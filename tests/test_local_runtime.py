@@ -2848,6 +2848,95 @@ class LocalRuntimeTests(TestCase):
         self.assertEqual(main._drop_hard_postbuild_rejected_final_items(final_by_section, min_items=4), 1)
         self.assertNotIn(housing, final_by_section["policy"])
 
+    def test_postbuild_rejects_non_agri_stock_auto_and_road_policy_noise(self) -> None:
+        stock = self._make_article(
+            section="supply",
+            title="[특징주] TS인베스트먼트, 액면병합 마치고 30일 거래 재개…기준가 2635원",
+            description="코스닥 변경상장일 보통주 기준가격과 거래 재개 일정을 전한 증권 기사다.",
+            link="https://example.com/stock-noise",
+            press="토큰포스트",
+            topic="증권",
+        )
+        auto = self._make_article(
+            section="supply",
+            title="3000만원대 중 친환경차 ‘공습’…현대차 포위전략 ‘반격’",
+            description="BYD 전기차와 PHEV 출시, 현대차 HEV 라인업 확대 등 자동차 시장 수급 전략을 다뤘다.",
+            link="https://example.com/auto-noise",
+            press="뉴스토마토",
+            topic="자동차",
+        )
+        road = self._make_article(
+            section="policy",
+            title="[민생브리핑]'성남~서초 고속도로' 추진 양재나들목 정체 줄인다",
+            description="국토교통부가 10.7㎞ 왕복 4차로 민간투자사업 우선협상대상자를 선정했다.",
+            link="https://example.com/road-policy-noise",
+            press="정책브리핑",
+            topic="교통",
+        )
+        final_by_section = {
+            "supply": [
+                self._make_article(
+                    section="supply",
+                    title=f"사과 가격 상승…출하량 감소 {idx}",
+                    description="사과 출하량 감소와 도매가격 상승을 다뤘다.",
+                    link=f"https://example.com/supply-clean-{idx}",
+                    topic="사과",
+                )
+                for idx in range(3)
+            ] + [stock, auto],
+            "policy": [
+                self._make_article(
+                    section="policy",
+                    title=f"정부 농산물 수급 안정 대책 {idx}",
+                    description="정부가 농산물 수급과 가격 안정 대책을 추진한다.",
+                    link=f"https://example.com/policy-clean-{idx}",
+                    topic="농산물",
+                )
+                for idx in range(4)
+            ] + [road],
+        }
+
+        self.assertTrue(main.is_commodity_corporate_stock_context(stock.title, stock.description))
+        self.assertTrue(main.is_non_agri_auto_market_context(auto.title, auto.description))
+        self.assertTrue(main.is_non_agri_transport_policy_context(road.title, road.description))
+        self.assertEqual(main._postbuild_article_reject_reason(stock, "supply"), "commodity_corporate_stock_context")
+        self.assertEqual(main._postbuild_article_reject_reason(auto, "supply"), "non_agri_auto_market_noise")
+        self.assertEqual(main._postbuild_article_reject_reason(road, "policy"), "non_agri_transport_policy_noise")
+        self.assertTrue(main._is_supply_publish_wrong_section_noise(stock))
+        self.assertTrue(main._is_supply_publish_wrong_section_noise(auto))
+        self.assertTrue(main._is_publish_policy_editorial_weak(road))
+        self.assertEqual(main._drop_hard_postbuild_rejected_final_items(final_by_section, min_items=3), 3)
+        self.assertNotIn(stock, final_by_section["supply"])
+        self.assertNotIn(auto, final_by_section["supply"])
+        self.assertNotIn(road, final_by_section["policy"])
+
+    def test_postbuild_rejects_ai_robot_and_unmanaged_price_roundup_noise(self) -> None:
+        robot = self._make_article(
+            section="policy",
+            title="[아이온의 AI:온] 걷고 들고 나르고…로봇이 바꾸는 산업 현장",
+            description="휴머노이드와 입는 로봇, 자동차 정비사 로봇 등 일반 AI 로봇 산업 동향을 소개했다.",
+            link="https://example.com/robot-industry-noise",
+            press="TV조선",
+            topic="AI",
+        )
+        roundup = self._make_article(
+            section="supply",
+            title="늦어지는 '장마'·무더위에 농산물값, 체리·파프리카↓ 다다기오이↑",
+            description="YTN 라디오 방송에서 체리와 파프리카, 다다기오이 가격을 생활정보로 소개했다.",
+            link="https://example.com/ytn-price-roundup",
+            press="YTN",
+            topic="농산물",
+        )
+
+        self.assertTrue(main.is_non_agri_ai_robot_industry_context(robot.title, robot.description))
+        self.assertTrue(main.is_supply_unmanaged_broad_price_roundup_context(roundup.title, roundup.description))
+        self.assertEqual(main._postbuild_article_reject_reason(robot, "policy"), "non_agri_ai_robot_industry_noise")
+        self.assertEqual(main._postbuild_article_reject_reason(roundup, "supply"), "supply_unmanaged_broad_price_roundup")
+        self.assertEqual(main._postbuild_article_reject_reason(roundup, "policy"), "supply_unmanaged_broad_price_roundup")
+        self.assertTrue(main._is_publish_policy_editorial_weak(robot))
+        self.assertTrue(main._is_publish_policy_editorial_weak(roundup))
+        self.assertTrue(main._is_supply_publish_wrong_section_noise(roundup))
+
     def test_postbuild_rejects_consumer_storage_tip_from_supply(self) -> None:
         storage_tip = self._make_article(
             section="supply",
@@ -3675,6 +3764,476 @@ class LocalRuntimeTests(TestCase):
         self.assertEqual(main._replace_dist_editorial_promo_tail_from_raw(final_by_section, {"dist": [ops]}), 1)
         self.assertEqual(final_by_section["dist"][0].link, ops.link)
 
+    def test_dist_apc_channel_expansion_is_operational_replacement(self) -> None:
+        article = self._make_article(
+            section="dist",
+            title="서북부경남 과수 거점 APC, 농산물 유통 역량 강화",
+            description=(
+                "과수거점산지유통센터(APC)는 기존 홈쇼핑 중심 판매에서 라이브커머스 채널과 "
+                "신규 판로를 확대한다. 지난해 매출 191억원과 방송 수수료 부담을 토대로 "
+                "판매 채널 다변화와 수익성 개선을 추진한다."
+            ),
+            link="https://example.com/dist-apc-channel-expansion",
+        )
+
+        self.assertTrue(main._is_dist_apc_channel_expansion_story(article))
+        self.assertTrue(main._is_dist_editorial_ops_replacement(article))
+        self.assertTrue(main._is_dist_operational_upgrade_candidate(article))
+        self.assertTrue(main._is_publish_editorial_candidate("dist", article))
+
+    def test_dist_direct_platform_launch_is_operational_replacement(self) -> None:
+        article = self._make_article(
+            section="dist",
+            title="제주 농특산물 직거래 플랫폼 '탐나는장터' 7월 10일 공식 오픈",
+            description=(
+                "생산자는 온라인 마케팅 비용과 판매 수수료 부담을 줄이고 새로운 판로를 확보하며, "
+                "소비자는 제주 농특산물을 직접 구매한다. 시범 운영 뒤 공식 오픈한다."
+            ),
+            link="https://example.com/dist-direct-platform",
+        )
+
+        self.assertTrue(main._is_dist_direct_platform_launch_story(article))
+        self.assertTrue(main._is_dist_editorial_ops_replacement(article))
+        self.assertTrue(main._is_dist_operational_upgrade_candidate(article))
+        self.assertTrue(main._is_publish_editorial_candidate("dist", article))
+
+    def test_dist_measured_export_growth_can_crossfill_from_supply(self) -> None:
+        article = self._make_article(
+            section="supply",
+            title="K-참외 매력에 ‘흠뻑’…국산 참외 일본 수출 ‘쑥쑥’",
+            description="국산 참외의 일본 수출량이 1.2톤에서 2.4톤으로 늘고 현지 판매량도 해마다 증가했다.",
+            link="https://example.com/dist-measured-export-growth",
+        )
+
+        self.assertTrue(main._is_dist_export_growth_context(article.title, article.description))
+        self.assertTrue(main._is_dist_operational_upgrade_candidate(article))
+        self.assertTrue(main._is_publish_editorial_candidate("dist", article))
+
+    def test_dist_editorial_guard_can_limit_followup_replacements(self) -> None:
+        promos = [
+            self._make_article(
+                section="dist",
+                title=f"도매법인 {idx}, 산지에 물류·영농기자재 지원",
+                description="농가에 물류기자재 지원금을 전달했다는 홍보성 기사다.",
+                link=f"https://example.com/dist-promo-{idx}",
+            )
+            for idx in range(2)
+        ]
+        replacements = [
+            self._make_article(
+                section="dist",
+                title=f"농산물 도매시장 {idx}, 경매시간 운영 변경",
+                description="도매시장이 출하정보와 반입량을 토대로 경매시간과 시장 운영을 변경한다.",
+                link=f"https://example.com/dist-ops-{idx}",
+            )
+            for idx in range(2)
+        ]
+        final_by_section = {"dist": promos}
+
+        self.assertEqual(
+            main._replace_dist_editorial_promo_tail_from_raw(
+                final_by_section,
+                {"dist": replacements},
+                max_changes=1,
+            ),
+            1,
+        )
+        self.assertEqual(sum(article.link in {item.link for item in replacements} for article in final_by_section["dist"]), 1)
+
+    def test_dist_followup_replaces_only_duplicate_support_handoff_with_apc_shift(self) -> None:
+        support_items = [
+            self._make_article(
+                section="dist",
+                title=f"도매법인 {idx}, 산지에 물류·영농기자재 전달",
+                description="산지 출하조직에 물류기자재 지원금을 전달했다.",
+                link=f"https://example.com/dist-support-handoff-{idx}",
+            )
+            for idx in range(2)
+        ]
+        fixed_items = [
+            self._make_article(
+                section="dist",
+                title=f"농산물 도매시장 운영 개선 {idx}",
+                description="도매시장 경매와 반입량 운영을 개선한다.",
+                link=f"https://example.com/dist-fixed-{idx}",
+            )
+            for idx in range(3)
+        ]
+        apc = self._make_article(
+            section="dist",
+            title="서북부경남 과수 거점 APC, 농산물 유통 역량 강화",
+            description=(
+                "과수거점산지유통센터(APC)가 매출 191억원과 홈쇼핑 수수료 부담을 토대로 "
+                "라이브커머스 판매 채널과 신규 판로를 확대한다."
+            ),
+            link="https://example.com/dist-apc-measured-shift",
+        )
+        final_by_section = {"dist": fixed_items + support_items}
+
+        self.assertEqual(
+            main._replace_publish_dist_support_promo_with_apc_channel_expansion(
+                final_by_section,
+                {"dist": [apc]},
+            ),
+            1,
+        )
+        links = {article.link for article in final_by_section["dist"]}
+        self.assertIn(apc.link, links)
+        self.assertEqual(sum(article.link in links for article in support_items), 1)
+
+    def test_dist_followup_replaces_single_support_handoff_with_apc_shift(self) -> None:
+        support = self._make_article(
+            section="dist",
+            title="중앙청과, 서창농협에 물류·영농기자재 지원",
+            description="산지 출하조직에 물류기자재 지원금을 전달했다.",
+            link="https://example.com/dist-single-support-handoff",
+        )
+        fixed_items = [
+            self._make_article(
+                section="dist",
+                title=f"농산물 도매시장 운영 개선 {idx}",
+                description="도매시장 경매와 반입량 운영을 개선한다.",
+                link=f"https://example.com/dist-single-fixed-{idx}",
+            )
+            for idx in range(4)
+        ]
+        apc = self._make_article(
+            section="dist",
+            title="서북부경남 과수 거점 APC, 농산물 유통 역량 강화",
+            description=(
+                "과수거점산지유통센터(APC)가 매출 191억원과 홈쇼핑 수수료 부담을 토대로 "
+                "라이브커머스 판매 채널과 신규 판로를 확대한다."
+            ),
+            link="https://example.com/dist-single-apc-shift",
+        )
+        final_by_section = {"dist": fixed_items + [support]}
+
+        self.assertEqual(
+            main._replace_publish_dist_support_promo_with_apc_channel_expansion(
+                final_by_section,
+                {"dist": [apc]},
+            ),
+            1,
+        )
+        self.assertIn(apc.link, {article.link for article in final_by_section["dist"]})
+        self.assertNotIn(support.link, {article.link for article in final_by_section["dist"]})
+
+    def test_measured_climate_output_story_is_valid_supply_candidate(self) -> None:
+        article = self._make_article(
+            section="supply",
+            title='"폭염에도 상추 수확 40%↑"…농진청, 양액 냉각기 점검',
+            description=(
+                "여름철 채소 수급 불안 우려 속에 양액 냉각 기술을 적용한 상추 생산량이 "
+                "최대 2배 증가했다."
+            ),
+            link="https://example.com/supply-measured-lettuce-output",
+            topic="상추",
+        )
+        conf = next(section for section in main.SECTIONS if section.get("key") == "supply")
+
+        self.assertTrue(main._is_supply_climate_output_context(article.title, article.description))
+        self.assertFalse(main._is_publish_supply_editorial_weak(article))
+        self.assertEqual(main._postbuild_article_reject_reason(article, "supply"), "")
+        self.assertGreater(main.section_fit_score(article.title, article.description, conf), 1.2)
+
+    def test_supply_followup_replaces_regional_duplicate_with_climate_output(self) -> None:
+        onion_a = self._make_article(
+            section="supply",
+            title="경북, 양파 가격 폭락에 소비촉진 행사 개최",
+            description="경북이 양파 가격 하락에 대응해 소비촉진 행사를 열었다.",
+            link="https://example.com/supply-onion-duplicate-a",
+            topic="양파",
+        )
+        onion_b = self._make_article(
+            section="supply",
+            title="경상북도, 양파 가격하락 농가 피해 줄이기 위해 수급 안정 대책",
+            description="경북이 양파 가격 하락과 농가 피해에 대응해 수급 안정 대책을 추진한다.",
+            link="https://example.com/supply-onion-duplicate-b",
+            topic="양파",
+        )
+        fixed = [
+            self._make_article(
+                section="supply",
+                title=f"채소 가격·출하 동향 {idx}",
+                description="채소 출하량과 가격 변화를 다룬다.",
+                link=f"https://example.com/supply-fixed-{idx}",
+            )
+            for idx in range(3)
+        ]
+        climate = self._make_article(
+            section="supply",
+            title='"폭염에도 상추 수확 40%↑"…농진청, 양액 냉각기 점검',
+            description="여름철 채소 수급 불안 속에 상추 생산량이 최대 2배 증가했다.",
+            link="https://example.com/supply-climate-replacement",
+            topic="상추",
+        )
+        final_by_section = {"supply": [onion_a, onion_b] + fixed}
+
+        self.assertEqual(
+            main._replace_publish_supply_duplicate_with_climate_output(
+                final_by_section,
+                {"supply": [climate]},
+            ),
+            1,
+        )
+        links = {article.link for article in final_by_section["supply"]}
+        self.assertIn(climate.link, links)
+        self.assertEqual(sum(article.link in links for article in (onion_a, onion_b)), 1)
+
+    def test_supply_followup_replaces_climate_technology_with_authoritative_multi_price(self) -> None:
+        climate = self._make_article(
+            section="supply",
+            title='"폭염에도 상추 수확 40%↑"…농진청, 양액 냉각기 점검',
+            description="여름철 채소 수급 불안 속에 상추 생산량이 최대 2배 증가했다.",
+            link="https://example.com/supply-climate-tail",
+            topic="상추",
+        )
+        fixed = [
+            self._make_article(
+                section="supply",
+                title=f"채소 가격·출하 동향 {idx}",
+                description="채소 출하량과 가격 변화를 다룬다.",
+                link=f"https://example.com/supply-multi-price-fixed-{idx}",
+            )
+            for idx in range(4)
+        ]
+        multi_price = self._make_article(
+            section="supply",
+            title="늦어지는 '장마'·무더위에 농산물값, 체리·파프리카↓, 다다기오이↑",
+            description=(
+                "한국농수산식품유통공사는 파프리카 가격이 전주 대비 17.1% 하락하고 "
+                "감자 생산량 증가로 가격이 13.4% 내렸다고 밝혔다. 다다기오이는 "
+                "산지 흐린 날씨로 반입량이 감소해 3.2% 상승했고 참외 출하량도 늘었다."
+            ),
+            link="https://example.com/supply-authoritative-multi-price",
+            topic="파프리카",
+        )
+        final_by_section = {"supply": fixed + [climate]}
+
+        self.assertTrue(main._is_supply_authoritative_multi_price_context(
+            multi_price.title,
+            multi_price.description,
+        ))
+        self.assertFalse(main.is_supply_unmanaged_broad_price_roundup_context(
+            multi_price.title,
+            multi_price.description,
+        ))
+        self.assertTrue(main._is_publish_editorial_candidate("supply", multi_price))
+        self.assertEqual(
+            main._replace_publish_supply_climate_output_with_multi_price(
+                final_by_section,
+                {"supply": [multi_price]},
+            ),
+            1,
+        )
+        links = {article.link for article in final_by_section["supply"]}
+        self.assertEqual(len(final_by_section["supply"]), 5)
+        self.assertIn(multi_price.link, links)
+        self.assertNotIn(climate.link, links)
+
+    def test_measured_export_growth_and_operating_apc_automation_fit_dist(self) -> None:
+        export = self._make_article(
+            section="dist",
+            title="K-참외 매력에 흠뻑…국산 참외 일본 수출 쑥쑥",
+            description="참외 수출량이 4년 전 61톤에서 지난해 271톤으로 4배 이상 증가했다.",
+            link="https://example.com/dist-melon-export-growth",
+            topic="참외",
+        )
+        automation = self._make_article(
+            section="dist",
+            title="토마토 선별·포장, 로봇이 다 해줍니다",
+            description=(
+                "전국 최초로 로봇 기반 자동화 시스템을 갖춘 스마트 농산물산지유통센터(APC)가 "
+                "토마토를 선별·포장한다."
+            ),
+            link="https://example.com/dist-tomato-apc-automation",
+            topic="토마토",
+        )
+        conf = next(section for section in main.SECTIONS if section.get("key") == "dist")
+
+        self.assertTrue(main._is_dist_export_growth_context(export.title, export.description))
+        self.assertTrue(main._is_dist_apc_automation_context(automation.title, automation.description))
+        self.assertFalse(main._is_publish_dist_editorial_weak(export))
+        self.assertFalse(main._is_publish_dist_editorial_weak(automation))
+        self.assertGreater(main.section_fit_score(export.title, export.description, conf), 1.2)
+        self.assertGreater(main.section_fit_score(automation.title, automation.description, conf), 1.2)
+
+    def test_dist_structural_followup_replaces_two_event_tails(self) -> None:
+        fixed = [
+            self._make_article(
+                section="dist",
+                title=f"농산물 도매시장 운영 기사 {idx}",
+                description="도매시장 반입량과 경매 운영을 다룬다.",
+                link=f"https://example.com/dist-fixed-structural-{idx}",
+            )
+            for idx in range(3)
+        ]
+        meeting = self._make_article(
+            section="dist",
+            title="영동농협, 경매사 초청 간담회",
+            description="경매사를 초청해 판로 확대 의견을 나눴다.",
+            link="https://example.com/dist-meeting-tail",
+        )
+        support = self._make_article(
+            section="dist",
+            title="중앙청과, 서창농협에 물류·영농기자재 지원",
+            description="물류기자재 지원금 전달식을 열었다.",
+            link="https://example.com/dist-support-tail-structural",
+        )
+        export = self._make_article(
+            section="dist",
+            title="K-참외 매력에 흠뻑…국산 참외 일본 수출 쑥쑥",
+            description="수출량이 61톤에서 271톤으로 4배 이상 증가했다.",
+            link="https://example.com/dist-export-replacement",
+            topic="참외",
+        )
+        automation = self._make_article(
+            section="dist",
+            title="토마토 선별·포장, 로봇이 다 해줍니다",
+            description="전국 최초 자동화 시스템을 갖춘 스마트 APC가 토마토를 선별·포장한다.",
+            link="https://example.com/dist-automation-replacement",
+            topic="토마토",
+        )
+        final_by_section = {"dist": fixed + [meeting, support]}
+
+        self.assertEqual(
+            main._replace_publish_dist_weak_tails_with_structural_ops(
+                final_by_section,
+                {"dist": [export, automation]},
+            ),
+            2,
+        )
+        links = {article.link for article in final_by_section["dist"]}
+        self.assertIn(export.link, links)
+        self.assertIn(automation.link, links)
+
+    def test_dist_core_rebalance_prefers_operational_anchors_over_structural_tails(self) -> None:
+        onion_export = self._make_article(
+            section="dist",
+            title="전주시, 양파 대만 수출 확대…농가 판로 다변화",
+            description="전주산 양파를 대만에 선적해 수출 판로를 넓힌다.",
+            link="https://example.com/dist-onion-export-anchor",
+            topic="양파",
+        )
+        garak = self._make_article(
+            section="dist",
+            title="[Issue+] 가락시장 시범휴업 추진 상황과 과제는",
+            description="가락시장 시범휴업의 운영 일정과 출하자 대응 과제를 점검한다.",
+            link="https://example.com/dist-garak-suspension-anchor",
+        )
+        automation = self._make_article(
+            section="dist",
+            title="토마토 선별·포장, 로봇이 다 해줍니다",
+            description="스마트 APC가 토마토 선별과 포장을 자동화한다.",
+            link="https://example.com/dist-automation-tail",
+            topic="토마토",
+        )
+        export_growth = self._make_article(
+            section="dist",
+            title="K-참외 매력에 흠뻑…국산 참외 일본 수출 쑥쑥",
+            description="참외 수출량이 61톤에서 271톤으로 4배 이상 증가했다.",
+            link="https://example.com/dist-export-growth-tail",
+            topic="참외",
+        )
+        support = self._make_article(
+            section="dist",
+            title="중앙청과, 서창농협에 물류·영농기자재 지원",
+            description="물류기자재 지원금을 전달했다.",
+            link="https://example.com/dist-support-tail",
+        )
+        for article in (automation, export_growth):
+            article.is_core = True
+        final_by_section = {
+            "dist": [automation, export_growth, support, onion_export, garak],
+        }
+
+        main._rebalance_publish_core_badges_for_editorial_target(final_by_section)
+
+        self.assertEqual(len(final_by_section["dist"]), 5)
+        self.assertEqual(
+            {article.link for article in final_by_section["dist"] if article.is_core},
+            {onion_export.link, garak.link},
+        )
+
+    def test_pest_followup_prefers_named_weather_warning_over_generic_consultation(self) -> None:
+        generic = self._make_article(
+            section="pest",
+            title="논산시, 7월 한 달 농가 찾아간다…폭염·병해충 영농상담 강화",
+            description="농가를 찾아 일반 영농상담과 병해충 예찰을 안내한다.",
+            link="https://example.com/pest-generic-consultation",
+        )
+        fixed = [
+            self._make_article(
+                section="pest",
+                title=f"고추 병해충 현장 기사 {idx}",
+                description="고추 재배지 병해충 발생과 방제 대응을 다룬다.",
+                link=f"https://example.com/pest-fixed-{idx}",
+            )
+            for idx in range(4)
+        ]
+        warning = self._make_article(
+            section="pest",
+            title="해남군 '고온다습 장마철' 고추 병해충 예방 당부",
+            description="고추 탄저병과 담배나방 발생 위험에 대비해 장마철 예방을 당부했다.",
+            link="https://example.com/pest-haenam-warning",
+        )
+        final_by_section = {"pest": fixed + [generic]}
+
+        self.assertEqual(
+            main._replace_publish_pest_generic_tail_with_direct_warning(
+                final_by_section,
+                {"pest": [warning]},
+            ),
+            1,
+        )
+        links = {article.link for article in final_by_section["pest"]}
+        self.assertIn(warning.link, links)
+        self.assertNotIn(generic.link, links)
+
+    def test_pest_followup_replaces_feature_with_weekly_guidance(self) -> None:
+        investigation = self._make_article(
+            section="pest",
+            title="사과 나무 무더기로 죽었는데 원인 불명?…경찰 수사까지",
+            description="당국은 과수화상병 가능성이 낮다고 보고 원인을 조사하고 있다.",
+            link="https://example.com/pest-unknown-apple",
+            topic="사과",
+        )
+        feature = self._make_article(
+            section="pest",
+            title="농약 치기 쉬운 만감류 나무, 제주 농가에 보급될까",
+            description="방제 작업이 쉬운 만감류 수형 연구를 소개한다.",
+            link="https://example.com/pest-citrus-feature",
+        )
+        fixed = [
+            self._make_article(
+                section="pest",
+                title=f"고추 병해충 발생 경보 {idx}",
+                description="장마철 고추 병해충 발생과 방제 대응을 다룬다.",
+                link=f"https://example.com/pest-guidance-fixed-{idx}",
+            )
+            for idx in range(3)
+        ]
+        weekly = self._make_article(
+            section="pest",
+            title="[주간농사메모] 병해충 발생 여부 수시 예찰",
+            description="병해충을 수시 예찰하고 발생 시 즉시 적용약제로 방제하도록 안내한다.",
+            link="https://example.com/pest-weekly-guidance",
+        )
+        final_by_section = {"pest": fixed + [investigation, feature]}
+
+        self.assertEqual(
+            main._replace_publish_pest_feature_tail_with_weekly_advisory(
+                final_by_section,
+                {"pest": [weekly]},
+            ),
+            1,
+        )
+        links = {article.link for article in final_by_section["pest"]}
+        self.assertEqual(len(final_by_section["pest"]), 5)
+        self.assertIn(weekly.link, links)
+        self.assertIn(investigation.link, links)
+        self.assertNotIn(feature.link, links)
+
     def test_dist_support_grant_is_not_hard_logistics_core(self) -> None:
         grant = self._make_article(
             section="dist",
@@ -3865,6 +4424,41 @@ class LocalRuntimeTests(TestCase):
         self.assertEqual(len(by_section["pest"]), 5)
         self.assertIn("render-pest-fire-direct", html)
         self.assertIn("render-pest-tomato", html)
+
+    def test_render_guard_never_reduces_dist_below_five(self) -> None:
+        articles = [
+            self._make_article(
+                section="dist",
+                title=f"농산물 도매시장 운영 개선 {idx}",
+                description="도매시장 경매와 산지 출하 운영을 개선한다.",
+                link=f"https://example.com/render-dist-safe-{idx}",
+            )
+            for idx in range(4)
+        ]
+        weak_first_shipment = self._make_article(
+            section="dist",
+            title="햇사레 복숭아 본격 출하",
+            description="첫 출하 기념식과 브랜드 홍보, 판매 활성화 계획을 소개했다.",
+            link="https://example.com/render-dist-first-shipment",
+            topic="복숭아",
+        )
+        by_section = {
+            "supply": [],
+            "policy": [],
+            "dist": articles + [weak_first_shipment],
+            "pest": [],
+        }
+
+        main.render_daily_page(
+            "2026-06-29",
+            datetime(2026, 6, 26, 6, 0, tzinfo=main.KST),
+            datetime(2026, 6, 29, 6, 0, tzinfo=main.KST),
+            by_section,
+            ["2026-06-29"],
+            "/agri-news-brief/",
+        )
+
+        self.assertEqual(len(by_section["dist"]), 5)
 
     def test_pest_diversity_replacement_accepts_pepper_disease_prevention(self) -> None:
         fire_core_a = self._make_article(
@@ -4503,3 +5097,1438 @@ class LocalRuntimeTests(TestCase):
         self.assertTrue(main._is_publish_editorial_candidate("dist", automation))
         self.assertFalse(main._is_publish_policy_editorial_weak(tariff))
         self.assertTrue(main._is_publish_editorial_candidate("policy", tariff))
+
+    def test_dist_market_facility_cooperation_is_operational_candidate(self) -> None:
+        article = self._make_article(
+            section="dist",
+            title="대아청과·애월농협, 제주산 농산물 유통 활성화 '맞손'",
+            description=(
+                "대아청과와 애월농협이 경매장과 저온창고를 점검하고 양배추·쪽파·브로콜리 "
+                "거래 현황을 확인했다. 전자경매 시스템과 오프라인 출하 협력도 논의했다."
+            ),
+            link="https://example.com/dist-market-facility-cooperation",
+            topic="도매시장",
+        )
+
+        self.assertTrue(main._is_dist_market_facility_cooperation_story(article))
+        self.assertTrue(main._is_dist_operational_upgrade_candidate(article))
+        self.assertTrue(main._is_publish_editorial_candidate("dist", article))
+
+    def test_publish_editorial_duplicate_story_groups_price_package_and_onion_response(self) -> None:
+        package_one = self._make_article(
+            section="policy",
+            title="1조 투입해 8월 고비 정조준…정부, 하반기 물가 방어 총력",
+            description="정부가 하반기 물가 대책을 발표했다.",
+            link="https://example.com/price-package-one",
+        )
+        package_two = self._make_article(
+            section="policy",
+            title="정부, 물가 안정에 1조 투입…공공요금 동결",
+            description="정부가 같은 하반기 물가 대책을 내놨다.",
+            link="https://example.com/price-package-two",
+        )
+        onion_one = self._make_article(
+            section="supply",
+            title="경북도, 가격 하락 양파 농가 지원 나서",
+            description="경북 양파 가격 급락 대응책이다.",
+            link="https://example.com/onion-response-one",
+            topic="양파",
+        )
+        onion_two = self._make_article(
+            section="supply",
+            title="양파값 30% 급락…경북도 소비·수출 확대 총력 대응",
+            description="경북도가 양파 소비와 수출 확대에 나섰다.",
+            link="https://example.com/onion-response-two",
+            topic="양파",
+        )
+
+        self.assertTrue(main._publish_editorial_duplicate_story("policy", package_one, package_two))
+        self.assertTrue(main._publish_editorial_duplicate_story("supply", onion_one, onion_two))
+
+    def test_publish_policy_guard_rejects_retrospective_and_accepts_current_instruments(self) -> None:
+        retrospective = self._make_article(
+            section="policy",
+            title="농업 희생 전제로 산업화 뒷받침한 1960년대 농업정책",
+            description="과거 농업정책의 역사를 회고한다.",
+            link="https://example.com/policy-retrospective",
+        )
+        tariff = self._make_article(
+            section="policy",
+            title="먹거리 할당관세 확대…내 식탁엔 무엇이 달라질까",
+            description="정부가 과일과 농산물 할당관세 대상을 확대한다.",
+            link="https://example.com/policy-tariff-current",
+        )
+        seasonal_workers = self._make_article(
+            section="policy",
+            title="외국인 계절노동자 9만명 넘었는데 행정·재정 지원 태부족",
+            description="계절노동자 제도의 중앙정부 행정 및 재정 지원 문제를 점검한다.",
+            link="https://example.com/policy-seasonal-workers",
+        )
+        research_meeting = self._make_article(
+            section="policy",
+            title="농경연·농식품부, 농정 현안 대응 위한 ‘정책연구협의회’ 개최",
+            description="두 기관이 농정 현안을 논의하는 협의회를 열었다.",
+            link="https://example.com/policy-research-meeting",
+        )
+
+        self.assertTrue(main._is_publish_policy_editorial_weak(retrospective))
+        self.assertTrue(main._is_publish_policy_editorial_weak(research_meeting))
+        self.assertFalse(main._is_publish_editorial_candidate("policy", retrospective))
+        self.assertFalse(main._is_publish_editorial_candidate("policy", research_meeting))
+        self.assertTrue(main._is_publish_editorial_candidate("policy", tariff))
+        self.assertTrue(main._is_publish_editorial_candidate("policy", seasonal_workers))
+
+    def test_publish_policy_repair_collapses_price_package_and_upgrades_representative(self) -> None:
+        price_package = [
+            self._make_article(
+                section="policy",
+                title=title,
+                description="정부가 같은 하반기 물가 안정 패키지를 발표했다.",
+                link=f"https://example.com/policy-package-{idx}",
+            )
+            for idx, title in enumerate(
+                (
+                    "1조 투입해 8월 고비 정조준…정부, 하반기 물가 방어 총력",
+                    "정부 3500억 농축산물 할인…불법수익 2배 환수 신설",
+                    "국정 2년차, 물가와의 전쟁…가격 개입 현실화",
+                    "정부, 물가 안정에 1조 투입…공공요금 동결",
+                )
+            )
+        ]
+        retrospective = self._make_article(
+            section="policy",
+            title="농업 희생 전제로 산업화 뒷받침한 1960년대 농업정책",
+            description="과거 농업정책을 회고한다.",
+            link="https://example.com/policy-old-history",
+        )
+        workers = self._make_article(
+            section="policy",
+            title="외국인 계절노동자 9만명 넘었는데 행정·재정 지원 태부족",
+            description="농촌 계절노동자 제도의 중앙정부 지원 부족을 점검한다.",
+            link="https://example.com/policy-workers-final",
+        )
+        best_package = self._make_article(
+            section="policy",
+            title="'계란 10개에 5000원'…물가 폭등에 1조원 쏟아 붓는다",
+            description="정부가 농축수산물 할인과 수입 지원을 담은 1조원 물가 대책을 발표했다.",
+            link="https://example.com/policy-best-package",
+        )
+        best_package.score = 79.1
+        tariff = self._make_article(
+            section="policy",
+            title="먹거리 할당관세 확대…내 식탁엔 무엇이 달라질까",
+            description="정부의 농산물 할당관세 확대 효과를 분석한다.",
+            link="https://example.com/policy-tariff-replacement",
+        )
+        cptpp = self._make_article(
+            section="policy",
+            title="CPTPP 수면 위로…농업계 검역 변수 촉각",
+            description="CPTPP 가입 재추진에 따른 농산물 검역 정책 변화를 다룬다.",
+            link="https://example.com/policy-cptpp",
+        )
+        advocacy = self._make_article(
+            section="policy",
+            title="농산물 가격 폭락·농자재값 폭등 대책 마련하라",
+            description="농민단체가 공공수급제와 농자재 가격 대책을 정부와 국회에 요구했다.",
+            link="https://example.com/policy-public-supply",
+        )
+        advocacy.selection_fit_score = 7.26
+        tariff.selection_fit_score = 6.99
+        homeplus = self._make_article(
+            section="policy",
+            title="농식품부, 홈플러스 미정산 산지유통조직에 300억 금융 지원 추진",
+            description="농식품부가 홈플러스 미정산 피해 산지유통조직에 정책금융 지원을 추진한다.",
+            link="https://example.com/policy-homeplus-finance",
+        )
+        final = {
+            "supply": [],
+            "policy": [*price_package, retrospective],
+            "dist": [],
+            "pest": [],
+        }
+        raw = {
+            "supply": [],
+            "policy": [best_package, tariff, cptpp, advocacy, workers, homeplus],
+            "dist": [],
+            "pest": [],
+        }
+
+        changed = main._repair_publish_editorial_selection(final, raw)
+        self.assertGreaterEqual(
+            changed,
+            3,
+            {
+                "final": [(article.title, main._is_publish_editorial_candidate("policy", article)) for article in final["policy"]],
+                "raw": [
+                    (
+                        article.title,
+                        main._postbuild_article_reject_reason(article, "policy", apply_selection_fit=False),
+                        main._is_publish_policy_editorial_weak(article),
+                        main._is_publish_editorial_candidate("policy", article),
+                    )
+                    for article in raw["policy"]
+                ],
+            },
+        )
+        links = {article.link for article in final["policy"]}
+        self.assertIn(price_package[1].link, links)
+        self.assertIn(tariff.link, links)
+        self.assertIn(cptpp.link, links)
+        self.assertIn(workers.link, links)
+        self.assertIn(homeplus.link, links)
+        self.assertNotIn(best_package.link, links)
+        self.assertNotIn(advocacy.link, links)
+        self.assertNotIn(retrospective.link, links)
+        self.assertEqual(
+            sum(main._is_publish_policy_price_package_title(article.title) for article in final["policy"]),
+            1,
+        )
+
+    def test_publish_dist_guard_replaces_labor_abuse_and_delegation_visit(self) -> None:
+        labor_abuse = self._make_article(
+            section="dist",
+            title='"때려도 허락 없인 못 떠나"…노예의 덫 갇힌 이주노동자 눈물',
+            description="이주노동자 폭행과 인권 침해 실태를 다룬 기사다.",
+            link="https://example.com/dist-labor-abuse",
+        )
+        delegation = self._make_article(
+            section="dist",
+            title="파라과이 연수단 한반도농협 스마트 APC 방문",
+            description="연수단이 APC 시설을 견학했다.",
+            link="https://example.com/dist-delegation",
+        )
+        market = self._make_article(
+            section="dist",
+            title="여주 대신농협, 가락공판장 찾아 농산물 제값받기 협력 논의",
+            description="산지 출하와 공판장 경매 운영 협력을 논의했다.",
+            link="https://example.com/dist-market-cooperation",
+        )
+        matching = self._make_article(
+            section="dist",
+            title="생산·구매사 맞춤형 매칭…농가는 판로 열고 식탁물가도 잡고",
+            description="농산물 생산자와 구매사를 수요에 맞춰 연결하는 판로 운영을 분석했다.",
+            link="https://example.com/dist-matching",
+        )
+        political_event = self._make_article(
+            section="dist",
+            title="김진열 군위군수, 자두·복숭아 공동출하회 행사 참석해 농가 격려",
+            description="군수가 초출하 행사에 참석해 농가를 격려했다.",
+            link="https://example.com/dist-political-event",
+        )
+
+        self.assertTrue(main._is_publish_dist_editorial_weak(labor_abuse))
+        self.assertTrue(main._is_publish_dist_editorial_weak(delegation))
+        self.assertTrue(main._is_publish_dist_editorial_weak(political_event))
+        self.assertTrue(main._is_publish_dist_editorial_weak(matching))
+        self.assertFalse(main._is_publish_dist_editorial_weak(market))
+        self.assertTrue(main._is_publish_editorial_candidate("dist", market))
+        self.assertFalse(main._is_publish_editorial_candidate("dist", matching))
+
+    def test_publish_guard_rejects_stale_event_reprints_and_stale_dated_article(self) -> None:
+        advocacy = self._make_article(
+            section="supply",
+            title="농산물 가격폭락·농자재값 폭등 대책 마련하라",
+            description=(
+                "농민단체가 지난달 24일 국회에서 기자회견을 열고 "
+                "공공수급제와 반값 농자재 대책을 촉구했다."
+            ),
+            link="https://example.com/stale-advocacy",
+        )
+        stale_matching = self._make_article(
+            section="dist",
+            title="생산·구매사 맞춤형 매칭…농가는 판로 열고 식탁물가도 잡고",
+            description="63개사가 185건을 상담해 70억원 계약 성과를 냈다.",
+            link="https://www.segye.com/newsView/20260318520952",
+        )
+
+        self.assertTrue(main._is_publish_stale_reprint(advocacy))
+        self.assertTrue(main._is_publish_supply_editorial_weak(advocacy))
+        self.assertFalse(main._is_publish_editorial_candidate("supply", advocacy))
+        self.assertTrue(main._is_publish_stale_reprint(stale_matching))
+        self.assertTrue(main._is_publish_dist_editorial_weak(stale_matching))
+        self.assertFalse(main._is_publish_editorial_candidate("dist", stale_matching))
+
+    def test_publish_dist_guard_promotes_supplier_payment_risk_over_first_shipment(self) -> None:
+        first_shipment = self._make_article(
+            section="dist",
+            title="햇사레 복숭아 본격 출하",
+            description=(
+                "첫 출하 기념식에서 공동선별한 복숭아 105상자를 도매시장에 보냈다. "
+                "브랜드 홍보와 판매 활성화 계획을 소개했다."
+            ),
+            link="https://example.com/peach-first-shipment",
+            topic="복숭아",
+        )
+        supplier_risk = self._make_article(
+            section="policy",
+            title="농식품부, 홈플러스 미정산 산지 유통 조직에 300억 규모 금융 지원 추진",
+            description=(
+                "홈플러스에 농산물을 납품한 산지출하조직이 납품대금 269억원을 받지 못해 "
+                "정부가 정책자금 상환 유예와 300억원 금융 지원을 추진한다."
+            ),
+            link="https://example.com/homeplus-supplier-risk",
+        )
+
+        self.assertTrue(main._is_publish_dist_editorial_weak(first_shipment))
+        self.assertFalse(main._is_publish_editorial_candidate("dist", first_shipment))
+        self.assertTrue(main._is_dist_supplier_payment_risk_story(supplier_risk))
+        self.assertEqual(main._postbuild_article_reject_reason(supplier_risk, "dist"), "")
+        self.assertFalse(main._is_publish_dist_editorial_weak(supplier_risk))
+        self.assertTrue(main._is_publish_editorial_candidate("dist", supplier_risk))
+
+    def test_publish_dist_core_prefers_measured_logistics_and_processing_outcomes(self) -> None:
+        onion_ops = self._make_article(
+            section="dist",
+            title="양파 톤백 매입·선별로 농가 부담 덜었다",
+            description="자동선별과 산지 경매로 비규격 양파 판로와 물류비 절감 성과를 냈다.",
+            link="https://example.com/dist-onion-ops-core",
+            topic="양파",
+        )
+        fast_logistics = self._make_article(
+            section="dist",
+            title="[K-푸드 산지 특송] 마트 도달 시간 1/3로…제주귤도 당일에",
+            description="온라인 도매시장으로 유통 단계를 줄여 산지 배송 시간을 3분의 1로 단축했다.",
+            link="https://example.com/dist-fast-logistics-core",
+            topic="감귤",
+        )
+        meeting = self._make_article(
+            section="dist",
+            title="여주 대신농협, 가락공판장 찾아 농산물 제값받기 협력 논의",
+            description="경매인 간담회와 경매 참관으로 판로 확대 방안을 논의했다.",
+            link="https://example.com/dist-market-meeting-tail",
+        )
+        matching = self._make_article(
+            section="dist",
+            title="생산·구매사 맞춤형 매칭…농가는 판로 확대",
+            description="63개사가 185건을 상담해 70억원 계약 성과를 냈다.",
+            link="https://example.com/dist-matching-tail",
+        )
+        market = self._make_article(
+            section="dist",
+            title="경기 광역 로컬푸드 개장…농산물 판로 확대",
+            description="광역 로컬푸드 시장을 개장해 산지 농산물 거래와 판로를 넓혔다.",
+            link="https://example.com/dist-localfood-tail",
+        )
+        final = {
+            "supply": [],
+            "policy": [],
+            "dist": [meeting, onion_ops, matching, fast_logistics, market],
+            "pest": [],
+        }
+
+        main._repair_publish_editorial_selection(final, {"supply": [], "policy": [], "dist": [], "pest": []})
+
+        core_links = {article.link for article in final["dist"] if article.is_core}
+        self.assertEqual(core_links, {onion_ops.link, fast_logistics.link})
+
+    def test_publish_guard_demotes_local_promo_but_keeps_material_pest_analysis(self) -> None:
+        policy_promo = self._make_article(
+            section="policy",
+            title="농협, 양파 소비촉진 나섰다",
+            description="지역 농협이 양파 직거래 행사와 판촉 활동을 진행했다.",
+            link="https://example.com/policy-local-consumption-promo",
+            topic="양파",
+        )
+        localfood_profile = self._make_article(
+            section="dist",
+            title="[판매농협이 간다] 광양원예농협, 로컬푸드직매장 성공으로 지역 농산물 판로 확대",
+            description="로컬푸드직매장의 연매출과 운영 성과를 소개하는 농협 프로필 기사다.",
+            link="https://example.com/dist-localfood-profile",
+        )
+        potato_giveaway = self._make_article(
+            section="dist",
+            title="오창농협, 감자 나눔행사·할인판매로 지역 농가 돕기",
+            description="본점 앞 광장에서 감자 소비 활성화 행사를 열었다.",
+            link="https://example.com/dist-potato-giveaway",
+            topic="감자",
+        )
+        opinion = self._make_article(
+            section="pest",
+            title="[취재수첩] 과수화상병이 개꿀이라니",
+            description="과수화상병 피해 보상 논란을 다룬 취재수첩이다.",
+            link="https://example.com/pest-opinion",
+        )
+        foreign_quarantine = self._make_article(
+            section="pest",
+            title="日 토마토뿔나방 검역병해충서 제외",
+            description="일본이 토마토뿔나방을 검역병해충에서 제외해 수출 검역 절차가 완화된다.",
+            link="https://example.com/pest-foreign-quarantine",
+            topic="토마토",
+        )
+
+        self.assertTrue(main._is_publish_policy_editorial_weak(policy_promo))
+        self.assertTrue(main._is_publish_dist_editorial_weak(localfood_profile))
+        self.assertTrue(main._is_dist_editorial_promo_tail(localfood_profile))
+        self.assertTrue(main._is_publish_dist_editorial_weak(potato_giveaway))
+        self.assertTrue(main._is_dist_editorial_promo_tail(potato_giveaway))
+        self.assertFalse(main._is_publish_pest_editorial_weak(opinion))
+        self.assertFalse(main._is_publish_pest_editorial_weak(foreign_quarantine))
+
+    def test_publish_repair_keeps_five_with_quantified_policy_fallback(self) -> None:
+        government_package = self._make_article(
+            section="policy",
+            title="정부 3500억 농축산물 할인…불법수익 2배 환수 신설",
+            description="정부가 1조원 물가대책의 농축산물 할인 방안을 발표했다.",
+            link="https://example.com/policy-government-package",
+        )
+        workers = self._make_article(
+            section="policy",
+            title="외국인 계절노동자 9만명 넘었는데 행정·재정 지원 태부족",
+            description="계절노동자 제도의 중앙정부 지원 부족을 점검한다.",
+            link="https://example.com/policy-workers-five",
+        )
+        tariff = self._make_article(
+            section="policy",
+            title="먹거리 할당관세 확대…내 식탁엔 무엇이 달라질까",
+            description="정부의 농산물 할당관세 확대 효과를 분석한다.",
+            link="https://example.com/policy-tariff-five",
+        )
+        cptpp = self._make_article(
+            section="policy",
+            title="CPTPP 수면 위로…농업계 검역 변수 촉각",
+            description="CPTPP 가입 재추진에 따른 농산물 검역 변화를 다룬다.",
+            link="https://example.com/policy-cptpp-five",
+        )
+        local_promo = self._make_article(
+            section="policy",
+            title="농협, 양파 소비촉진 나섰다",
+            description="지역 농협이 양파 직거래 행사와 판촉 활동을 진행했다.",
+            link="https://example.com/policy-local-promo-five",
+            topic="양파",
+        )
+        egg_package = self._make_article(
+            section="policy",
+            title="'계란 10개에 5000원'…물가 폭등에 1조원 쏟아 붓는다",
+            description="정부가 계란 가격 대응과 농축수산물 할인을 담은 1조원 대책을 발표했다.",
+            link="https://example.com/policy-egg-package-five",
+        )
+        supplier_risk = self._make_article(
+            section="dist",
+            title="홈플러스 대금 못 받은 산지, 정책자금 상환 1년 유예",
+            description="농산물 납품대금 269억원을 받지 못한 산지출하조직의 정책자금 상환을 유예한다.",
+            link="https://example.com/dist-homeplus-five",
+        )
+        supplier_risk_policy = self._make_article(
+            section="policy",
+            title="농식품부, 홈플러스 미정산 산지유통조직에 300억 금융 지원",
+            description="농산물 납품대금 미수금이 발생한 산지출하조직에 300억원 금융 지원을 추진한다.",
+            link="https://example.com/policy-homeplus-duplicate-five",
+        )
+        final = {
+            "supply": [],
+            "policy": [government_package, workers, tariff, cptpp, local_promo],
+            "dist": [supplier_risk],
+            "pest": [],
+        }
+
+        main._repair_publish_editorial_selection(
+            final,
+            {"supply": [], "policy": [supplier_risk_policy, egg_package], "dist": [], "pest": []},
+        )
+
+        links = {article.link for article in final["policy"]}
+        self.assertEqual(len(final["policy"]), 5)
+        self.assertIn(egg_package.link, links)
+        self.assertNotIn(supplier_risk_policy.link, links)
+        self.assertNotIn(local_promo.link, links)
+
+    def test_publish_repair_limits_same_pest_theme_to_two(self) -> None:
+        pepper_rows = [
+            self._make_article(
+                section="pest",
+                title=f"경북 고추 탄저병 확산 우려 {idx}",
+                description="장마철 고추 탄저병 확산과 피해를 막기 위해 예찰과 방제를 강화한다.",
+                link=f"https://example.com/pest-anthracnose-{idx}",
+                topic="고추",
+            )
+            for idx in range(3)
+        ]
+        fire = self._make_article(
+            section="pest",
+            title="충북 과수화상병 49곳 피해",
+            description="과수화상병 발생 농가가 49곳으로 늘어 매몰과 예찰을 강화했다.",
+            link="https://example.com/pest-fire-five",
+        )
+        equipment = self._make_article(
+            section="pest",
+            title="강원 농협, 최신 방제 장비로 재해 농가 긴급 방제 지원",
+            description="과수와 채소 농가의 돌발해충 피해에 긴급 방제 장비를 투입한다.",
+            link="https://example.com/pest-equipment-five",
+        )
+        trap = self._make_article(
+            section="pest",
+            title="단감 농가 노린재 방제 트랩 지원",
+            description="단감 과원 노린재 피해를 막기 위해 방제 트랩을 공급한다.",
+            link="https://example.com/pest-trap-five",
+            topic="단감",
+        )
+        final = {
+            "supply": [],
+            "policy": [],
+            "dist": [],
+            "pest": [fire, equipment, *pepper_rows],
+        }
+
+        main._repair_publish_editorial_selection(
+            final,
+            {"supply": [], "policy": [], "dist": [], "pest": [trap]},
+        )
+
+        themes = [main._publish_pest_family_key(article) for article in final["pest"]]
+        self.assertEqual(len(final["pest"]), 5)
+        self.assertLessEqual(themes.count("anthracnose"), 2)
+        self.assertIn(trap.link, {article.link for article in final["pest"]})
+
+    def test_publish_policy_prefers_official_quantified_package_representative(self) -> None:
+        generic = self._make_article(
+            section="policy",
+            title="1조 투입해 8월 고비 정조준…정부, 하반기 물가 방어 총력",
+            description="정부가 1조원 규모의 하반기 물가대책을 발표했다.",
+            link="https://example.com/policy-generic-package",
+        )
+        egg = self._make_article(
+            section="policy",
+            title="'계란 10개에 5000원'…물가 폭등에 1조원 쏟아 붓는다",
+            description="계란 가격과 농축수산물 할인 대책을 다룬다.",
+            link="https://example.com/policy-egg-package",
+        )
+        official = self._make_article(
+            section="policy",
+            title="정부 3500억 농축산물 할인…불법수익 2배 환수 신설",
+            description="정부가 농축산물 할인과 불공정 유통 단속을 포함한 물가대책을 발표했다.",
+            link="https://example.com/policy-official-package",
+        )
+        final = {"policy": [generic, egg]}
+
+        self.assertEqual(
+            main._ensure_publish_policy_official_package_representative(
+                final,
+                {"policy": [official], "supply": []},
+            ),
+            1,
+        )
+        links = {article.link for article in final["policy"]}
+        self.assertIn(official.link, links)
+        self.assertIn(egg.link, links)
+        self.assertNotIn(generic.link, links)
+
+    def test_publish_supply_guard_prefers_quantified_climate_crop_risk_over_local_unpriced_purchase(self) -> None:
+        local_purchase = self._make_article(
+            section="supply",
+            title="고흥 풍양농협, 순회수집 통한 건조 마늘 수매 진행",
+            description="지역 농협이 농가를 돌며 마늘을 수매한다.",
+            link="https://example.com/local-garlic-purchase",
+            topic="마늘",
+        )
+        climate_risk = self._make_article(
+            section="supply",
+            title='"어쩌나, 상추 다 버리게 생겼네"…농가 초비상',
+            description="폭염과 늦은 장마로 상추 작황이 악화됐고 소매가격은 전월보다 24.1% 올랐다.",
+            link="https://example.com/lettuce-climate-risk",
+            topic="상추",
+        )
+
+        self.assertTrue(main._is_publish_supply_editorial_weak(local_purchase))
+        self.assertFalse(main._is_publish_supply_editorial_weak(climate_risk))
+        self.assertTrue(main._is_publish_editorial_candidate("supply", climate_risk))
+
+    def test_publish_core_selection_diversifies_supply_and_promotes_pest_escalation(self) -> None:
+        cucumber_up = self._make_article(
+            section="supply",
+            title="오이 값 1주일 새 70% 올랐다",
+            description="오이 도매가격이 급등했다.",
+            link="https://example.com/cucumber-up",
+            topic="오이",
+        )
+        cucumber_down = self._make_article(
+            section="supply",
+            title="오이 값 반토막…농민들 수확 포기할 형편",
+            description="오이 산지가격이 급락했다.",
+            link="https://example.com/cucumber-down",
+            topic="오이",
+        )
+        onion = self._make_article(
+            section="supply",
+            title="양파값 30% 급락…산지 수급 비상",
+            description="양파 가격 급락과 공급과잉을 다룬다.",
+            link="https://example.com/onion-crash",
+            topic="양파",
+        )
+        supply_core_ids = main._publish_editorial_diverse_core_ids(
+            "supply",
+            [cucumber_up, cucumber_down, onion],
+        )
+        self.assertEqual(supply_core_ids, {id(cucumber_up), id(onion)})
+
+        fire_blight = self._make_article(
+            section="pest",
+            title="충북서 엿새 만에 과수화상병…49곳 피해",
+            description="과수화상병 발생 농가와 피해 지역이 빠르게 늘었다.",
+            link="https://example.com/fire-blight-spread",
+            topic="사과",
+        )
+        anthracnose = self._make_article(
+            section="pest",
+            title="해남군, 탄저병 확산 우려…장마철 포장관리 당부",
+            description="고추 탄저병 확산 위험과 긴급 방제 요령을 알렸다.",
+            link="https://example.com/anthracnose-spread",
+            topic="고추",
+        )
+        warning = self._make_article(
+            section="pest",
+            title="경북 고추 농가 탄저병·세균성점무늬병 주의…장마철 피해 우려",
+            description="경북농기원이 고추 탄저병과 세균성점무늬병의 확산 위험을 경보했다.",
+            link="https://example.com/pepper-disease-warning",
+            topic="고추",
+        )
+        column = self._make_article(
+            section="pest",
+            title="[취재수첩] 과수화상병이 개꿀이라니",
+            description="과수화상병 보상 논란을 비평한 칼럼이다.",
+            link="https://example.com/fire-blight-column",
+            topic="사과",
+        )
+        trap = self._make_article(
+            section="pest",
+            title="진주문산농협, 단감 농가 노린재 방제 트랩 지원",
+            description="단감 농가에 노린재 트랩을 보급한다.",
+            link="https://example.com/pest-trap",
+            topic="감",
+        )
+        advice = self._make_article(
+            section="pest",
+            title="서산시, 여름철 고추 병해충 방제 및 재배관리 당부",
+            description="고추 병해충 방제 시기를 안내했다.",
+            link="https://example.com/pest-advice",
+            topic="고추",
+        )
+        roundup = self._make_article(
+            section="pest",
+            title="[가평 소식] 돌발해충 선제 공동방제 실시 외",
+            description="여러 지역 행정 소식을 묶어 소개했다.",
+            link="https://example.com/pest-roundup",
+        )
+        tomato_moth = self._make_article(
+            section="pest",
+            title="토마토뿔나방 검역 강화…재배지 예찰 확대",
+            description="검역 당국이 토마토뿔나방 확산을 막기 위해 재배지 예찰과 검역을 확대했다.",
+            link="https://example.com/tomato-moth-quarantine",
+            topic="토마토",
+        )
+        final = {"supply": [], "policy": [], "dist": [], "pest": [column, fire_blight, roundup, trap, advice]}
+        raw = {
+            "supply": [],
+            "policy": [],
+            "dist": [],
+            "pest": [anthracnose, warning, tomato_moth],
+        }
+
+        self.assertGreaterEqual(main._repair_publish_editorial_selection(final, raw), 2)
+        self.assertNotIn(roundup.link, {article.link for article in final["pest"]})
+        self.assertNotIn(advice.link, {article.link for article in final["pest"]})
+        self.assertIn(column.link, {article.link for article in final["pest"]})
+        core_links = {article.link for article in final["pest"] if article.is_core}
+        self.assertIn(fire_blight.link, core_links)
+        self.assertEqual(len(core_links), 2)
+        self.assertTrue(core_links & {anthracnose.link, warning.link})
+
+    def test_commodity_board_source_keeps_eligible_final_briefing_article(self) -> None:
+        selected = self._make_article(
+            section="dist",
+            title="양파 톤백 매입·선별로 농가 부담 덜었다",
+            description=(
+                "합천동부농협이 양파 톤백 수매·선별 사업과 산지 공판장을 운영한다. "
+                "농가는 선별·포장·출하 비용과 물류비를 절감하고 비규격 양파 판로를 확보했다. "
+                "저온저장 물량은 홍수출기 공급을 분산해 가격안정에도 기여한다."
+            ),
+            link="https://example.com/selected-onion-logistics",
+            topic="양파",
+        )
+        selected.is_core = True
+        selected.score = 73.36
+        selected.selection_fit_score = 6.54
+        raw_other = self._make_article(
+            section="supply",
+            title="양파 가격 하락…산지 수급 조절 착수",
+            description="양파 가격 하락에 대응해 산지 출하량을 조절한다.",
+            link="https://example.com/raw-onion-market",
+            topic="양파",
+        )
+        final = {"supply": [], "policy": [], "dist": [selected], "pest": []}
+        source = {"supply": [raw_other], "policy": [], "dist": [], "pest": []}
+
+        merged = main._merge_commodity_board_source_with_final_selection(final, source)
+        self.assertIn(selected.link, {article.link for article in merged["dist"]})
+
+        with (
+            patch.object(main, "HF_COMMODITY_BOARD_RERANK_ENABLED", False),
+            patch.object(main, "HF_API_TOKEN", ""),
+        ):
+            context = main.build_managed_commodity_board_context(merged)
+        onion = next(
+            item
+            for group in context["groups"]
+            for item in group["items"] + group["inactive_items"]
+            if item["key"] == "onion"
+        )
+        linked = list(onion.get("preview_articles") or []) + list(onion.get("extra_articles") or [])
+        self.assertIn(selected.link, {article.link for article in linked})
+
+    def test_summary_normalization_keeps_clean_two_sentences_and_clarifies_price_basis(self) -> None:
+        article = self._make_article(
+            section="policy",
+            title="정부, 농축산물 할인 지원 확대",
+            description="기사 메타문구 기자 입력 2026년 스크랩 프린트 관련 뉴스가 이어진다.",
+            link="https://example.com/clean-summary",
+        )
+        clean = "정부가 농축산물 할인 지원을 확대했다. 집행 규모와 대상 품목도 확정했다."
+        self.assertEqual(main._normalize_article_summary(article, clean), clean)
+
+        cucumber_up = self._make_article(
+            section="supply",
+            title="오이 값 1주일 새 70% 올랐다",
+            description="최근 1주일 오이 도매가격이 급등했다.",
+            link="https://example.com/summary-cucumber-up",
+            topic="오이",
+        )
+        cucumber_down = self._make_article(
+            section="supply",
+            title="오이 값 1년 새 반토막",
+            description="전년 대비 오이 산지가격이 하락했다.",
+            link="https://example.com/summary-cucumber-down",
+            topic="오이",
+        )
+        cucumber_up.summary = "최근 1주일 오이 도매가격이 70% 올랐다."
+        cucumber_down.summary = "전년 대비 오이 산지가격이 절반 수준으로 내렸다."
+        by_section = {"supply": [cucumber_up, cucumber_down], "policy": [], "dist": [], "pest": []}
+
+        main._clarify_conflicting_price_basis_summaries(by_section)
+
+        self.assertIn("비교 기준이 다르다", cucumber_up.summary)
+        self.assertIn("비교 기준이 다르다", cucumber_down.summary)
+
+    def test_summary_cache_quality_rejects_page_chrome_and_regenerates(self) -> None:
+        article = self._make_article(
+            section="supply",
+            title="오이 값 1주일 새 70% 올랐다",
+            description="최근 1주일 오이 도매가격이 70% 상승했다.",
+            link="https://example.com/cucumber-summary-refresh",
+            topic="오이",
+        )
+        polluted = (
+            "오이 값 1주일 새 70% 올랐다, 한경 PREMIUM 구독하기 입력 "
+            "2026.06.28 17:26 수정 2026.06.28 TTS 스크랩 프린트 관련 뉴스..."
+        )
+        meta_polluted = (
+            "오이 가격은 최근 1주일 사이 70% 급등해 산지와 도매시장 수급 변동성이 커졌다. "
+            "출하량 점검이 필요하며 개발자 지침 조건을 만족하려고 두 문장으로 작성합니다."
+        )
+        refreshed = (
+            "오이 도매가격이 최근 1주일 새 70% 올라 단기 수급 변동성이 커졌다. "
+            "산지와 유통 주체는 출하량과 도매시장 반입 흐름을 매일 함께 점검할 필요가 있다."
+        )
+        cache = {article.norm_key: {"s": polluted, "t": "2026-06-29T06:00:00+09:00"}}
+
+        self.assertEqual(main._summary_quality_block_reason(article, polluted), "boilerplate")
+        self.assertEqual(main._summary_quality_block_reason(article, meta_polluted), "boilerplate")
+        self.assertEqual(
+            main._summary_quality_block_reason(
+                article,
+                "오이 도매가격이 최근 1주일 새 70% 올라 단기 수급 변동성이 커졌다. 산지는 출하량을 점검한다다다다다.",
+            ),
+            "repeated_character",
+        )
+        with (
+            patch.object(main, "OPENAI_API_KEY", "test-key"),
+            patch.object(main, "_openai_summarize_rows", return_value={article.norm_key: refreshed}) as summarize,
+        ):
+            mapping = main.openai_summarize_batch([article], cache=cache)
+
+        summarize.assert_called_once()
+        self.assertEqual(mapping[article.norm_key], refreshed)
+        self.assertEqual(cache[article.norm_key]["s"], refreshed)
+        self.assertEqual(main._summary_quality_block_reason(article, refreshed), "")
+
+    def test_dist_miryang_logistics_center_variants_are_duplicate_story(self) -> None:
+        first = self._make_article(
+            section="dist",
+            title="친환경논산물 종합물류센터 유치 전략 점검",
+            description="밀양시가 경남 친환경농산물 종합물류센터 유치 전략과 공모 대응 방향을 점검했다.",
+            link="https://example.com/miryang-logistics-1",
+            topic="농산물",
+        )
+        second = self._make_article(
+            section="dist",
+            title="밀양시, '경남 친환경 농산물 종합물류센터' 유치 본격화",
+            description="밀양시는 경남 친환경농산물 광역거점물류센터 유치를 위한 최종 보고회를 열었다.",
+            link="https://example.com/miryang-logistics-2",
+            topic="농산물",
+        )
+
+        self.assertEqual(
+            main._final_story_signature("dist", first),
+            ("dist_gyeongnam_miryang_eco_logistics_center",),
+        )
+        self.assertTrue(main._publish_editorial_duplicate_story("dist", first, second))
+
+    def test_publish_weak_blocks_local_promo_visit_robot_demo_and_logistics_bid(self) -> None:
+        localfood_column = self._make_article(
+            section="supply",
+            title="[문상윤의 로컬푸드 이야기] 시간을 파는 기술, 발효와 가공",
+            description="로컬푸드와 발효 가공의 생활문화적 의미를 소개했다.",
+            link="https://example.com/localfood-column",
+            topic="로컬푸드",
+        )
+        hydro_cooler = self._make_article(
+            section="supply",
+            title='"폭염에도 상추 수확 40%↑"…농진청, 양액 냉각기 점검',
+            description="농진청이 상추 수경재배 양액 냉각기 장비를 점검했다.",
+            link="https://example.com/hydro-cooler",
+            topic="상추",
+        )
+        farm_supply_support = self._make_article(
+            section="supply",
+            title="한국청과, 양파 출하조직에 농자재 지원",
+            description="도매법인이 산지 출하조직에 농자재를 지원했다.",
+            link="https://example.com/farm-supply-support",
+            topic="양파",
+        )
+        local_purchase = self._make_article(
+            section="policy",
+            title="나주시, 양파 값 하락 농가 돕기 소비 촉진 나서",
+            description="지역 농가 돕기 차원의 구매 행사와 소비촉진 캠페인을 소개했다.",
+            link="https://example.com/local-farmer-help",
+            topic="양파",
+        )
+        candidate_visit = self._make_article(
+            section="policy",
+            title="신용한 충북지사 당선인, 농업 현장 방문",
+            description="당선인이 농가를 찾아 현장 의견을 들었다.",
+            link="https://example.com/candidate-field-visit",
+            topic="농업",
+        )
+        robot_demo = self._make_article(
+            section="dist",
+            title="토마토 선별·포장, 로봇이 다 해줍니다",
+            description="APC 장비 시연 행사에서 로봇 자동화 기술을 선보였다.",
+            link="https://example.com/tomato-robot-demo",
+            topic="토마토",
+        )
+        logistics_bid = self._make_article(
+            section="dist",
+            title="친환경논산물 종합물류센터 유치 전략 점검",
+            description="밀양시가 경남 친환경농산물 종합물류센터 유치 공모 대응 방향을 점검했다.",
+            link="https://example.com/logistics-bid-weak",
+            topic="농산물",
+        )
+
+        self.assertTrue(main._is_publish_supply_editorial_weak(localfood_column))
+        self.assertTrue(main._is_publish_supply_editorial_weak(hydro_cooler))
+        self.assertFalse(main._is_publish_supply_editorial_weak(farm_supply_support))
+        self.assertFalse(main._is_supply_editorial_market_replacement(localfood_column))
+        self.assertFalse(main._is_supply_editorial_market_replacement(hydro_cooler))
+        farm_supply_support.is_core = True
+        self.assertTrue(main._is_supply_editorial_weak_core(farm_supply_support))
+        self.assertEqual(main._postbuild_article_reject_reason(localfood_column, "supply"), "supply_lifestyle_column_tail")
+        self.assertEqual(main._postbuild_article_reject_reason(hydro_cooler, "supply"), "supply_production_tech_tail")
+        self.assertTrue(main._is_publish_supply_editorial_weak(local_purchase))
+        self.assertFalse(main._is_supply_editorial_market_replacement(local_purchase))
+        self.assertTrue(main._is_publish_policy_editorial_weak(local_purchase))
+        self.assertTrue(main._is_publish_policy_editorial_weak(candidate_visit))
+        self.assertTrue(main._is_publish_dist_editorial_weak(robot_demo))
+        self.assertTrue(main._is_publish_dist_editorial_weak(logistics_bid))
+        self.assertFalse(main._is_publish_editorial_candidate("supply", localfood_column))
+        self.assertFalse(main._is_publish_editorial_candidate("supply", hydro_cooler))
+        self.assertFalse(main._is_publish_editorial_candidate("policy", local_purchase))
+        self.assertFalse(main._is_publish_editorial_candidate("policy", candidate_visit))
+        self.assertFalse(main._is_publish_editorial_candidate("dist", robot_demo))
+        self.assertFalse(main._is_publish_editorial_candidate("dist", logistics_bid))
+
+    def test_publish_policy_and_dist_replacements_filter_meetings_from_operational_candidates(self) -> None:
+        at_plan = self._make_article(
+            section="policy",
+            title="aT, 'AI 전환·ESG·수급 안정' 대응 강화... 실행계획 수립",
+            description="aT가 농산물 수급 안정과 ESG 대응 실행계획을 수립했다.",
+            link="https://example.com/at-execution-plan",
+            topic="농산물",
+        )
+        research_council = self._make_article(
+            section="policy",
+            title="농식품부·농경연, 주요 농정 현안 대응 위한 정책연구협의회 개최",
+            description="농식품부와 농경연이 가격 안정과 농정 현안 대응 협력 강화 방안을 논의했다.",
+            link="https://example.com/maf-krei-policy",
+            topic="농정",
+        )
+        auction_meeting = self._make_article(
+            section="dist",
+            title="영동농협, 경매사 초청 간담회",
+            description="농협이 공판장 경매사와 출하·경매 운영 개선을 논의했다.",
+            link="https://example.com/auction-meeting",
+            topic="농산물",
+        )
+        import_controls = self._make_article(
+            section="policy",
+            title="수입 농산물 관리 효율화, 민·관 머리 맞댄다",
+            description="정부와 민간이 수입농산물 관리 개선방안과 검역·통관 대응을 논의했다.",
+            link="https://example.com/import-controls",
+            topic="농산물",
+        )
+
+        self.assertFalse(main._is_publish_policy_editorial_weak(at_plan))
+        self.assertTrue(main._is_publish_policy_editorial_weak(research_council))
+        self.assertFalse(main._is_publish_policy_editorial_weak(import_controls))
+        self.assertTrue(main._is_publish_editorial_candidate("policy", at_plan))
+        self.assertFalse(main._is_publish_editorial_candidate("policy", research_council))
+        self.assertTrue(main._is_publish_editorial_candidate("policy", import_controls))
+        self.assertTrue(main._is_dist_editorial_ops_replacement(auction_meeting))
+        self.assertTrue(main._is_publish_editorial_candidate("dist", auction_meeting))
+
+    def test_publish_duplicate_story_groups_onion_export_and_krei_council(self) -> None:
+        onion_export_a = self._make_article(
+            section="dist",
+            title="전주시, 양파 대만 수출 확대…농가 판로 다변화",
+            description="전주시가 양파 대만 수출로 가격 하락 대응에 나섰다.",
+            link="https://example.com/onion-export-a",
+            topic="양파",
+        )
+        onion_export_b = self._make_article(
+            section="dist",
+            title='"양파 값 더 떨어지면 안돼" 수출로 활로찾기',
+            description="전북 양파를 대만에 선적해 수출길을 넓힌다.",
+            link="https://example.com/onion-export-b",
+            topic="양파",
+        )
+        krei_a = self._make_article(
+            section="policy",
+            title="농경연·농식품부, 주요 농정 현안 대응 협력 강화",
+            description="농식품부와 농경연이 정책연구협의회를 열고 주요 농정 현안 대응을 논의했다.",
+            link="https://example.com/krei-a",
+            topic="농정",
+        )
+        krei_b = self._make_article(
+            section="policy",
+            title="농식품부·농경연, 주요 농정 현안 대응 위한 정책연구협의회 개최",
+            description="농식품부와 농경연이 주요 농정 현안 대응과 협력 강화 방향을 점검했다.",
+            link="https://example.com/krei-b",
+            topic="농정",
+        )
+        import_a = self._make_article(
+            section="policy",
+            title="수입 농산물 관리 효율화, 민·관 머리 맞댄다",
+            description="정부와 민간이 수입농산물 관리 개선방안을 논의했다.",
+            link="https://example.com/import-a",
+            topic="농산물",
+        )
+        import_b = self._make_article(
+            section="policy",
+            title="수입 농산물 관리, 생산자·소비자 참여 협의 착수",
+            description="생산자와 소비자가 수입 농산물 관리 개선방안 협의에 참여했다.",
+            link="https://example.com/import-b",
+            topic="농산물",
+        )
+
+        self.assertFalse(main._publish_editorial_duplicate_story("dist", onion_export_a, onion_export_b))
+        self.assertFalse(main._publish_editorial_duplicate_story("policy", krei_a, krei_b))
+        self.assertFalse(main._publish_editorial_duplicate_story("policy", import_a, import_b))
+
+    def test_policy_bean_stockpile_keeps_sufficient_fit(self) -> None:
+        bean = self._make_article(
+            section="policy",
+            title="정부비축 국산 콩 6만5000톤 푼다",
+            description="정부가 가격 안정을 위해 정부비축 국산 콩 6만5000톤을 시장에 공급한다.",
+            link="https://example.com/bean-stockpile",
+            topic="콩",
+        )
+        conf = next(section for section in main.SECTIONS if section.get("key") == "policy")
+
+        self.assertFalse(main._is_publish_policy_editorial_weak(bean))
+        self.assertTrue(main._is_publish_editorial_candidate("policy", bean))
+        self.assertGreaterEqual(main.section_fit_score(bean.title, bean.description, conf, bean.domain, bean.press), 1.2)
+        self.assertGreater(
+            main.compute_rank_score(
+                bean.title,
+                bean.description,
+                bean.domain,
+                bean.pub_dt_kst,
+                conf,
+                bean.press,
+            ),
+            20.0,
+        )
+
+    def test_policy_market_demand_is_distinct_publish_candidate(self) -> None:
+        article = self._make_article(
+            section="policy",
+            title='"농산물 가격 폭락·농자재값 폭등 대책 마련하라"',
+            description="농민단체는 생산비와 비료값 부담이 커졌다며 정부에 가격보장 대책을 촉구했다.",
+            link="https://example.com/farmer-market-demand",
+        )
+
+        self.assertTrue(main._is_policy_stakeholder_market_demand_story(article))
+        self.assertTrue(main._is_publish_policy_editorial_weak(article))
+        self.assertFalse(main._is_publish_editorial_candidate("policy", article))
+
+    def test_policy_market_demand_recognizes_price_drop_and_cost_crisis_wording(self) -> None:
+        article = self._make_article(
+            section="policy",
+            title='"농자재 가격 뛰고 농산물값 추락…경영난 해소 대책 촉구"',
+            description="농민단체가 생산비와 비료값 부담을 호소하며 정부에 가격보장 대책을 요구했다.",
+            link="https://example.com/farmer-cost-crisis-demand",
+        )
+
+        self.assertTrue(main._is_policy_stakeholder_market_demand_story(article))
+
+    def test_policy_high_confidence_core_keeps_package_and_demand_as_tail(self) -> None:
+        package = self._make_article(
+            section="policy",
+            title="물가 안정 위해 1조 원 투입",
+            description="정부가 농축산물과 먹거리 물가 안정을 위해 1조 원 규모 대책을 시행한다.",
+            link="https://example.com/policy-price-package-core",
+        )
+        demand = self._make_article(
+            section="policy",
+            title='"농자재 가격 뛰고 농산물값 추락…경영난 해소 대책 촉구"',
+            description="농민단체가 생산비 부담을 호소하며 가격보장 대책을 요구했다.",
+            link="https://example.com/policy-demand-tail",
+        )
+        forecast = self._make_article(
+            section="policy",
+            title="농산물 도매시장 쏠림 막는다…출하예측 20개 품목 확대",
+            description="정부가 농산물 도매시장 출하예측 대상을 20개 품목으로 확대한다.",
+            link="https://example.com/policy-market-forecast-core",
+        )
+        bean = self._make_article(
+            section="policy",
+            title="정부비축 국산 콩 6만5000톤 푼다",
+            description="정부가 가격 안정을 위해 비축 콩 6만5000톤을 시장에 공급한다.",
+            link="https://example.com/policy-bean-stockpile-core",
+        )
+
+        self.assertGreater(main._publish_core_badge_penalty("policy", package), 0)
+        self.assertFalse(main._is_publish_high_confidence_core_candidate("policy", package))
+        self.assertFalse(main._is_publish_high_confidence_core_candidate("policy", demand))
+        self.assertTrue(main._is_publish_high_confidence_core_candidate("policy", forecast))
+        self.assertEqual(main._publish_core_badge_penalty("policy", bean), 0)
+        self.assertTrue(main._is_publish_high_confidence_core_candidate("policy", bean))
+
+    def test_pest_locust_outbreak_is_direct_named_control_story(self) -> None:
+        article = self._make_article(
+            section="pest",
+            title="'풀무치떼의 습격'…몰려온 괴물 메뚜기에 고흥만 간척지 '비상'",
+            description=(
+                "농촌진흥청과 전남도농업기술원은 농작물 피해를 막기 위해 "
+                "풀무치 등 돌발해충의 확산 차단 방제를 강화하고 있다."
+            ),
+            link="https://example.com/pest-locust-outbreak",
+        )
+
+        self.assertTrue(main._has_named_pest_signal(article.title))
+        self.assertTrue(main.is_pest_locust_outbreak_context(article.title, article.description))
+        self.assertTrue(main._is_pest_locust_outbreak_story(article))
+        self.assertTrue(main._is_pest_direct_field_risk_upgrade(article))
+        self.assertTrue(main._is_publish_high_confidence_core_candidate("pest", article))
+        conf = next(section for section in main.SECTIONS if section.get("key") == "pest")
+        self.assertTrue(
+            main.is_relevant(
+                article.title,
+                article.description,
+                article.domain,
+                article.link,
+                conf,
+                article.press,
+            )
+        )
+        self.assertNotEqual(
+            main._postbuild_article_reject_reason(article, "pest", apply_selection_fit=False),
+            "pest_partial_mention",
+        )
+        weak = self._make_article(
+            section="pest",
+            title="[주간농사메모] 병해충 발생 여부 수시 예찰",
+            description="병해충 발생 여부를 수시로 살펴야 한다.",
+            link="https://example.com/pest-weekly-memo-tail",
+        )
+        fixed = [
+            self._make_article(
+                section="pest",
+                title=f"과수 병해충 현장 대응 {idx}",
+                description="과수 농가가 병해충 확산을 막기 위해 현장 방제를 실시했다.",
+                link=f"https://example.com/pest-fixed-{idx}",
+            )
+            for idx in range(4)
+        ]
+        final_by_section = {"pest": fixed + [weak]}
+
+        changed = main._replace_publish_pest_weak_tail_with_direct_risk(
+            final_by_section,
+            {"pest": [article]},
+        )
+
+        self.assertEqual(changed, 1)
+        self.assertEqual(len(final_by_section["pest"]), 5)
+        promoted = next(item for item in final_by_section["pest"] if "풀무치" in item.title)
+        self.assertTrue(promoted.is_core)
+        main._rebalance_publish_core_badges_for_editorial_target(final_by_section)
+        promoted = next(item for item in final_by_section["pest"] if "풀무치" in item.title)
+        self.assertTrue(promoted.is_core)
+
+    def test_dist_followup_rechecks_onion_export_cap_after_structural_replacements(self) -> None:
+        onion_a = self._make_article(
+            section="dist",
+            title="전주시, 양파 대만 수출 확대…농가 판로 다변화",
+            description="전주산 양파를 대만에 선적해 수출 판로를 넓힌다.",
+            link="https://example.com/dist-onion-cap-a",
+        )
+        onion_b = self._make_article(
+            section="dist",
+            title="전북농협, ‘26년산 햇 양파 대만 수출 선적식 가져",
+            description="전북 햇양파를 대만에 수출해 판로를 확대한다.",
+            link="https://example.com/dist-onion-cap-b",
+        )
+        fixed = [
+            self._make_article(
+                section="dist",
+                title=title,
+                description=description,
+                link=f"https://example.com/dist-onion-cap-fixed-{idx}",
+            )
+            for idx, (title, description) in enumerate(
+                (
+                    ("가락시장 시범휴업 추진 상황과 과제", "도매시장 주 5일제와 경매 운영 개선을 점검한다."),
+                    ("K-참외 일본 수출 증가", "국산 참외의 일본 판매량과 수출 실적이 증가했다."),
+                    ("토마토 선별·포장, 로봇이 다 해줍니다", "토마토 선별과 포장 자동화 설비를 도입했다."),
+                )
+            )
+        ]
+        apc = self._make_article(
+            section="dist",
+            title="서북부경남 과수 거점 APC, 농산물 유통 역량 강화",
+            description=(
+                "과수거점산지유통센터(APC)가 매출 191억원과 홈쇼핑 수수료 부담을 토대로 "
+                "라이브커머스 판매 채널과 신규 판로를 확대한다."
+            ),
+            link="https://example.com/dist-onion-cap-apc",
+        )
+        final_by_section = {"dist": [onion_a, onion_b, *fixed]}
+
+        self.assertEqual(
+            main._replace_publish_dist_extra_onion_exports_with_ops(
+                final_by_section,
+                {"dist": [apc]},
+                max_onion_exports=1,
+            ),
+            1,
+        )
+        self.assertEqual(len(final_by_section["dist"]), 5)
+        self.assertEqual(
+            sum(main._is_dist_onion_export_story(article) for article in final_by_section["dist"]),
+            1,
+        )
+        self.assertIn(apc.link, {article.link for article in final_by_section["dist"]})
+
+    def test_dist_onion_cap_uses_one_export_growth_and_one_platform_family(self) -> None:
+        onions = [
+            self._make_article(
+                section="dist",
+                title=f"전북 양파 대만 수출 선적식 {idx}",
+                description="전북 햇양파를 대만에 수출해 판로를 확대한다.",
+                link=f"https://example.com/dist-three-onions-{idx}",
+            )
+            for idx in range(3)
+        ]
+        fixed = [
+            self._make_article(
+                section="dist",
+                title="가락시장 시범휴업 추진 상황과 과제",
+                description="도매시장 주 5일제와 경매 운영 개선을 점검한다.",
+                link="https://example.com/dist-three-onions-garak",
+            ),
+            self._make_article(
+                section="dist",
+                title="토마토 선별·포장, 로봇이 다 해줍니다",
+                description="토마토 선별과 포장 자동화 설비를 도입했다.",
+                link="https://example.com/dist-three-onions-tomato",
+            ),
+        ]
+        export_growth = self._make_article(
+            section="supply",
+            title="K-참외 매력에 ‘흠뻑’…국산 참외 일본 수출 ‘쑥쑥’",
+            description="국산 참외의 일본 수출량이 1.2톤에서 2.4톤으로 늘고 현지 판매량도 증가했다.",
+            link="https://example.com/dist-three-onions-export",
+        )
+        platforms = [
+            self._make_article(
+                section="dist",
+                title=title,
+                description=(
+                    "생산자는 온라인 마케팅 비용과 판매 수수료 부담을 줄이고 새로운 판로를 확보하며, "
+                    "소비자는 제주 농특산물을 직접 구매한다. 시범 운영 뒤 공식 오픈한다."
+                ),
+                link=f"https://example.com/dist-three-onions-platform-{idx}",
+            )
+            for idx, title in enumerate(
+                (
+                    "제주 농특산물 직거래 플랫폼 '탐나는장터' 7월 10일 공식 오픈",
+                    "제주시 농특산물 온라인 직거래 플랫폼 '탐나는장터' 문 연다",
+                )
+            )
+        ]
+        final_by_section = {"dist": [*onions, *fixed]}
+
+        self.assertEqual(
+            main._replace_publish_dist_extra_onion_exports_with_ops(
+                final_by_section,
+                {"dist": [*platforms], "supply": [export_growth]},
+                max_onion_exports=1,
+            ),
+            2,
+        )
+        items = final_by_section["dist"]
+        self.assertEqual(len(items), 5)
+        self.assertEqual(sum(main._is_dist_onion_export_story(article) for article in items), 1)
+        self.assertEqual(sum(main._is_dist_direct_platform_launch_story(article) for article in items), 1)
+        self.assertIn(export_growth.link, {article.link for article in items})
+
+    def test_pest_followup_replaces_unknown_incident_with_locust_outbreak(self) -> None:
+        incident = self._make_article(
+            section="pest",
+            title="사과 나무 무더기로 죽었는데 원인 불명?…경찰 수사까지",
+            description="사과 과수원에서 원인을 알 수 없는 생육 저하를 조사한다.",
+            link="https://example.com/pest-unknown-incident",
+        )
+        fixed = [
+            self._make_article(
+                section="pest",
+                title=f"병해충 발생 방제 기사 {idx}",
+                description="농작물 병해충 발생과 방제 대응을 다룬다.",
+                link=f"https://example.com/pest-locust-fixed-{idx}",
+            )
+            for idx in range(4)
+        ]
+        locust = self._make_article(
+            section="pest",
+            title="'풀무치떼의 습격'…몰려온 괴물 메뚜기에 고흥만 간척지 '비상'",
+            description=(
+                "농촌진흥청과 전남도농업기술원은 농작물 피해를 막기 위해 "
+                "풀무치 등 돌발해충의 확산 차단 방제를 강화하고 있다."
+            ),
+            link="https://example.com/pest-locust-replacement",
+        )
+        final_by_section = {"pest": fixed + [incident]}
+
+        self.assertEqual(
+            main._replace_publish_pest_unknown_incident_with_locust_outbreak(
+                final_by_section,
+                {"pest": [locust]},
+            ),
+            1,
+        )
+        links = {article.link for article in final_by_section["pest"]}
+        self.assertIn(locust.link, links)
+        self.assertNotIn(incident.link, links)
+
+    def test_pest_followup_preserves_unknown_incident_when_locust_is_selected(self) -> None:
+        incident = self._make_article(
+            section="pest",
+            title="사과 나무 무더기로 죽었는데 원인 불명?…경찰 수사까지",
+            description="사과 과수원에서 원인을 알 수 없는 생육 저하를 조사한다.",
+            link="https://example.com/pest-unknown-with-locust",
+        )
+        locust = self._make_article(
+            section="pest",
+            title="'풀무치떼의 습격'…몰려온 괴물 메뚜기에 고흥만 간척지 '비상'",
+            description=(
+                "농촌진흥청과 전남도농업기술원은 농작물 피해를 막기 위해 "
+                "풀무치 등 돌발해충의 확산 차단 방제를 강화하고 있다."
+            ),
+            link="https://example.com/pest-selected-locust",
+        )
+        weekly = self._make_article(
+            section="pest",
+            title="[주간농사메모] 병해충 발생 여부 수시 예찰",
+            description="병해충을 수시 예찰하고 발생 시 적용약제로 적기 방제해야 한다.",
+            link="https://example.com/pest-weekly-fallback",
+        )
+        fixed = [
+            self._make_article(
+                section="pest",
+                title=f"고추 병해충 방제 현장 {idx}",
+                description="고추 병해충 발생과 현장 방제 대응을 다룬다.",
+                link=f"https://example.com/pest-weekly-fixed-{idx}",
+            )
+            for idx in range(2)
+        ]
+        final_by_section = {"pest": [locust, incident, *fixed, self._make_article(section="pest", link="https://example.com/pest-weekly-fixed-last")]}
+
+        self.assertEqual(
+            main._replace_publish_pest_unknown_incident_with_locust_outbreak(
+                final_by_section,
+                {"pest": [locust, weekly]},
+            ),
+            0,
+        )
+        links = {article.link for article in final_by_section["pest"]}
+        self.assertEqual(len(final_by_section["pest"]), 5)
+        self.assertIn(locust.link, links)
+        self.assertIn(incident.link, links)
+        self.assertNotIn(weekly.link, links)
+
+    def test_pest_followup_replaces_duplicate_pepper_warning_with_quantified_control(self) -> None:
+        pepper_a = self._make_article(
+            section="pest",
+            title="해남군, 장마철 고추 탄저병 등 병해충 예방 당부",
+            description="고온다습한 장마철 고추 탄저병과 세균성점무늬병 예방을 당부했다.",
+            link="https://example.com/pest-pepper-warning-a",
+            topic="고추",
+        )
+        pepper_b = self._make_article(
+            section="pest",
+            title="장마철 고추 탄저병·세균성점무늬병 확산 우려",
+            description="장마철 고추 탄저병과 세균성점무늬병 확산에 대비해 방제를 안내했다.",
+            link="https://example.com/pest-pepper-warning-b",
+            topic="고추",
+        )
+        fixed = [
+            self._make_article(
+                section="pest",
+                title=f"과수 병해충 현장 대응 {idx}",
+                description="과수 병해충 발생과 현장 방제 대응을 다룬다.",
+                link=f"https://example.com/pest-control-fixed-{idx}",
+            )
+            for idx in range(3)
+        ]
+        quantified = self._make_article(
+            section="pest",
+            title="농약 치기 쉬운 만감류 나무, 제주 농가에 보급될까",
+            description=(
+                "만감류 병해충 방제 시간이 74% 줄었고 농약 부착률은 90% 이상이었다. "
+                "진딧물 방제 효과는 99.0%, 귤응애 84.5%, 총채벌레 88.5%로 조사됐다."
+            ),
+            link="https://example.com/pest-quantified-control",
+            topic="감귤/만감",
+        )
+        final_by_section = {"pest": [pepper_a, pepper_b, *fixed]}
+
+        self.assertTrue(main._is_pest_quantified_control_technology_story(quantified))
+        self.assertEqual(
+            main._replace_publish_pest_duplicate_warning_with_quantified_control(
+                final_by_section,
+                {"pest": [quantified]},
+            ),
+            1,
+        )
+        links = {article.link for article in final_by_section["pest"]}
+        self.assertEqual(len(final_by_section["pest"]), 5)
+        self.assertIn(quantified.link, links)
+        self.assertEqual(sum(article.link in links for article in (pepper_a, pepper_b)), 1)
+
+    def test_pest_high_confidence_core_excludes_unknown_cause_incident(self) -> None:
+        incident = self._make_article(
+            section="pest",
+            title="사과 나무 무더기로 죽었는데 원인 불명?…경찰 수사까지",
+            description="사과 과수원에서 나무가 죽어 경찰이 원인을 조사하고 있다.",
+            link="https://example.com/pest-unknown-cause",
+        )
+        fire_blight = self._make_article(
+            section="pest",
+            title="[사설] 과수화상병 충북 전역 확산, 그 파장과 역할",
+            description="충북 과수원과 농가에서 과수화상병 확산 피해가 이어져 방역 대응이 필요하다.",
+            link="https://example.com/pest-fire-blight-core",
+        )
+        fire_blight.score = 40.0
+        fire_blight.selection_fit_score = 5.0
+
+        self.assertFalse(main._is_publish_high_confidence_core_candidate("pest", incident))
+        self.assertTrue(main._is_publish_high_confidence_core_candidate("pest", fire_blight))
+
+    def test_policy_fixed_five_prefers_market_demand_over_duplicate_price_package(self) -> None:
+        official = self._make_article(
+            section="policy",
+            title="정부 3500억 농축산물 할인…불법수익 2배 환수 신설",
+            description="정부가 1조원 물가대책과 농축산물 할인 지원을 발표했다.",
+            link="https://example.com/official-price-package-five",
+        )
+        egg = self._make_article(
+            section="policy",
+            title="계란 10개 5000원…물가 폭등에 1조원 투입",
+            description="정부의 1조원 물가대책 중 계란 가격 대응을 소개했다.",
+            link="https://example.com/egg-price-package-five",
+        )
+        workers = self._make_article(
+            section="policy",
+            title="외국인 계절노동자 9만명…행정·재정 지원 태부족",
+            description="농촌 계절노동자 제도의 중앙정부 지원 부족을 점검했다.",
+            link="https://example.com/workers-policy-five",
+        )
+        tariff = self._make_article(
+            section="policy",
+            title="먹거리 할당관세 확대…농산물 적용 품목 점검",
+            description="정부의 농산물 할당관세 확대 방안을 분석했다.",
+            link="https://example.com/tariff-policy-five",
+        )
+        cptpp = self._make_article(
+            section="policy",
+            title="CPTPP 수면 위로…농업계 검역 변수 촉각",
+            description="CPTPP 가입 논의에 따른 농산물 검역 정책 변화를 다뤘다.",
+            link="https://example.com/cptpp-policy-five",
+        )
+        advocacy = self._make_article(
+            section="policy",
+            title="농산물 가격 폭락·농자재값 폭등 대책 마련하라",
+            description=(
+                "농민단체가 지난달 24일 국회 기자회견에서 공공수급제와 "
+                "생산비·비료값 대책을 정부에 요구했다."
+            ),
+            link="https://example.com/stale-but-substantive-demand-five",
+        )
+        homeplus = self._make_article(
+            section="dist",
+            title="홈플러스 미정산 산지출하조직 정책자금 상환 1년 유예",
+            description="농산물 납품대금을 받지 못한 산지출하조직의 정책자금 상환을 유예한다.",
+            link="https://example.com/homeplus-reserved-for-dist-five",
+        )
+        final = {
+            "supply": [],
+            "policy": [official, egg, workers, tariff, cptpp],
+            "dist": [homeplus],
+            "pest": [],
+        }
+        raw = {
+            "supply": [],
+            "policy": [advocacy, homeplus],
+            "dist": [],
+            "pest": [],
+        }
+
+        main._repair_publish_editorial_selection(final, raw)
+
+        links = {article.link for article in final["policy"]}
+        self.assertEqual(len(final["policy"]), 5)
+        self.assertIn(advocacy.link, links)
+        self.assertNotIn(egg.link, links)
+        self.assertIn(homeplus.link, {article.link for article in final["dist"]})
+
+    def test_pest_family_uses_title_focus_and_caps_anthracnose_at_one(self) -> None:
+        stink_bug = self._make_article(
+            section="pest",
+            title="단감 농가 노린재 방제 트랩 지원",
+            description="고추 탄저병 대응 자료와 함께 단감 노린재 방제 트랩 보급 계획을 안내했다.",
+            link="https://example.com/stink-bug-title-focus",
+            topic="감",
+        )
+
+        self.assertEqual(main._publish_pest_family_key(stink_bug), "stink_bug")
+        self.assertEqual(main._publish_pest_family_cap("anthracnose"), 1)
+        self.assertEqual(main._publish_pest_family_cap("fire_blight"), 2)
+
+    def test_dist_title_ops_recognizes_collection_purchase_and_selection(self) -> None:
+        article = self._make_article(
+            section="supply",
+            title="고흥 풍양농협, 순회수집 통한 건조 마늘 수매 진행",
+            description="농협이 산지에서 마늘을 순회수집해 수매하고 선별·출하한다.",
+            link="https://example.com/garlic-collection-purchase",
+            topic="마늘",
+        )
+
+        self.assertGreaterEqual(main._dist_title_ops_hits(article), 2)
+        self.assertTrue(main._is_publish_editorial_candidate("dist", article))

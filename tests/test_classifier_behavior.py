@@ -2108,6 +2108,125 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertIn("농산물 가격 동향", seen_queries, msg=str(seen_queries))
         self.assertTrue(any("6481885" in (a.link or "") for a in items), msg=str([(a.link, a.title) for a in items]))
 
+    def test_editorial_quality_recall_preserves_five_item_target(self):
+        self.assertEqual(main.PREFERRED_PER_SECTION, 5)
+        self.assertGreaterEqual(main.EDITORIAL_QUALITY_RECALL_TARGET, main.PREFERRED_PER_SECTION)
+
+    def test_editorial_quality_count_ignores_large_weak_pool(self):
+        weak = [
+            self._make_article(
+                "supply",
+                f"지역 사과 품평회 참가 농가 모집 {idx}",
+                "사과 농가 교류와 홍보를 위한 행사를 연다.",
+                f"https://example.com/weak-supply-{idx}",
+            )
+            for idx in range(40)
+        ]
+        self.assertEqual(main._editorial_quality_candidate_count(weak, "supply"), 0)
+
+    def test_editorial_quality_recall_runs_even_when_raw_result_is_large(self):
+        section_conf = {
+            "key": "supply",
+            "queries": ["사과 가격"],
+            "must_terms": ["사과", "오이", "가격", "출하", "작황"],
+        }
+        start_kst = main.dt_kst(main.date(2026, 6, 28), main.REPORT_HOUR_KST)
+        end_kst = main.dt_kst(main.date(2026, 6, 29), main.REPORT_HOUR_KST)
+        quality_query = main.EDITORIAL_QUALITY_RECALL_QUERIES["supply"][0]
+        seen_queries = []
+
+        def _fake_search(q, display=50, pages=1, sort="date"):
+            seen_queries.append(q)
+            if q == quality_query:
+                return {
+                    "items": [
+                        {
+                            "title": "오이 출하량 35% 감소…도매가격 70% 급등",
+                            "description": "가락시장 반입량이 줄면서 오이 도매가격이 전년 대비 70% 올랐다.",
+                            "link": "https://example.com/strong-cucumber",
+                            "originallink": "https://example.com/strong-cucumber",
+                            "pubDate": "Sun, 28 Jun 2026 03:00:00 +0000",
+                        }
+                    ]
+                }
+            if q == "사과 가격":
+                return {
+                    "items": [
+                        {
+                            "title": f"지역 사과 품평회 참가 농가 모집 {idx}",
+                            "description": "사과 농가 교류와 홍보를 위한 행사를 연다.",
+                            "link": f"https://example.com/weak-supply-{idx}",
+                            "originallink": f"https://example.com/weak-supply-{idx}",
+                            "pubDate": "Sun, 28 Jun 2026 03:00:00 +0000",
+                        }
+                        for idx in range(40)
+                    ]
+                }
+            return {"items": []}
+
+        with (
+            mock.patch.object(main, "naver_news_search_paged", side_effect=_fake_search),
+            mock.patch.object(main, "EDITORIAL_QUALITY_RECALL_ENABLED", True),
+            mock.patch.object(main, "EDITORIAL_QUALITY_RECALL_QUERY_CAP_PER_SECTION", 1),
+            mock.patch.object(main, "collect_rss_candidates", return_value=[]),
+            mock.patch.object(main, "fetch_editorial_recall_items", return_value=[]),
+        ):
+            items = main.collect_candidates_for_section(section_conf, start_kst, end_kst)
+
+        self.assertIn(quality_query, seen_queries)
+        self.assertTrue(any("strong-cucumber" in (article.link or "") for article in items))
+
+    def test_editorial_quality_recall_stops_when_eight_strong_stories_exist(self):
+        section_conf = {
+            "key": "supply",
+            "queries": ["농산물 작황"],
+            "must_terms": ["가격", "출하", "작황", "생산량", "수급"],
+        }
+        start_kst = main.dt_kst(main.date(2026, 6, 28), main.REPORT_HOUR_KST)
+        end_kst = main.dt_kst(main.date(2026, 6, 29), main.REPORT_HOUR_KST)
+        quality_queries = set(main.EDITORIAL_QUALITY_RECALL_QUERIES["supply"])
+        seen_queries = []
+        stories = [
+            ("오이", "출하량", "35% 감소", "도매가격 70% 급등"),
+            ("양파", "생산량", "12% 감소", "산지가격 18% 상승"),
+            ("마늘", "재배면적", "9% 감소", "도매가격 11% 상승"),
+            ("상추", "반입량", "25% 감소", "경락가격 30% 상승"),
+            ("복숭아", "출하량", "15% 증가", "도매가격 8% 하락"),
+            ("사과", "생산량", "10% 증가", "도매가격 6% 하락"),
+            ("배", "작황", "20% 개선", "출하량 14% 증가"),
+            ("감귤", "생산량", "7% 감소", "도매가격 13% 상승"),
+        ]
+
+        def _fake_search(q, display=50, pages=1, sort="date"):
+            seen_queries.append(q)
+            if q != "농산물 작황":
+                return {"items": []}
+            return {
+                "items": [
+                    {
+                        "title": f"{crop} {measure} {change}…{price}",
+                        "description": f"{crop} {measure}이 전년 대비 변하면서 {price}했다.",
+                        "link": f"https://example.com/strong-{idx}",
+                        "originallink": f"https://example.com/strong-{idx}",
+                        "pubDate": "Sun, 28 Jun 2026 03:00:00 +0000",
+                    }
+                    for idx, (crop, measure, change, price) in enumerate(stories)
+                ]
+            }
+
+        with (
+            mock.patch.object(main, "naver_news_search_paged", side_effect=_fake_search),
+            mock.patch.object(main, "EDITORIAL_QUALITY_RECALL_ENABLED", True),
+            mock.patch.object(main, "EDITORIAL_QUALITY_RECALL_TARGET", 8),
+            mock.patch.object(main, "_editorial_quality_candidate_count", return_value=8),
+            mock.patch.object(main, "collect_rss_candidates", return_value=[]),
+            mock.patch.object(main, "fetch_editorial_recall_items", return_value=[]),
+        ):
+            items = main.collect_candidates_for_section(section_conf, start_kst, end_kst)
+
+        self.assertGreaterEqual(len(items), 5)
+        self.assertTrue(quality_queries.isdisjoint(seen_queries), msg=str(seen_queries))
+
 
 
     def test_collect_candidates_can_recall_policy_market_brief_story_via_check_query(self):
@@ -3933,6 +4052,8 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertIn("농산물 유통 거점", main._recall_common_queries("dist", "2026-01-05"))
         self.assertIn("토마토뿔나방 약제 지원", main._recall_common_queries("pest", "2026-01-05"))
         self.assertIn("과수화상병 예찰", main._recall_common_queries("pest", "2026-01-05"))
+        self.assertIn("풀무치 돌발해충 방제", main._recall_common_queries("pest", "2026-01-05"))
+        self.assertIn("풀무치 돌발해충 방제", main.EDITORIAL_QUALITY_RECALL_QUERIES["pest"][:5])
         self.assertTrue(len(pest_queries) > 0)
 
     def test_onion_and_garlic_articles_are_not_globally_excluded(self):
