@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-30T02:12:59+09:00",
+  "generated_at": "2026-07-01T01:32:58+09:00",
   "rows": [
     {
       "date": "2026-05-20",
@@ -63,6 +63,19 @@
       "target_domain": "www.newsis.com",
       "clicks": 6,
       "users": 4,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-06-30",
+      "article_id": "78680451d02e",
+      "title": "‘늦은장마’로 농산물 출하 몰려⋯ 가격 급락",
+      "report_date": "2026-06-30",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.nongmin.com",
+      "clicks": 6,
+      "users": 3,
       "archive_url": "",
       "source_url": ""
     },
@@ -416,6 +429,19 @@
       "users": 1,
       "archive_url": "",
       "source_url": ""
+    },
+    {
+      "date": "2026-06-30",
+      "article_id": "ea6f34514fe1",
+      "title": "경상북도, 양파 가격하락 따른 농가 피해 줄이기 위해 수급 안정 대책 ...",
+      "report_date": "2026-06-30",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.hansbiz.co.kr",
+      "clicks": 4,
+      "users": 2,
+      "archive_url": "/agri-news-brief/archive/2026-06-30.html#sec-supply",
+      "source_url": "http://www.hansbiz.co.kr/news/articleView.html?idxno=846737"
     },
     {
       "date": "2026-04-01",
@@ -882,6 +908,19 @@
       "target_domain": "sports.donga.com",
       "clicks": 3,
       "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-06-30",
+      "article_id": "ef6e67de72b6",
+      "title": "사과 나무 무더기로 죽었는데 원인 불명?…경찰 수사까지",
+      "report_date": "2026-06-30",
+      "section": "pest",
+      "surface": "briefing_card",
+      "target_domain": "news.kbs.co.kr",
+      "clicks": 3,
+      "users": 2,
       "archive_url": "",
       "source_url": ""
     },
@@ -2382,6 +2421,19 @@
     },
     {
       "date": "2026-06-29",
+      "article_id": "28f45ddedcdb",
+      "title": "오이 값 1주일 새 70% 올랐다",
+      "report_date": "2026-06-29",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.hankyung.com",
+      "clicks": 2,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-06-29",
       "article_id": "96094c33e842",
       "title": "과천 임시 화훼 판매장 취득세 논란… 화훼 인 “감면해야” vs 시 “법 따...",
       "report_date": "2026-06-29",
@@ -2418,6 +2470,71 @@
       "users": 2,
       "archive_url": "",
       "source_url": ""
+    },
+    {
+      "date": "2026-06-30",
+      "article_id": "78680451d02e",
+      "title": "‘늦은장마’로 농산물 출하 몰려⋯ 가격 급락",
+      "report_date": "2026-06-30",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.nongmin.com",
+      "clicks": 2,
+      "users": 2,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-06-30",
+      "article_id": "996e44131ba5",
+      "title": "늦어지는 '장마'·무더위에 농산물값, 체리·파프리카↓ , 다다기오이·...",
+      "report_date": "2026-06-30",
+      "section": "policy",
+      "surface": "briefing_card",
+      "target_domain": "www.ytn.co.kr",
+      "clicks": 2,
+      "users": 2,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-06-30",
+      "article_id": "ad1c886532ea",
+      "title": "노지 출하에 배추·감자 ↓…과일·수산물은 강세",
+      "report_date": "2026-06-30",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.jndn.com",
+      "clicks": 2,
+      "users": 2,
+      "archive_url": "/agri-news-brief/archive/2026-06-30.html#sec-supply",
+      "source_url": "http://www.jndn.com/article.php?aid=1782722747435129004"
+    },
+    {
+      "date": "2026-06-30",
+      "article_id": "cb53f5437f89",
+      "title": "\"마늘값 안정시키자!\"… 생산자·농협·중도매인 사상 첫 '상생 간담회'",
+      "report_date": "2026-06-30",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.aflnews.co.kr",
+      "clicks": 2,
+      "users": 2,
+      "archive_url": "/agri-news-brief/archive/2026-06-30.html#sec-supply",
+      "source_url": "https://www.aflnews.co.kr/news/articleView.html?idxno=323390"
+    },
+    {
+      "date": "2026-06-30",
+      "article_id": "cb53f5437f89",
+      "title": "\"마늘값 안정시키자!\"… 생산자·농협·중도매인 사상 첫 '상생 간담회'",
+      "report_date": "2026-06-30",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.aflnews.co.kr",
+      "clicks": 2,
+      "users": 2,
+      "archive_url": "/agri-news-brief/archive/2026-06-30.html#sec-supply",
+      "source_url": "https://www.aflnews.co.kr/news/articleView.html?idxno=323390"
     },
     {
       "date": "2026-03-30",
@@ -8626,19 +8743,6 @@
       "title": "오이 값 1주일 새 70% 올랐다",
       "report_date": "2026-06-29",
       "section": "supply",
-      "surface": "briefing_card",
-      "target_domain": "www.hankyung.com",
-      "clicks": 1,
-      "users": 1,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-06-29",
-      "article_id": "28f45ddedcdb",
-      "title": "오이 값 1주일 새 70% 올랐다",
-      "report_date": "2026-06-29",
-      "section": "supply",
       "surface": "briefing_open",
       "target_domain": "www.hankyung.com",
       "clicks": 1,
@@ -8671,6 +8775,19 @@
       "users": 1,
       "archive_url": "",
       "source_url": ""
+    },
+    {
+      "date": "2026-06-29",
+      "article_id": "9c03e4c60f06",
+      "title": "1조 투입해 '8월 고비' 정조준...정부, 하반기 물가 3% 방어 총력",
+      "report_date": "2026-06-29",
+      "section": "policy",
+      "surface": "briefing_open",
+      "target_domain": "www.newspim.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-06-29.html#sec-policy",
+      "source_url": "https://www.newspim.com/news/view/20260626000493"
     },
     {
       "date": "2026-06-29",
@@ -8723,6 +8840,84 @@
       "users": 1,
       "archive_url": "",
       "source_url": ""
+    },
+    {
+      "date": "2026-06-30",
+      "article_id": "996e44131ba5",
+      "title": "늦어지는 '장마'·무더위에 농산물값, 체리·파프리카↓ , 다다기오이·...",
+      "report_date": "2026-06-30",
+      "section": "policy",
+      "surface": "briefing_open",
+      "target_domain": "www.ytn.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-06-30",
+      "article_id": "a53bca8432f9",
+      "title": "\" 양파 값 더 떨어지면 안돼\" 수출로 활로찾기",
+      "report_date": "2026-06-30",
+      "section": "dist",
+      "surface": "briefing_open",
+      "target_domain": "www.jjn.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-06-30.html#sec-dist",
+      "source_url": "http://www.jjn.co.kr/news/articleView.html?idxno=1045021"
+    },
+    {
+      "date": "2026-06-30",
+      "article_id": "a9fc1e200c25",
+      "title": "밀양시, '경남 친환경 농산물 종합물류센터' 유치 본격화",
+      "report_date": "2026-06-30",
+      "section": "dist",
+      "surface": "briefing_card",
+      "target_domain": "www.enewstoday.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-06-30.html#sec-dist",
+      "source_url": "http://www.enewstoday.co.kr/news/articleView.html?idxno=2443464"
+    },
+    {
+      "date": "2026-06-30",
+      "article_id": "b4ab8ffdddfe",
+      "title": "해남군 '고온다습 장마철 '고추 병해충 예방 당부",
+      "report_date": "2026-06-30",
+      "section": "pest",
+      "surface": "briefing_card",
+      "target_domain": "www.aflnews.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-06-30.html#sec-pest",
+      "source_url": "https://www.aflnews.co.kr/news/articleView.html?idxno=323339"
+    },
+    {
+      "date": "2026-06-30",
+      "article_id": "c54d2ee2c49d",
+      "title": "[사설] 과수화상병 충북 전역 확산, 그 파장과 역할",
+      "report_date": "2026-06-30",
+      "section": "pest",
+      "surface": "briefing_card",
+      "target_domain": "www.chungnamilbo.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-06-30.html#sec-pest",
+      "source_url": "http://www.chungnamilbo.co.kr/news/articleView.html?idxno=895984"
+    },
+    {
+      "date": "2026-06-30",
+      "article_id": "ed954d63c473",
+      "title": "친환경논산물 종합물류센터 유치 전략 점검",
+      "report_date": "2026-06-30",
+      "section": "dist",
+      "surface": "briefing_card",
+      "target_domain": "www.ulsanpress.net",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-06-30.html#sec-dist",
+      "source_url": "https://www.ulsanpress.net/news/articleView.html?idxno=578085"
     }
   ]
 }
