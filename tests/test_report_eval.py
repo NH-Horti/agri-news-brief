@@ -793,6 +793,52 @@ class ReportEvalTests(unittest.TestCase):
         self.assertEqual(result["content_false_positive_samples"], [])
         self.assertGreater(result["scores"]["core_quality"], 80.0)
 
+    def test_quantified_public_distribution_execution_is_not_event_filler(self) -> None:
+        html = """
+        <div
+          data-surface="briefing_card"
+          data-section="dist"
+          data-article-title="aT, 유통 본부 회의 개최…공공급식 거래액 2.3%↑·스마트 APC 115개 확대"
+          data-href="https://example.com/at-public-distribution"
+          data-article-id="at-public-distribution"
+          data-target-domain="example.com"
+          data-selection-fit="3.7"
+          data-selection-stage="dist_publish_daily_floor_replacement"
+          data-is-core="0"
+        >
+          <div class="sum">aT가 공공급식플랫폼 거래액 증가와 스마트 APC 확대 실적을 점검했다.</div>
+        </div>
+        """
+        snapshot_payload = {
+            "window": {"end_kst": "2026-07-01T06:00:00+09:00"},
+            "raw_by_section": {
+                "dist": [
+                    {
+                        "section": "dist",
+                        "title": "aT, 유통 본부 회의 개최…공공급식 거래액 2.3%↑·스마트 APC 115개 확대",
+                        "link": "https://example.com/at-public-distribution",
+                        "description": (
+                            "aT가 생산유통통합조직과 공공급식플랫폼 거래액 2.3% 증가, "
+                            "스마트 APC 115개소 확대 실적을 발표했다."
+                        ),
+                        "selection_fit_score": 3.7,
+                        "selection_stage": "dist_publish_daily_floor_replacement",
+                        "score": 60.0,
+                        "pub_dt_kst": "2026-07-01T05:00:00+09:00",
+                    }
+                ],
+                "supply": [],
+                "policy": [],
+                "pest": [],
+            },
+        }
+
+        result = report_eval.evaluate_report("2026-07-01", html, snapshot_payload)
+
+        self.assertEqual(result["metrics"]["promotional_filler_rate"], 0.0)
+        self.assertEqual(result["metrics"]["dist_weak_ops_rate"], 0.0)
+        self.assertEqual(result["editorial_quality_samples"], [])
+
     def test_priority_locust_outbreak_core_overrides_stale_pool_rank(self) -> None:
         html = """
         <div
@@ -842,6 +888,83 @@ class ReportEvalTests(unittest.TestCase):
         }
 
         result = report_eval.evaluate_report("2026-06-30", html, snapshot_payload)
+
+        self.assertEqual(result["metrics"]["weak_core_rate"], 0.0)
+        self.assertEqual(result["metrics"]["core_rank_percentile_avg"], 1.0)
+
+    def test_authoritative_warning_and_live_prediction_are_priority_pest_cores(self) -> None:
+        html = """
+        <div
+          data-surface="briefing_card"
+          data-section="pest"
+          data-article-title="경북농기원, 장마철 고추 탄저병 주의 당부"
+          data-href="https://example.com/pepper-warning"
+          data-article-id="pepper-warning"
+          data-target-domain="example.com"
+          data-selection-fit="2.89"
+          data-selection-stage="pest_publish_editorial_core"
+          data-is-core="1"
+        ><div class="sum">농기원이 고추 탄저병 확산을 경고하고 비 전 살균제 방제를 당부했다.</div></div>
+        <div
+          data-surface="briefing_card"
+          data-section="pest"
+          data-article-title="경기도농업기술원, 병해충 위험 AI 조기 예측"
+          data-href="https://example.com/pest-ai-warning"
+          data-article-id="pest-ai-warning"
+          data-target-domain="example.com"
+          data-selection-fit="3.55"
+          data-selection-stage="pest_publish_editorial_core"
+          data-is-core="1"
+        ><div class="sum">벼·콩 병해충 위험을 AI로 분석해 예보부터 경보까지 실시간 제공한다.</div></div>
+        """
+        snapshot_payload = {
+            "window": {"end_kst": "2026-07-01T06:00:00+09:00"},
+            "raw_by_section": {
+                "pest": [
+                    {
+                        "section": "pest",
+                        "title": "경북농기원, 장마철 고추 탄저병 주의 당부",
+                        "link": "https://example.com/pepper-warning",
+                        "description": (
+                            "경북농업기술원이 고추 탄저병 확산을 경고하고 비 전 살균제 살포와 "
+                            "비 뒤 피해 과실 제거, 치료 약제 방제를 당부했다."
+                        ),
+                        "selection_fit_score": 2.89,
+                        "selection_stage": "pest_publish_editorial_core",
+                        "score": 20.0,
+                        "pub_dt_kst": "2026-07-01T05:00:00+09:00",
+                    },
+                    {
+                        "section": "pest",
+                        "title": "경기도농업기술원, 병해충 위험 AI 조기 예측",
+                        "link": "https://example.com/pest-ai-warning",
+                        "description": (
+                            "경기도농업기술원이 벼와 콩 등 농작물 병해충 위험도를 분석해 "
+                            "예보·주의보·경보를 실시간 제공한다."
+                        ),
+                        "selection_fit_score": 3.55,
+                        "selection_stage": "pest_publish_editorial_core",
+                        "score": 21.0,
+                        "pub_dt_kst": "2026-07-01T04:00:00+09:00",
+                    },
+                    {
+                        "section": "pest",
+                        "title": "일반 병해충 지원 소식",
+                        "link": "https://example.com/high-score-generic",
+                        "description": "지역 농가에 방제장비를 지원했다.",
+                        "selection_fit_score": 3.8,
+                        "selection_stage": "core_final",
+                        "score": 90.0,
+                        "pub_dt_kst": "2026-07-01T03:00:00+09:00",
+                    },
+                ],
+                "supply": [],
+                "policy": [],
+                "dist": [],
+            },
+        }
+
+        result = report_eval.evaluate_report("2026-07-01", html, snapshot_payload)
 
         self.assertEqual(result["metrics"]["weak_core_rate"], 0.0)
         self.assertEqual(result["metrics"]["core_rank_percentile_avg"], 1.0)
