@@ -43,7 +43,7 @@ _GREEN_ONION_SPORTS_HOMONYM_RE = re.compile(
 )
 _WEAK_SELECTION_STAGE_TOKENS = ("backfill", "bridge", "swap", "recycle")
 _QUALITY_STAGE_PREFIXES = ("dist_anchor", "supply_board", "supply_feature")
-_COMMODITY_ISSUE_TERMS = (
+_COMMODITY_ISSUE_TERMS: tuple[str, ...] = (
     "가격",
     "수급",
     "출하",
@@ -541,7 +541,17 @@ def _editorial_dist_channel_execution_context(article: SurfaceArticle, text: str
         and _has_any(text_l, ("수출량", "판매량", "수출액"))
         and _has_any(text_l, ("증가", "늘", "확대", "성장"))
     )
-    return direct_platform or measured_export_growth
+    quantified_public_distribution = bool(
+        "at" in title_l
+        and "유통" in title_l
+        and _has_any(title_l, ("공공급식", "스마트 apc", "농산물산지유통센터"))
+        and re.search(r"\d+(?:\.\d+)?\s*(?:%|개|개소|조|억)", text_l)
+        and _has_any(
+            text_l,
+            ("거래액", "생산유통통합조직", "공공급식플랫폼", "스마트 apc", "확대"),
+        )
+    )
+    return direct_platform or measured_export_growth or quantified_public_distribution
 
 
 def _editorial_policy_wrong_section_reason(article: SurfaceArticle, snapshot_body: str) -> str:
@@ -763,7 +773,36 @@ def _is_priority_field_risk_core(article: SurfaceArticle, snapshot_body: str) ->
     outbreak_signal = any(term in text for term in ("집단 발생", "떼", "습격", "비상", "확산"))
     urgent_control = any(term in text for term in ("긴급 방제", "방제에 나", "확산 차단"))
     crop_exposure = any(term in text for term in ("농작물", "재배지", "벼", "조사료", "간척지"))
-    return bool(named_outbreak and outbreak_signal and urgent_control and crop_exposure)
+    authoritative_named_warning = bool(
+        any(term in title for term in ("고추", "사과", "배", "복숭아", "포도", "감귤", "토마토"))
+        and any(term in title for term in (
+            "탄저병", "세균성점무늬병", "과수화상병", "역병", "노균병", "흰가루병",
+        ))
+        and any(term in title for term in ("주의", "주위", "경보", "확산", "발생", "위험"))
+        and any(term in text for term in ("농업기술원", "농기원", "검역본부", "연구소"))
+        and any(term in text for term in ("예방", "방제", "살균제", "약제", "피해 과실"))
+    )
+    operational_early_warning = bool(
+        "병해충" in title
+        and any(term in title for term in ("조기 예측", "위험 예측", "예측서비스"))
+        and any(term in title for term in ("ai", "인공지능"))
+        and any(term in text for term in ("농업기술원", "농기원"))
+        and any(term in text for term in ("예보", "주의보", "경보", "위험도", "실시간"))
+        and any(term in text for term in ("벼", "콩", "농작물", "재배"))
+    )
+    multi_disease_field_advisory = bool(
+        any(term in title for term in ("장마철", "우기", "고온다습"))
+        and any(term in title for term in ("사과농가", "과수농가", "사과 농가", "과수 농가"))
+        and any(term in text for term in ("과수화상병", "화상병"))
+        and "탄저병" in text
+        and any(term in text for term in ("발생", "피해", "방제", "예방", "주의"))
+    )
+    return bool(
+        (named_outbreak and outbreak_signal and urgent_control and crop_exposure)
+        or authoritative_named_warning
+        or operational_early_warning
+        or multi_disease_field_advisory
+    )
 
 
 def _off_scope_content_reason(article: SurfaceArticle, snapshot_body: str) -> str:
