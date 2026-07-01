@@ -2,19 +2,21 @@
   "reports": [
     {
       "report_date": "2026-07-01",
-      "generated_at_kst": "2026-07-01T06:20:26+09:00",
-      "overall_score": 92.81,
-      "operational_score": 94.11,
-      "reader_quality_score": 94.11,
-      "reader_quality_gate_status": "clear",
-      "reader_quality_gate_reasons": [],
-      "editorial_score": 82.0,
-      "editorial_status": "needs_iteration",
-      "quality_gate_status": "needs_iteration",
+      "generated_at_kst": "2026-07-01T09:13:55+09:00",
+      "overall_score": 81.9,
+      "operational_score": 88.2,
+      "reader_quality_score": 83.3,
+      "reader_quality_gate_status": "capped",
+      "reader_quality_gate_reasons": [
+        "story_duplicate"
+      ],
+      "editorial_score": 81.0,
+      "editorial_status": "needs_major_iteration",
+      "quality_gate_status": "needs_major_iteration",
       "quality_gate_reason": "editorial_below_target_bounded_penalty",
-      "status": "pass",
-      "section_alignment": 91.67,
-      "core_quality": 63.88,
+      "status": "warn",
+      "section_alignment": 100.0,
+      "core_quality": 78.73,
       "commodity_board_quality": 92.0,
       "briefing_total": 20,
       "commodity_total": 23,
@@ -23,15 +25,15 @@
       "commodity_managed_unlinked_total": 27,
       "summary_presence_rate": 1.0,
       "within_72h_rate": 1.0,
-      "briefing_title_unique_rate": 1.0,
+      "briefing_title_unique_rate": 0.95,
       "content_false_positive_rate": 0.0,
       "reader_hard_issue_count": 0,
-      "reader_quality_penalty": 0.0,
-      "editorial_quality_penalty": 0.0,
+      "reader_quality_penalty": 4.9,
+      "editorial_quality_penalty": 0.5,
       "commodity_primary_false_link_rate": 0.0,
       "commodity_pool_false_link_rate": 0.0,
       "policy_wrong_section_rate": 0.0,
-      "promotional_filler_rate": 0.0,
+      "promotional_filler_rate": 0.05,
       "promotional_core_rate": 0.0,
       "pest_theme_duplicate_rate": 0.0,
       "guardrail_driver_tags": [
@@ -1426,5 +1428,5 @@
       "briefing_title_unique_rate": 1.0
     }
   ],
-  "updated_at_kst": "2026-07-01T06:20:26+09:00"
+  "updated_at_kst": "2026-07-01T09:13:55+09:00"
 }
