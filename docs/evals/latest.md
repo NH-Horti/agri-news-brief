@@ -1,30 +1,31 @@
-## Daily Eval (2026-07-02)
-- Overall: **85.47** (pass)
-- Operational: **95.72**
-- Reader quality: **86.77** (capped; penalty=8.9, cap=90.0, reasons=pest_theme_duplicate)
-- Quality gate: **85.47** (needs_iteration, editorial_below_target_bounded_penalty; editorial=82.0, operational=95.7)
-- Scores: completeness=100.0, diversity=100.0, summary=100.0, freshness=100.0, retrieval=87.5, section_fit=97.2, core=100.0, commodity=96.1
-- Briefing cards: 20 / Commodity cards: 22
-- Sections: supply:5/5 raw=172, policy:5/5 raw=190, dist:5/5 raw=81, pest:5/5 raw=30
-- Metrics: title_unique=1.00, domain_diversity=0.70, summary_presence=1.00, summary_numeric=0.85, fresh_72h=1.00, fit_avg=3.87, false_positive=0.00, hard_reader_issues=0, weak_core=0.00, editorial_penalty=2.8, commodity_weak=0.00, commodity_items=7, commodity_active_today=12, commodity_active_today_unlinked=5, commodity_coverage=0.21, commodity_strict_link=0.86, commodity_false_link=0.00, commodity_pool_false_link=0.00, commodity_dominant_section=0.57, semantic_penalty=0.0
+## Daily Eval (2026-07-03)
+- Overall: **87.27** (pass)
+- Operational: **92.88**
+- Reader quality: **88.47** (clear; penalty=4.4, cap=100.0, reasons=clear)
+- Quality gate: **87.27** (needs_iteration, editorial_below_target_bounded_penalty; editorial=83.0, operational=92.9)
+- Scores: completeness=100.0, diversity=100.0, summary=100.0, freshness=100.0, retrieval=83.8, section_fit=91.7, core=66.1, commodity=100.0
+- Briefing cards: 20 / Commodity cards: 42
+- Sections: supply:5/5 raw=189, policy:5/5 raw=191, dist:5/5 raw=93, pest:5/5 raw=40
+- Metrics: title_unique=1.00, domain_diversity=0.85, summary_presence=1.00, summary_numeric=0.95, fresh_72h=1.00, fit_avg=4.67, false_positive=0.00, hard_reader_issues=0, weak_core=0.50, editorial_penalty=2.5, commodity_weak=0.00, commodity_items=10, commodity_active_today=14, commodity_active_today_unlinked=4, commodity_coverage=0.30, commodity_strict_link=0.90, commodity_false_link=0.00, commodity_pool_false_link=0.00, commodity_dominant_section=0.40, semantic_penalty=0.0
 
 
 ### Editorial Shadow Eval
-- Editorial: **82.00** (target 95, needs_iteration)
+- Editorial: **83.00** (target 95, needs_iteration)
 - Model: gpt-5.5 (resolved gpt-5.5-2026-04-23)
 - Section count gate: 100.0 (target_met)
-- Components: article_selection=80.0, section_fit=82.0, core=78.0, summary=91.0, missed=76.0, noise=78.0
-- Summary: 형식과 카드 수는 모두 충족했지만, 편집 품질은 목표 95에는 크게 못 미칩니다. 핵심 이슈인 마늘 가격·정부 물가대책·수입농산물 협의체·화상병 대응은 잡았으나, 같은 사건을 중복 배치하거나 사진성/인물성/취임식성 기사를 핵심 또는 꼬리 카드로 넣은 문제가 큽니다. 특히 pest의 보은군수 취임 기사는 병해충 섹션에서 명백한 오선정이며, dist의 합천 마늘 산지경매 2건 중복은 더 나은 물류·수출·APC 후보를 밀어냈습니다.
-- [high] irrelevant_selection: 보은군, 최재형 군수 취임식 생략한 채 민선 9기 민생 행보 본격화 - 병해충 내용이 아니라 지자체장 취임·군정 기사다.
-- [high] duplicate_story: 합천군, 2026년산 건 마늘 초매식… / 합천군, 건마늘 산지경매 개장 - 같은 합천 건마늘 산지경매 개장 내용을 두 카드로 반복했다.
-- [medium] weak_core: '올해 마늘값은 괜찮나?' - 1번 창녕 마늘 가격 기사와 같은 현장의 사진성 보조 기사로 보이며 핵심 카드로 약하다.
-- [medium] duplicate_story: 백성익 (사)제주 감귤 연합회장, 수입농산물 관리 민관협의체 위원 선정 - 수입농산물 민관협의체 출범 카드와 사실상 같은 이슈의 지역 인물 후속이다.
-- [medium] cross_section_overlap: 정부, 농축산물 할인에 3천억 투입… / 계란 2억개 더 들여온다… - 정부 여름 물가·할인·계란수입 대책을 policy와 dist에 중복 배치했다.
+- Components: article_selection=82.0, section_fit=78.0, core=68.0, summary=60.0, missed=74.0, noise=70.0
+- Summary: 전체 20건·섹션별 5건 충족과 신선도는 좋지만, 기사 선택은 publish-quality에는 못 미칩니다. 공급·정책에서 여름배추와 양배추 밭갈이 이슈가 반복돼 지면 효율이 떨어졌고, 유통 섹션은 판촉·교육성 행사가 코어로 올라간 점이 가장 큰 약점입니다. 병해충은 비교적 양호하지만 애호박 뿌리혹병 원인균 규명, 고추 탄저병 같은 더 구체적인 후보를 일부 놓쳤습니다. 요약문에는 ‘〈/s〉’와 중복·절단 문장이 반복돼 독자 품질을 크게 깎습니다.
+- [high] duplicate_story: 정부, 여름배추 2만7000t 확보… / 배추 정부가용물량 2.7만t 확보 - 같은 장관 현장점검·2.7만t 확보 내용을 공급 섹션에서 2건 반복했다.
+- [high] cross_section_duplicate: "가을 금배추 없도록"… 농식품부, 여름철 배추 생산 안정화 총력 지원 - 공급 섹션의 여름배추 기사와 사실상 같은 정책 발표다.
+- [medium] cross_section_duplicate: 농산물값 폭락에 양배추밭 갈아엎은 청주 농민들... - 공급 1번 양배추 밭갈이와 같은 현장 이슈를 정책 꼬리로 재사용했다.
+- [high] weak_core: [2일 경북도] 'daily 여름과일 특별전' 진행 등 - 지역 과일 판촉·할인 행사 성격이 강한데 유통 코어로 배치됐다.
+- [high] weak_core: 청년 양돈농가, 공판장서 축산유통 배웠다 - 교육 행사 기사로 유통 운영·물류·시장 변화 신호가 약하다.
 
 ### Improvement Hints
-- 편집 품질상 약한 기사 선택이 감지되었습니다 (promotional_filler=5%, pest_theme_duplicate=5%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요.
+- 핵심기사 품질 편차가 큽니다. core 기사에는 low-fit·tail 후보를 쓰지 말고, fit 상위권이면서 실제 이슈성이 강한 기사만 남기세요.
+- 리콜 시드 결손이 보입니다: supply, pest. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요.
+- 편집 품질상 약한 기사 선택이 감지되었습니다 (promotional_filler=10%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요.
+- 농업과 무관한 기사가 브리핑에 포함되어 있습니다 (비율 5%). 해외 경제지표, 관광 홍보, 비농업 기사가 선정되지 않도록 is_relevant 게이트를 점검하세요.
 
 ### Next Summary Feedback
-- 각 기사 요약은 2문장으로 유지하고 첫 문장에 품목·지역·핵심 이슈를 바로 적는다.
-- 기사에 수치가 있으면 1개 이상 남기고, 없으면 대응 주체나 시점을 분명히 적는다.
-- 비슷한 시작 표현을 반복하지 말고 원인과 대응을 분리해서 간결하게 쓴다.
+- 핵심기사 요약은 행사성 문구를 걷어내고 가격·물량·방제 같은 실제 이슈 변수를 첫 문장에 바로 둔다.
