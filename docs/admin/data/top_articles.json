@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-02T01:40:28+09:00",
+  "generated_at": "2026-07-03T01:16:40+09:00",
   "rows": [
     {
       "date": "2026-05-20",
@@ -440,8 +440,8 @@
       "target_domain": "www.hansbiz.co.kr",
       "clicks": 4,
       "users": 2,
-      "archive_url": "/agri-news-brief/archive/2026-06-30.html#sec-supply",
-      "source_url": "http://www.hansbiz.co.kr/news/articleView.html?idxno=846737"
+      "archive_url": "",
+      "source_url": ""
     },
     {
       "date": "2026-04-01",
@@ -923,6 +923,19 @@
       "users": 2,
       "archive_url": "",
       "source_url": ""
+    },
+    {
+      "date": "2026-07-02",
+      "article_id": "7305966d7bde",
+      "title": "농협 개혁위, 자체 개혁과제 75% 이행.. 농협 법 개정 앞두고 자율혁신 속...",
+      "report_date": "2026-07-02",
+      "section": "policy",
+      "surface": "briefing_card",
+      "target_domain": "www.4th.kr",
+      "clicks": 3,
+      "users": 2,
+      "archive_url": "/agri-news-brief/archive/2026-07-02.html#sec-policy",
+      "source_url": "http://www.4th.kr/news/articleView.html?idxno=2114039"
     },
     {
       "date": "2026-04-01",
@@ -2535,6 +2548,32 @@
       "users": 2,
       "archive_url": "/agri-news-brief/archive/2026-06-30.html#sec-supply",
       "source_url": "https://www.aflnews.co.kr/news/articleView.html?idxno=323390"
+    },
+    {
+      "date": "2026-07-02",
+      "article_id": "69dd7dc472fe",
+      "title": "보은군, 최재형 군수 취임식 생략한 채 민선 9기 민생 행보 본격화",
+      "report_date": "2026-07-02",
+      "section": "pest",
+      "surface": "briefing_card",
+      "target_domain": "www.breaknews.com",
+      "clicks": 2,
+      "users": 2,
+      "archive_url": "/agri-news-brief/archive/2026-07-02.html#sec-pest",
+      "source_url": "http://www.breaknews.com/1218416"
+    },
+    {
+      "date": "2026-07-02",
+      "article_id": "c623d06c2475",
+      "title": "마늘가격 무난한 출발…관건은 '등외품 수매'",
+      "report_date": "2026-07-02",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.ikpnews.net",
+      "clicks": 2,
+      "users": 2,
+      "archive_url": "/agri-news-brief/archive/2026-07-02.html#sec-supply",
+      "source_url": "http://www.ikpnews.net/news/articleView.html?idxno=70842"
     },
     {
       "date": "2026-03-30",
@@ -8786,8 +8825,8 @@
       "target_domain": "www.newspim.com",
       "clicks": 1,
       "users": 1,
-      "archive_url": "/agri-news-brief/archive/2026-06-29.html#sec-policy",
-      "source_url": "https://www.newspim.com/news/view/20260626000493"
+      "archive_url": "",
+      "source_url": ""
     },
     {
       "date": "2026-06-29",
@@ -8799,8 +8838,8 @@
       "target_domain": "www.newstomato.com",
       "clicks": 1,
       "users": 1,
-      "archive_url": "/agri-news-brief/archive/2026-06-29.html#sec-policy",
-      "source_url": "http://www.newstomato.com/ReadNews.aspx?no=1305342&inflow=N"
+      "archive_url": "",
+      "source_url": ""
     },
     {
       "date": "2026-06-29",
@@ -8864,8 +8903,8 @@
       "target_domain": "www.jjn.co.kr",
       "clicks": 1,
       "users": 1,
-      "archive_url": "/agri-news-brief/archive/2026-06-30.html#sec-dist",
-      "source_url": "http://www.jjn.co.kr/news/articleView.html?idxno=1045021"
+      "archive_url": "",
+      "source_url": ""
     },
     {
       "date": "2026-06-30",
@@ -8877,8 +8916,8 @@
       "target_domain": "www.enewstoday.co.kr",
       "clicks": 1,
       "users": 1,
-      "archive_url": "/agri-news-brief/archive/2026-06-30.html#sec-dist",
-      "source_url": "http://www.enewstoday.co.kr/news/articleView.html?idxno=2443464"
+      "archive_url": "",
+      "source_url": ""
     },
     {
       "date": "2026-06-30",
@@ -8890,8 +8929,8 @@
       "target_domain": "www.aflnews.co.kr",
       "clicks": 1,
       "users": 1,
-      "archive_url": "/agri-news-brief/archive/2026-06-30.html#sec-pest",
-      "source_url": "https://www.aflnews.co.kr/news/articleView.html?idxno=323339"
+      "archive_url": "",
+      "source_url": ""
     },
     {
       "date": "2026-06-30",
@@ -8916,8 +8955,8 @@
       "target_domain": "www.ulsanpress.net",
       "clicks": 1,
       "users": 1,
-      "archive_url": "/agri-news-brief/archive/2026-06-30.html#sec-dist",
-      "source_url": "https://www.ulsanpress.net/news/articleView.html?idxno=578085"
+      "archive_url": "",
+      "source_url": ""
     },
     {
       "date": "2026-07-01",
@@ -8957,6 +8996,19 @@
       "users": 1,
       "archive_url": "/agri-news-brief/archive/2026-07-01.html#sec-supply",
       "source_url": "https://www.agrinet.co.kr/news/articleView.html?idxno=405270"
+    },
+    {
+      "date": "2026-07-01",
+      "article_id": "67c68f2264e1",
+      "title": "영천 마늘· 양파 농가 '이상기후 직격탄'… 가격 희비에도 농민은 '울상...",
+      "report_date": "2026-07-01",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.kyongbuk.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-07-01.html#sec-supply",
+      "source_url": "https://www.kyongbuk.co.kr/news/articleView.html?idxno=4076998"
     },
     {
       "date": "2026-07-01",
@@ -9035,6 +9087,110 @@
       "users": 1,
       "archive_url": "",
       "source_url": ""
+    },
+    {
+      "date": "2026-07-02",
+      "article_id": "24f8ce5e843e",
+      "title": "'올해 마늘값은 괜찮나?'",
+      "report_date": "2026-07-02",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.ikpnews.net",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-07-02.html#sec-supply",
+      "source_url": "http://www.ikpnews.net/news/articleView.html?idxno=70841"
+    },
+    {
+      "date": "2026-07-02",
+      "article_id": "4bb06ad1e525",
+      "title": "합천군, 건마늘 산지경매 개장",
+      "report_date": "2026-07-02",
+      "section": "dist",
+      "surface": "briefing_card",
+      "target_domain": "www.kukinews.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-07-02.html#sec-dist",
+      "source_url": "https://www.kukinews.com/article/view/kuk202607010179"
+    },
+    {
+      "date": "2026-07-02",
+      "article_id": "4bb06ad1e525",
+      "title": "합천군, 건마늘 산지경매 개장",
+      "report_date": "2026-07-02",
+      "section": "dist",
+      "surface": "briefing_open",
+      "target_domain": "www.kukinews.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-07-02.html#sec-dist",
+      "source_url": "https://www.kukinews.com/article/view/kuk202607010179"
+    },
+    {
+      "date": "2026-07-02",
+      "article_id": "6c1c9832b5a5",
+      "title": "정부, 농축산물 할인에 3천억 투입…농할상품권 매월 200억 발행",
+      "report_date": "2026-07-02",
+      "section": "policy",
+      "surface": "briefing_open",
+      "target_domain": "www.newsian.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-07-02.html#sec-policy",
+      "source_url": "http://www.newsian.co.kr/news/articleView.html?idxno=91695"
+    },
+    {
+      "date": "2026-07-02",
+      "article_id": "88db7a335b81",
+      "title": "대경사과원예농협, 군위 자두·복숭아 초출하",
+      "report_date": "2026-07-02",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.wonyesanup.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-07-02.html#sec-supply",
+      "source_url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=65102"
+    },
+    {
+      "date": "2026-07-02",
+      "article_id": "a8b9a0df644b",
+      "title": "백성익 (사)제주 감귤 연합회장, 수입농산물 관리 민관협의체 위원 선정",
+      "report_date": "2026-07-02",
+      "section": "policy",
+      "surface": "briefing_open",
+      "target_domain": "www.aflnews.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-07-02.html#sec-policy",
+      "source_url": "https://www.aflnews.co.kr/news/articleView.html?idxno=323501"
+    },
+    {
+      "date": "2026-07-02",
+      "article_id": "bd0442d42bd3",
+      "title": "농사포인트 - 고추역병 6월 초순부터 발생 … 이랑 높여 물 잘 빠지게 해",
+      "report_date": "2026-07-02",
+      "section": "pest",
+      "surface": "briefing_open",
+      "target_domain": "www.wonyesanup.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-07-02.html#sec-pest",
+      "source_url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=65095"
+    },
+    {
+      "date": "2026-07-02",
+      "article_id": "c623d06c2475",
+      "title": "마늘가격 무난한 출발…관건은 '등외품 수매'",
+      "report_date": "2026-07-02",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.ikpnews.net",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-07-02.html#sec-supply",
+      "source_url": "http://www.ikpnews.net/news/articleView.html?idxno=70842"
     }
   ]
 }
