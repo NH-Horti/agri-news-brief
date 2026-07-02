@@ -27410,6 +27410,40 @@ def _build_sections_phase123(
     except Exception as e:
         log.warning("[WARN] post-publish editorial follow-up guard failed: %s", e)
 
+    try:
+        # Follow-up fillers deliberately search a wider pool and can therefore
+        # reintroduce a card that the earlier structural gate rejected.  The
+        # same source-agnostic duplicate/scope gate must own the final word.
+        post_followup_structural_repairs = _repair_publish_editorial_selection(
+            final_by_section,
+            raw_by_section,
+        )
+        if post_followup_structural_repairs:
+            log.info(
+                "[REBALANCE] post-followup structural quality repaired %d visible card(s)",
+                post_followup_structural_repairs,
+            )
+            _sync_debug_with_final_sections(final_by_section)
+        post_followup_refill = _refill_preferred_section_counts_relaxed_from_raw(
+            final_by_section,
+            raw_by_section,
+            target=PREFERRED_PER_SECTION,
+        )
+        post_refill_structural_repairs = 0
+        if post_followup_refill:
+            post_refill_structural_repairs = _repair_publish_editorial_selection(
+                final_by_section,
+                raw_by_section,
+            )
+            log.info(
+                "[REBALANCE] post-followup quality refill added=%d repaired=%d",
+                post_followup_refill,
+                post_refill_structural_repairs,
+            )
+            _sync_debug_with_final_sections(final_by_section)
+    except Exception as e:
+        log.warning("[WARN] post-followup structural quality guard failed: %s", e)
+
     # The raw commodity pool is deliberately broader than the final briefing,
     # but cap/filter decisions must never make an eligible selected card vanish
     # from today's commodity board.
@@ -34490,6 +34524,268 @@ def _publish_editorial_text(article: Article) -> str:
     return _nfkc_lower(f"{article.title or ''} {article.description or ''}")
 
 
+_PUBLISH_EDITORIAL_TOKEN_STOPWORDS = frozenset(
+    {
+        "기자",
+        "뉴스",
+        "기사",
+        "사진",
+        "제공",
+        "관련",
+        "무단전재",
+        "재배포",
+        "저작권자",
+        "현재",
+        "인터넷",
+        "익스플로러",
+        "브라우저",
+        "사용",
+        "이하",
+        "버전",
+        "최신",
+        "잠깐",
+        "오전",
+        "오후",
+        "이날",
+        "올해",
+        "지난해",
+        "지역",
+        "농가",
+        "농민",
+        "관계자",
+        "밝혔다",
+        "말했다",
+        "전했다",
+        "설명했다",
+        "강조했다",
+    }
+)
+
+
+def _publish_editorial_content_tokens(article: Article) -> frozenset[str]:
+    """Return reusable content tokens after removing publisher boilerplate.
+
+    The final selection pass cannot rely on title similarity alone: photo
+    captions and local rewrites often use very different headlines for the
+    same event.  Description tokens provide a source-independent event
+    fingerprint while the stop list prevents publisher chrome from creating
+    false duplicates.
+    """
+    text = _publish_editorial_text(article)
+    tokens = {
+        token
+        for token in re.findall(r"[가-힣a-z]{2,}|\d+(?:\.\d+)?", text[:1800])
+        if token not in _PUBLISH_EDITORIAL_TOKEN_STOPWORDS
+    }
+    return frozenset(tokens)
+
+
+def _publish_editorial_regions(article: Article) -> frozenset[str]:
+    text = _publish_editorial_text(article)
+    explicit = set(_PUBLISH_EDITORIAL_REGIONS) & set(re.findall(r"[가-힣]{2,8}", text))
+    administrative = {
+        token
+        for token in re.findall(r"[가-힣]{2,8}(?:시|군|구|읍|면)", text)
+        if token not in {
+            "지역시",
+            "도매시",
+            "출하시",
+            "당시",
+            "동시에",
+            "농업인",
+            "생산자",
+        }
+    }
+    city_county = {
+        token for token in administrative if token.endswith(("시", "군", "구"))
+    }
+    if city_county:
+        return frozenset(city_county)
+    town_village = {
+        token for token in administrative if token.endswith(("읍", "면"))
+    }
+    if town_village:
+        return frozenset(town_village)
+    return frozenset(explicit)
+
+
+def _publish_editorial_event_signature(article: Article) -> tuple[str, ...]:
+    """Build a section-agnostic signature for recurring agricultural events."""
+    title = _publish_editorial_title(article)
+    text = _publish_editorial_text(article)
+
+    agri_price_relief = bool(
+        any(term in text for term in ("농축산물", "농축수산물", "농산물", "먹거리"))
+        and "할인" in text
+        and any(term in text for term in ("정부", "농식품부", "농림축산식품부", "기재부"))
+        and any(term in text for term in ("투입", "지원", "상품권", "수입", "수급안정"))
+    )
+    if agri_price_relief:
+        return ("national_agri_price_relief",)
+
+    if (
+        any(term in text for term in ("수입농산물 관리", "수입 농산물 관리"))
+        and any(term in text for term in ("민관협의체", "민·관 협의체", "민관 합동"))
+        and any(term in text for term in ("출범", "발족", "전체회의", "위원 선정"))
+    ):
+        return ("import_commodity_management_council",)
+
+    auction_launch = bool(
+        any(term in text for term in ("경매", "공판장", "산지경매"))
+        and any(term in text for term in ("초매", "개장", "개시", "시작", "첫 경매"))
+    )
+    if auction_launch:
+        commodities, _known_regions, _issues = _publish_editorial_story_parts(article)
+        regions = _publish_editorial_regions(article)
+        if commodities and regions:
+            return (
+                "auction_launch",
+                "|".join(sorted(commodities)),
+                "|".join(sorted(regions)),
+            )
+
+    quantified_law_or_program = bool(
+        any(term in title for term in ("법적 근거", "시행령", "법안", "조례", "지원사업"))
+        and any(term in title for term in ("시행", "개정", "마련", "확정", "신설"))
+    )
+    if quantified_law_or_program:
+        key_tokens = sorted(
+            token
+            for token in _publish_editorial_content_tokens(article)
+            if any(stem in token for stem in ("농업", "농산업", "농산물", "원예"))
+        )
+        if key_tokens:
+            return ("agri_law_or_program", key_tokens[0])
+    return ()
+
+
+def _publish_editorial_description_duplicate(left: Article, right: Article) -> bool:
+    left_tokens = _publish_editorial_content_tokens(left)
+    right_tokens = _publish_editorial_content_tokens(right)
+    if min(len(left_tokens), len(right_tokens)) < 8:
+        return False
+    shared = left_tokens & right_tokens
+    containment = len(shared) / max(1, min(len(left_tokens), len(right_tokens)))
+    if containment < 0.56 or len(shared) < 7:
+        return False
+    event_anchors = {
+        "경매",
+        "초매식",
+        "공판장",
+        "출범",
+        "발족",
+        "준공",
+        "개장",
+        "수입",
+        "할인",
+        "투입",
+        "방제",
+        "발생",
+        "확산",
+        "시행",
+        "개정",
+    }
+    commodities_left, _regions_left, _issues_left = _publish_editorial_story_parts(left)
+    commodities_right, _regions_right, _issues_right = _publish_editorial_story_parts(right)
+    shared_commodity = bool(commodities_left & commodities_right)
+    shared_regions = bool(_publish_editorial_regions(left) & _publish_editorial_regions(right))
+    return bool(
+        shared_commodity
+        and (shared_regions or len(shared) >= 10)
+        and (shared & event_anchors)
+    )
+
+
+def _is_publish_information_light(article: Article) -> bool:
+    """Detect caption/profile copy that lacks a decision-useful news payload."""
+    title = _publish_editorial_title(article)
+    text = _publish_editorial_text(article)
+    scene_hits = count_any(
+        text,
+        [w.lower() for w in (
+            "바라보고", "둘러보고", "기념촬영", "사진 제공", "표정을", "전광판",
+            "현장을 찾", "참석해", "격려했다",
+        )],
+    )
+    action_hits = count_any(
+        text,
+        [w.lower() for w in (
+            "가격", "수급", "생산량", "출하량", "경락가", "지원 규모", "예산",
+            "시행", "확정", "개정", "방제", "발생", "피해", "처리량", "물류비",
+        )],
+    )
+    numeric_facts = len(
+        re.findall(
+            r"\d+(?:\.\d+)?\s*(?:원|억|조|톤|t|kg|ha|%|개|건|명|상자|박스)",
+            text,
+        )
+    )
+    question_or_caption_title = bool(
+        ("?" in (article.title or "") or "？" in (article.title or ""))
+        or any(term in title for term in ("현장 포토", "포토뉴스", "사진으로 보는"))
+    )
+    return bool(
+        scene_hits >= 2
+        and action_hits <= 2
+        and numeric_facts <= 1
+        and (question_or_caption_title or len(_publish_editorial_content_tokens(article)) <= 32)
+    )
+
+
+def _is_publish_supply_production_structure_story(article: Article) -> bool:
+    title = _publish_editorial_title(article)
+    commodity_hits = int(
+        _managed_commodity_match_summary(article.title or "", "").get("count") or 0
+    )
+    crop_focus = bool(
+        commodity_hits >= 1
+        or any(term in title for term in (
+            "잎채소", "엽채류", "채소류", "과채류", "과수", "원예작물",
+        ))
+    )
+    return bool(
+        crop_focus
+        and count_any(
+            title,
+            [w.lower() for w in (
+                "대체작목", "재배 전환", "재배면적", "생산 기술", "안정 생산",
+                "생산 기반", "작황 전망", "생육 부진",
+            )],
+        ) >= 1
+        and count_any(
+            _publish_editorial_text(article),
+            [w.lower() for w in (
+                "농업기술원", "농촌진흥청", "농진청", "생산량", "재배면적",
+                "출하량", "수급", "안정 생산", "기술 보급", "실증",
+            )],
+        ) >= 1
+    )
+
+
+def _is_publish_supply_quantified_shipment_story(article: Article) -> bool:
+    title = _publish_editorial_title(article)
+    text = _publish_editorial_text(article)
+    commodity_hits = int(
+        _managed_commodity_match_summary(article.title or "", "").get("count") or 0
+    )
+    if commodity_hits <= 0 or not any(
+        term in title for term in ("첫 출하", "초출하", "본격 출하")
+    ):
+        return False
+    volume_fact = re.search(
+        r"\d[\d,]*(?:\.\d+)?\s*(?:여|약)?\s*(?:상자|박스|톤|t|kg|농가|개소|곳)",
+        text,
+    )
+    operations = count_any(
+        text,
+        [w.lower() for w in (
+            "공동선별", "공동 선별", "공동출하", "공동 출하", "공판장",
+            "도매시장", "출하 시스템", "분산 출하", "출하 물량", "수도권",
+        )],
+    )
+    return bool(volume_fact and operations >= 2)
+
+
 def _publish_editorial_story_parts(article: Article) -> tuple[frozenset[str], frozenset[str], frozenset[str]]:
     text = _publish_editorial_title(article)
     commodities = frozenset(
@@ -34546,6 +34842,12 @@ def _publish_editorial_duplicate_story(section_key: str, left: Article, right: A
             return True
     except Exception:
         pass
+    left_signature = _publish_editorial_event_signature(left)
+    right_signature = _publish_editorial_event_signature(right)
+    if left_signature and left_signature == right_signature:
+        return True
+    if _publish_editorial_description_duplicate(left, right):
+        return True
     left_title = _publish_editorial_title(left)
     right_title = _publish_editorial_title(right)
     if section_key == "dist" and all(
@@ -34740,7 +35042,16 @@ def _is_policy_stakeholder_market_demand_story(article: Article) -> bool:
 def _is_publish_supply_editorial_weak(article: Article) -> bool:
     title = _publish_editorial_title(article)
     text = _publish_editorial_text(article)
+    # A freshly published shipment report with volumes and a concrete market
+    # route remains operationally useful even when the launch ceremony itself
+    # occurred a few days earlier.
+    if _is_publish_supply_quantified_shipment_story(article):
+        return False
     if _is_publish_stale_reprint(article):
+        return True
+    if _is_publish_supply_production_structure_story(article):
+        return False
+    if _is_publish_information_light(article):
         return True
     if _is_supply_publish_wrong_section_noise(article):
         return True
@@ -35195,6 +35506,11 @@ def _is_publish_policy_editorial_weak(article: Article) -> bool:
     if _is_non_agri_venture_policy_story(article):
         return True
     if (
+        _publish_editorial_event_signature(article)
+        and _publish_editorial_event_signature(article)[0] == "agri_law_or_program"
+    ):
+        return False
+    if (
         _is_policy_domestic_production_import_response_story(article)
         or _is_policy_crop_tariff_risk_story(article)
         or _is_policy_agri_regulation_update_story(article)
@@ -35237,6 +35553,22 @@ def _is_publish_policy_editorial_weak(article: Article) -> bool:
             "비축", "할당관세", "검역", "법안", "예산", "수립", "대응", "강화",
         )
     )
+    local_field_notice = bool(
+        re.search(r"^[가-힣]{2,8}(?:시|군|구|도)[,\s]", title)
+        and any(term in title for term in (
+            "현장 기술지원", "현장기술지원", "재배 기술지원", "피해 예방",
+            "재배관리", "현장 지도", "농가 교육",
+        ))
+        and count_any(
+            title,
+            [w.lower() for w in (
+                "정부", "농식품부", "농림축산식품부", "국회", "법안", "시행령",
+                "조례", "예산", "전국", "광역", "제도", "정책",
+            )],
+        ) == 0
+    )
+    if local_field_notice:
+        return True
     if (
         any(term in title for term in ("농가 돕기", "사주기 운동", "소비 촉진", "소비촉진"))
         and count_any(
@@ -35389,6 +35721,21 @@ def _is_publish_dist_editorial_weak(article: Article) -> bool:
         return False
     if _is_dist_garak_market_suspension_story(article):
         return False
+    if _publish_editorial_event_signature(article) == ("national_agri_price_relief",):
+        return True
+    production_input_delivery = bool(
+        any(term in title for term in ("종구", "씨마늘", "씨 마늘", "묘목", "육묘", "종자"))
+        and any(term in text for term in ("농가 공급", "재배 농가", "보급", "전량 공급"))
+        and count_any(
+            title,
+            [w.lower() for w in (
+                "도매시장", "공판장", "경매", "산지유통", "apc", "물류", "수출",
+                "온라인도매시장", "판매", "계약", "정산", "선별",
+            )],
+        ) == 0
+    )
+    if production_input_delivery:
+        return True
     if (
         count_any(title, [w.lower() for w in ("경매사", "공판장", "도매시장")]) >= 1
         and count_any(text, [w.lower() for w in ("출하", "경매", "공판장", "경락", "반입")]) >= 2
@@ -35513,7 +35860,44 @@ def _is_publish_dist_editorial_weak(article: Article) -> bool:
 
 def _is_publish_pest_editorial_weak(article: Article) -> bool:
     title = _publish_editorial_title(article)
+    text = _publish_editorial_text(article)
     if _is_publish_stale_reprint(article):
+        return True
+    export_facilitation = bool(
+        "수출" in title
+        and "검역" in title
+        and any(term in title for term in ("완화", "풀렸다", "해소", "제외", "규제"))
+        and count_any(
+            title,
+            [w.lower() for w in ("발생", "확산", "피해", "방제", "예찰", "주의", "경보")],
+        ) == 0
+    )
+    if export_facilitation:
+        return True
+    person_profile = bool(
+        re.match(r"^[가-힣]{2,5}\s*[\(\[]", title)
+        and count_any(
+            title,
+            [w.lower() for w in (
+                "발생", "확산", "피해", "주의", "경보", "긴급", "검역", "합동방제",
+            )],
+        ) == 0
+    )
+    if person_profile:
+        return True
+    title_scope_hits = count_any(
+        title,
+        [w.lower() for w in (
+            "과수화상병", "화상병", "역병", "탄저병", "세균성점무늬병",
+            "토마토뿔나방", "노린재", "총채벌레", "진딧물", "돌발해충",
+            "풀무치", "메뚜기", "병해충", "토양 소독", "토양소독", "방제", "예찰",
+        )],
+    )
+    incidental_body_mention = bool(
+        title_scope_hits == 0
+        and count_any(text, [w.lower() for w in ("병해충", "화상병", "방제")]) >= 1
+    )
+    if incidental_body_mention:
         return True
     if any(term in title for term in ("[가평 소식]", "[지역 소식]", " 소식]")) and " 외" in title:
         return True
@@ -35554,6 +35938,14 @@ def _publish_pest_family_key(article: Article) -> str:
         return "aphid"
     if "탄저병" in title:
         return "anthracnose"
+    if "역병" in title:
+        return "phytophthora"
+    if "돌발해충" in title:
+        return "outbreak_pest"
+    if "육묘장" in title and "병해충" in title:
+        return "nursery_pest"
+    if any(term in title for term in ("토양 소독", "토양소독")):
+        return "soil_disinfection"
     if "풀무치" in title or "메뚜기" in title:
         return "locust"
     if "과수화상병" in text or "화상병" in text:
@@ -35691,6 +36083,40 @@ def _publish_editorial_candidate_rank(section_key: str, article: Article) -> tup
     return (fit, score, press_priority(article.press, article.domain))
 
 
+def _publish_editorial_victim_priority(section_key: str, article: Article) -> tuple[int, int, int]:
+    """Rank weak visible cards by the urgency of replacing them."""
+    title = _publish_editorial_title(article)
+    text = _publish_editorial_text(article)
+    award_label = bool(
+        any(term in title for term in ("수상", "수상자", "선정", "시상"))
+        or re.search(r"(?:농민|농업|영농|공로|우수)[가-힣]{0,8}상(?:\b|[’'\"])", title)
+    )
+    award_or_profile = bool(
+        award_label
+        and count_any(
+            text,
+            [w.lower() for w in ("부부", "조합원", "대표", "이사", "회장", "공로", "기념 촬영")],
+        ) >= 1
+        and count_any(
+            title,
+            [w.lower() for w in (
+                "가격", "수급", "출하량", "생산량", "지원 규모", "예산", "시행",
+                "경매", "공판장", "물류", "방제", "발생", "피해",
+            )],
+        ) == 0
+    )
+    section_mismatch = bool(
+        (section_key == "policy" and _is_publish_policy_editorial_weak(article))
+        or (section_key == "dist" and _is_publish_dist_editorial_weak(article))
+        or (section_key == "pest" and _is_publish_pest_editorial_weak(article))
+    )
+    return (
+        3 if award_or_profile or _is_publish_information_light(article) else 0,
+        2 if section_mismatch else 0,
+        1 if bool(getattr(article, "is_core", False)) else 0,
+    )
+
+
 def _is_publish_editorial_candidate(section_key: str, article: Article) -> bool:
     if not isinstance(article, Article):
         return False
@@ -35818,6 +36244,18 @@ def _is_publish_editorial_candidate(section_key: str, article: Article) -> bool:
             [w.lower() for w in ("농산물", "농축산물", "농축수산물", "먹거리", "채소", "과일")],
         ) >= 1
     )
+    policy_agri_law_exception = bool(
+        section_key == "policy"
+        and reject_reason in {
+            "policy_private_support_promo",
+            "low_value_local_promo",
+            "selection_feedback_low_fit",
+        }
+        and (
+            (signature := _publish_editorial_event_signature(article))
+            and signature[0] == "agri_law_or_program"
+        )
+    )
     supply_quantified_market_exception = bool(
         section_key == "supply"
         and reject_reason in {
@@ -35834,6 +36272,17 @@ def _is_publish_editorial_candidate(section_key: str, article: Article) -> bool:
             )
         )
     )
+    supply_production_structure_exception = bool(
+        section_key == "supply"
+        and reject_reason in {
+            "agri_training_recruitment",
+            "consumer_campaign_promo",
+            "low_value_local_promo",
+            "supply_editorial_weak_tail",
+            "selection_feedback_low_fit",
+        }
+        and _is_publish_supply_production_structure_story(article)
+    )
     if (
         reject_reason
         and not dist_direct_trade_exception
@@ -35846,7 +36295,9 @@ def _is_publish_editorial_candidate(section_key: str, article: Article) -> bool:
         and not dist_quantified_public_execution_exception
         and not policy_national_execution_exception
         and not policy_price_package_exception
+        and not policy_agri_law_exception
         and not supply_quantified_market_exception
+        and not supply_production_structure_exception
     ):
         return False
     title = _publish_editorial_title(article)
@@ -35874,10 +36325,22 @@ def _is_publish_editorial_candidate(section_key: str, article: Article) -> bool:
                 [w.lower() for w in ("가격", "수급", "작황", "생산량", "출하량", "피해", "급등", "하락")],
             ) >= 1
         )
-        return bool((commodity_hits >= 1 or broad_horti) and (market_hits >= 1 or climate_crop_risk))
+        production_structure_change = _is_publish_supply_production_structure_story(article)
+        quantified_shipment = _is_publish_supply_quantified_shipment_story(article)
+        return bool(
+            (
+                (commodity_hits >= 1 or broad_horti)
+                and (market_hits >= 1 or climate_crop_risk)
+            )
+            or production_structure_change
+            or quantified_shipment
+        )
     if section_key == "policy":
         if _is_publish_policy_editorial_weak(article):
             return False
+        signature = _publish_editorial_event_signature(article)
+        if signature and signature[0] == "agri_law_or_program":
+            return True
         if (
             _is_policy_domestic_production_import_response_story(article)
             or _is_policy_crop_tariff_risk_story(article)
@@ -38712,7 +39175,11 @@ def _repair_publish_editorial_selection(
                 theme_seen[theme] = theme_seen.get(theme, 0) + 1
                 if theme_seen[theme] > _publish_pest_family_cap(theme):
                     victim_indexes.add(idx)
-        for replace_idx in sorted(victim_indexes):
+        for replace_idx in sorted(
+            victim_indexes,
+            key=lambda idx: _publish_editorial_victim_priority(section_key, items[idx]),
+            reverse=True,
+        ):
             used = {
                 _article_selection_identity(article)
                 for key, section_items in final_by_section.items()

@@ -518,11 +518,30 @@ def _editorial_policy_execution_context(article: SurfaceArticle, text: str) -> b
         and re.search(r"\d[\d,.]*\s*(?:조|억)\s*원", title_l)
         and _has_any(text_l, ("정부", "기재부", "농식품부", "대책", "투입", "시행"))
     )
+    quantified_agri_discount = bool(
+        _has_any(title_l, ("농축산물", "농축 수산물", "농축수산물", "농산물"))
+        and "할인" in title_l
+        and re.search(r"\d[\d,.]*\s*(?:천\s*)?(?:조|억)\s*원?", title_l)
+        and _has_any(text_l, ("정부", "기재부", "농식품부", "농림축산식품부"))
+        and _has_any(text_l, ("투입", "지원", "상품권", "대책", "시행"))
+    )
+    statutory_agri_execution = bool(
+        _has_any(title_l, ("법적 근거", "시행령", "법안", "조례"))
+        and _has_any(title_l, ("농업", "농산업", "농산물", "농촌", "식품산업"))
+        and _has_any(text_l, ("정부", "농식품부", "농림축산식품부"))
+        and _has_any(text_l, ("시행", "개정", "법적 기반", "지원 근거", "법적 체계"))
+    )
     import_management_execution = bool(
         _has_any(title_l, ("수입 농산물 관리", "수입농산물 관리"))
         and _has_any(text_l, ("개선방안", "효율화", "협의", "생산자", "소비자", "민·관", "민관"))
     )
-    return quantified_stock_release or quantified_price_package or import_management_execution
+    return (
+        quantified_stock_release
+        or quantified_price_package
+        or quantified_agri_discount
+        or statutory_agri_execution
+        or import_management_execution
+    )
 
 
 def _editorial_dist_channel_execution_context(article: SurfaceArticle, text: str) -> bool:
@@ -628,6 +647,15 @@ def _pest_editorial_theme(article: SurfaceArticle, snapshot_body: str = "") -> s
         return "plant_quarantine"
     if "과수화상병" in text or "화상병" in text:
         return "fire_blight"
+    title_l = _normalize_spaces(article.title or "").lower()
+    if "역병" in title_l:
+        return "phytophthora"
+    if "돌발해충" in title_l:
+        return "outbreak_pest"
+    if "육묘장" in title_l and "병해충" in title_l:
+        return "nursery_pest"
+    if _has_any(title_l, ("토양 소독", "토양소독")):
+        return "soil_disinfection"
     if "벼" in text and "병해충" in text:
         return "rice_pest"
     if "병해충" in text:

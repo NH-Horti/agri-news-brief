@@ -1265,6 +1265,14 @@ class ReportEvalTests(unittest.TestCase):
                 "수입 농산물 관리 효율화, 민·관 머리 맞댄다",
                 "생산자와 소비자가 참여해 수입 농산물 관리 개선방안을 협의한다.",
             ),
+            (
+                "정부, 농축산물 할인에 3천억 투입…농할상품권 매월 200억 발행",
+                "농식품부가 여름철 농축산물 할인 지원에 3000억원을 투입하는 대책을 시행한다.",
+            ),
+            (
+                "농산업 육성·지원 법적 근거 마련",
+                "농식품부가 농산업 지원 근거를 담은 기본법 시행령 개정안을 시행했다.",
+            ),
         )
         for index, (title, body) in enumerate(cases):
             with self.subTest(title=title):
@@ -1280,6 +1288,29 @@ class ReportEvalTests(unittest.TestCase):
                     is_core=index == 0,
                 )
                 self.assertEqual(report_eval._editorial_base_issue_reasons(article, body), [])
+
+    def test_eval_pest_theme_keeps_distinct_field_risks_separate(self) -> None:
+        cases = (
+            ("고추역병 6월부터 발생…배수 관리 필요", "phytophthora"),
+            ("영천시, 과수·산림지 돌발해충 합동방제", "outbreak_pest"),
+            ("고온기 육묘장 병해충 확산 우려", "nursery_pest"),
+            ("마늘·양파 여름철 토양 소독 당부", "soil_disinfection"),
+        )
+        for title, expected in cases:
+            with self.subTest(title=title):
+                article = report_eval.SurfaceArticle(
+                    tag="div",
+                    surface=report_eval.BRIEFING_SURFACE,
+                    section="pest",
+                    title=title,
+                    href="https://example.com/pest-theme",
+                    article_id=expected,
+                    domain="example.com",
+                )
+                self.assertEqual(
+                    report_eval._pest_editorial_theme(article, f"{title} 병해충 방제 안내"),
+                    expected,
+                )
 
     def test_eval_keeps_direct_platform_and_measured_export_clean(self) -> None:
         cases = (

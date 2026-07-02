@@ -5075,6 +5075,176 @@ class LocalRuntimeTests(TestCase):
         self.assertTrue(main._publish_editorial_duplicate_story("supply", winter_one, winter_two))
         self.assertTrue(main._publish_editorial_duplicate_story("dist", trade_one, trade_two))
 
+    def test_publish_editorial_duplicate_story_uses_event_body_for_photo_caption(self) -> None:
+        report = self._make_article(
+            section="supply",
+            title="마늘 가격 4523원…등외품 수매가 향방 가른다",
+            description=(
+                "경남 창녕군 창녕농협 농산물공판장 건마늘 초매식에서 평균 4523원/kg을 기록했다. "
+                "생산자는 정부의 등외품 수매 물량과 단가 확정을 기다리고 있다."
+            ),
+            link="https://example.com/garlic-market-report",
+            topic="마늘",
+        )
+        caption = self._make_article(
+            section="supply",
+            title="'올해 마늘값은 괜찮나?'",
+            description=(
+                "경남 창녕군 창녕농협 농산물공판장 건마늘 초매식에서 농민들이 "
+                "경매가격 전광판을 굳은 표정으로 바라보고 있다."
+            ),
+            link="https://example.com/garlic-market-photo",
+            topic="마늘",
+        )
+
+        self.assertTrue(main._is_publish_information_light(caption))
+        self.assertTrue(main._publish_editorial_duplicate_story("supply", report, caption))
+        self.assertTrue(main._is_publish_supply_editorial_weak(caption))
+
+    def test_publish_section_roles_reject_local_notice_input_delivery_and_export_relaxation(self) -> None:
+        local_notice = self._make_article(
+            section="policy",
+            title="함평군, 시설원예 농가 폭염 피해 예방 현장 기술지원",
+            description="군이 지역 시설원예 농가를 찾아 차광과 관수 재배기술을 지도했다.",
+            link="https://example.com/local-field-support",
+            topic="정책",
+        )
+        input_delivery = self._make_article(
+            section="dist",
+            title="태안군, 육쪽마늘 우량종구 재배 농가 전량 공급",
+            description="씨마늘 6790접을 614개 재배 농가에 보급했다.",
+            link="https://example.com/seed-garlic-delivery",
+            topic="마늘",
+        )
+        export_relaxation = self._make_article(
+            section="pest",
+            title="국산 토마토 대일 수출 검역 규제 풀렸다",
+            description="일본 수출 검역 절차가 완화돼 수출업체의 부담이 줄었다.",
+            link="https://example.com/export-quarantine-relief",
+            topic="토마토",
+        )
+        soil_control = self._make_article(
+            section="pest",
+            title="마늘·양파 여름철 토양 소독, 뿌리병 96% 예방",
+            description="농촌진흥청이 태양열 토양소독과 병해 예방 절차를 안내했다.",
+            link="https://example.com/soil-disinfection",
+            topic="마늘",
+        )
+        person_profile = self._make_article(
+            section="pest",
+            title="홍길동(지역농협 이사) - 초생재배로 병해충 대비",
+            description="지역 농업인의 재배 경험과 이력을 소개했다.",
+            link="https://example.com/pest-person-profile",
+            topic="병해충",
+        )
+        agri_law = self._make_article(
+            section="policy",
+            title="농산업 육성·지원 법적 근거 마련",
+            description="농식품부가 농산업 지원 근거를 담은 기본법 시행령 개정안을 시행했다.",
+            link="https://example.com/agri-law",
+            topic="정책",
+        )
+        production_change = self._make_article(
+            section="supply",
+            title="마늘 농가 휴경기 '대체작목' 육성한다",
+            description=(
+                "농업기술원이 휴경기 시설에서 대체작목 양액재배 실증을 추진해 "
+                "생산량과 재배면적 변화를 점검한다."
+            ),
+            link="https://example.com/crop-production-change",
+            topic="마늘",
+        )
+        broad_crop_technology = self._make_article(
+            section="supply",
+            title="고온기 잎채소 안정 생산 기술 확산",
+            description="농촌진흥청이 생산량 안정을 위한 재배 기술 실증과 기술 보급을 추진한다.",
+            link="https://example.com/leafy-production-technology",
+            topic="채소",
+        )
+        quantified_shipment = self._make_article(
+            section="supply",
+            title="원예농협, 자두·복숭아 초출하",
+            description=(
+                "공동출하회가 자두 2000상자와 복숭아 350상자를 공동선별해 "
+                "공판장을 통해 수도권에 공급하고 분산 출하를 시작했다."
+            ),
+            link="https://example.com/quantified-first-shipment",
+            topic="자두",
+        )
+        award_profile = self._make_article(
+            section="supply",
+            title="선도농업인 부부, 이달의 농민상",
+            description="농협 조합원 부부가 영농 공로를 인정받아 시상식에서 상을 받았다.",
+            link="https://example.com/award-profile",
+            topic="사과",
+        )
+        delivery_trend = self._make_article(
+            section="supply",
+            title="퇴근 전 주문, 요리 전 배송…장보기 문화 바꾼 퀵커머스",
+            description="온라인 장보기 배송 채널의 주문과 유통 변화를 분석했다.",
+            link="https://example.com/delivery-trend",
+            topic="유통",
+        )
+
+        self.assertTrue(main._is_publish_policy_editorial_weak(local_notice))
+        self.assertTrue(main._is_publish_dist_editorial_weak(input_delivery))
+        self.assertTrue(main._is_publish_pest_editorial_weak(export_relaxation))
+        self.assertTrue(main._is_publish_pest_editorial_weak(person_profile))
+        self.assertFalse(main._is_publish_pest_editorial_weak(soil_control))
+        self.assertFalse(main._is_publish_policy_editorial_weak(agri_law))
+        self.assertTrue(main._is_publish_editorial_candidate("policy", agri_law))
+        self.assertTrue(main._is_publish_supply_production_structure_story(production_change))
+        self.assertTrue(main._is_publish_editorial_candidate("supply", broad_crop_technology))
+        self.assertTrue(main._is_publish_editorial_candidate("supply", quantified_shipment))
+        self.assertGreater(
+            main._publish_editorial_victim_priority("supply", award_profile),
+            main._publish_editorial_victim_priority("supply", delivery_trend),
+        )
+
+    def test_publish_event_signature_groups_price_relief_across_sections(self) -> None:
+        policy = self._make_article(
+            section="policy",
+            title="정부, 농축산물 할인에 3천억 투입",
+            description="농식품부가 여름철 수급안정대책으로 할인 지원과 상품권을 확대한다.",
+            link="https://example.com/agri-price-policy",
+        )
+        distribution = self._make_article(
+            section="dist",
+            title="계란 2억개 수입·농축산물 할인에 3000억원 지원",
+            description="정부가 같은 수급안정대책에 따라 계란을 수입하고 할인 예산을 투입한다.",
+            link="https://example.com/agri-price-distribution",
+        )
+
+        self.assertEqual(
+            main._publish_editorial_event_signature(policy),
+            ("national_agri_price_relief",),
+        )
+        self.assertEqual(
+            main._publish_editorial_event_signature(distribution),
+            ("national_agri_price_relief",),
+        )
+        self.assertTrue(main._publish_editorial_duplicate_story("policy", policy, distribution))
+
+        auction_one = self._make_article(
+            section="dist",
+            title="합천군, 건마늘 산지경매 개장",
+            description="합천군 농산물공판장에서 건마늘 초매식을 열고 경매를 시작했다.",
+            link="https://example.com/auction-one",
+            topic="마늘",
+        )
+        auction_two = self._make_article(
+            section="dist",
+            title="합천군, 건마늘 초매식…경남 동·남부권 산지 경매",
+            description="경남 합천군 농산물공판장에서 건마늘 산지경매를 개시했다.",
+            link="https://example.com/auction-two",
+            topic="마늘",
+        )
+        self.assertEqual(
+            main._publish_editorial_event_signature(auction_one),
+            main._publish_editorial_event_signature(auction_two),
+        )
+        self.assertTrue(main._publish_editorial_duplicate_story("dist", auction_one, auction_two))
+
     def test_publish_editorial_guard_separates_events_from_market_operations(self) -> None:
         event = self._make_article(
             section="dist",
