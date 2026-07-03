@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-03T01:16:40+09:00",
+  "generated_at": "2026-07-04T01:01:17+09:00",
   "rows": [
     {
       "date": "2026-05-20",
@@ -923,19 +923,6 @@
       "users": 2,
       "archive_url": "",
       "source_url": ""
-    },
-    {
-      "date": "2026-07-02",
-      "article_id": "7305966d7bde",
-      "title": "농협 개혁위, 자체 개혁과제 75% 이행.. 농협 법 개정 앞두고 자율혁신 속...",
-      "report_date": "2026-07-02",
-      "section": "policy",
-      "surface": "briefing_card",
-      "target_domain": "www.4th.kr",
-      "clicks": 3,
-      "users": 2,
-      "archive_url": "/agri-news-brief/archive/2026-07-02.html#sec-policy",
-      "source_url": "http://www.4th.kr/news/articleView.html?idxno=2114039"
     },
     {
       "date": "2026-04-01",
@@ -2564,6 +2551,19 @@
     },
     {
       "date": "2026-07-02",
+      "article_id": "7305966d7bde",
+      "title": "농협 개혁위, 자체 개혁과제 75% 이행.. 농협 법 개정 앞두고 자율혁신 속...",
+      "report_date": "2026-07-02",
+      "section": "policy",
+      "surface": "briefing_card",
+      "target_domain": "www.4th.kr",
+      "clicks": 2,
+      "users": 2,
+      "archive_url": "/agri-news-brief/archive/2026-07-02.html#sec-policy",
+      "source_url": "http://www.4th.kr/news/articleView.html?idxno=2114039"
+    },
+    {
+      "date": "2026-07-02",
       "article_id": "c623d06c2475",
       "title": "마늘가격 무난한 출발…관건은 '등외품 수매'",
       "report_date": "2026-07-02",
@@ -2574,6 +2574,45 @@
       "users": 2,
       "archive_url": "/agri-news-brief/archive/2026-07-02.html#sec-supply",
       "source_url": "http://www.ikpnews.net/news/articleView.html?idxno=70842"
+    },
+    {
+      "date": "2026-07-02",
+      "article_id": "c623d06c2475",
+      "title": "마늘가격 무난한 출발…관건은 '등외품 수매'",
+      "report_date": "2026-07-02",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.ikpnews.net",
+      "clicks": 2,
+      "users": 2,
+      "archive_url": "/agri-news-brief/archive/2026-07-02.html#sec-supply",
+      "source_url": "http://www.ikpnews.net/news/articleView.html?idxno=70842"
+    },
+    {
+      "date": "2026-07-03",
+      "article_id": "377d50084dc4",
+      "title": "논산시 노지 고추 , 진딧물·칼슘결핍 비상…\"초기 예찰이 수확량 좌우\"",
+      "report_date": "2026-07-03",
+      "section": "pest",
+      "surface": "briefing_card",
+      "target_domain": "www.aflnews.co.kr",
+      "clicks": 2,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-07-03.html#sec-pest",
+      "source_url": "https://www.aflnews.co.kr/news/articleView.html?idxno=323598"
+    },
+    {
+      "date": "2026-07-03",
+      "article_id": "4e12c4f4d301",
+      "title": "영천 신녕농협, 마늘 초매식 열어…농가소득 증대 앞장",
+      "report_date": "2026-07-03",
+      "section": "dist",
+      "surface": "briefing_open",
+      "target_domain": "www.nongmin.com",
+      "clicks": 2,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
     },
     {
       "date": "2026-03-30",
@@ -9180,17 +9219,121 @@
       "source_url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=65095"
     },
     {
-      "date": "2026-07-02",
-      "article_id": "c623d06c2475",
-      "title": "마늘가격 무난한 출발…관건은 '등외품 수매'",
-      "report_date": "2026-07-02",
-      "section": "supply",
-      "surface": "briefing_open",
-      "target_domain": "www.ikpnews.net",
+      "date": "2026-07-03",
+      "article_id": "0274887856ba",
+      "title": "관세청·농식품부·해수부, 이달 중 할당관세 통관·유통 점검",
+      "report_date": "2026-07-03",
+      "section": "policy",
+      "surface": "briefing_card",
+      "target_domain": "www.taxtimes.co.kr",
       "clicks": 1,
       "users": 1,
-      "archive_url": "/agri-news-brief/archive/2026-07-02.html#sec-supply",
-      "source_url": "http://www.ikpnews.net/news/articleView.html?idxno=70842"
+      "archive_url": "/agri-news-brief/archive/2026-07-03.html#sec-policy",
+      "source_url": "https://www.taxtimes.co.kr/news/article.html?no=275800"
+    },
+    {
+      "date": "2026-07-03",
+      "article_id": "05ba708f6449",
+      "title": "이형일 차관 “하반기 물가상승률 3% 이내 관리에 전 부처 총력” 주문",
+      "report_date": "2026-07-03",
+      "section": "policy",
+      "surface": "briefing_open",
+      "target_domain": "www.viva100.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-07-03.html#sec-policy",
+      "source_url": "https://www.viva100.com/article/20260702500803"
+    },
+    {
+      "date": "2026-07-03",
+      "article_id": "11c6520cbec4",
+      "title": "[현장] 이상기후·생산비 급등 속 ‘올해 첫 경매’…‘햇건 마늘 ’ 시세...",
+      "report_date": "2026-07-03",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.nongmin.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-07-03",
+      "article_id": "6c6f50d9a83d",
+      "title": "정부, 여름배추 2만7000t 확보…폭염·폭우 수급 불안 막는다",
+      "report_date": "2026-07-03",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "biz.heraldcorp.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-07-03",
+      "article_id": "7edd443110a4",
+      "title": "경기동부 원예농협 , ‘햇사레 복숭아’ 출하협의회 열어",
+      "report_date": "2026-07-03",
+      "section": "dist",
+      "surface": "commodity_primary",
+      "target_domain": "www.nongmin.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-07-03",
+      "article_id": "c000f9a702c5",
+      "title": "가격 폭락에 양배추 밭 갈아엎은 농민들…\"이러나저러나 손해\"",
+      "report_date": "2026-07-03",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "news.sbs.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-07-03",
+      "article_id": "dc2adbcc0a76",
+      "title": "농산물값 폭락에 양배추밭 갈아엎은 청주 농민들... \"정부, 대책 마련하...",
+      "report_date": "2026-07-03",
+      "section": "policy",
+      "surface": "briefing_open",
+      "target_domain": "www.dynews.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-07-03.html#sec-policy",
+      "source_url": "http://www.dynews.co.kr/news/articleView.html?idxno=856447"
+    },
+    {
+      "date": "2026-07-03",
+      "article_id": "e6380f00d94d",
+      "title": "늦장마·무더위 탓 생육 빨라진 강원농산물…출하 봇물에 값 ‘와르르’",
+      "report_date": "2026-07-03",
+      "section": "dist",
+      "surface": "briefing_card",
+      "target_domain": "www.nongmin.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-07-03",
+      "article_id": "f25098727f12",
+      "title": "\"가을 금배추 없도록\"… 농식품부 , 여름철 배추 생산 안정화 총력 지원",
+      "report_date": "2026-07-03",
+      "section": "policy",
+      "surface": "briefing_open",
+      "target_domain": "www.news1.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
     }
   ]
 }
