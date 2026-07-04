@@ -1,20 +1,20 @@
 {
-  "report_date": "2026-06-29",
-  "generated_at_kst": "2026-07-04T13:33:08+09:00",
+  "report_date": "2026-06-30",
+  "generated_at_kst": "2026-07-04T13:37:17+09:00",
   "scores": {
     "section_alignment": 100.0,
-    "core_quality": 100.0,
-    "commodity_board_quality": 99.14
+    "core_quality": 90.52,
+    "commodity_board_quality": 88.0
   },
   "metrics": {
-    "section_alignment_low_fit_rate": 0.0,
+    "section_alignment_low_fit_rate": 0.05,
     "section_alignment_cross_gap_rate": 0.0,
     "content_false_positive_rate": 0.0,
     "reader_hard_issue_count": 0,
     "reader_hard_issue_rate": 0.0,
     "reader_quality_penalty": 0.0,
     "reader_quality_cap": 100.0,
-    "weak_core_rate": 0.0,
+    "weak_core_rate": 0.1429,
     "policy_wrong_section_rate": 0.0,
     "promotional_filler_rate": 0.0,
     "promotional_core_rate": 0.0,
@@ -26,25 +26,27 @@
     "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0,
     "commodity_primary_title_item_focus_rate": 1.0,
-    "commodity_primary_title_issue_signal_rate": 0.9,
-    "commodity_primary_strict_link_rate": 0.9,
+    "commodity_primary_title_issue_signal_rate": 1.0,
+    "commodity_primary_strict_link_rate": 1.0,
     "commodity_primary_low_rank_rate": 0.0,
-    "commodity_primary_count": 10,
-    "commodity_active_today_total": 17,
-    "commodity_active_today_unlinked_total": 7,
-    "commodity_managed_unlinked_total": 23,
+    "commodity_primary_count": 6,
+    "commodity_active_today_total": 11,
+    "commodity_active_today_unlinked_total": 5,
+    "commodity_managed_unlinked_total": 27,
     "commodity_board_daily_min_primary_count": 6,
     "commodity_board_low_coverage": false,
-    "commodity_board_coverage_rate": 0.303,
+    "commodity_board_coverage_rate": 0.1818,
     "commodity_primary_title_item_missing_rate": 0.0,
     "commodity_primary_body_only_rate": 0.0,
     "commodity_primary_false_link_rate": 0.0,
-    "commodity_pool_count": 9,
+    "commodity_pool_count": 7,
     "commodity_pool_false_link_rate": 0.0,
-    "commodity_primary_dominant_section_rate": 0.5
+    "commodity_primary_dominant_section_rate": 0.8333
   },
   "selection_guardrails": {
-    "driver_tags": [],
+    "driver_tags": [
+      "commodity_board"
+    ],
     "section_card_min_fit": {
       "default": 0.8,
       "supply": 0.82,
@@ -70,8 +72,8 @@
       "pest": 1.0
     },
     "disable_relaxed_core_fill": false,
-    "commodity_active_min_rank": 1,
-    "commodity_program_core_min_rank": 1,
+    "commodity_active_min_rank": 2,
+    "commodity_program_core_min_rank": 3,
     "commodity_require_issue_signal": false,
     "commodity_require_direct_item_focus": false,
     "commodity_strict_primary_only": true,
@@ -80,93 +82,133 @@
   "editorial_quality_samples": [],
   "reader_hard_issue_samples": [],
   "editorial": {
-    "score": 95.0,
+    "score": 86.0,
     "target_score": 95.0,
-    "target_status": "target_met",
+    "target_status": "needs_iteration",
     "section_count_score": 100.0,
     "section_count_status": "target_met",
     "scores": {
-      "article_selection": 84.0,
-      "section_fit": 86.0,
-      "core_pick_quality": 82.0,
-      "summary_usefulness": 77.0,
-      "missed_opportunity": 78.0,
+      "article_selection": 86.0,
+      "section_fit": 84.0,
+      "core_pick_quality": 85.0,
+      "summary_usefulness": 78.0,
+      "missed_opportunity": 82.0,
       "noise_control": 80.0
     },
     "issues": [
       {
-        "type": "weak_tail",
-        "severity": "medium",
-        "section": "supply",
-        "title": "보령 사현 포도 , 26일 올해 첫 수확 본격 출하",
-        "reason": "지역 첫 수확·출하 알림 성격이 강해 수급 브리핑 핵심도가 낮다.",
-        "suggested_action": "고랭지 여름배추 생산기반 악화 기사로 교체."
+        "type": "wrong_section",
+        "severity": "major",
+        "section": "dist",
+        "title": "화훼 산업, 이대로면 사라진다",
+        "reason": "화훼 생산기반·소비문화·정책 토론 성격으로 유통·물류·시장운영 기사와 거리가 있다.",
+        "suggested_action": "마늘 수급 안정 간담회, 한국청과 양파 출하조직 포장재 지원, APC 판로 확대 기사로 교체."
       },
       {
-        "type": "missed_better_candidate",
-        "severity": "medium",
-        "section": "supply",
-        "title": "기후위기 직격탄…고랭지 농사 ‘먹구름’",
-        "reason": "여름배추 재배의향 감소와 수급·가격 불안 신호가 더 전국적이고 중요하다.",
-        "suggested_action": "포도 첫 출하 또는 약한 꼬리 카드 대신 포함."
+        "type": "missed_candidate",
+        "severity": "major",
+        "section": "pest",
+        "title": "사과 나무 무더기로 죽었는데 원인 불명?…경찰 수사까지",
+        "reason": "사과 과수원 100여 그루 피해와 원인 조사라는 현장성 높은 병해·생육 리스크 후보를 누락했다.",
+        "suggested_action": "주간농사메모나 중복 고추 예방 기사 대신 포함."
       },
       {
         "type": "duplication",
         "severity": "medium",
-        "section": "policy",
-        "title": "국정 2년차, 물가와의 전쟁…'가격 개입' 현실화",
-        "reason": "계란·1조 물가대책 카드와 정책축이 상당히 겹친다.",
-        "suggested_action": "할당관세 확대나 외국인 계절노동자 제도개선 기사로 다양화."
+        "section": "pest",
+        "title": "해남군 '고온다습 장마철 '고추 병해충 예방 당부",
+        "reason": "경북 고추 탄저병·세균성점무늬병 확산 우려 기사와 주제가 겹치고 지역 안내성도 강하다.",
+        "suggested_action": "고추 병해충은 더 구체적인 경북 기사만 남기고 다른 작목·사건형 후보로 대체."
       },
       {
-        "type": "missed_better_candidate",
+        "type": "weak_tail",
+        "severity": "medium",
+        "section": "pest",
+        "title": "[주간농사메모] 병해충 발생 여부 수시 예찰",
+        "reason": "여러 작목 일반 관리요령을 나열한 정례 메모라 당일 뉴스성과 긴급성이 낮다.",
+        "suggested_action": "사과 피해, 과수화상병 확산, 특정 병해충 발생 기사 우선 선별."
+      },
+      {
+        "type": "promotional_or_event_filler",
         "severity": "medium",
         "section": "policy",
-        "title": "먹거리 할당관세 확대…내 식탁엔 무엇이 달라질까? [나유정]",
-        "reason": "수입·관세 정책의 품목별 영향을 설명해 중복 물가대책 기사보다 활용도가 높다.",
-        "suggested_action": "중복성 높은 물가개입 해설 카드와 교체 검토."
-      },
-      {
-        "type": "promotional_filler",
-        "severity": "high",
-        "section": "dist",
-        "title": "구천동농협 여수농협 임직원 초청 영농 현장체험",
-        "reason": "임직원 견학·체험 행사 중심으로 유통 운영 뉴스성이 약하다.",
-        "suggested_action": "광양 로컬푸드직매장 매출, 햇사레 복숭아 출하, 못난이 농산물 판로 기사 중 하나로 교체."
+        "title": "농경연· 농식품부 , 주요 농정 현안 대응 협력 강화",
+        "reason": "정책연구협의회 개최 소식 중심으로 독자에게 필요한 구체 정책 변화가 약하다.",
+        "suggested_action": "물가 안정·농축수산물 할인·농자재 지원 등 실행 정책 후보가 있으면 우선."
       },
       {
         "type": "weak_core",
         "severity": "medium",
-        "section": "pest",
-        "title": "서산시, 여름철 고추 병해충 방제 및 재배관리 당부",
-        "reason": "일반 지자체 당부 기사인데 core로 지정돼 핵심도에 비해 과대평가됐다.",
-        "suggested_action": "과수화상병 추가 발생 또는 토마토뿔나방 검역완화 같은 더 구체적 사안을 core로 승격."
+        "section": "dist",
+        "title": "토마토 선별·포장, 로봇이 다 해줍니다",
+        "reason": "APC 자동화 소재는 적합하지만 사진설명형 짧은 기사라 핵심 카드로는 취재 밀도가 낮다.",
+        "suggested_action": "핵심 표시는 가락시장 시범휴업, 양파 수출, 출하예측 확대 같은 운영 영향 큰 기사에 부여."
       },
       {
-        "type": "theme_duplicate",
-        "severity": "high",
-        "section": "pest",
-        "title": "서산시·해남군·경북 고추 탄저병 관련 3건",
-        "reason": "고추 탄저병·장마철 방제 당부가 3건 반복돼 병해충 섹션 다양성이 낮다.",
-        "suggested_action": "고추 경고는 광역성 기사 1건만 남기고 토마토뿔나방·단감 노린재·돌발해충 방제로 대체."
+        "type": "promotional_or_event_filler",
+        "severity": "minor",
+        "section": "dist",
+        "title": "대아청과·애월 농협 , 제주산 농산물 유통 활성화 '맞손'",
+        "reason": "간담회·협력 홍보 성격이 강해 구체 물류 변화나 거래 영향이 제한적이다.",
+        "suggested_action": "동일 섹션 내 더 구체적인 시장운영·포장물류·수급 안정 후보를 우선."
       },
       {
-        "type": "summary_quality",
+        "type": "summary_noise",
         "severity": "medium",
-        "section": "supply",
-        "title": "오이 값 1주일 새 70% 올랐다",
-        "reason": "요약에 구독 문구·지면 정보 등 크롤링 잔재가 섞여 독자용 문장으로 부적합하다.",
-        "suggested_action": "가격 수치, 원인, 비교 기준만 남겨 재작성."
+        "section": "dist",
+        "title": "전주시, 양파 대만 수출 확대…농가 판로 다변화",
+        "reason": "요약에 글자 크기, 번역 선택, AI 핵심 요약 등 페이지 UI 문구가 섞였다.",
+        "suggested_action": "출하량, 수출국, 가격하락 대응 효과 중심으로 요약을 재작성."
       }
     ]
   },
+  "editorial_suggested_guardrails": {
+    "driver_tags": [
+      "commodity_board",
+      "editorial_section_fit",
+      "editorial_duplicate_topic",
+      "editorial_core_pick"
+    ],
+    "section_card_min_fit": {
+      "default": 0.85,
+      "supply": 0.9,
+      "policy": 0.9,
+      "dist": 1.05,
+      "pest": 0.84
+    },
+    "section_low_fit_rescue_min": 0.15,
+    "high_score_low_fit_rescue_margin": 4.2,
+    "tail_score_floor_delta": 0.4,
+    "core_fit_min": {
+      "default": 1.3,
+      "supply": 1.5,
+      "policy": 1.5,
+      "dist": 1.7,
+      "pest": 1.3
+    },
+    "core_relaxed_min_fit": {
+      "default": 1.0,
+      "supply": 1.18,
+      "policy": 1.15,
+      "dist": 1.35,
+      "pest": 1.0
+    },
+    "disable_relaxed_core_fill": true,
+    "commodity_active_min_rank": 2,
+    "commodity_program_core_min_rank": 3,
+    "commodity_require_issue_signal": false,
+    "commodity_require_direct_item_focus": false,
+    "commodity_strict_primary_only": true,
+    "commodity_disable_primary_fallback": true
+  },
+  "editorial_guardrail_mode": "advisory_only",
   "editorial_improvement_plan": {
     "mode": "shadow_replay_loop",
     "proposal_only": true,
     "target_score": 95.0,
-    "current_editorial_score": 95.0,
-    "target_status": "target_met",
-    "iteration_budget": 0,
+    "current_editorial_score": 86.0,
+    "target_status": "needs_iteration",
+    "iteration_budget": 3,
     "promotion_gates": {
       "editorial_score_min": 95.0,
       "operational_score_min": 95.0,
@@ -181,7 +223,7 @@
         "supply": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 221,
+          "raw_candidates": 193,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -193,7 +235,7 @@
         "policy": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 105,
+          "raw_candidates": 81,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -205,7 +247,7 @@
         "dist": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 64,
+          "raw_candidates": 40,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -217,12 +259,12 @@
         "pest": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 23,
+          "raw_candidates": 12,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
           "count_floor": 3,
-          "core_count": 2,
+          "core_count": 1,
           "fill_ratio": 1.0,
           "score": 100.0
         }
@@ -239,9 +281,8 @@
     },
     "guardrail_focus": [
       "core_quality",
-      "missed_opportunity",
       "article_selection",
-      "noise_control"
+      "section_fit"
     ],
     "recommended_actions": [
       {
@@ -251,26 +292,22 @@
         "reason": "Core cards should not be filled by merely available articles."
       },
       {
-        "kind": "candidate_recall",
-        "target": "raw_candidate_pool",
-        "direction": "expand_or_rerank",
-        "reason": "The raw pool contained stronger alternatives than selected cards."
-      },
-      {
         "kind": "story_dedupe",
         "target": "story_signature_gate",
         "direction": "tighten",
         "reason": "Multiple cards covered the same issue and reduced briefing breadth."
       },
       {
-        "kind": "noise_filter",
-        "target": "semantic_false_positive_gate",
+        "kind": "section_fit",
+        "target": "section_card_min_fit",
         "direction": "tighten",
-        "reason": "Selected cards included low editorial-value noise."
+        "reason": "A selected card appears to fit another section better."
       }
     ],
     "current_selection_guardrails": {
-      "driver_tags": [],
+      "driver_tags": [
+        "commodity_board"
+      ],
       "section_card_min_fit": {
         "default": 0.8,
         "supply": 0.82,
@@ -296,8 +333,8 @@
         "pest": 1.0
       },
       "disable_relaxed_core_fill": false,
-      "commodity_active_min_rank": 1,
-      "commodity_program_core_min_rank": 1,
+      "commodity_active_min_rank": 2,
+      "commodity_program_core_min_rank": 3,
       "commodity_require_issue_signal": false,
       "commodity_require_direct_item_focus": false,
       "commodity_strict_primary_only": true,
