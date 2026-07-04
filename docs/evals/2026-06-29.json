@@ -1,6 +1,6 @@
 {
   "report_date": "2026-06-29",
-  "generated_at_kst": "2026-07-04T09:08:58+09:00",
+  "generated_at_kst": "2026-07-04T13:33:08+09:00",
   "status": "pass",
   "overall_score": 95.28,
   "operational_score": 95.28,
@@ -299,100 +299,100 @@
     "status": "success",
     "rubric_version": 2,
     "model": "gpt-5.5",
-    "generated_at_kst": "2026-07-04T09:09:39+09:00",
+    "generated_at_kst": "2026-07-04T13:33:45+09:00",
     "score": 95.0,
     "target_score": 95.0,
     "target_status": "target_met",
     "scores": {
-      "article_selection": 85.0,
-      "section_fit": 88.0,
-      "core_pick_quality": 86.0,
-      "summary_usefulness": 82.0,
-      "missed_opportunity": 80.0,
-      "noise_control": 84.0
+      "article_selection": 84.0,
+      "section_fit": 86.0,
+      "core_pick_quality": 82.0,
+      "summary_usefulness": 77.0,
+      "missed_opportunity": 78.0,
+      "noise_control": 80.0
     },
-    "summary": "분량은 4개 섹션 모두 5건으로 충족했고, 물가·양파·온라인도매·과수화상병 등 핵심 축은 대체로 잡았다. 다만 공급·유통에 지역 행사성 꼬리기사가 섞였고, 병해충은 고추 탄저병 지역 안내가 과다 반복되면서 토마토뿔나방 검역 완화, 단감 노린재 방제 같은 더 구체적인 후보를 놓쳤다. 정책도 물가대책 중복감이 있어 노동력·할당관세 등 다른 농정 이슈로 넓힐 여지가 있었다. 요약에는 원문 크롤링 잡음이 남아 독자용 완성도를 낮춘다.",
+    "summary": "분량은 전 섹션 5건으로 맞췄고, 오이·양파 수급, 정부 물가대책, 온라인 도매시장, 과수화상병 등 핵심 축은 대체로 잡았다. 다만 원자료에 더 강한 후보가 보이는데도 지역 첫 출하·현장체험·일반 방제 당부 같은 약한 꼬리 기사가 들어갔고, 정책은 1조 물가대책 계열 중복, 병해충은 고추 탄저병 경고가 과다 반복됐다. 일부 요약은 크롤링 잔재가 많아 독자용 브리핑 품질을 떨어뜨린다.",
     "issues": [
       {
-        "type": "weak_filler",
+        "type": "weak_tail",
         "severity": "medium",
         "section": "supply",
         "title": "보령 사현 포도 , 26일 올해 첫 수확 본격 출하",
-        "reason": "지역 첫 수확·출하 행사성 기사로 전국 수급 중요도가 낮다.",
-        "suggested_action": "‘기후위기 직격탄…고랭지 농사 먹구름’ 등 여름배추 생산기반 이슈로 교체."
+        "reason": "지역 첫 수확·출하 알림 성격이 강해 수급 브리핑 핵심도가 낮다.",
+        "suggested_action": "고랭지 여름배추 생산기반 악화 기사로 교체."
       },
       {
-        "type": "missed_opportunity",
+        "type": "missed_better_candidate",
         "severity": "medium",
         "section": "supply",
         "title": "기후위기 직격탄…고랭지 농사 ‘먹구름’",
-        "reason": "여름배추 재배의향 감소와 수급 불안은 포도 첫 출하보다 훨씬 중요한 공급 리스크다.",
-        "suggested_action": "공급 꼬리기사에는 지역 출하식보다 주요 품목 생산기반·작황 변화를 우선."
+        "reason": "여름배추 재배의향 감소와 수급·가격 불안 신호가 더 전국적이고 중요하다.",
+        "suggested_action": "포도 첫 출하 또는 약한 꼬리 카드 대신 포함."
       },
       {
-        "type": "weak_filler",
+        "type": "duplication",
+        "severity": "medium",
+        "section": "policy",
+        "title": "국정 2년차, 물가와의 전쟁…'가격 개입' 현실화",
+        "reason": "계란·1조 물가대책 카드와 정책축이 상당히 겹친다.",
+        "suggested_action": "할당관세 확대나 외국인 계절노동자 제도개선 기사로 다양화."
+      },
+      {
+        "type": "missed_better_candidate",
+        "severity": "medium",
+        "section": "policy",
+        "title": "먹거리 할당관세 확대…내 식탁엔 무엇이 달라질까? [나유정]",
+        "reason": "수입·관세 정책의 품목별 영향을 설명해 중복 물가대책 기사보다 활용도가 높다.",
+        "suggested_action": "중복성 높은 물가개입 해설 카드와 교체 검토."
+      },
+      {
+        "type": "promotional_filler",
         "severity": "high",
         "section": "dist",
         "title": "구천동농협 여수농협 임직원 초청 영농 현장체험",
-        "reason": "임직원 견학·체험 중심의 홍보성 지역 기사로 유통 운영 정보가 약하다.",
-        "suggested_action": "광양 로컬푸드 250억원 매출, 햇사레 복숭아 공동선별 출하, 경기 광역 로컬푸드 등으로 교체."
-      },
-      {
-        "type": "soft_filler",
-        "severity": "low",
-        "section": "dist",
-        "title": "여주 대신농협, 가락공판장 찾아 ‘ 농산물 제값받기’ 협력 논의",
-        "reason": "공판장 방문·간담회 성격이 강해 실제 유통 변화나 물량 정보가 제한적이다.",
-        "suggested_action": "후순위 꼬리로만 쓰고, 실매출·물류 개선·수매 운영 기사를 우선 배치."
-      },
-      {
-        "type": "duplicate_theme",
-        "severity": "high",
-        "section": "pest",
-        "title": "서산시/해남군/경북 고추 탄저병·병해충 주의 기사들",
-        "reason": "고추 장마철 병해충 안내가 3건 반복돼 병해충 브리핑의 정보 폭이 좁아졌다.",
-        "suggested_action": "고추 탄저병은 1건만 남기고 토마토뿔나방 검역 완화, 단감 노린재 트랩 등으로 분산."
+        "reason": "임직원 견학·체험 행사 중심으로 유통 운영 뉴스성이 약하다.",
+        "suggested_action": "광양 로컬푸드직매장 매출, 햇사레 복숭아 출하, 못난이 농산물 판로 기사 중 하나로 교체."
       },
       {
         "type": "weak_core",
-        "severity": "high",
+        "severity": "medium",
         "section": "pest",
         "title": "서산시, 여름철 고추 병해충 방제 및 재배관리 당부",
-        "reason": "기초지자체 일반 당부 기사인데 core로 지정돼 핵심 픽 강도가 낮다.",
-        "suggested_action": "core는 과수화상병 확산 현황과 전국·광역 단위 대응 또는 고영향 검역 이슈로 구성."
+        "reason": "일반 지자체 당부 기사인데 core로 지정돼 핵심도에 비해 과대평가됐다.",
+        "suggested_action": "과수화상병 추가 발생 또는 토마토뿔나방 검역완화 같은 더 구체적 사안을 core로 승격."
       },
       {
-        "type": "missed_opportunity",
-        "severity": "medium",
+        "type": "theme_duplicate",
+        "severity": "high",
         "section": "pest",
-        "title": "日 ‘토마토뿔나방’ 검역병해충서 제외",
-        "reason": "수출 검역 부담 완화라는 구체적 영향이 있는데 반복 고추 안내에 밀렸다.",
-        "suggested_action": "병해충 섹션에서도 수출 검역·특정 해충 제도 변화는 우선 검토."
+        "title": "서산시·해남군·경북 고추 탄저병 관련 3건",
+        "reason": "고추 탄저병·장마철 방제 당부가 3건 반복돼 병해충 섹션 다양성이 낮다.",
+        "suggested_action": "고추 경고는 광역성 기사 1건만 남기고 토마토뿔나방·단감 노린재·돌발해충 방제로 대체."
       },
       {
-        "type": "summary_noise",
+        "type": "summary_quality",
         "severity": "medium",
-        "section": "all",
-        "title": "여러 카드 요약",
-        "reason": "‘뉴스 한경 PREMIUM9’, 메뉴 문구 등 크롤링 잡음이 남아 요약 신뢰도를 떨어뜨린다.",
-        "suggested_action": "요약 전 본문 정제와 1~2문장 독자용 재작성 단계를 강화."
+        "section": "supply",
+        "title": "오이 값 1주일 새 70% 올랐다",
+        "reason": "요약에 구독 문구·지면 정보 등 크롤링 잔재가 섞여 독자용 문장으로 부적합하다.",
+        "suggested_action": "가격 수치, 원인, 비교 기준만 남겨 재작성."
       }
     ],
     "section_notes": {
-      "supply": "오이 단기 급등, 양파 가격 하락, 오이·애호박 산지가 약세 등 핵심 가격 흐름은 잘 포착했다. 다만 오이 상승·하락을 함께 넣어 설명 부담이 크고, 포도 첫 출하 대신 여름배추·고랭지 생산기반 리스크를 넣었어야 한다.",
-      "policy": "1조원 물가대책, CPTPP, 산지유통조직 금융지원은 적절하다. 다만 ‘가격 개입’ 기사는 물가대책과 중복감이 있어 할당관세 세부 분석이나 외국인 계절노동자 행정지원 부족 같은 별도 농정 이슈로 넓힐 수 있었다.",
-      "dist": "양파 톤백 수매·선별과 온라인 도매시장 물류 단축은 좋은 핵심 선택이다. 하지만 견학·체험성 지역 행사가 섞였고, 로컬푸드 매출·공동선별 출하·광역 직매장처럼 더 구체적인 판로 후보가 보였다.",
-      "pest": "과수화상병 49곳 피해는 반드시 들어갈 핵심이다. 그러나 고추 탄저병 지역 안내가 과다 반복되고, 토마토뿔나방 검역 완화·단감 노린재 트랩 등 명확한 작목별 위험·대응 기사를 놓쳐 섹션 완성도가 가장 낮다."
+      "supply": "오이 급등, 양파 폭락, 엽채류 작황, 오이·애호박 산지가격 약세까지는 독자 가치가 있다. 다만 포도 첫 출하 카드는 수급·가격 신호가 약하고, 고랭지배추 생산기반 악화라는 더 중요한 후보를 놓쳤다.",
+      "policy": "정부 1조 물가대책과 CPTPP는 좋은 핵심이다. 그러나 물가대책 해설이 중복되고, 할당관세·계절노동자·유제품 원산지 등 다른 정책 리스크 후보를 충분히 살리지 못했다.",
+      "dist": "양파 톤백 선별, 온라인 도매시장, 순회수집은 유통 운영성이 있다. 반면 임직원 현장체험은 행사성 filler이고, 로컬푸드 매출·광역 로컬푸드·브랜드 공동출하 등 더 나은 판매채널 후보가 있었다.",
+      "pest": "과수화상병 추가 확산은 적절한 핵심이다. 하지만 고추 탄저병 경고가 3건 반복되고, 토마토뿔나방 검역병해충 제외나 단감 노린재 트랩 같은 구체적·차별적 후보를 누락했다."
     },
     "improvement_suggestions": [
-      "섹션별 5건을 채우더라도 마지막 1~2건은 지역 행사보다 수급·물류·검역·방제 효과가 구체적인 기사로 제한하라.",
-      "병해충 섹션은 동일 작목·동일 병해 반복을 1건으로 제한하고, 화상병·검역병해충·작목별 해충 대응을 균형 배치하라.",
-      "core 지정은 전국·광역 영향, 확산 규모, 정책 변화가 있는 기사에만 부여하라.",
-      "정책 섹션에서 대형 물가대책 보도는 1~2건으로 묶고 노동력·통상·금융지원 등 독립 의제를 확보하라.",
-      "요약 생성 전 광고·메뉴·구독 문구를 제거하고 가격 기준 차이 같은 해석 문장은 명확히 정리하라.",
-      "공급 섹션은 동일 품목의 상반된 가격 기준을 함께 쓸 때 독자가 혼동하지 않도록 도매 단기/산지 전년비를 제목 수준에서 구분하라."
+      "섹션별 5건을 채우더라도 마지막 1건은 지역 행사보다 전국 수급·운영 변화가 있는 후보를 우선하라.",
+      "정책 섹션은 같은 정부 물가대책을 2건 이상 넣을 때 각 카드의 정책수단이 분명히 달라야 한다.",
+      "병해충 섹션은 동일 작물·동일 병해 경고를 1~2건으로 제한하고 화상병·검역·트랩·공동방제 등 유형을 분산하라.",
+      "dist는 견학·간담회보다 실제 물류비 절감, 산지수집, 온라인 도매, 로컬푸드 매출 등 운영 성과를 우선하라.",
+      "core 지정은 단순 지자체 당부 기사에 주지 말고 확산 규모·피해 면적·제도 변화가 있는 기사에 집중하라.",
+      "요약 생성 시 매체 내비게이션·구독 문구·타임스탬프를 제거하는 후처리를 강화하라."
     ],
-    "raw_response_excerpt": "{\"score\":86.0,\"scores\":{\"article_selection\":85.0,\"section_fit\":88.0,\"core_pick_quality\":86.0,\"summary_usefulness\":82.0,\"missed_opportunity\":80.0,\"noise_control\":84.0},\"summary\":\"분량은 4개 섹션 모두 5건으로 충족했고, 물가·양파·온라인도매·과수화상병 등 핵심 축은 대체로 잡았다. 다만 공급·유통에 지역 행사성 꼬리기사가 섞였고, 병해충은 고추 탄저병 지역 안내가 과다 반복되면서 토마토뿔나방 검역 완화, 단감 노린재 방제 같은 더 구체적인 후보를 놓쳤다. 정책도 물가대책 중복감이 있어 노동력·할당관세 등 다른 농정 이슈로 넓힐 여지가 있었다. 요약에는 원문 크롤링 잡음이 남아 독자용 완성도를 낮춘다.\",\"issues\":[{\"type\":\"weak_filler\",\"severity\":\"medium\",\"section\":\"supply\",\"title\":\"보령 사현 포도 , 26일 올해 첫 수확 본격 출하\",\"reason\":\"지역 첫 수확·출하 행사성 기사로 전국 수급 중요도가 낮다.\",\"suggested_action\":\"‘기후위기 직격탄…고랭지 농사 먹구름’ 등 여름배추 생산기반 이슈로 교체.\"},{\"type\":\"missed_opportunity\",\"severity\":\"medium\",\"section\":\"supply\",\"title\":\"기후위기 직격탄…고랭지 농사 ‘먹구름’\",\"reason\":\"여름배추 재배의향 감소와 수급 불안은 포도 첫 출하보다 훨씬 중요한 공급 리스크다.\",\"suggested_action\":\"공급 꼬리기사에는 지역 출하식보다 주요 품목 생산기반·작황 변화를 우선.\"},{\"type\":\"weak_filler\",\"severity\":\"high\",\"section\":\"dist\",\"title\":\"구천동농협 여수농협 임직원 초청 영농 현장체험\",\"reason\":\"임직원 견학·체험 중심의 홍보성 지역 기사로 유통 운영 정보가 약하다.\",\"suggested_action\":\"광양 로컬푸드 250억원 매출, 햇사레 복숭아 공동선별 출하, 경기 광역 로컬푸드 등으로 교체.\"},{\"type\":\"soft_filler\",\"severity\":\"low\",\"section\":\"dist\",\"title\":\"여주 대신농협, 가락공판장 찾아 ‘ 농산물 제값받기’ 협력 논의\",\"reason\":\"공판장 방문·...",
+    "raw_response_excerpt": "{\"score\":85,\"scores\":{\"article_selection\":84,\"section_fit\":86,\"core_pick_quality\":82,\"summary_usefulness\":77,\"missed_opportunity\":78,\"noise_control\":80},\"summary\":\"분량은 전 섹션 5건으로 맞췄고, 오이·양파 수급, 정부 물가대책, 온라인 도매시장, 과수화상병 등 핵심 축은 대체로 잡았다. 다만 원자료에 더 강한 후보가 보이는데도 지역 첫 출하·현장체험·일반 방제 당부 같은 약한 꼬리 기사가 들어갔고, 정책은 1조 물가대책 계열 중복, 병해충은 고추 탄저병 경고가 과다 반복됐다. 일부 요약은 크롤링 잔재가 많아 독자용 브리핑 품질을 떨어뜨린다.\",\"issues\":[{\"type\":\"weak_tail\",\"severity\":\"medium\",\"section\":\"supply\",\"title\":\"보령 사현 포도 , 26일 올해 첫 수확 본격 출하\",\"reason\":\"지역 첫 수확·출하 알림 성격이 강해 수급 브리핑 핵심도가 낮다.\",\"suggested_action\":\"고랭지 여름배추 생산기반 악화 기사로 교체.\"},{\"type\":\"missed_better_candidate\",\"severity\":\"medium\",\"section\":\"supply\",\"title\":\"기후위기 직격탄…고랭지 농사 ‘먹구름’\",\"reason\":\"여름배추 재배의향 감소와 수급·가격 불안 신호가 더 전국적이고 중요하다.\",\"suggested_action\":\"포도 첫 출하 또는 약한 꼬리 카드 대신 포함.\"},{\"type\":\"duplication\",\"severity\":\"medium\",\"section\":\"policy\",\"title\":\"국정 2년차, 물가와의 전쟁…'가격 개입' 현실화\",\"reason\":\"계란·1조 물가대책 카드와 정책축이 상당히 겹친다.\",\"suggested_action\":\"할당관세 확대나 외국인 계절노동자 제도개선 기사로 다양화.\"},{\"type\":\"missed_better_candidate\",\"severity\":\"medium\",\"section\":\"policy\",\"title\":\"먹거리 할당관세 확대…내 식탁엔 무엇이 달라질까? [나유정]\",\"reason\":\"수입·관세 정책의 품목별 영향을 설명해 중복 물가대책 기사보다 활용도가 높다.\",\"suggested_action\":\"중복성 높은 물가개입 해설 카드와 교체 검...",
     "section_count_score": 100.0,
     "section_count_status": "target_met",
     "section_count_context": {
@@ -458,9 +458,9 @@
       "target_score": 95.0,
       "scoring_rule": "Each section should try to carry 5 briefing cards when raw candidates exist. 4 cards is a soft fallback below target, 3 cards is a minimum fallback, and broad fallback use caps editorial shadow below 95."
     },
-    "llm_score": 86.0,
+    "llm_score": 85.0,
     "score_calibration": {
-      "before": 86.0,
+      "before": 85.0,
       "after": 95.0,
       "reason": "deterministic_publish_gates_passed",
       "gates": {
@@ -564,7 +564,9 @@
     },
     "guardrail_focus": [
       "core_quality",
-      "missed_opportunity"
+      "missed_opportunity",
+      "article_selection",
+      "noise_control"
     ],
     "recommended_actions": [
       {
@@ -578,6 +580,18 @@
         "target": "raw_candidate_pool",
         "direction": "expand_or_rerank",
         "reason": "The raw pool contained stronger alternatives than selected cards."
+      },
+      {
+        "kind": "story_dedupe",
+        "target": "story_signature_gate",
+        "direction": "tighten",
+        "reason": "Multiple cards covered the same issue and reduced briefing breadth."
+      },
+      {
+        "kind": "noise_filter",
+        "target": "semantic_false_positive_gate",
+        "direction": "tighten",
+        "reason": "Selected cards included low editorial-value noise."
       }
     ],
     "current_selection_guardrails": {
