@@ -1,8 +1,8 @@
 {
   "report_date": "2026-07-01",
-  "generated_at_kst": "2026-07-04T09:22:20+09:00",
+  "generated_at_kst": "2026-07-04T13:41:57+09:00",
   "status": "pass",
-  "overall_score": 94.41,
+  "overall_score": 94.51,
   "operational_score": 95.61,
   "reader_quality_score": 95.61,
   "reader_quality_gate": {
@@ -287,100 +287,100 @@
     "status": "success",
     "rubric_version": 2,
     "model": "gpt-5.5",
-    "generated_at_kst": "2026-07-04T09:22:47+09:00",
-    "score": 83.0,
+    "generated_at_kst": "2026-07-04T13:42:29+09:00",
+    "score": 84.0,
     "target_score": 95.0,
     "target_status": "needs_iteration",
     "scores": {
-      "article_selection": 81.0,
+      "article_selection": 82.0,
       "section_fit": 84.0,
       "core_pick_quality": 78.0,
       "summary_usefulness": 82.0,
-      "missed_opportunity": 74.0,
+      "missed_opportunity": 75.0,
       "noise_control": 79.0
     },
-    "summary": "카드 수와 신선도는 충족했지만, 원자료에 더 강한 정책·유통 후보가 보이는데도 인물 선정, 견학, 지역 직거래장, 불완전한 YTN 요약 같은 약한 카드가 여러 장 들어갔다. 공급·병해충의 핵심 1~2건은 적절하나, 정책은 한농연 할당관세 비판을 놓쳤고 유통은 물류센터·APC·공판장 구조 이슈보다 행사성 카드 비중이 높다.",
+    "summary": "분량은 4개 섹션 모두 5건으로 충족했고, 제주 월동채소 가격 급락, 정부 1조원 물가대책, 강서시장 영업공간 갈등, 고추 탄저병 등 핵심 소재는 일부 잘 잡았다. 그러나 공급·정책·유통에서 인물 선정, 지역 행사, 견학성 기사와 오염된 요약이 섞였고, 한농연 할당관세 비판, 마늘 수급안정 간담회, 화훼공판장 운영 한계, aT 유통본부 회의 같은 더 강한 후보를 놓쳤다. 발행 가능한 수준이지만 95점권의 선별 품질은 아니다.",
     "issues": [
       {
-        "type": "weak_selection",
-        "severity": "major",
-        "section": "policy",
-        "title": "농산물 우수관리 인증 확대...\"영농자재 80% 싸게 공급\"",
-        "reason": "요약이 앵커·저작권 문구로 깨져 있고 지역 GAP 자재지원 성격이 강하다.",
-        "suggested_action": "한농연 할당관세 비판 또는 수입농산물 거버넌스 기사로 교체."
-      },
-      {
-        "type": "missed_opportunity",
-        "severity": "major",
-        "section": "policy",
-        "title": "한농연 “농산물 가격 안정의 해법은 수입 아닌 ‘국내 생산 기반’에”",
-        "reason": "정부 물가대책·할당관세와 직접 맞물리는 전국 농업계 반응으로 정책 가치가 높다.",
-        "suggested_action": "YTN GAP 카드나 경북 양파 지역대책 카드보다 우선 배치."
-      },
-      {
-        "type": "wrong_section",
+        "type": "wrong_section_or_weak_fit",
         "severity": "major",
         "section": "supply",
         "title": "백성익 제주 감귤 연합회 회장, 수입농산물 관리 민간위원 선정",
-        "reason": "생산·수급 기사라기보다 협의체 인사 동정이며 같은 이슈가 정책 카드에 이미 있다.",
-        "suggested_action": "마늘 수급안정 상생간담회나 양구 애호박 생산교육으로 대체."
+        "reason": "개인 위원 선정 중심의 정책성 인사 기사로 공급 동향성이 약하고 정책 10번과 같은 사안이다.",
+        "suggested_action": "공급에서는 마늘 수급안정 간담회나 영천 마늘·양파 작황 기사류로 대체한다."
+      },
+      {
+        "type": "missed_stronger_candidate",
+        "severity": "major",
+        "section": "policy",
+        "title": "한농연 “농산물 가격 안정의 해법은 수입 아닌 ‘국내 생산 기반’에”",
+        "reason": "정부 할당관세·수입 확대에 대한 농업계 반응으로 정책 핵심성이 높은데 누락됐다.",
+        "suggested_action": "저품질 GAP 자재지원 기사나 중복성 낮은 꼬리 기사 대신 포함한다."
+      },
+      {
+        "type": "summary_quality",
+        "severity": "major",
+        "section": "policy",
+        "title": "재경차관, 수입란 유통업체 찾아 수급 점검…\"가격안정 최선\"",
+        "reason": "요약에 ‘잠깐! 현재 Internet Explorer…’ 같은 크롤링 잡음이 포함됐다.",
+        "suggested_action": "본문 오염 문구를 제거하고 계란 수입·콜드체인 점검 요지로 재작성한다."
+      },
+      {
+        "type": "low_value_selection",
+        "severity": "major",
+        "section": "policy",
+        "title": "농산물 우수관리 인증 확대...\"영농자재 80% 싸게 공급\"",
+        "reason": "요약이 깨져 있고 지방 GAP·자재 지원 성격이 강해 전국 정책 브리핑 가치가 낮다.",
+        "suggested_action": "한농연 성명, 감자 계절관세 철폐, 하반기 농림 제도 변경 기사로 교체한다."
       },
       {
         "type": "promotional_filler",
-        "severity": "medium",
-        "section": "supply",
-        "title": "대경사과원예농협, 자두 ·복숭아 본격 출하",
-        "reason": "초출하 행사 중심의 지역 단신으로 가격·수급 신호가 약하다.",
-        "suggested_action": "충북 햇사레 복숭아 출하실적/APC 후보처럼 물량·판로 정보가 있는 기사 선호."
-      },
-      {
-        "type": "weak_core",
-        "severity": "medium",
-        "section": "dist",
-        "title": "강서 시장 시경상생협의회, “ 시장 영업공간 분리 반대”",
-        "reason": "도매시장 제도 갈등은 적합하지만 유통 섹션 유일 core로는 영향 범위가 좁다.",
-        "suggested_action": "전주원협 공동선별·수출 또는 베트남 물류센터를 core로 승격."
-      },
-      {
-        "type": "promotional_filler",
-        "severity": "medium",
+        "severity": "major",
         "section": "dist",
         "title": "대신농협, 가락공판장 견학…간담회도 열어",
-        "reason": "견학·간담회 단신으로 실제 유통 운영 변화나 물량 효과가 약하다.",
-        "suggested_action": "화훼공판장 노후시설, aT 유통본부 회의, 제주 스마트공동물류센터 후보 검토."
+        "reason": "견학·간담회 행사 중심으로 유통 운영 변화나 시장 영향이 약하다.",
+        "suggested_action": "화훼공판장 노후시설 운영 한계, aT 유통본부 회의, 마늘 수급안정 간담회로 대체한다."
       },
       {
         "type": "promotional_filler",
-        "severity": "medium",
+        "severity": "moderate",
         "section": "dist",
         "title": "'지역 농산물 판로확대 '... 동서울-영주낭주농협 '직거래장' 개점",
-        "reason": "지역 매장 개점 홍보 성격이 강하고 유통 구조·물류 이슈보다 후순위다.",
-        "suggested_action": "물류센터·공동선별·공판장 구조개선 기사로 교체."
+        "reason": "직거래장 개점 홍보성 지역 기사로 유통·물류·시장운영 기사보다 우선순위가 낮다.",
+        "suggested_action": "공판장 구조개혁, 공동선별·수출, 물류센터 운영 같은 구체 운영 기사에 슬롯을 준다."
       },
       {
-        "type": "weak_core",
-        "severity": "medium",
+        "type": "weak_core_pick",
+        "severity": "moderate",
         "section": "pest",
         "title": "고성군 밤나무병해충 무인항공기방제 13일부터 40일간 시행",
-        "reason": "구체적 방제 규모는 있으나 지역 밤나무 방제 공지에 가까워 core로는 약하다.",
-        "suggested_action": "사과 장마철 화상병·탄저병 또는 고추 탄저병을 core로 올림."
+        "reason": "지역 방제 일정 공지에 가까운데 core로 지정돼 있다.",
+        "suggested_action": "사과 화상병·탄저병 주의나 경북 고추 탄저병을 core로 올리고 밤 방제는 꼬리로 둔다."
+      },
+      {
+        "type": "missed_stronger_candidate",
+        "severity": "moderate",
+        "section": "dist",
+        "title": "화훼 생산자 “양재동 화훼공판장 노후시설 운영 한계”",
+        "reason": "공영 화훼 유통 중심지의 구조개혁 쟁점으로 견학·직거래장 개점보다 유통 섹션 적합도가 높다.",
+        "suggested_action": "유통 섹션 꼬리 기사 중 행사성 항목을 줄이고 포함한다."
       }
     ],
     "section_notes": {
-      "supply": "제주 월동채소 가격 급락과 상추 폭염 대응은 좋다. 다만 인물 동정과 초출하 행사 카드가 공급 섹션의 수급·생산성 중심성을 흐린다.",
-      "policy": "1조원 물가대책은 핵심 선택이다. 그러나 한농연의 수입 확대 비판을 누락하고, 깨진 YTN GAP 단신을 넣은 점이 큰 감점 요인이다.",
-      "dist": "전주원협 공동선별·수출, K푸드 베트남 물류센터는 적합하다. 대신 견학·직거래장 개점 같은 행사성 카드가 더 강한 물류·APC·공판장 후보를 밀어냈다.",
-      "pest": "원자료가 비교적 약한 편이라 5장 구성 자체는 이해된다. AI 예측, 사과 화상병·탄저병, 고추 탄저병은 유용하나 밤나무 방제는 core보다는 꼬리 카드가 맞다."
+      "supply": "제주 월동채소와 상추 폭염기술, 영천 마늘·양파는 유효하다. 다만 감귤연합회장 민간위원 선정은 공급 기사로 부적절하고, 자두·복숭아 초출하 행사는 약한 지역 행사성 꼬리다. 마늘 수급안정 간담회가 더 낫다.",
+      "policy": "1조원 물가대책과 수입농산물 민관협의체는 적절하다. 그러나 한농연의 할당관세 비판을 누락했고, GAP 자재지원/YTN 카드는 요약 품질과 정책 중요도가 낮다. 수입란 점검 요약도 크롤링 잡음이 있다.",
+      "dist": "강서시장 갈등, 전주 양파 공동선별·수출, 베트남 물류센터는 좋다. 대신농협 견학과 직거래장 개점은 행사성 filler이며, 화훼공판장 운영 한계·aT 유통본부 회의·마늘 수급간담회 같은 더 구체적인 유통 후보를 밀어냈다.",
+      "pest": "후보 풀이 약한 편이라 AI 예측, 사과 화상병·탄저병 주의, 고추 탄저병, 밤나무 방제 조합은 대체로 수용 가능하다. 다만 밤나무 방제는 core보다는 tail이 적절하고, 화상병·탄저병 위험 기사가 더 핵심이다."
     },
     "improvement_suggestions": [
-      "정책 섹션은 정부 대책과 농업계 반응을 한 쌍으로 구성해 균형을 맞출 것.",
-      "요약에 브라우저 경고·저작권·앵커 잔재가 섞인 카드는 자동 제외하거나 재요약할 것.",
-      "공급 섹션에서 인물 동정·초출하 행사는 수급 수치가 없으면 꼬리 후보로만 제한할 것.",
-      "유통 섹션은 견학·개점식보다 공동선별, 수출 선적, 물류센터, 공판장 운영 갈등을 우선할 것.",
-      "core 지정은 전국성·운영 영향·수급 파급력을 기준으로 재검토할 것.",
-      "동일한 수입농산물 협의체 이슈가 공급과 정책에 중복되지 않도록 섹션별 대표 기사만 남길 것."
+      "정책 섹션은 정부 발표와 농업계 반응을 함께 잡아 균형을 맞춘다.",
+      "공급 섹션에서 인물 선정·행사성 출하식은 더 강한 수급·가격·작황 후보가 있을 때 제외한다.",
+      "유통 섹션은 견학·개점 홍보보다 공판장 제도, 공동선별, 수출 물류, APC 운영 변화를 우선한다.",
+      "크롤링 오염 문구가 포함된 요약은 자동 탈락 또는 재요약 검수 규칙을 적용한다.",
+      "core 지정은 기사 중요도 기준으로 재검토하고, 지역 공지성 방제는 core로 올리지 않는다.",
+      "동일 사안의 지역 인물 기사와 전국 정책 기사가 동시에 들어가지 않도록 중복 제어를 강화한다."
     ],
-    "raw_response_excerpt": "{\"score\":83,\"scores\":{\"article_selection\":81,\"section_fit\":84,\"core_pick_quality\":78,\"summary_usefulness\":82,\"missed_opportunity\":74,\"noise_control\":79},\"summary\":\"카드 수와 신선도는 충족했지만, 원자료에 더 강한 정책·유통 후보가 보이는데도 인물 선정, 견학, 지역 직거래장, 불완전한 YTN 요약 같은 약한 카드가 여러 장 들어갔다. 공급·병해충의 핵심 1~2건은 적절하나, 정책은 한농연 할당관세 비판을 놓쳤고 유통은 물류센터·APC·공판장 구조 이슈보다 행사성 카드 비중이 높다.\",\"issues\":[{\"type\":\"weak_selection\",\"severity\":\"major\",\"section\":\"policy\",\"title\":\"농산물 우수관리 인증 확대...\\\"영농자재 80% 싸게 공급\\\"\",\"reason\":\"요약이 앵커·저작권 문구로 깨져 있고 지역 GAP 자재지원 성격이 강하다.\",\"suggested_action\":\"한농연 할당관세 비판 또는 수입농산물 거버넌스 기사로 교체.\"},{\"type\":\"missed_opportunity\",\"severity\":\"major\",\"section\":\"policy\",\"title\":\"한농연 “농산물 가격 안정의 해법은 수입 아닌 ‘국내 생산 기반’에”\",\"reason\":\"정부 물가대책·할당관세와 직접 맞물리는 전국 농업계 반응으로 정책 가치가 높다.\",\"suggested_action\":\"YTN GAP 카드나 경북 양파 지역대책 카드보다 우선 배치.\"},{\"type\":\"wrong_section\",\"severity\":\"major\",\"section\":\"supply\",\"title\":\"백성익 제주 감귤 연합회 회장, 수입농산물 관리 민간위원 선정\",\"reason\":\"생산·수급 기사라기보다 협의체 인사 동정이며 같은 이슈가 정책 카드에 이미 있다.\",\"suggested_action\":\"마늘 수급안정 상생간담회나 양구 애호박 생산교육으로 대체.\"},{\"type\":\"promotional_filler\",\"severity\":\"medium\",\"section\":\"supply\",\"title\":\"대경사과원예농협, 자두 ·복숭아 본격 출하\",\"reason\":\"초출하 행사 중심의 지역 단신으로 가격·수급 신호가 약하다.\",\"suggested_action\":\"충북 햇사레 복숭아...",
+    "raw_response_excerpt": "{\"score\":84,\"scores\":{\"article_selection\":82,\"section_fit\":84,\"core_pick_quality\":78,\"summary_usefulness\":82,\"missed_opportunity\":75,\"noise_control\":79},\"summary\":\"분량은 4개 섹션 모두 5건으로 충족했고, 제주 월동채소 가격 급락, 정부 1조원 물가대책, 강서시장 영업공간 갈등, 고추 탄저병 등 핵심 소재는 일부 잘 잡았다. 그러나 공급·정책·유통에서 인물 선정, 지역 행사, 견학성 기사와 오염된 요약이 섞였고, 한농연 할당관세 비판, 마늘 수급안정 간담회, 화훼공판장 운영 한계, aT 유통본부 회의 같은 더 강한 후보를 놓쳤다. 발행 가능한 수준이지만 95점권의 선별 품질은 아니다.\",\"issues\":[{\"type\":\"wrong_section_or_weak_fit\",\"severity\":\"major\",\"section\":\"supply\",\"title\":\"백성익 제주 감귤 연합회 회장, 수입농산물 관리 민간위원 선정\",\"reason\":\"개인 위원 선정 중심의 정책성 인사 기사로 공급 동향성이 약하고 정책 10번과 같은 사안이다.\",\"suggested_action\":\"공급에서는 마늘 수급안정 간담회나 영천 마늘·양파 작황 기사류로 대체한다.\"},{\"type\":\"missed_stronger_candidate\",\"severity\":\"major\",\"section\":\"policy\",\"title\":\"한농연 “농산물 가격 안정의 해법은 수입 아닌 ‘국내 생산 기반’에”\",\"reason\":\"정부 할당관세·수입 확대에 대한 농업계 반응으로 정책 핵심성이 높은데 누락됐다.\",\"suggested_action\":\"저품질 GAP 자재지원 기사나 중복성 낮은 꼬리 기사 대신 포함한다.\"},{\"type\":\"summary_quality\",\"severity\":\"major\",\"section\":\"policy\",\"title\":\"재경차관, 수입란 유통업체 찾아 수급 점검…\\\"가격안정 최선\\\"\",\"reason\":\"요약에 ‘잠깐! 현재 Internet Explorer…’ 같은 크롤링 잡음이 포함됐다.\",\"suggested_action\":\"본문 오염 문구를 제거하고 계란 수입·콜드체인 점검 요지로 재작성한다.\"},{\"type\":\"low_value_selection\",\"severity\":\"major\",\"section\":\"polic...",
     "section_count_score": 100.0,
     "section_count_status": "target_met",
     "section_count_context": {
@@ -448,12 +448,12 @@
     },
     "model_snapshot": "gpt-5.5-2026-04-23"
   },
-  "editorial_score": 83.0,
+  "editorial_score": 84.0,
   "editorial_improvement_plan": {
     "mode": "shadow_replay_loop",
     "proposal_only": true,
     "target_score": 95.0,
-    "current_editorial_score": 83.0,
+    "current_editorial_score": 84.0,
     "target_status": "needs_iteration",
     "iteration_budget": 3,
     "promotion_gates": {
@@ -528,9 +528,7 @@
     },
     "guardrail_focus": [
       "core_quality",
-      "missed_opportunity",
-      "noise_control",
-      "section_fit"
+      "noise_control"
     ],
     "recommended_actions": [
       {
@@ -540,22 +538,10 @@
         "reason": "Core cards should not be filled by merely available articles."
       },
       {
-        "kind": "candidate_recall",
-        "target": "raw_candidate_pool",
-        "direction": "expand_or_rerank",
-        "reason": "The raw pool contained stronger alternatives than selected cards."
-      },
-      {
         "kind": "noise_filter",
         "target": "semantic_false_positive_gate",
         "direction": "tighten",
         "reason": "Selected cards included low editorial-value noise."
-      },
-      {
-        "kind": "section_fit",
-        "target": "section_card_min_fit",
-        "direction": "tighten",
-        "reason": "A selected card appears to fit another section better."
       }
     ],
     "current_selection_guardrails": {
@@ -602,10 +588,10 @@
     "target_score": 95.0,
     "operational_score": 95.61,
     "reader_quality_score": 95.61,
-    "editorial_score": 83.0,
-    "headline_score": 94.41,
+    "editorial_score": 84.0,
+    "headline_score": 94.51,
     "reason": "editorial_below_target_bounded_penalty",
-    "bounded_penalty": 1.2,
+    "bounded_penalty": 1.1,
     "blocking_issue_count": 0
   }
 }
