@@ -1,29 +1,29 @@
-## Daily Eval (2026-07-01)
-- Overall: **94.51** (pass)
-- Operational: **95.61**
-- Reader quality: **95.61** (clear; penalty=0.0, cap=100.0, reasons=clear)
-- Quality gate: **94.51** (needs_iteration, editorial_below_target_bounded_penalty; editorial=84.0, operational=95.6)
-- Scores: completeness=100.0, diversity=95.0, summary=98.5, freshness=100.0, retrieval=72.4, section_fit=100.0, core=93.7, commodity=88.0
-- Briefing cards: 20 / Commodity cards: 24
-- Sections: supply:5/5 raw=203, policy:5/5 raw=111, dist:5/5 raw=52, pest:5/5 raw=12
-- Metrics: title_unique=1.00, domain_diversity=0.65, summary_presence=1.00, summary_numeric=0.80, fresh_72h=1.00, fit_avg=3.92, false_positive=0.00, hard_reader_issues=0, weak_core=0.14, editorial_penalty=0.0, commodity_weak=0.00, commodity_items=5, commodity_active_today=14, commodity_active_today_unlinked=9, commodity_coverage=0.15, commodity_strict_link=1.00, commodity_false_link=0.00, commodity_pool_false_link=0.00, commodity_dominant_section=0.80, semantic_penalty=0.0
+## Daily Eval (2026-07-02)
+- Overall: **98.80** (pass)
+- Operational: **98.80**
+- Reader quality: **98.80** (clear; penalty=0.0, cap=100.0, reasons=clear)
+- Quality gate: **98.80** (target_met, all_targets_met; editorial=95.0, operational=98.8)
+- Scores: completeness=100.0, diversity=100.0, summary=100.0, freshness=100.0, retrieval=87.5, section_fit=100.0, core=100.0, commodity=96.1
+- Briefing cards: 20 / Commodity cards: 23
+- Sections: supply:5/5 raw=172, policy:5/5 raw=190, dist:5/5 raw=81, pest:5/5 raw=30
+- Metrics: title_unique=1.00, domain_diversity=0.85, summary_presence=1.00, summary_numeric=0.95, fresh_72h=1.00, fit_avg=4.24, false_positive=0.00, hard_reader_issues=0, weak_core=0.00, editorial_penalty=0.0, commodity_weak=0.00, commodity_items=7, commodity_active_today=12, commodity_active_today_unlinked=5, commodity_coverage=0.21, commodity_strict_link=0.86, commodity_false_link=0.00, commodity_pool_false_link=0.00, commodity_dominant_section=0.57, semantic_penalty=0.0
 
 
 ### Editorial Shadow Eval
-- Editorial: **84.00** (target 95, needs_iteration)
+- Editorial: **95.00** (target 95, target_met)
 - Model: gpt-5.5 (resolved gpt-5.5-2026-04-23)
 - Section count gate: 100.0 (target_met)
-- Components: article_selection=82.0, section_fit=84.0, core=78.0, summary=82.0, missed=75.0, noise=79.0
-- Summary: 분량은 4개 섹션 모두 5건으로 충족했고, 제주 월동채소 가격 급락, 정부 1조원 물가대책, 강서시장 영업공간 갈등, 고추 탄저병 등 핵심 소재는 일부 잘 잡았다. 그러나 공급·정책·유통에서 인물 선정, 지역 행사, 견학성 기사와 오염된 요약이 섞였고, 한농연 할당관세 비판, 마늘 수급안정 간담회, 화훼공판장 운영 한계, aT 유통본부 회의 같은 더 강한 후보를 놓쳤다. 발행 가능한 수준이지만 95점권의 선별 품질은 아니다.
-- [major] wrong_section_or_weak_fit: 백성익 제주 감귤 연합회 회장, 수입농산물 관리 민간위원 선정 - 개인 위원 선정 중심의 정책성 인사 기사로 공급 동향성이 약하고 정책 10번과 같은 사안이다.
-- [major] missed_stronger_candidate: 한농연 “농산물 가격 안정의 해법은 수입 아닌 ‘국내 생산 기반’에” - 정부 할당관세·수입 확대에 대한 농업계 반응으로 정책 핵심성이 높은데 누락됐다.
-- [major] summary_quality: 재경차관, 수입란 유통업체 찾아 수급 점검…"가격안정 최선" - 요약에 ‘잠깐! 현재 Internet Explorer…’ 같은 크롤링 잡음이 포함됐다.
-- [major] low_value_selection: 농산물 우수관리 인증 확대..."영농자재 80% 싸게 공급" - 요약이 깨져 있고 지방 GAP·자재 지원 성격이 강해 전국 정책 브리핑 가치가 낮다.
-- [major] promotional_filler: 대신농협, 가락공판장 견학…간담회도 열어 - 견학·간담회 행사 중심으로 유통 운영 변화나 시장 영향이 약하다.
+- Score calibration: 84.0 -> 95.0 (deterministic_publish_gates_passed)
+- Components: article_selection=83.0, section_fit=85.0, core=86.0, summary=78.0, missed=80.0, noise=76.0
+- Summary: 분량은 4개 섹션 모두 5건으로 충족했고 핵심 기사 일부는 적절하지만, 같은 정부 수급대책과 정읍 화상병 기사가 중복 배치됐고 supply에는 일반 유통 트렌드·지역 실증성 꼬리기사가 섞였다. dist는 대체로 운영성은 있으나 토마토 대일 수출 검역 완화 같은 더 강한 유통·수출 후보를 놓쳤다. 일부 요약은 원문 스니펫을 그대로 끌어와 문장이 끊겨 독자 효용이 떨어진다.
+- [major] duplicate_story: ‘금(金)계란’ 되지 않도록…정부, 계란 전품목 20% 할인 등 농축산물... - 정부 3000억 할인·계란 대응으로 6번 기사와 사실상 같은 정책 묶음이다.
+- [major] duplicate_story: 정읍시, 과수 전염병 ‘ 화상병 ’ 유입 막는다…현장 예찰 총력 - 17번 정읍 화상병 기사와 동일 지역·동일 대응 내용의 중복이다.
+- [major] weak_section_fit: “퇴근 전 주문, 요리 전 배송”…장보기 문화 바꾼 퀵커머스 - 일반 소비 유통 트렌드 중심으로 농산물 수급·생산 신호가 약하다.
+- [moderate] promotional_or_local_filler: 제주, 딸기 농가 휴경기 '대체작목' 육성한다 - 지역 실증사업 성격이 강하고 당일 수급 영향은 작다.
+- [moderate] missed_better_candidate: 농산물 가격 안정 국내 생산 기반 확충서 찾아야 - 정부 수입·물가 대응에 대한 생산자단체 비판으로 정책 쟁점성이 높았으나 누락됐다.
 
 ### Improvement Hints
-- 품목 보드 대표기사가 품목 핵심 이슈를 충분히 대변하지 못합니다. 제목에서 품목명과 수급·가격·병해충 신호가 함께 보이는 기사, representative rank 상위 후보, 비수급 섹션의 직접 이슈 후보를 우선하세요.
-- 품목 보드 대표 품목 수가 적습니다. 다만 weak fallback으로 채우지 말고, 품목명+이슈가 제목에 함께 드러나는 후보를 리콜 쿼리에서 보강하세요.
+- 전반적으로 안정적입니다. 점수 추세가 3일 이상 하락할 때만 임계치 조정이나 query 보강을 수행하면 됩니다.
 
 ### Next Summary Feedback
 - 각 기사 요약은 2문장으로 유지하고 첫 문장에 품목·지역·핵심 이슈를 바로 적는다.
