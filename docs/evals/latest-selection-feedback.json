@@ -1,10 +1,10 @@
 {
-  "report_date": "2026-07-02",
-  "generated_at_kst": "2026-07-04T09:27:03+09:00",
+  "report_date": "2026-06-29",
+  "generated_at_kst": "2026-07-04T13:33:08+09:00",
   "scores": {
     "section_alignment": 100.0,
     "core_quality": 100.0,
-    "commodity_board_quality": 96.08
+    "commodity_board_quality": 99.14
   },
   "metrics": {
     "section_alignment_low_fit_rate": 0.0,
@@ -26,22 +26,22 @@
     "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0,
     "commodity_primary_title_item_focus_rate": 1.0,
-    "commodity_primary_title_issue_signal_rate": 0.8571,
-    "commodity_primary_strict_link_rate": 0.8571,
+    "commodity_primary_title_issue_signal_rate": 0.9,
+    "commodity_primary_strict_link_rate": 0.9,
     "commodity_primary_low_rank_rate": 0.0,
-    "commodity_primary_count": 7,
-    "commodity_active_today_total": 12,
-    "commodity_active_today_unlinked_total": 5,
-    "commodity_managed_unlinked_total": 26,
+    "commodity_primary_count": 10,
+    "commodity_active_today_total": 17,
+    "commodity_active_today_unlinked_total": 7,
+    "commodity_managed_unlinked_total": 23,
     "commodity_board_daily_min_primary_count": 6,
     "commodity_board_low_coverage": false,
-    "commodity_board_coverage_rate": 0.2121,
+    "commodity_board_coverage_rate": 0.303,
     "commodity_primary_title_item_missing_rate": 0.0,
     "commodity_primary_body_only_rate": 0.0,
     "commodity_primary_false_link_rate": 0.0,
-    "commodity_pool_count": 6,
+    "commodity_pool_count": 9,
     "commodity_pool_false_link_rate": 0.0,
-    "commodity_primary_dominant_section_rate": 0.5714
+    "commodity_primary_dominant_section_rate": 0.5
   },
   "selection_guardrails": {
     "driver_tags": [],
@@ -86,77 +86,77 @@
     "section_count_score": 100.0,
     "section_count_status": "target_met",
     "scores": {
-      "article_selection": 83.0,
+      "article_selection": 84.0,
       "section_fit": 86.0,
       "core_pick_quality": 82.0,
-      "summary_usefulness": 82.0,
+      "summary_usefulness": 77.0,
       "missed_opportunity": 78.0,
-      "noise_control": 79.0
+      "noise_control": 80.0
     },
     "issues": [
       {
-        "type": "duplicate_story",
-        "severity": "major",
-        "section": "policy",
-        "title": "‘금(金)계란’ 되지 않도록…정부, 계란 전품목 20% 할인 등 농축산물...",
-        "reason": "3000억원 할인·계란 수입 대책은 이미 6번 카드와 같은 핵심 내용이다.",
-        "suggested_action": "중복을 빼고 ‘농산물 가격 안정 국내 생산 기반 확충’이나 쌀 수급조절용 벼 기사로 교체."
-      },
-      {
-        "type": "duplicate_story",
-        "severity": "major",
-        "section": "pest",
-        "title": "정읍시, 과수 전염병 ‘ 화상병 ’ 유입 막는다…현장 예찰 총력",
-        "reason": "17번 정읍 화상병 기사와 사실상 동일한 지역·사안 중복이다.",
-        "suggested_action": "‘고온기 육묘장 병해충 확산 우려’나 제주 장마 감귤 병해 대응 기사로 교체."
-      },
-      {
-        "type": "weak_section_fit",
-        "severity": "moderate",
+        "type": "weak_tail",
+        "severity": "medium",
         "section": "supply",
-        "title": "“퇴근 전 주문, 요리 전 배송”…장보기 문화 바꾼 퀵커머스",
-        "reason": "일반 유통·소비 트렌드 기사로 농산물 생산·수급 신호가 약하다.",
-        "suggested_action": "스마트 저장, 폭염 시설원예 지원, 상추·고추 가격 등 더 농업적인 후보를 우선."
-      },
-      {
-        "type": "low_impact_filler",
-        "severity": "moderate",
-        "section": "supply",
-        "title": "제주, 딸기 농가 휴경기 '대체작목' 육성한다",
-        "reason": "지역 실증 사업 성격이 강하고 당일 전국 수급 브리핑 임팩트가 낮다.",
-        "suggested_action": "고온기 잎채소·시설원예 폭염 대응이나 배추 육묘 공급 기사와 비교해 선별."
+        "title": "보령 사현 포도 , 26일 올해 첫 수확 본격 출하",
+        "reason": "지역 첫 수확·출하 알림 성격이 강해 수급 브리핑 핵심도가 낮다.",
+        "suggested_action": "고랭지 여름배추 생산기반 악화 기사로 교체."
       },
       {
         "type": "missed_better_candidate",
-        "severity": "major",
+        "severity": "medium",
+        "section": "supply",
+        "title": "기후위기 직격탄…고랭지 농사 ‘먹구름’",
+        "reason": "여름배추 재배의향 감소와 수급·가격 불안 신호가 더 전국적이고 중요하다.",
+        "suggested_action": "포도 첫 출하 또는 약한 꼬리 카드 대신 포함."
+      },
+      {
+        "type": "duplication",
+        "severity": "medium",
         "section": "policy",
-        "title": "농산물 가격 안정 국내 생산 기반 확충서 찾아야",
-        "reason": "수입 확대 기조와 국내 생산기반 논쟁을 다루는 상위 정책 후보가 누락됐다.",
-        "suggested_action": "중복 물가대책 카드 대신 정책 논쟁 축을 보강하는 카드로 채택."
+        "title": "국정 2년차, 물가와의 전쟁…'가격 개입' 현실화",
+        "reason": "계란·1조 물가대책 카드와 정책축이 상당히 겹친다.",
+        "suggested_action": "할당관세 확대나 외국인 계절노동자 제도개선 기사로 다양화."
       },
       {
         "type": "missed_better_candidate",
-        "severity": "moderate",
+        "severity": "medium",
+        "section": "policy",
+        "title": "먹거리 할당관세 확대…내 식탁엔 무엇이 달라질까? [나유정]",
+        "reason": "수입·관세 정책의 품목별 영향을 설명해 중복 물가대책 기사보다 활용도가 높다.",
+        "suggested_action": "중복성 높은 물가개입 해설 카드와 교체 검토."
+      },
+      {
+        "type": "promotional_filler",
+        "severity": "high",
         "section": "dist",
-        "title": "국산 토마토 대일 수출 검역 규제 풀렸다",
-        "reason": "수출 검역 장벽 해소는 유통·수출 채널에 직접적인 운영 가치가 크다.",
-        "suggested_action": "가락시장 휴업 공지 같은 낮은 임팩트 카드와 교체 검토."
+        "title": "구천동농협 여수농협 임직원 초청 영농 현장체험",
+        "reason": "임직원 견학·체험 행사 중심으로 유통 운영 뉴스성이 약하다.",
+        "suggested_action": "광양 로컬푸드직매장 매출, 햇사레 복숭아 출하, 못난이 농산물 판로 기사 중 하나로 교체."
       },
       {
-        "type": "weak_core_pick",
-        "severity": "moderate",
-        "section": "supply",
-        "title": "대경사과원예농협, 군위 자두·복숭아 초출하",
-        "reason": "초출하 행사는 구체적이지만 지역 행사성이 있어 코어 기사로는 다소 약하다.",
-        "suggested_action": "마늘 가격·고온기 생산기술·전국 수급대책성 후보를 코어로 올리고 이 기사는 tail 처리."
+        "type": "weak_core",
+        "severity": "medium",
+        "section": "pest",
+        "title": "서산시, 여름철 고추 병해충 방제 및 재배관리 당부",
+        "reason": "일반 지자체 당부 기사인데 core로 지정돼 핵심도에 비해 과대평가됐다.",
+        "suggested_action": "과수화상병 추가 발생 또는 토마토뿔나방 검역완화 같은 더 구체적 사안을 core로 승격."
+      },
+      {
+        "type": "theme_duplicate",
+        "severity": "high",
+        "section": "pest",
+        "title": "서산시·해남군·경북 고추 탄저병 관련 3건",
+        "reason": "고추 탄저병·장마철 방제 당부가 3건 반복돼 병해충 섹션 다양성이 낮다.",
+        "suggested_action": "고추 경고는 광역성 기사 1건만 남기고 토마토뿔나방·단감 노린재·돌발해충 방제로 대체."
       },
       {
         "type": "summary_quality",
-        "severity": "moderate",
-        "section": "multiple",
-        "title": "KBS 물가대책·정읍 화상병·영천 돌발해충 요약",
-        "reason": "일부 요약이 원문 파편과 말줄임표가 남아 읽기 흐름이 거칠다.",
-        "suggested_action": "핵심 수치·대상 작물·대응 조치 중심으로 1~2문장 재작성."
+        "severity": "medium",
+        "section": "supply",
+        "title": "오이 값 1주일 새 70% 올랐다",
+        "reason": "요약에 구독 문구·지면 정보 등 크롤링 잔재가 섞여 독자용 문장으로 부적합하다.",
+        "suggested_action": "가격 수치, 원인, 비교 기준만 남겨 재작성."
       }
     ]
   },
@@ -181,7 +181,7 @@
         "supply": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 172,
+          "raw_candidates": 221,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -193,7 +193,7 @@
         "policy": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 190,
+          "raw_candidates": 105,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -205,7 +205,7 @@
         "dist": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 81,
+          "raw_candidates": 64,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -217,7 +217,7 @@
         "pest": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 30,
+          "raw_candidates": 23,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -240,7 +240,8 @@
     "guardrail_focus": [
       "core_quality",
       "missed_opportunity",
-      "article_selection"
+      "article_selection",
+      "noise_control"
     ],
     "recommended_actions": [
       {
@@ -260,6 +261,12 @@
         "target": "story_signature_gate",
         "direction": "tighten",
         "reason": "Multiple cards covered the same issue and reduced briefing breadth."
+      },
+      {
+        "kind": "noise_filter",
+        "target": "semantic_false_positive_gate",
+        "direction": "tighten",
+        "reason": "Selected cards included low editorial-value noise."
       }
     ],
     "current_selection_guardrails": {
