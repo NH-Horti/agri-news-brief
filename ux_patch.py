@@ -91,6 +91,64 @@ def _upsert_archive_nav_button(html_text: str) -> str:
     )
 
 
+_SWIPE_GUARD_MARKER = "UX_SWIPE_GUARD v20260704"
+_SWIPE_GUARD_BLOCK = """
+  <!-- UX_SWIPE_GUARD v20260704 -->
+  <script>
+  (function(){
+    // 가로 스와이프가 브라우저 히스토리 이동(뒤로가기)으로 번지지 않도록 차단.
+    // 날짜 이동은 페이지의 기존 스와이프 핸들러가 담당한다.
+    try {
+      if (document.documentElement && document.documentElement.style) {
+        document.documentElement.style.overscrollBehaviorX = 'none';
+      }
+      if (document.body && document.body.style) {
+        document.body.style.overscrollBehaviorX = 'none';
+      }
+      window.addEventListener('wheel', function(e){
+        if (!e || e.ctrlKey) return;
+        var dx = Number(e.deltaX || 0);
+        var dy = Number(e.deltaY || 0);
+        if (Math.abs(dx) <= Math.abs(dy)) return;
+        var node = e.target;
+        var hops = 0;
+        while (node && node !== document.body && hops < 12) {
+          try {
+            if (node.scrollWidth && node.clientWidth && (node.scrollWidth - node.clientWidth) > 8) {
+              var ox = window.getComputedStyle ? window.getComputedStyle(node).overflowX : '';
+              if (ox === 'auto' || ox === 'scroll') return;
+            }
+          } catch (scrollProbeErr) {}
+          node = node.parentElement;
+          hops += 1;
+        }
+        try {
+          if (e.cancelable && e.preventDefault) e.preventDefault();
+        } catch (wheelGuardErr) {}
+      }, { passive: false });
+    } catch (overscrollGuardErr) {}
+  })();
+  </script>
+"""
+
+
+def ensure_swipe_history_guard(html_text: str) -> str:
+    """히스토리 이동 차단 가드가 없는 페이지에 독립 가드 블록을 주입한다(멱등)."""
+    if not html_text:
+        return html_text
+    if "overscrollBehaviorX" in html_text or "overscroll-behavior-x:none" in html_text:
+        return html_text
+    if _SWIPE_GUARD_MARKER in html_text:
+        return html_text
+    return re.sub(
+        r"(</body>)",
+        lambda _m: _SWIPE_GUARD_BLOCK + _m.group(1),
+        html_text,
+        count=1,
+        flags=re.I,
+    )
+
+
 def build_archive_ux_html(
     raw_html: str,
     *,
@@ -467,6 +525,10 @@ def build_archive_ux_html(
     elif not _has_modern_archive_interactions(html_new):
         html_new = re.sub(r"<script>[\s\S]*?(touchstart|touchend|pointerdown|pointerup|mousedown|mouseup)[\s\S]*?</script>\s*", "", html_new, flags=re.S | re.I)
         html_new = re.sub(r"(</body>)", lambda _m: js_block + _m.group(1), html_new, count=1, flags=re.I)
+
+    # 모던 템플릿 페이지(자체 스와이프 핸들러 보유)라도 히스토리 이동 차단 가드가 없으면
+    # 독립 가드 블록을 주입한다 — 구버전 템플릿으로 렌더된 페이지의 뒤로가기 오동작 소급 수정.
+    html_new = ensure_swipe_history_guard(html_new)
 
     # Safety: never commit if HTML looks broken.
     if "</html>" not in html_new.lower() or "</body>" not in html_new.lower():
