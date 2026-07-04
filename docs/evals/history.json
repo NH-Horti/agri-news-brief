@@ -2,20 +2,20 @@
   "reports": [
     {
       "report_date": "2026-07-03",
-      "generated_at_kst": "2026-07-03T06:22:01+09:00",
-      "overall_score": 87.27,
-      "operational_score": 92.88,
-      "reader_quality_score": 88.47,
+      "generated_at_kst": "2026-07-04T09:13:28+09:00",
+      "overall_score": 95.4,
+      "operational_score": 96.5,
+      "reader_quality_score": 96.5,
       "reader_quality_gate_status": "clear",
       "reader_quality_gate_reasons": [],
-      "editorial_score": 83.0,
+      "editorial_score": 84.0,
       "editorial_status": "needs_iteration",
       "quality_gate_status": "needs_iteration",
       "quality_gate_reason": "editorial_below_target_bounded_penalty",
       "status": "pass",
-      "section_alignment": 91.67,
-      "core_quality": 66.11,
-      "commodity_board_quality": 100.0,
+      "section_alignment": 100.0,
+      "core_quality": 100.0,
+      "commodity_board_quality": 99.14,
       "briefing_total": 20,
       "commodity_total": 42,
       "commodity_active_today_total": 14,
@@ -26,17 +26,15 @@
       "briefing_title_unique_rate": 1.0,
       "content_false_positive_rate": 0.0,
       "reader_hard_issue_count": 0,
-      "reader_quality_penalty": 4.41,
-      "editorial_quality_penalty": 2.45,
+      "reader_quality_penalty": 0.0,
+      "editorial_quality_penalty": 0.0,
       "commodity_primary_false_link_rate": 0.0,
       "commodity_pool_false_link_rate": 0.0,
       "policy_wrong_section_rate": 0.0,
-      "promotional_filler_rate": 0.1,
-      "promotional_core_rate": 0.125,
+      "promotional_filler_rate": 0.0,
+      "promotional_core_rate": 0.0,
       "pest_theme_duplicate_rate": 0.0,
-      "guardrail_driver_tags": [
-        "core_quality"
-      ]
+      "guardrail_driver_tags": []
     },
     {
       "report_date": "2026-07-02",
@@ -1504,5 +1502,5 @@
       "briefing_title_unique_rate": 1.0
     }
   ],
-  "updated_at_kst": "2026-07-04T09:08:58+09:00"
+  "updated_at_kst": "2026-07-04T09:13:28+09:00"
 }
