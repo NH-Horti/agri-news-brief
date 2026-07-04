@@ -141,11 +141,43 @@ def build_archive_ux_html(
     _js_next_lbl = json.dumps(NEXT_LABEL, ensure_ascii=False)[1:-1]
 
     js_block = f"""
-  <!-- UX_PATCH_BEGIN v20260314-uxnav-korean-copy -->
+  <!-- UX_PATCH_BEGIN v20260704-swipe-history-guard -->
   <script>
   (function(){{
     var navRow = document.querySelector('.navRow');
     var navLoading = document.getElementById('navLoading');
+
+    // 가로 스와이프가 브라우저 히스토리 이동(뒤로가기)으로 번지지 않도록 차단.
+    // 날짜 이동은 페이지 스와이프 핸들러가 담당한다.
+    try {{
+      if (document.documentElement && document.documentElement.style) {{
+        document.documentElement.style.overscrollBehaviorX = 'none';
+      }}
+      if (document.body && document.body.style) {{
+        document.body.style.overscrollBehaviorX = 'none';
+      }}
+      window.addEventListener('wheel', function(e){{
+        if (!e || e.ctrlKey) return;
+        var dx = Number(e.deltaX || 0);
+        var dy = Number(e.deltaY || 0);
+        if (Math.abs(dx) <= Math.abs(dy)) return;
+        var node = e.target;
+        var hops = 0;
+        while (node && node !== document.body && hops < 12) {{
+          try {{
+            if (node.scrollWidth && node.clientWidth && (node.scrollWidth - node.clientWidth) > 8) {{
+              var ox = window.getComputedStyle ? window.getComputedStyle(node).overflowX : '';
+              if (ox === 'auto' || ox === 'scroll') return;
+            }}
+          }} catch (scrollProbeErr) {{}}
+          node = node.parentElement;
+          hops += 1;
+        }}
+        try {{
+          if (e.cancelable && e.preventDefault) e.preventDefault();
+        }} catch (wheelGuardErr) {{}}
+      }}, {{ passive: false }});
+    }} catch (overscrollGuardErr) {{}}
 
     function _hideLoading(){{ try{{ if(navLoading) navLoading.classList.remove('show'); }}catch(e){{}} }}
     function _showLoading(){{

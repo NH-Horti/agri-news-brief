@@ -43934,8 +43934,12 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
     html {{
       scroll-behavior:smooth;
       scroll-padding-top: var(--anchor-offset);
+      /* 가로 오버스크롤이 브라우저 히스토리 이동(뒤로가기 제스처)으로 번지지 않도록 차단
+         — 날짜 이동 스와이프는 페이지 자체 핸들러가 처리한다 */
+      overscroll-behavior-x:none;
     }}
     body{{margin:0;background:var(--bg); color:var(--text);
+         overscroll-behavior-x:none;
          font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, \"Noto Sans KR\", Arial;}}
     .wrap{{max-width:var(--page-max) !important;margin:0 auto !important;padding:18px 20px 80px !important;touch-action:pan-y;overscroll-behavior-x:contain;}}
     .topbar{{position:sticky;top:0;background:rgba(255,255,255,0.94);backdrop-filter:saturate(180%) blur(10px);
@@ -45213,10 +45217,36 @@ try {{ _ensureDates(); }} catch (e) {{}}
         wheelSwipeAt = 0;
       }}
 
+      function isHorizontallyScrollableTarget(target) {{
+        var node = target;
+        var hops = 0;
+        while (node && node !== swipeArea && node !== document.body && hops < 12) {{
+          try {{
+            if (node.scrollWidth && node.clientWidth && (node.scrollWidth - node.clientWidth) > 8) {{
+              var ox = (window.getComputedStyle ? window.getComputedStyle(node).overflowX : "") || "";
+              if (ox === "auto" || ox === "scroll") return true;
+            }}
+          }} catch (_scrollProbeErr) {{}}
+          node = node.parentElement;
+          hops += 1;
+        }}
+        return false;
+      }}
+
       function handleWheelSwipe(e) {{
-        if (!e || isNavigating) return;
+        if (!e) return;
         if (e.ctrlKey) return;
         if (isBlockedTarget(e.target)) return;
+        // 가로 성분이 우세한 트랙패드 스와이프는 임계값 도달 전에도 즉시 기본 동작을 막아
+        // 브라우저의 히스토리 이동 제스처가 시작되지 않게 한다 (가로 스크롤 요소 위는 예외)
+        var dxRaw = Number(e.deltaX || 0);
+        var dyRaw = Number(e.deltaY || 0);
+        if (Math.abs(dxRaw) > Math.abs(dyRaw) && !isHorizontallyScrollableTarget(e.target)) {{
+          try {{
+            if (e.cancelable && e.preventDefault) e.preventDefault();
+          }} catch (_wheelGuardErr) {{}}
+        }}
+        if (isNavigating) return;
         var now = Date.now();
         if (wheelSwipeLockUntil && now < wheelSwipeLockUntil) return;
         if (!wheelSwipeAt || (now - wheelSwipeAt) > 240) {{
