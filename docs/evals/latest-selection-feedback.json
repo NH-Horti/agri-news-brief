@@ -1,9 +1,9 @@
 {
-  "report_date": "2026-06-30",
-  "generated_at_kst": "2026-07-04T09:17:57+09:00",
+  "report_date": "2026-07-01",
+  "generated_at_kst": "2026-07-04T09:22:20+09:00",
   "scores": {
     "section_alignment": 100.0,
-    "core_quality": 90.52,
+    "core_quality": 93.72,
     "commodity_board_quality": 88.0
   },
   "metrics": {
@@ -29,23 +29,24 @@
     "commodity_primary_title_issue_signal_rate": 1.0,
     "commodity_primary_strict_link_rate": 1.0,
     "commodity_primary_low_rank_rate": 0.0,
-    "commodity_primary_count": 6,
-    "commodity_active_today_total": 11,
-    "commodity_active_today_unlinked_total": 5,
-    "commodity_managed_unlinked_total": 27,
+    "commodity_primary_count": 5,
+    "commodity_active_today_total": 14,
+    "commodity_active_today_unlinked_total": 9,
+    "commodity_managed_unlinked_total": 28,
     "commodity_board_daily_min_primary_count": 6,
-    "commodity_board_low_coverage": false,
-    "commodity_board_coverage_rate": 0.1818,
+    "commodity_board_low_coverage": true,
+    "commodity_board_coverage_rate": 0.1515,
     "commodity_primary_title_item_missing_rate": 0.0,
     "commodity_primary_body_only_rate": 0.0,
     "commodity_primary_false_link_rate": 0.0,
-    "commodity_pool_count": 7,
+    "commodity_pool_count": 10,
     "commodity_pool_false_link_rate": 0.0,
-    "commodity_primary_dominant_section_rate": 0.8333
+    "commodity_primary_dominant_section_rate": 0.8
   },
   "selection_guardrails": {
     "driver_tags": [
-      "commodity_board"
+      "commodity_board",
+      "commodity_board_low_coverage"
     ],
     "section_card_min_fit": {
       "default": 0.8,
@@ -82,92 +83,92 @@
   "editorial_quality_samples": [],
   "reader_hard_issue_samples": [],
   "editorial": {
-    "score": 88.0,
+    "score": 83.0,
     "target_score": 95.0,
     "target_status": "needs_iteration",
     "section_count_score": 100.0,
     "section_count_status": "target_met",
     "scores": {
-      "article_selection": 87.0,
-      "section_fit": 88.0,
-      "core_pick_quality": 86.0,
-      "summary_usefulness": 78.0,
-      "missed_opportunity": 84.0,
-      "noise_control": 82.0
+      "article_selection": 81.0,
+      "section_fit": 84.0,
+      "core_pick_quality": 78.0,
+      "summary_usefulness": 82.0,
+      "missed_opportunity": 74.0,
+      "noise_control": 79.0
     },
     "issues": [
       {
-        "type": "wrong_section",
-        "severity": "major",
-        "section": "dist",
-        "title": "화훼 산업, 이대로면 사라진다",
-        "reason": "유통·물류·판매채널보다 산업 구조와 소비문화 정책 토론에 가까워 dist 적합도가 낮다.",
-        "suggested_action": "한국청과 양파 출하조직 지원, 마늘 수급 간담회, 영동농협 경매사 간담회 등 유통 운영 후보로 교체."
-      },
-      {
-        "type": "weak_tail",
+        "type": "weak_selection",
         "severity": "major",
         "section": "policy",
-        "title": "농경연· 농식품부 , 주요 농정 현안 대응 협력 강화",
-        "reason": "정책연구협의회 개최 중심의 기관 동정으로 독자가 얻을 실행 정보가 약하다.",
-        "suggested_action": "‘물가 안정 위해 1조 원 투입’ 또는 GAP 영농자재 80% 지원처럼 구체적 정책·지원 카드로 대체."
+        "title": "농산물 우수관리 인증 확대...\"영농자재 80% 싸게 공급\"",
+        "reason": "요약이 앵커·저작권 문구로 깨져 있고 지역 GAP 자재지원 성격이 강하다.",
+        "suggested_action": "한농연 할당관세 비판 또는 수입농산물 거버넌스 기사로 교체."
+      },
+      {
+        "type": "missed_opportunity",
+        "severity": "major",
+        "section": "policy",
+        "title": "한농연 “농산물 가격 안정의 해법은 수입 아닌 ‘국내 생산 기반’에”",
+        "reason": "정부 물가대책·할당관세와 직접 맞물리는 전국 농업계 반응으로 정책 가치가 높다.",
+        "suggested_action": "YTN GAP 카드나 경북 양파 지역대책 카드보다 우선 배치."
+      },
+      {
+        "type": "wrong_section",
+        "severity": "major",
+        "section": "supply",
+        "title": "백성익 제주 감귤 연합회 회장, 수입농산물 관리 민간위원 선정",
+        "reason": "생산·수급 기사라기보다 협의체 인사 동정이며 같은 이슈가 정책 카드에 이미 있다.",
+        "suggested_action": "마늘 수급안정 상생간담회나 양구 애호박 생산교육으로 대체."
+      },
+      {
+        "type": "promotional_filler",
+        "severity": "medium",
+        "section": "supply",
+        "title": "대경사과원예농협, 자두 ·복숭아 본격 출하",
+        "reason": "초출하 행사 중심의 지역 단신으로 가격·수급 신호가 약하다.",
+        "suggested_action": "충북 햇사레 복숭아 출하실적/APC 후보처럼 물량·판로 정보가 있는 기사 선호."
       },
       {
         "type": "weak_core",
         "severity": "medium",
         "section": "dist",
-        "title": "토마토 선별·포장, 로봇이 다 해줍니다",
-        "reason": "APC 자동화 소재는 좋지만 기사 본문이 사진설명 수준이라 core 카드로는 정보 밀도가 낮다.",
-        "suggested_action": "core는 가락시장 시범휴업이나 출하예측 확대 같은 운영 영향 큰 기사에 배정하고 이 카드는 tail 처리."
+        "title": "강서 시장 시경상생협의회, “ 시장 영업공간 분리 반대”",
+        "reason": "도매시장 제도 갈등은 적합하지만 유통 섹션 유일 core로는 영향 범위가 좁다.",
+        "suggested_action": "전주원협 공동선별·수출 또는 베트남 물류센터를 core로 승격."
       },
       {
         "type": "promotional_filler",
         "severity": "medium",
         "section": "dist",
-        "title": "대아청과·애월 농협 , 제주산 농산물 유통 활성화 '맞손'",
-        "reason": "간담회·협력 홍보 성격이 강하고 실제 물량, 가격, 운영 변화가 제한적이다.",
-        "suggested_action": "후순위 tail로 낮추거나, 구체적 수출·물류비·시장 운영 기사로 교체."
+        "title": "대신농협, 가락공판장 견학…간담회도 열어",
+        "reason": "견학·간담회 단신으로 실제 유통 운영 변화나 물량 효과가 약하다.",
+        "suggested_action": "화훼공판장 노후시설, aT 유통본부 회의, 제주 스마트공동물류센터 후보 검토."
       },
       {
-        "type": "duplication",
+        "type": "promotional_filler",
+        "severity": "medium",
+        "section": "dist",
+        "title": "'지역 농산물 판로확대 '... 동서울-영주낭주농협 '직거래장' 개점",
+        "reason": "지역 매장 개점 홍보 성격이 강하고 유통 구조·물류 이슈보다 후순위다.",
+        "suggested_action": "물류센터·공동선별·공판장 구조개선 기사로 교체."
+      },
+      {
+        "type": "weak_core",
         "severity": "medium",
         "section": "pest",
-        "title": "해남군 '고온다습 장마철 '고추 병해충 예방 당부",
-        "reason": "경북 고추 탄저병·세균성점무늬병 카드와 병해충 테마가 겹치며 지역 안내 성격이 강하다.",
-        "suggested_action": "고추 병해충은 한 장으로 압축하고 다른 작목·피해 현장 후보를 넣을 것."
-      },
-      {
-        "type": "missed_opportunity",
-        "severity": "medium",
-        "section": "pest",
-        "title": "사과 나무 무더기로 죽었는데 원인 불명?…경찰 수사까지",
-        "reason": "원자료에 현장 피해와 행정 조사·수사까지 포함된 강한 사과 피해 후보가 있었지만 제외됐다.",
-        "suggested_action": "일반 주간농사메모나 중복 고추 안내 대신 이 현장 피해 기사를 검토."
-      },
-      {
-        "type": "weak_tail",
-        "severity": "medium",
-        "section": "pest",
-        "title": "[주간농사메모] 병해충 발생 여부 수시 예찰",
-        "reason": "범용 농사 달력형 기사로 특정 병해충 위험, 발생 규모, 대응 주체가 약하다.",
-        "suggested_action": "raw pool이 약할 때의 최후 tail로만 사용하고 구체 피해·방제 기사 우선."
-      },
-      {
-        "type": "summary_noise",
-        "severity": "major",
-        "section": "multiple",
-        "title": "여러 카드 요약",
-        "reason": "YTN, 뉴스핌, 대구신문 등에서 방송 고지, AI 요약 안내, 잘린 문장이 그대로 남아 briefing 요약 품질을 떨어뜨린다.",
-        "suggested_action": "요약은 핵심 수치·원인·영향 중심으로 재작성하고 사이트 boilerplate를 제거."
+        "title": "고성군 밤나무병해충 무인항공기방제 13일부터 40일간 시행",
+        "reason": "구체적 방제 규모는 있으나 지역 밤나무 방제 공지에 가까워 core로는 약하다.",
+        "suggested_action": "사과 장마철 화상병·탄저병 또는 고추 탄저병을 core로 올림."
       }
     ]
   },
   "editorial_suggested_guardrails": {
     "driver_tags": [
       "commodity_board",
+      "commodity_board_low_coverage",
       "editorial_section_fit",
       "editorial_noise_filter",
-      "editorial_duplicate_topic",
       "editorial_core_pick",
       "editorial_missed_opportunity"
     ],
@@ -180,7 +181,7 @@
     },
     "section_low_fit_rescue_min": 0.35,
     "high_score_low_fit_rescue_margin": 4.2,
-    "tail_score_floor_delta": 0.8,
+    "tail_score_floor_delta": 0.4,
     "core_fit_min": {
       "default": 1.3,
       "supply": 1.5,
@@ -208,7 +209,7 @@
     "mode": "shadow_replay_loop",
     "proposal_only": true,
     "target_score": 95.0,
-    "current_editorial_score": 88.0,
+    "current_editorial_score": 83.0,
     "target_status": "needs_iteration",
     "iteration_budget": 3,
     "promotion_gates": {
@@ -225,7 +226,7 @@
         "supply": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 193,
+          "raw_candidates": 203,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -237,7 +238,7 @@
         "policy": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 81,
+          "raw_candidates": 111,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -249,12 +250,12 @@
         "dist": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 40,
+          "raw_candidates": 52,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
           "count_floor": 3,
-          "core_count": 2,
+          "core_count": 1,
           "fill_ratio": 1.0,
           "score": 100.0
         },
@@ -266,7 +267,7 @@
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
           "count_floor": 3,
-          "core_count": 1,
+          "core_count": 2,
           "fill_ratio": 1.0,
           "score": 100.0
         }
@@ -284,7 +285,6 @@
     "guardrail_focus": [
       "core_quality",
       "missed_opportunity",
-      "article_selection",
       "noise_control",
       "section_fit"
     ],
@@ -302,12 +302,6 @@
         "reason": "The raw pool contained stronger alternatives than selected cards."
       },
       {
-        "kind": "story_dedupe",
-        "target": "story_signature_gate",
-        "direction": "tighten",
-        "reason": "Multiple cards covered the same issue and reduced briefing breadth."
-      },
-      {
         "kind": "noise_filter",
         "target": "semantic_false_positive_gate",
         "direction": "tighten",
@@ -322,7 +316,8 @@
     ],
     "current_selection_guardrails": {
       "driver_tags": [
-        "commodity_board"
+        "commodity_board",
+        "commodity_board_low_coverage"
       ],
       "section_card_min_fit": {
         "default": 0.8,
