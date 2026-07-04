@@ -2534,6 +2534,10 @@ SECTIONS: list[SectionConfig] = [
             "광역수급관리센터 수급 관리",
             "화훼공판장 경매",
             "절화 경매",
+            # 시장 운영 상태 변화(휴업·개장 일정)는 유통 독자에게 직접적인 운영 정보
+            "도매시장 휴업", "도매시장 휴장", "공판장 휴장", "도매시장 개장",
+            "도매시장 경매 일정", "농산물 물류센터 준공", "스마트 공동물류센터",
+            "농산물 콜드체인 물류", "도매법인 농산물 거래",
             # 유통 현장·운영·구조 개편
             "가락시장 운영", "가락시장 주5일", "도매시장 현대화", "도매시장 운영 개선",
             "농산물 유통 현장", "농산물 산지 유통",
@@ -2600,12 +2604,40 @@ SECTIONS: list[SectionConfig] = [
         "key": "pest",
         "title": "생육 리스크 및 방제",
         "color": "#b45309",
+        # 병명·해충명 × 발생·확산·방제 조합의 광역 시드 — 특정 사건이 아닌 병해충 클래스 단위 리콜
         "queries": [
+            # 기존 핵심 시드
             "과수화상병 방제", "탄저병 방제", "월동 해충 방제",
             "냉해 동해 과수 피해", "병해충 예찰 방제", "생육 관리 저온피해",
             "과수화상병 매몰 농가", "사과 과수원 붉은 죽음", "풀무치 돌발해충 방제",
+            # 병명별 시드 (주요 원예 병해)
+            "고추 탄저병 방제", "단감 탄저병", "포도 탄저병", "과수 궤양병",
+            "역병 방제 농작물", "노균병 방제", "흰가루병 방제", "잿빛곰팡이병 방제",
+            "세균성점무늬병 방제", "무름병 방제 채소", "뿌리혹병 원인", "시들음병 방제",
+            "바이러스병 농작물", "선충 피해 방제",
+            # 해충별 시드
+            "갈색날개매미충 방제", "미국선녀벌레 방제", "꽃매미 방제", "응애 방제 과수",
+            "진딧물 방제 농작물", "총채벌레 방제", "노린재 방제 과수", "나방 방제 농작물",
+            "돌발해충 발생 방제",
+            # 발생·확산·경보류
+            "병해충 주의보", "병해충 발생 경보", "농작물 병해충 확산", "과수원 집단 고사",
+            "농작물 고사 원인", "병해충 발생 정보",
+            # 기상·생육 리스크
+            "폭염 농작물 피해", "장마 농작물 병해충", "침수 농작물 피해", "우박 과수 피해",
+            "일소 피해 과수", "고온 생리장해 농작물",
+            # 방제 행정·검역
+            "긴급 방제 농작물", "공동방제 항공방제", "병해충 검역 격리",
         ],
-        "must_terms": ["방제", "병해충", "약제", "살포", "예찰", "과수화상병", "화상병", "붉은 죽음", "매몰", "탄저병", "돌발해충", "풀무치", "메뚜기", "냉해", "동해", "저온피해", "서리", "생육", "월동"],
+        "must_terms": [
+            "방제", "병해충", "약제", "살포", "예찰", "과수화상병", "화상병", "붉은 죽음", "매몰",
+            "탄저병", "돌발해충", "풀무치", "메뚜기", "냉해", "동해", "저온피해", "서리", "생육", "월동",
+            # 병명·해충명 어휘 확장 (섹션 적합도·키워드 강도 계산에 사용)
+            "역병", "노균병", "흰가루병", "잿빛곰팡이", "세균성점무늬병", "무름병", "뿌리혹",
+            "시들음", "궤양병", "바이러스병", "선충", "갈색날개매미충", "미국선녀벌레", "꽃매미",
+            "응애", "진딧물", "총채벌레", "노린재", "매미충", "깍지벌레",
+            # 발생·리스크 어휘
+            "주의보", "경보", "고사", "방역", "검역", "격리", "생리장해", "일소", "우박", "침수",
+        ],
     },
 ]
 
@@ -3674,7 +3706,8 @@ def _dedupe_by_event_key(items: list["Article"], section_key: str) -> list["Arti
         pass
 
     out: list["Article"] = []
-    # 제목 유사도 기반 추가 dedup: 이벤트 키가 없어 통과하는 중복 기사 제거
+    _out_keys: list[str | None] = []
+    # 제목 유사도 + 사건 시그니처 기반 추가 dedup: 이벤트 키가 없어 통과하는 중복 기사 제거
     _seen_title_keys: list[str] = []
     for a in items:
         k = _event_key(a, section_key)
@@ -3684,9 +3717,22 @@ def _dedupe_by_event_key(items: list["Article"], section_key: str) -> list["Arti
         _tk = getattr(a, "title_key", "") or norm_title_key(a.title or "")
         if _tk and any(_is_similar_title(_tk, sk) for sk in _seen_title_keys):
             continue
+        # 사건 시그니처 체크: 매체만 다른 같은 사건이면 스킵.
+        # 단, 두 기사 모두 명시적 이벤트 키가 있고 서로 다르면 파이프라인이
+        # 이미 별개 사건으로 판정한 것이므로 퍼지 시그니처로 뒤집지 않는다.
+        _sig_dup = False
+        for kept, kept_k in zip(out, _out_keys):
+            if k and kept_k and k != kept_k:
+                continue
+            if _same_event_articles_reason(a, kept):
+                _sig_dup = True
+                break
+        if _sig_dup:
+            continue
         if _tk:
             _seen_title_keys.append(_tk)
         out.append(a)
+        _out_keys.append(k)
     return out
 
 
@@ -3887,8 +3933,114 @@ def is_dist_labor_issue_without_logistics_action(title: str, desc: str) -> bool:
     )
 
 
+_CORE_OPINION_TITLE_MARKERS = (
+    "취재수첩", "기자수첩", "데스크칼럼", "칼럼", "기고", "사설", "오피니언", "독자기고", "기자의 눈",
+)
+_CORE_CEREMONY_TITLE_TERMS = (
+    "취임", "이임", "부임", "연임", "위촉", "임명장", "선출", "당선", "표창", "시상",
+    "수상", "포상", "기념식", "개소식", "준공식", "선포식", "발대식", "출범식", "이취임",
+)
+_CORE_EDU_VISIT_TITLE_TERMS = (
+    "견학", "체험", "배웠다", "배운다", "배우다", "연수", "워크숍", "특강", "초청",
+    "벤치마킹", "교육",
+    "민생 행보", "민생 현장", "현장 행보", "영농상담", "찾아간다",
+)
+# 회의체 명칭은 단체 이름의 일부일 수 있어(예: ○○상생협의회의 반대 성명),
+# 제목에 개최·참석류 동사가 함께 있을 때만 행사 기사로 판정한다.
+_CORE_MEETING_EVENT_TERMS = ("협의회", "간담회", "세미나", "포럼")
+_CORE_MEETING_EVENT_VERB_RX = re.compile(r"열|개최|가졌|참석|성료")
+_CORE_PROMO_TITLE_TERMS = (
+    "특별전", "판촉", "판매전", "홍보", "캠페인", "페스티벌", "축제", "시식", "증정",
+    "경품", "팔아주기", "기탁", "전달식", "나눔", "자매결연", "맞손", "업무협약", "협약",
+    "개점", "개업",
+)
+_CORE_ADMIN_INTERNAL_TITLE_TERMS = (
+    "실행계획 수립", "경영평가", "경영혁신", "조직개편", "비전 선포", "청렴", "윤리경영",
+    "공급 완료", "지원 완료", "보급 완료", "접수 완료", "추진 실적",
+)
+# 조합·법인의 물품 지원(자재·장비·기증) 홍보 기사 — 시장 신호 수치 없으면 소프트뉴스
+_CORE_SUPPORT_GRANT_RX = re.compile(
+    r"(?:물품|자재|장비|기자재|농자재|물류기자재|트랩|방제기).{0,12}(?:지원|기증|전달|보급|공급|할인)"
+)
+_CORE_SUPPORT_GRANT_ORG_RX = re.compile(
+    r"[가-힣A-Za-z]{1,12}(?:청과|농협|조합|공판장|연합회)[,\s].{0,20}(?:지원|기증|전달)"
+)
+def _has_market_metric_evidence(text: str) -> bool:
+    """가격·물량 수치가 시장 맥락과 함께 등장하는지(소프트뉴스 강등의 유일한 예외)."""
+    body = _nfkc_lower(text or "")
+    if not body:
+        return False
+    # NOTE: 한글은 \w에 포함되어 \b가 단위+조사('톤을') 사이에서 성립하지 않으므로
+    #       라틴 문자 연속 방지 lookahead로 단위 경계를 판정한다
+    return bool(re.search(
+        r"\d[\d,]*(?:\.\d+)?\s*(?:톤|t|㎏|kg|억원|만원|원|%|ha|㏊|상자|박스)(?![A-Za-z]).{0,30}"
+        r"(?:가격|시세|출하|반입|경매|경락|물량|생산|수급|거래|피해|방제|수매|안정|방출|비축)"
+        r"|(?:가격|시세|값|출하량|반입량|경매가|경락가|최고가|물량|생산량|피해).{0,16}\d",
+        body,
+        re.IGNORECASE,
+    ))
+
+
+def _soft_news_core_demote_reason(article: "Article") -> str:
+    """행사·교육·인사·판촉·칼럼 등 소프트뉴스는 섹션 불문 core 승격을 금지한다.
+    tail 카드로는 남을 수 있으나 핵심 슬롯은 하드뉴스가 차지해야 한다."""
+    title = str(getattr(article, "title", "") or "").strip()
+    if not title:
+        return ""
+    title_l = _nfkc_lower(title)
+    if is_news_roundup_brief_context(title, getattr(article, "description", "") or ""):
+        return "roundup_brief_core"
+    # '[2일 ○○도] … 등' 형태의 지역 동정 라운드업 제목
+    if re.match(r"^\s*[\[〔【]", title) and re.search(r"(?:등|외)\s*$", title):
+        return "regional_roundup_core"
+    # '[주간농사메모]' 같은 고정 코너 안내는 당일 뉴스가 아니라 상시 가이드
+    if re.match(r"^\s*[\[〔【]\s*(?:주간|월간|금주|오늘의)", title):
+        return "recurring_guide_core"
+    # 과거 회고·연대기성 기획은 당일 핵심 뉴스가 아니다
+    if re.search(r"(?:19|20)\d0년대", title) or any(t in title_l for t in ("회고", "돌아본", "그때 그")):
+        return "retrospective_feature_core"
+    if any(marker in title_l for marker in _CORE_OPINION_TITLE_MARKERS):
+        return "opinion_column_core"
+    text = _editorial_safe_text(article)
+    # 행사·교육·판촉 제목이라도 구체적 가격·물량 수치가 있으면 시장 뉴스로 취급
+    if _has_market_metric_evidence(text):
+        return ""
+    if any(term in title_l for term in _CORE_CEREMONY_TITLE_TERMS):
+        return "soft_news_ceremony_core"
+    if any(term in title_l for term in _CORE_EDU_VISIT_TITLE_TERMS):
+        return "soft_news_education_core"
+    if (
+        any(term in title_l for term in _CORE_MEETING_EVENT_TERMS)
+        and _CORE_MEETING_EVENT_VERB_RX.search(title_l)
+    ):
+        return "soft_news_education_core"
+    if any(term in title_l for term in _CORE_PROMO_TITLE_TERMS):
+        return "soft_news_promo_core"
+    if any(term in title_l for term in _CORE_ADMIN_INTERNAL_TITLE_TERMS):
+        return "soft_news_admin_internal_core"
+    if _CORE_SUPPORT_GRANT_RX.search(title_l) or _CORE_SUPPORT_GRANT_ORG_RX.search(title):
+        return "soft_news_support_grant_core"
+    return ""
+
+
+_PEST_ACTIVE_RISK_TITLE_TERMS = (
+    "방제", "발생", "확산", "피해", "예찰", "비상", "주의", "경보", "감염", "고사",
+    "매몰", "확진", "냉해", "우박", "일소", "침수", "차단",
+)
+
+
 def _editorial_safe_core_demote_reason(article: "Article", section_key: str) -> str:
-    if section_key not in {"supply", "policy", "dist"}:
+    if section_key not in {"supply", "policy", "dist", "pest"}:
+        return ""
+    if section_key == "pest":
+        soft = _soft_news_core_demote_reason(article)
+        if soft:
+            return soft
+        # pest core는 당일 발생·확산·방제 등 활성 리스크 신호가 제목에 있어야 한다
+        # (방제 편의 기술·품종 보급·AI 서비스 소개류는 tail로만)
+        pest_title = _nfkc_lower(getattr(article, "title", "") or "")
+        if pest_title and not any(term in pest_title for term in _PEST_ACTIVE_RISK_TITLE_TERMS):
+            return "pest_no_active_risk_core"
         return ""
     text = _editorial_safe_text(article)
     title_l = _nfkc_lower(getattr(article, "title", "") or "")
@@ -4030,7 +4182,8 @@ def _editorial_safe_core_demote_reason(article: "Article", section_key: str) -> 
             ops_hits = count_any(text, tuple(term.lower() for term in _EDITORIAL_SAFE_DIST_OPS_TERMS))
             if "현장투어" in text or "소득작목" in text or ops_hits <= 1:
                 return "dist_event_or_development_without_ops"
-    return ""
+    # 일반화 소프트뉴스 게이트 (기존 세부 사유가 모두 통과한 뒤 마지막으로 적용)
+    return _soft_news_core_demote_reason(article)
 
 
 def _editorial_safe_soft_penalty(article: "Article", section_key: str) -> float:
@@ -4279,6 +4432,240 @@ def _is_similar_title(k1: str, k2: str) -> bool:
         pass
 
     return False
+
+
+# -----------------------------
+# 사건(event) 단위 동일성 판정 (일반화)
+# - 제목/본문에서 품목·행위자·행위·지역·수량 엔티티를 구조적으로 추출해
+#   "매체만 다른 같은 사건" 또는 "같은 사건의 섹션 교차 재배치"를 판정한다.
+# - 특정 기사 제목·URL·매체·날짜 하드코딩 없이 동작한다.
+# -----------------------------
+_EVENT_QTY_TOKEN_RX = re.compile(
+    r"(\d[\d,]*(?:\.\d+)?)\s*(조|억|만|천)?\s*(\d[\d,]*)?\s*"
+    r"(억\s*원|만\s*원|천\s*원|원|톤|t|㎏|kg|퍼센트|%|헥타르|㏊|ha|박스|상자|포기|그루|개|알|건|명|호|가구)",
+    re.IGNORECASE,
+)
+_EVENT_QTY_SCALE = {"조": 1e12, "억": 1e8, "만": 1e4, "천": 1e3}
+_EVENT_QTY_UNIT_CANON = {
+    "t": "t", "톤": "t", "kg": "kg", "㎏": "kg",
+    "%": "pct", "퍼센트": "pct",
+    "원": "won", "억원": "won", "만원": "won", "천원": "won",
+    "개": "cnt", "알": "cnt", "건": "cnt", "명": "cnt", "호": "cnt", "가구": "cnt",
+    "그루": "cnt", "포기": "cnt",
+    "ha": "ha", "㏊": "ha", "헥타르": "ha",
+    "박스": "box", "상자": "box",
+}
+_EVENT_QTY_UNIT_EXTRA_SCALE = {"억원": 1e8, "만원": 1e4, "천원": 1e3}
+
+_EVENT_GOV_ACTOR_TERMS = (
+    "정부", "농식품부", "농림축산식품부", "해양수산부", "해수부", "기재부", "기획재정부",
+    "농진청", "농촌진흥청", "산림청", "관세청", "검역본부", "농림축산검역본부",
+    "국무총리", "국회", "공정거래위원회", "식약처", "at", "한국농수산식품유통공사",
+    "농관원", "국립농산물품질관리원", "통계청",
+)
+# 행위(action) 그룹: 같은 사건을 다른 문장으로 보도해도 묶이도록 표면형을 그룹화
+_EVENT_ACTION_GROUPS: dict[str, tuple[str, ...]] = {
+    "reserve": ("확보", "비축", "수매", "가용물량", "방출", "공급 확대", "공급확대", "들여온다", "추가 수입", "추가수입"),
+    "stabilize": ("수급 안정", "수급안정", "가격 안정", "가격안정", "안정화", "안정 대책", "안정대책",
+                  "수급 대책", "수급대책", "물가 안정", "물가안정", "작황 점검", "생육 점검", "현장 점검",
+                  "수급 점검", "총력", "수급 불안", "수급 비상", "공급 불안", "생산 안정"),
+    "discount": ("할인", "쿠폰", "환급", "소비촉진", "소비 촉진"),
+    "destroy": ("갈아엎", "산지폐기", "시장격리", "출하정지", "폐기"),
+    "tariff": ("할당관세", "관세 인하", "무관세"),
+    "trade": ("수출", "수출길", "선적"),
+    "market_open": ("초매식", "첫 경매", "첫경매", "경매 개시", "경매 시작", "산지경매", "경매 개장",
+                    "첫 출하", "첫출하", "첫 수확", "본격 출하", "수확 시작"),
+    "market_close": ("휴업", "휴장", "휴무"),
+    "pest_control": ("방제", "예찰", "약제 살포", "공동방제", "항공방제"),
+    "price_up": ("급등", "폭등", "오름세", "치솟", "올랐다", "강세"),
+    "price_down": ("급락", "폭락", "반토막", "와르르", "내림세", "약세", "떨어져", "떨어지"),
+}
+# 사건 시그니처 품목 확장: 원예 외에 정책·물가 기사에서 반복 등장하는 기초 품목
+_EVENT_EXTRA_COMMODITY_TERMS = ("계란", "달걀", "한우", "돼지고기", "닭고기", "쌀")
+# 섹션 내 같은 (품목, 행위그룹) 카드 반복 상한
+# 경매 개장·수출·할인 등 이벤트성 행위는 같은 품목으로 1건이면 충분하다 (편집 다양성)
+_SECTION_THEME_CAP = 1
+_THEME_CAP_ACTION_GROUPS = frozenset(("market_open", "destroy", "discount", "trade", "market_close"))
+
+
+def _extract_event_quantities(text: str) -> frozenset[tuple[str, float]]:
+    """정규화된 (단위, 수량) 집합. '2만7000t'과 '2.7만t'을 같은 값으로 인식한다."""
+    out: set[tuple[str, float]] = set()
+    if not text:
+        return frozenset()
+    for m in _EVENT_QTY_TOKEN_RX.finditer(text):
+        base_raw, scale, rest_raw, unit_raw = m.group(1), m.group(2), m.group(3), m.group(4)
+        try:
+            base_val = float(base_raw.replace(",", ""))
+        except (TypeError, ValueError):
+            continue
+        unit_compact = re.sub(r"\s+", "", unit_raw or "").lower()
+        unit_extra = _EVENT_QTY_UNIT_EXTRA_SCALE.get(unit_compact, 1.0)
+        if scale:
+            # '1억5000만원' = 1×억 + 5000×만원 — 단위 스케일은 뒤 숫자에만 적용한다
+            value = base_val * _EVENT_QTY_SCALE.get(scale, 1.0)
+            if rest_raw:
+                try:
+                    value += float(rest_raw.replace(",", "")) * unit_extra
+                except (TypeError, ValueError):
+                    pass
+        else:
+            value = base_val * unit_extra
+        canon = _EVENT_QTY_UNIT_CANON.get(unit_compact)
+        if not canon or value <= 0:
+            continue
+        # '1㎏당', '1개당' 같은 단위 기준 표현은 수량이 아니다
+        if canon in ("kg", "cnt", "box") and value <= 1:
+            continue
+        try:
+            out.add((canon, float(f"{value:.3g}")))
+        except (ValueError, OverflowError):
+            continue
+    return frozenset(out)
+
+
+def _salient_event_quantities(quantities: frozenset[tuple[str, float]]) -> frozenset[tuple[str, float]]:
+    """사건 규모를 특정하는 유의미 수량만 남긴다.
+    본문에 흔한 소액 가격·비율 수치는 서로 다른 사건에서도 우연히 겹치기 쉽다."""
+    return frozenset(
+        (unit, value) for unit, value in quantities
+        if (unit == "won" and value >= 1e7)
+        or (unit == "t" and value >= 10)
+        or (unit == "cnt" and value >= 1e4)
+        or (unit == "ha" and value >= 50)
+        or (unit == "box" and value >= 100)
+    )
+
+
+def _extract_event_commodities(title: str) -> frozenset[str]:
+    """제목에서 품목 엔티티 추출. 부분문자열 오탐('배추'⊂'양배추')은 최장 일치만 사용."""
+    ttl = _nfkc_lower(title or "")
+    if not ttl:
+        return frozenset()
+    matched = [t for t in HORTI_ITEM_TERMS_L if len(t) >= 2 and t in ttl]
+    matched += [t for t in _EVENT_EXTRA_COMMODITY_TERMS if t in ttl]
+    maximal = [
+        t for t in matched
+        if not any(t != other and t in other for other in matched)
+    ]
+    return frozenset(TOPIC_REP_BY_TERM_L.get(t, t) for t in maximal)
+
+
+def _extract_event_actions(text: str) -> frozenset[str]:
+    body = _nfkc_lower(text or "")
+    if not body:
+        return frozenset()
+    return frozenset(
+        group for group, terms in _EVENT_ACTION_GROUPS.items()
+        if any(term in body for term in terms)
+    )
+
+
+_EVENT_AT_CORP_RX = re.compile(r"(?<![a-z0-9])at(?![a-z0-9])")
+
+
+def _extract_event_gov_actors(text: str) -> frozenset[str]:
+    body = _nfkc_lower(text or "")
+    if not body:
+        return frozenset()
+    out = {t for t in _EVENT_GOV_ACTOR_TERMS if t != "at" and t in body}
+    # aT(한국농수산식품유통공사)는 라틴 단어 내부 부분일치(platform 등)를 배제하고 판정
+    if _EVENT_AT_CORP_RX.search(body):
+        out.add("at")
+    return frozenset(out)
+
+
+@lru_cache(maxsize=16384)
+def _event_story_signature(title: str, desc: str) -> tuple[frozenset, frozenset, frozenset, frozenset, frozenset]:
+    """(품목, 행위그룹, 정부행위자, 지역, 수량) 시그니처.
+    본문은 리드(앞부분)만 사용 — 전문 크롤링 본문의 잡다한 수치·지명 오탐 방지."""
+    lead = (desc or "")[:400]
+    full = f"{title or ''} {lead}"
+    commodities = _extract_event_commodities(title or "")
+    actions = _extract_event_actions(full)
+    actors = _extract_event_gov_actors(full)
+    try:
+        regions = frozenset(_region_set(_nfkc_lower(full)))
+    except Exception:
+        regions = frozenset()
+    quantities = _extract_event_quantities(full)
+    return (commodities, actions, actors, regions, quantities)
+
+
+def _same_event_story_reason(title_a: str, desc_a: str, title_b: str, desc_b: str) -> str:
+    """두 기사가 같은 사건인지 판정. 다른 사건이면 빈 문자열."""
+    try:
+        comm_a, act_a, gov_a, reg_a, qty_a = _event_story_signature(title_a or "", desc_a or "")
+        comm_b, act_b, gov_b, reg_b, qty_b = _event_story_signature(title_b or "", desc_b or "")
+    except Exception:
+        return ""
+    shared_comm = comm_a & comm_b
+    shared_act = act_a & act_b
+    shared_qty = qty_a & qty_b
+    shared_reg = reg_a & reg_b
+    both_gov = bool(gov_a) and bool(gov_b)
+    # 병명이 서로 다른 병해충 기사는 품목·지역·행위가 겹쳐도 다른 사건이다
+    #   (예: 사과 탄저병 방제 vs 사과 과수화상병 매몰 — 둘 다 pest_control이지만 별개 사건)
+    try:
+        text_a = _nfkc_lower(f"{title_a or ''} {(desc_a or '')[:400]}")
+        text_b = _nfkc_lower(f"{title_b or ''} {(desc_b or '')[:400]}")
+        dis_a = {t for t in _PEST_NAMED_DISEASE_TERMS if t in text_a}
+        dis_b = {t for t in _PEST_NAMED_DISEASE_TERMS if t in text_b}
+        if dis_a and dis_b and not (dis_a & dis_b):
+            return ""
+    except Exception:
+        pass
+    if shared_comm and shared_qty:
+        return "same_commodity_quantity"
+    if shared_comm and shared_act and (both_gov or shared_reg):
+        return "same_commodity_action_context"
+    if shared_comm and len(shared_act) >= 2:
+        return "same_commodity_multi_action"
+    # 품목이 없는 정부 대책 사건: 우연히 겹치기 쉬운 소액·비율 수치는 제외하고
+    # 사건 규모를 특정하는 유의미 수량이 겹칠 때만 같은 사건으로 본다
+    shared_salient_qty = _salient_event_quantities(qty_a) & _salient_event_quantities(qty_b)
+    if both_gov and shared_act and shared_salient_qty:
+        return "same_gov_action_quantity"
+    # 정부 발표를 다룬 두 기사가 서로 다른 수치 2개 이상을 정확히 공유하면 같은 발표다
+    # (예: '3.2%가 아닌 3.6%' 같은 수치 쌍이 두 제목·리드에 반복)
+    if both_gov and len(shared_qty) >= 2:
+        return "same_gov_multi_quantity"
+    return ""
+
+
+def _same_event_articles_reason(a: "Article", b: "Article") -> str:
+    return _same_event_story_reason(
+        getattr(a, "title", "") or "", getattr(a, "description", "") or "",
+        getattr(b, "title", "") or "", getattr(b, "description", "") or "",
+    )
+
+
+def _title_token_jaccard(title_a: str, title_b: str) -> float:
+    """제목 토큰(2자 이상) 자카드 유사도 — 어순·수식어만 다른 같은 사건 백스톱."""
+    tok_a = set(re.findall(r"[가-힣A-Za-z0-9]{2,}", _nfkc_lower(title_a or "")))
+    tok_b = set(re.findall(r"[가-힣A-Za-z0-9]{2,}", _nfkc_lower(title_b or "")))
+    if len(tok_a) < 4 or len(tok_b) < 4:
+        return 0.0
+    union = tok_a | tok_b
+    if not union:
+        return 0.0
+    return len(tok_a & tok_b) / len(union)
+
+
+def _duplicate_story_pair_reason(a: "Article", b: "Article") -> str:
+    """URL·제목 유사도·사건 시그니처를 통합한 스토리 중복 판정."""
+    url_a = str(getattr(a, "canon_url", "") or "")
+    url_b = str(getattr(b, "canon_url", "") or "")
+    if url_a and url_b and url_a == url_b:
+        return "same_url"
+    try:
+        if _is_similar_title(getattr(a, "title_key", "") or "", getattr(b, "title_key", "") or ""):
+            return "similar_title"
+    except Exception:
+        pass
+    if _title_token_jaccard(getattr(a, "title", "") or "", getattr(b, "title", "") or "") >= 0.6:
+        return "similar_title_tokens"
+    return _same_event_articles_reason(a, b)
 
 
 # -----------------------------
@@ -20473,77 +20860,6 @@ def _build_seed_coverage_ledger(
     return rows
 
 
-def _recall_common_queries(section_key: str, report_date: str | None = None) -> list[str]:
-    _ = report_date
-    common: list[str] = []
-    if section_key == "supply":
-        common = [
-            "농산물 가격 동향",
-            "농산물 수급 동향",
-            "과일 가격",
-            "채소 가격",
-            "과일 수급",
-            "채소 수급",
-            "농산물 출하 동향",
-            "화훼 경매",
-            "절화 경매",
-            "꽃시장 경매",
-        ]
-    elif section_key == "policy":
-        common = list(POLICY_MARKET_BRIEF_QUERIES) + [
-            "농식품부 농산물 수급 점검",
-            "농식품부 가격 점검",
-            "농산물 소비자물가",
-            "농산물 수급 안정 대책",
-            "농산물가격안정제도",
-            "농산물 가격안정제도",
-            "농산물가격안정제도 차액 지원",
-            "평균가격 경영비 차액 지원 농산물",
-            "농산물 가격안정 지원",
-            "농산물 최저가격 지원",
-            "농산물 가격안정 지원사업",
-            "농식품부 농산물 유통 전문가 협의체",
-            "농산물 유통 구조 개선",
-            "농산물 최소가격 보전제",
-            "온라인 도매시장 정책",
-            "농식품부 원예",
-        ]
-    elif section_key == "dist":
-        common = [
-            "도매시장 경매",
-            "공판장 경매",
-            "가락시장 경락",
-            "온라인 도매시장 제도 개선",
-            "도매시장 제도 개선",
-            "품목농협 산지유통",
-            "원예농협 산지유통",
-            "연합판매사업 직거래",
-            "농산물 판로 확대",
-            "농산물 공동구매",
-            "농산물 직거래 장터",
-            "농산물 유통 거점",
-            "푸드통합지원센터 직거래",
-            "산지유통센터",
-            "스마트 APC",
-            "농산물 광역수급관리센터",
-        ]
-    elif section_key == "pest":
-        common = [
-            "과수 병해충 방제",
-            "병해충 예찰",
-            "검역 병해충",
-            "과수화상병 예방",
-            "과수화상병 방제 계획",
-            "과수화상병 약제 공급",
-            "탄저병 방제",
-            "월동 병해충 예찰",
-            "시설채소 방제",
-            "토마토뿔나방 약제 지원",
-            "토마토뿔나방 전수조사",
-        ]
-    return _dedupe_queries(common)
-
-
 def _managed_recall_anchor_dt(report_date: str | None) -> datetime | None:
     try:
         day = datetime.strptime(str(report_date or "").strip(), "%Y-%m-%d").date()
@@ -20552,7 +20868,7 @@ def _managed_recall_anchor_dt(report_date: str | None) -> datetime | None:
         return None
 
 
-def _recall_common_queries(section_key: str, report_date: str | None = None) -> list[str]:  # type: ignore[no-redef]
+def _recall_common_queries(section_key: str, report_date: str | None = None) -> list[str]:
     common: list[str] = []
     if section_key == "supply":
         common = [
@@ -20648,6 +20964,18 @@ def _recall_common_queries(section_key: str, report_date: str | None = None) -> 
             "사과 탄저병 발생 피해",
             "고추 세균성점무늬병 방제",
             "포도 탄저병 방제",
+            # 병해충 클래스 광역 보강 (특정 사건 아님)
+            "병해충 주의보",
+            "농작물 병해충 확산",
+            "과수원 집단 고사",
+            "긴급 방제 농작물",
+            "갈색날개매미충 방제",
+            "미국선녀벌레 방제",
+            "총채벌레 방제",
+            "노린재 방제 과수",
+            "뿌리혹병 원인",
+            "폭염 농작물 피해",
+            "장마 농작물 병해충",
             "복숭아 병해충 발생 피해",
             "채소 역병 발생 방제",
         ]
@@ -22457,6 +22785,104 @@ def is_garbled_article_text(title: str, desc: str) -> bool:
     return False
 
 
+_PEST_NAMED_DISEASE_TERMS = (
+    "화상병", "탄저병", "역병", "노균병", "흰가루병", "갈색날개매미충", "미국선녀벌레",
+    "꽃매미", "매미충", "응애", "진딧물", "총채벌레", "나방", "멸구", "풀무치", "메뚜기",
+    "선충", "궤양병", "뿌리혹", "시들음", "바이러스", "병원균", "깍지벌레", "혹병",
+    "노린재", "돌발해충", "잿빛곰팡이", "무름병", "갈반병",
+)
+_PEST_CONTROL_ACTION_TERMS = (
+    "방제", "예찰", "약제", "살포", "방역", "검역", "병해충", "병충해", "병해", "해충",
+    "매몰", "공동방제", "항공방제", "긴급방제", "소독",
+)
+_PEST_GROWTH_RISK_TERMS = (
+    "냉해", "동해", "저온피해", "서리", "우박", "일소", "침수", "생육", "생리장해",
+    "월동", "폭염 피해", "고온 피해", "고사", "말라 죽", "말라죽", "무더기로 죽",
+)
+_PEST_CROP_CONTEXT_TERMS = (
+    "농작물", "과수", "작물", "재배", "과원", "농가", "원예", "채소", "과일", "노지",
+)
+
+
+def _has_pest_or_growth_risk_signal(title: str, desc: str) -> bool:
+    """pest 섹션 양성 신호: 병해충·방제·검역 또는 (생육 리스크 + 농작물 맥락)."""
+    text = _nfkc_lower(f"{title or ''} {desc or ''}")
+    if not text:
+        return False
+    if count_any(text, [w.lower() for w in _PEST_NAMED_DISEASE_TERMS]) >= 1:
+        return True
+    if count_any(text, [w.lower() for w in _PEST_CONTROL_ACTION_TERMS]) >= 1:
+        return True
+    growth_hits = count_any(text, [w.lower() for w in _PEST_GROWTH_RISK_TERMS])
+    crop_hits = count_any(text, [w.lower() for w in _PEST_CROP_CONTEXT_TERMS])
+    return growth_hits >= 1 and crop_hits >= 1
+
+
+_FOODSERVICE_MENU_TITLE_TERMS = (
+    "치킨", "버거", "햄버거", "피자", "커피", "음료", "디저트", "베이커리", "빵값",
+    "외식", "프랜차이즈", "메뉴", "배달비", "식당", "뷔페",
+)
+_FOODSERVICE_PRICE_TERMS = ("인상", "가격", "값", "요금")
+_SUPPLY_DIRECT_MARKET_TITLE_TERMS = (
+    "산지", "도매", "경락", "경매", "출하", "수급", "작황", "농가", "재배",
+    "생산량", "물량", "반입", "폐기", "비축",
+)
+
+
+def is_foodservice_menu_price_story(title: str, desc: str) -> bool:
+    """외식·프랜차이즈 메뉴 가격 기사 판정 — 농산물 수급 기사가 아니다.
+    (원재료 수급난 등 공급망 맥락이 함께 있으면 제외하지 않는다)"""
+    ttl = _nfkc_lower(title or "")
+    if not ttl:
+        return False
+    if count_any(ttl, [w.lower() for w in _FOODSERVICE_MENU_TITLE_TERMS]) < 1:
+        return False
+    if count_any(ttl, [w.lower() for w in _FOODSERVICE_PRICE_TERMS]) < 1:
+        return False
+    if count_any(ttl, [w.lower() for w in _SUPPLY_DIRECT_MARKET_TITLE_TERMS]) >= 1:
+        return False
+    # 제목에 원예 품목이 있으면 품목 수급·가격 기사로 본다 (예: 외식 불황에 배추값 약세)
+    if _extract_event_commodities(title or ""):
+        return False
+    text = _nfkc_lower(f"{title or ''} {desc or ''}")
+    supply_chain_hits = count_any(
+        text,
+        [w.lower() for w in ("산지", "도매시장", "경락", "출하량", "수급난", "작황", "원물", "산지가격", "계약재배")],
+    )
+    return supply_chain_hits <= 0
+
+
+_POLICY_ORG_EVENT_ORG_RX = re.compile(
+    r"[가-힣]{1,12}(?:원예농협|축협|농협|조합|영농조합|영농법인|연합회|협회|공판장|청과)"
+)
+_POLICY_ORG_EVENT_TERMS = (
+    "협의회", "간담회", "워크숍", "세미나", "포럼", "출범식", "개소식", "발대식",
+    "초청", "열어", "열렸다", "개최", "개장", "개점", "초매식", "시상", "수상", "성료",
+)
+_POLICY_ACTION_TITLE_TERMS = (
+    "정책", "대책", "법안", "발의", "개정", "예산", "관세", "할당관세", "비축", "수매",
+    "고시", "시행", "제도", "지원", "검역", "방역", "규제", "브리핑",
+)
+
+
+def _is_policy_org_event_without_policy_action(title: str, desc: str) -> bool:
+    """조합·단체 주관 행사 기사가 정책 섹션에 들어오는 오분류 차단.
+    제목에 정부 행위자·정책 행위가 없으면 정책 기사가 아니다."""
+    ttl = unicodedata.normalize("NFKC", (title or "").strip())
+    if not ttl:
+        return False
+    ttl_l = ttl.lower()
+    if not _POLICY_ORG_EVENT_ORG_RX.search(ttl):
+        return False
+    if count_any(ttl_l, [w.lower() for w in _POLICY_ORG_EVENT_TERMS]) < 1:
+        return False
+    if any(actor in ttl_l for actor in _EVENT_GOV_ACTOR_TERMS):
+        return False
+    if count_any(ttl_l, [w.lower() for w in _POLICY_ACTION_TITLE_TERMS]) >= 1:
+        return False
+    return True
+
+
 def _postbuild_article_reject_reason(a: "Article", section_key: str, *, apply_selection_fit: bool = True) -> str:
     text = ((a.title or "") + " " + (a.description or "")).lower()
     if is_garbled_article_text(a.title or "", a.description or ""):
@@ -22828,6 +23254,8 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str, *, apply_se
                 "농식품 수출", "원산지", "부정유통", "강서 시장", "강서시장",
                 "도매법인", "법인협회", "유통 주체", "유통 혁신", "농산물 유통",
                 "수출", "선적", "공동선별", "공선출하", "경매사", "유통 활성화",
+                # 시장 운영 상태 변화(휴업·개장 일정)는 유통 독자에게 직접적인 운영 정보
+                "휴업", "휴장", "휴무", "개장", "경매 일정",
             ),
         )
         if (
@@ -22920,6 +23348,13 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str, *, apply_se
             or pest_crop_disease_prevention
         ):
             return "pest_partial_mention"
+    # 일반화 양성 게이트 (기존 세부 사유가 모두 통과한 뒤 마지막으로 적용)
+    if section_key == "pest" and not _has_pest_or_growth_risk_signal(a.title or "", a.description or ""):
+        return "pest_no_pest_signal"
+    if section_key == "policy" and _is_policy_org_event_without_policy_action(a.title or "", a.description or ""):
+        return "policy_org_event_not_policy"
+    if section_key == "supply" and is_foodservice_menu_price_story(a.title or "", a.description or ""):
+        return "supply_foodservice_menu_price"
     return ""
 
 
@@ -25918,6 +26353,19 @@ def _placement_save_preproc_cache(raw_by_section: dict[str, list[Article]], star
 
 
 def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst: datetime, end_kst: datetime) -> dict[str, list[Article]]:
+    # 사이트 소개문이 크롤링된 description은 요약·관련성 판정을 오염시키므로 비운다
+    try:
+        _boilerplate_blanked = 0
+        for _bp_items in (raw_by_section or {}).values():
+            for _bp_a in (_bp_items or []):
+                if _is_site_boilerplate_description(getattr(_bp_a, "description", "") or ""):
+                    _bp_a.description = ""
+                    _boilerplate_blanked += 1
+        if _boilerplate_blanked:
+            log.info("[CLEAN] blanked %d site-boilerplate description(s)", _boilerplate_blanked)
+    except Exception as e:
+        log.warning("[WARN] boilerplate description cleanup failed: %s", e)
+
     board_source_by_section: dict[str, list[Article]] = {str(sec.get("key") or "").strip(): [] for sec in SECTIONS if str(sec.get("key") or "").strip()}
     pest_fire_blight_rescue_seed: list[Article] = [
         a
@@ -26441,6 +26889,9 @@ def _build_sections_phase123(
                     break
             if _topic_dup:
                 continue
+            # 사건 시그니처 체크 (품목+행위+수량 기반 동일 사건)
+            if any(_same_event_articles_reason(a, p) for p in picked):
+                continue
             picked.append(a)
             _picked_sigs.append((_a_comms, _a_issues))
             if len(picked) >= MAX_PER_SECTION:
@@ -26511,6 +26962,9 @@ def _build_sections_phase123(
                             topic_dup = True
                     except Exception:
                         pass
+                # 사건 시그니처 fallback (수량·행위자·행위 조합 기반)
+                if not topic_dup and _same_event_articles_reason(articles[i], articles[j]):
+                    topic_dup = True
                 if topic_dup:
                     score_i = float(getattr(articles[i], "score", 0.0) or 0.0)
                     score_j = float(getattr(articles[j], "score", 0.0) or 0.0)
@@ -26556,6 +27010,9 @@ def _build_sections_phase123(
                     # title 유사도 체크 (같은 뉴스 다른 매체)
                     if any(_is_similar_title(a.title_key or "", b.title_key or "") for b in kept):
                         continue
+                    # 사건 시그니처 체크 (같은 사건 재유입 방지)
+                    if any(_same_event_articles_reason(a, b) for b in kept):
+                        continue
                     kept.append(a)
                     _existing_idents.add(ident)
                     log.info("[WITHIN-DEDUP-BACKFILL] section=%s title=%s", key, (a.title or "")[:80])
@@ -26596,7 +27053,11 @@ def _build_sections_phase123(
                             _is_title_dup = _is_similar_title(art_a.title_key or "", art_b.title_key or "")
                         except Exception:
                             pass
+                    # 사건 시그니처 체크 (수급 기사를 정책·유통에 재배치하는 교차 섹션 중복 포착)
+                    _is_event_dup = False
                     if not is_same_url and not _is_topic_dup and not _is_title_dup:
+                        _is_event_dup = bool(_same_event_articles_reason(art_a, art_b))
+                    if not is_same_url and not _is_topic_dup and not _is_title_dup and not _is_event_dup:
                         continue
                     score_a = float(getattr(art_a, "score", 0.0) or 0.0)
                     score_b = float(getattr(art_b, "score", 0.0) or 0.0)
@@ -26698,6 +27159,10 @@ def _build_sections_phase123(
                             break
                     except Exception:
                         pass
+                    # 사건 시그니처 체크 (다른 섹션의 같은 사건 재유입 방지)
+                    if _same_event_articles_reason(a, b):
+                        _backfill_cross_skip = True
+                        break
                 if _backfill_cross_skip:
                     log.info("[CROSS-DEDUP-BACKFILL-SKIP] section=%s title=%s (similar to other section)", sec_key, (a.title or "")[:80])
                     continue
@@ -27444,6 +27909,64 @@ def _build_sections_phase123(
     except Exception as e:
         log.warning("[WARN] post-followup structural quality guard failed: %s", e)
 
+    try:
+        # 모든 recovery/repair 단계 이후 최종 사건 단위 dedup + 테마 반복 상한.
+        # 후반 단계가 재유입시킨 같은 사건의 다매체/교차 섹션 중복을 발행 직전에 정리한다.
+        dedupe_removed, dedupe_refilled = _final_global_story_dedupe(final_by_section, raw_by_section)
+        if dedupe_removed or dedupe_refilled:
+            log.info(
+                "[REBALANCE] final event-level dedupe removed=%d refilled=%d",
+                dedupe_removed,
+                dedupe_refilled,
+            )
+            _sync_debug_with_final_sections(final_by_section)
+    except Exception as e:
+        log.warning("[WARN] final event-level dedupe failed: %s", e)
+
+    try:
+        # 농업 맥락 신호가 없는 카드는 같은 사건의 맥락 있는 변형으로 교체
+        relevance_swapped = _swap_agri_irrelevant_final_cards(final_by_section, raw_by_section)
+        if relevance_swapped:
+            log.info("[REBALANCE] final relevance swap replaced %d card(s)", relevance_swapped)
+            _sync_debug_with_final_sections(final_by_section)
+    except Exception as e:
+        log.warning("[WARN] final relevance swap failed: %s", e)
+
+    try:
+        # 행사·판촉·자재지원성 tail을 하드뉴스 후보로 교체
+        soft_tail_swapped = _swap_soft_news_tails(final_by_section, raw_by_section)
+        if soft_tail_swapped:
+            log.info("[REBALANCE] final soft-news tail swap replaced %d card(s)", soft_tail_swapped)
+            _sync_debug_with_final_sections(final_by_section)
+    except Exception as e:
+        log.warning("[WARN] final soft-news tail swap failed: %s", e)
+
+    try:
+        # 단일 매체 편중 완화 (전 섹션 도메인 상한)
+        domain_swapped = _cap_final_domain_concentration(final_by_section, raw_by_section)
+        if domain_swapped:
+            log.info("[REBALANCE] final domain diversity swapped %d card(s)", domain_swapped)
+            _sync_debug_with_final_sections(final_by_section)
+    except Exception as e:
+        log.warning("[WARN] final domain diversity cap failed: %s", e)
+
+    try:
+        # 최종 카드 selection 메타데이터 위생 (fit 재계산·core stage 표준화)
+        fit_stamped = _ensure_final_selection_fit(final_by_section)
+        if fit_stamped:
+            log.info("[REBALANCE] final selection metadata repaired %d field(s)", fit_stamped)
+    except Exception as e:
+        log.warning("[WARN] final selection metadata repair failed: %s", e)
+
+    try:
+        # 발행 직전 core 품질 게이트: 소프트뉴스 core 강등 + 하드뉴스 core 승격
+        soft_core_changed = _demote_soft_news_final_cores(final_by_section, raw_by_section)
+        if soft_core_changed:
+            log.info("[REBALANCE] final soft-news core gate changed %d core badge(s)", soft_core_changed)
+            _sync_debug_with_final_sections(final_by_section)
+    except Exception as e:
+        log.warning("[WARN] final soft-news core gate failed: %s", e)
+
     # The raw commodity pool is deliberately broader than the final briefing,
     # but cap/filter decisions must never make an eligible selected card vanish
     # from today's commodity board.
@@ -27783,6 +28306,8 @@ def _summary_quality_block_reason(article: Article, summary: str) -> str:
     ).strip()
     if not value:
         return "empty"
+    if _SUMMARY_MODEL_TOKEN_RX.search(value):
+        return "model_token"
     value_l = value.lower()
     if re.search(r"([가-힣])\1{3,}", value):
         return "repeated_character"
@@ -27854,6 +28379,9 @@ def openai_summarize_batch(articles: list[Article], cache: dict[str, SummaryCach
             for k, v in part.items():
                 if not k or not v:
                     continue
+                v = _sanitize_summary_text(v)
+                if not v:
+                    continue
                 article = article_by_key.get(k)
                 if article is not None:
                     reason = _summary_quality_block_reason(article, v)
@@ -27875,6 +28403,157 @@ def _clean_summary_text(text: str) -> str:
     ).strip()
 
 
+# -----------------------------
+# 요약 후처리 (모델 특수토큰·크롤링 잡음·반복 문장·절단 정리)
+# - 생성 경로와 replay 캐시 소비 경로 모두에 적용되는 결정론적 정화기
+# -----------------------------
+_SUMMARY_MODEL_TOKEN_RX = re.compile(
+    r"[<〈⟨《]\s*/?\s*(?:s|pad|unk|eos|bos|sep|cls|endoftext)\s*[>〉⟩》]"
+    r"|<\|[^|>]{1,40}\|>"
+    r"|\[(?:SEP|CLS|PAD|UNK|EOS|BOS)\]",
+    re.IGNORECASE,
+)
+_SUMMARY_META_DATE_RX = re.compile(
+    r"(?:입력|수정|등록|게재|승인|발행)\s*[:：]?\s*20\d{2}[.\-/년\s]+\d{1,2}[.\-/월\s]+\d{1,2}일?\.?\s*(?:\d{1,2}:\d{2}(?::\d{2})?)?"
+)
+_SUMMARY_UI_NOISE_TERMS = (
+    "TTS", "스크랩", "프린트", "글씨 크게", "글씨 작게", "글자크기", "작게", "크게",
+    "페이스북", "트위터", "네이버", "카카오톡", "카카오스토리", "밴드", "주소복사",
+    "URL복사", "링크복사", "기사공유", "공유하기", "구독하기", "기사듣기", "본문듣기",
+    "메일보내기", "인쇄하기", "댓글", "좋아요", "톡톡",
+    "기사 읽어주기", "읽어드립니다", "오디오 재생", "글씨 키우기", "글씨 줄이기", "가나다",
+)
+_SUMMARY_UI_RUN_RX = re.compile(
+    r"(?:(?:" + "|".join(re.escape(t) for t in _SUMMARY_UI_NOISE_TERMS)
+    # 독립된 1~3자리 숫자(공유 카운트 등)만 UI 나열의 일부로 취급 — 수량·연도 숫자를 침식하지 않도록
+    + r"|(?<![\d가-힣])\d{1,3}(?![\d가-힣]))[\s·|,]+){2,}(?:"
+    + "|".join(re.escape(t) for t in _SUMMARY_UI_NOISE_TERMS)
+    + r"|(?<![\d가-힣])\d{1,3}(?![\d가-힣]))[\s·|,]*"
+)
+_SUMMARY_BYLINE_RXES = (
+    # (창녕=국제뉴스) 홍성만 기자 = / [진주=뉴시스] 정경규 기자 =
+    re.compile(r"^\s*[\[(（〔][가-힣A-Za-z0-9·\s]{1,10}[=＝][가-힣A-Za-z0-9·\s]{1,12}[\])）〕]\s*[가-힣]{2,4}\s*(?:기자|특파원|통신원)\s*[=＝]?\s*"),
+    # [충남일보 전현민 기자]
+    re.compile(r"^\s*[\[(（〔][가-힣A-Za-z0-9·\s]{2,14}\s*(?:기자|특파원|통신원)[\])）〕]\s*"),
+    # 홍길동 기자 = (선두)
+    re.compile(r"^\s*[가-힣]{2,4}\s*(?:기자|특파원|통신원)\s*[=＝]\s*"),
+)
+_SUMMARY_COPYRIGHT_RX = re.compile(r"(?:ⓒ|©|무단\s*전재|재배포\s*금지|저작권자).*$")
+# 강한 잡음 신호: 문장에 있으면 무조건 크롤링 잔재로 판단
+_SUMMARY_NOISE_SEGMENT_RX = re.compile(
+    r"(?:기자|특파원)\s*[=＝]|무단\s*전재|재배포|저작권|앱 다운|바로가기|"
+    r"제보하기|기사제보|보도자료|많이 본 뉴스|관련기사|해당 언어로 번역|번역 결과|AI가 요약|"
+    r"AI 요약|읽어주기|읽어드립니다|사진\s*[=:]|촬영\s*[=:]|그래픽\s*[=:]|"
+    r"운영하는.{0,10}(?:포털|사이트)|internet\s*explorer|브라우저를?\s*(?:지원|업데이트)|"
+    r"제보는|제호\s*[:：]|대표전화|등록번호|발행인|편집인|인터뷰 전문|다시듣기"
+)
+# 약한 잡음 신호: 기사 본문에도 등장할 수 있어(예: '화훼 구독 서비스'),
+# 농업 맥락 어휘가 전혀 없는 문장에서만 잡음으로 판단한다
+_SUMMARY_WEAK_NOISE_SEGMENT_RX = re.compile(
+    r"구독|클릭|오디오|팟캐스트|라디오|방송에서|진행자|앵커|생방송|청취"
+)
+
+
+def _drop_noise_sentences(text: str) -> str:
+    """요약 내 문장 단위 크롤링 잡음(방송 고지·AI요약 안내·브라우저 안내 등) 제거."""
+    value = str(text or "").strip()
+    if not value:
+        return value
+    parts = [p.strip() for p in _SUMMARY_SENTENCE_SPLIT_RX.split(value) if p and p.strip()]
+    if len(parts) <= 1:
+        return value
+    kept = []
+    for part in parts:
+        if _SUMMARY_NOISE_SEGMENT_RX.search(part):
+            continue
+        if _SUMMARY_WEAK_NOISE_SEGMENT_RX.search(part) and not any(
+            term in part for term in _AGRI_CONTEXT_RELEVANCE_TERMS
+        ):
+            continue
+        kept.append(part)
+    if not kept:
+        return value
+    return " ".join(kept).strip()
+_SUMMARY_SENTENCE_SPLIT_RX = re.compile(r"(?<=[.!?。！？])\s+|(?<=다\.)\s*|(?<=요\.)\s*|(?<=함\.)\s*|(?<=임\.)\s*")
+_SUMMARY_COMPLETE_END_RX = re.compile(
+    r"(?:(?<![\d.])[.!?。！？…]|다\.|요\.|함\.|임\.|음\.)[\"'」』〉》)\]]?\s*$"
+)
+
+
+def _strip_summary_model_tokens(text: str) -> str:
+    """모델 특수토큰 제거. 토큰 앞 조각이 완결 요약이면 이후(재생성 중복·잘린 꼬리)는 버린다."""
+    value = str(text or "")
+    m = _SUMMARY_MODEL_TOKEN_RX.search(value)
+    if not m:
+        return value
+    head = value[: m.start()].strip()
+    if len(head) >= 30 and re.search(r"(?:다|요|함|임|음)\s*\.", head):
+        return head
+    return _SUMMARY_MODEL_TOKEN_RX.sub(" ", value)
+
+
+def _strip_summary_boilerplate(text: str) -> str:
+    """크롤링 유래 잡음(입력/수정 시각, 공유 UI 나열, 바이라인, 저작권 고지) 제거."""
+    value = str(text or "")
+    for rx in _SUMMARY_BYLINE_RXES:
+        value = rx.sub("", value)
+    value = _SUMMARY_META_DATE_RX.sub(" ", value)
+    value = _SUMMARY_UI_RUN_RX.sub(" ", value)
+    value = _SUMMARY_COPYRIGHT_RX.sub("", value)
+    # 조사 앞 어색한 공백·중복 마침표 정리
+    value = re.sub(r"\s+([.,;:!?%)\]」』])", r"\1", value)
+    value = re.sub(r"\.{2,}(?!\.)", ".", value)
+    return re.sub(r"\s+", " ", value).strip()
+
+
+def _dedupe_summary_sentences(text: str) -> str:
+    """반복 문장 제거(공백·문장부호 차이 무시)."""
+    value = str(text or "").strip()
+    if not value:
+        return value
+    parts = [p.strip() for p in _SUMMARY_SENTENCE_SPLIT_RX.split(value) if p and p.strip()]
+    if len(parts) <= 1:
+        return value
+    seen: set[str] = set()
+    kept: list[str] = []
+    for part in parts:
+        norm = re.sub(r"[\s\W]+", "", part).lower()
+        if not norm or norm in seen:
+            continue
+        seen.add(norm)
+        kept.append(part)
+    return " ".join(kept).strip()
+
+
+def _repair_summary_truncation(text: str) -> str:
+    """문장 중간 절단 감지 시 마지막 완결 문장까지로 정리(충분한 길이가 남는 경우)."""
+    value = str(text or "").strip()
+    if not value or _SUMMARY_COMPLETE_END_RX.search(value):
+        return value
+    # 한국어 종결어미 우선 — '전년 대비 5.' 같은 숫자 뒤 마침표는 문장 끝이 아니다
+    boundary = -1
+    for ender in ("다.", "요.", "함.", "임.", "음."):
+        pos = value.rfind(ender)
+        if pos >= 0:
+            boundary = max(boundary, pos + len(ender) - 1)
+    boundary = max(boundary, value.rfind("!"), value.rfind("?"))
+    if boundary >= 20:
+        return value[: boundary + 1].strip()
+    return value
+
+
+def _sanitize_summary_text(text: str) -> str:
+    """요약·본문 폴백 공통 정화기: 토큰 → 잡음 → 반복 문장 순으로 제거."""
+    value = _clean_summary_text(text)
+    if not value:
+        return value
+    value = _strip_summary_model_tokens(value)
+    value = _strip_summary_boilerplate(value)
+    value = _drop_noise_sentences(value)
+    value = _dedupe_summary_sentences(value)
+    return value.strip()
+
+
 def _trim_summary_text(text: str, max_chars: int = SUMMARY_TARGET_MAX_CHARS) -> str:
     value = _clean_summary_text(text)
     if len(value) <= max_chars:
@@ -27885,9 +28564,10 @@ def _trim_summary_text(text: str, max_chars: int = SUMMARY_TARGET_MAX_CHARS) -> 
         window.rfind("요."),
         window.rfind("임."),
         window.rfind("함."),
+        window.rfind("음."),
         window.rfind("."),
     )
-    if boundary >= max(40, max_chars - 45):
+    if boundary >= 40:
         return window[: boundary + 1].strip()
     return value[: max(1, max_chars - 3)].rstrip() + "..."
 
@@ -27895,42 +28575,65 @@ def _trim_summary_text(text: str, max_chars: int = SUMMARY_TARGET_MAX_CHARS) -> 
 def _summary_context_segments(article: Article) -> list[str]:
     segments: list[str] = []
     for source in (getattr(article, "description", "") or "", getattr(article, "title", "") or ""):
-        source = _clean_summary_text(source)
+        source = _sanitize_summary_text(source)
         if not source:
             continue
         parts = re.split(r"(?<=[.!?。！？])\s+|(?<=다\.)\s+|(?<=요\.)\s+", source)
         for part in parts:
             part = _clean_summary_text(part)
-            if part and part not in segments:
-                segments.append(part)
+            if not part or part in segments:
+                continue
+            # 크롤링 잡음이 남은 조각은 요약 확장에 쓰지 않는다
+            if _SUMMARY_NOISE_SEGMENT_RX.search(part):
+                continue
+            segments.append(part)
     return segments
 
 
 def _normalize_article_summary(article: Article, summary: str) -> str:
-    value = _clean_summary_text(summary)
+    value = _sanitize_summary_text(summary)
     if not value:
-        value = _clean_summary_text(getattr(article, "description", "") or getattr(article, "title", "") or "")
+        value = _sanitize_summary_text(getattr(article, "description", "") or getattr(article, "title", "") or "")
     if len(value) > SUMMARY_TARGET_MAX_CHARS:
         value = _trim_summary_text(value)
+    value = _repair_summary_truncation(value)
+    # 제목 그대로 반복하는 요약 방지: 본문 조각으로 대체 가능한 경우 확장 경로로 보낸다
+    title_clean = _clean_summary_text(getattr(article, "title", "") or "")
+    title_echo = bool(title_clean) and re.sub(r"[\s\W]+", "", value) == re.sub(r"[\s\W]+", "", title_clean)
     complete_sentences = len(re.findall(r"(?:다|요|함|임)\.", value))
-    if len(value) >= 40 and complete_sentences >= 2:
-        return value
-    if len(value) >= SUMMARY_TARGET_MIN_CHARS:
-        return value
+    if not title_echo:
+        if len(value) >= 40 and complete_sentences >= 2:
+            return value
+        if len(value) >= SUMMARY_TARGET_MIN_CHARS:
+            return value
 
     for segment in _summary_context_segments(article):
         if segment in value:
             continue
+        if title_echo:
+            # 제목 반복 요약이면 제목 대신 본문 조각으로 재구성
+            value = ""
+            title_echo = False
         candidate = _clean_summary_text((value + " " + segment).strip())
         value = _trim_summary_text(candidate)
         if len(value) >= SUMMARY_TARGET_MIN_CHARS:
             break
 
-    if len(value) < SUMMARY_TARGET_MIN_CHARS:
-        title = _clean_summary_text(getattr(article, "title", "") or "")
+    if len(value) < 40:
+        title = title_clean
         if title and title not in value:
             value = _trim_summary_text(f"{title} {value}".strip())
-    return value
+    return _repair_summary_truncation(value) or value
+
+
+def _append_summary_note(summary: str, note: str) -> str:
+    """요약 끝에 편집 주석을 덧붙인다. 주석이 잘리지 않도록 본문을 먼저 줄인다."""
+    note = _clean_summary_text(note)
+    if not note:
+        return _trim_summary_text(summary)
+    base_budget = max(40, SUMMARY_TARGET_MAX_CHARS - len(note) - 1)
+    base = _trim_summary_text(summary, max_chars=base_budget)
+    return _clean_summary_text(f"{base} {note}")
 
 
 def _clarify_conflicting_price_basis_summaries(by_section: dict[str, list[Article]]) -> None:
@@ -27954,18 +28657,18 @@ def _clarify_conflicting_price_basis_summaries(by_section: dict[str, list[Articl
         for article in upward:
             note = "단기 도매 흐름으로, 전년 대비 산지가격 약세 기사와 비교 기준이 다르다."
             if note not in article.summary:
-                article.summary = _trim_summary_text(f"{article.summary} {note}")
+                article.summary = _append_summary_note(article.summary, note)
         for article in downward:
             note = "전년 대비 산지가격 흐름으로, 최근 단기 도매 급등 기사와 비교 기준이 다르다."
             if note not in article.summary:
-                article.summary = _trim_summary_text(f"{article.summary} {note}")
+                article.summary = _append_summary_note(article.summary, note)
     for article in (by_section.get("policy") or []):
         title = _publish_editorial_title(article)
         if "3500억" not in title or "농축산물 할인" not in title:
             continue
         note = "전체 대책은 1조원 규모로, 계란 10구 5000원 등 급등 품목 대응도 포함한다."
         if note not in article.summary:
-            article.summary = _trim_summary_text(f"{article.summary} {note}")
+            article.summary = _append_summary_note(article.summary, note)
 
 
 def fill_summaries(
@@ -27999,7 +28702,20 @@ def fill_summaries(
 
         if not s:
             s = a.description.strip() or a.title.strip()
-        a.summary = s if (from_cache and not normalize_cached) else _normalize_article_summary(a, s)
+        if from_cache and not normalize_cached:
+            # replay 캐시 요약도 결정론적 정화(토큰·잡음·반복 문장)는 항상 적용한다.
+            # 정화로 달라진 것이 없으면 캐시 요약을 그대로 보존한다(기존 재현성 계약).
+            sanitized = _sanitize_summary_text(s)
+            if sanitized == _clean_summary_text(s):
+                a.summary = sanitized
+            else:
+                repaired = _repair_summary_truncation(sanitized)
+                if len(repaired) >= 40 and _SUMMARY_COMPLETE_END_RX.search(repaired):
+                    a.summary = repaired
+                else:
+                    a.summary = _normalize_article_summary(a, repaired or s)
+        else:
+            a.summary = _normalize_article_summary(a, s)
     _clarify_conflicting_price_basis_summaries(by_section)
     return by_section
 
@@ -30614,7 +31330,19 @@ def _preferred_tail_block_reason(
         return "invalid_article"
     protected_thin_section = raw_count < PREFERRED_PER_SECTION and current_count < MIN_FALLBACK_PER_SECTION
     demote_reason = _editorial_safe_core_demote_reason(article, section_key)
+    if demote_reason == "pest_no_active_risk_core":
+        # core 전용 신호(예방·기술 기사) — tail 배치는 허용한다
+        demote_reason = ""
+    if demote_reason.startswith("soft_news") and _extract_event_gov_actors(getattr(article, "title", "") or ""):
+        # 정부 행위자가 제목에 드러난 실행 기사(협약·행사 형식이라도)는 tail로 유지
+        demote_reason = ""
     if demote_reason and not protected_thin_section:
+        # 일반 소프트뉴스 게이트 사유라면 postbuild 세부 사유 라벨을 우선 노출 (차단 판정은 동일)
+        if demote_reason.startswith("soft_news") or demote_reason in (
+            "roundup_brief_core", "regional_roundup_core", "opinion_column_core",
+        ):
+            postbuild_reason = _postbuild_article_reject_reason(article, section_key, apply_selection_fit=False)
+            return postbuild_reason or demote_reason
         return demote_reason
 
     title = article.title or ""
@@ -32280,6 +33008,9 @@ _HARD_FINAL_POSTBUILD_REJECT_REASONS = frozenset(
         "pest_no_damage_crop_price",
         "pest_diplomacy_not_pest",
         "pest_labor_help_not_pest",
+        "pest_no_pest_signal",
+        "policy_org_event_not_policy",
+        "supply_foodservice_menu_price",
     }
 )
 
@@ -32500,6 +33231,776 @@ def _drop_final_story_duplicates(
                     dropped += 1
         final_by_section[section_key] = keep
     return dropped
+
+
+_AGRI_CONTEXT_RELEVANCE_TERMS = (
+    "농산물", "농업", "농가", "원예", "과수", "채소", "화훼", "도매시장", "공판장",
+    "수급", "출하", "반입", "경락", "방제", "병해충", "작황", "재배", "수확",
+    "비료", "농약", "묘목", "육묘", "종자", "경매", "산지", "가락시장", "유통",
+    "농협", "농식품", "과일", "청과",
+)
+
+
+def _agri_context_hits(article: "Article") -> int:
+    """제목+본문의 국내 농업 맥락 신호 수(같은 사건 대표 선정·관련성 게이트에 사용)."""
+    text = _nfkc_lower(
+        f"{getattr(article, 'title', '') or ''} {getattr(article, 'description', '') or ''}"
+    )
+    if not text:
+        return 0
+    return count_any(text, _AGRI_CONTEXT_RELEVANCE_TERMS)
+
+
+_SITE_BOILERPLATE_DESC_TERMS = (
+    "포털사이트", "정책뉴스", "정책포커스", "국민이말하는정책", "멀티미디어뉴스",
+    "사실은이렇습니다", "누리집", "홈페이지 안내",
+)
+
+
+def _is_site_boilerplate_description(desc: str) -> bool:
+    """기사 본문이 아니라 사이트 소개문이 크롤링된 description 판정."""
+    text = _nfkc_lower(desc or "")
+    if not text:
+        return False
+    if count_any(text, _SITE_BOILERPLATE_DESC_TERMS) >= 2:
+        return True
+    return "운영하는" in text and ("포털" in text or "사이트" in text) and "제공하는" in text
+
+
+def _story_keep_priority(article: "Article") -> tuple:
+    """중복 그룹에서 대표 기사 선정 우선순위:
+    core > 섹션 적합도 > 농업 맥락 > 매체 신뢰도 > 정보량(수치) > 점수 > 최신성."""
+    try:
+        qty_count = len(_extract_event_quantities(
+            f"{getattr(article, 'title', '') or ''} {getattr(article, 'description', '') or ''}"
+        ))
+    except Exception:
+        qty_count = 0
+    return (
+        1 if bool(getattr(article, "is_core", False)) else 0,
+        float(getattr(article, "selection_fit_score", 0.0) or 0.0),
+        min(3, _agri_context_hits(article)),
+        press_priority(getattr(article, "press", "") or "", getattr(article, "domain", "") or ""),
+        qty_count,
+        float(getattr(article, "score", 0.0) or 0.0),
+        getattr(article, "pub_dt_kst", None) or datetime.min.replace(tzinfo=KST),
+    )
+
+
+def _article_ident_key(article: "Article") -> str:
+    return (
+        getattr(article, "norm_key", "") or getattr(article, "canon_url", "")
+        or f"{(getattr(article, 'press', '') or '').strip()}|{getattr(article, 'title_key', '') or ''}"
+    )
+
+
+def _section_theme_cap_groups(article: "Article") -> list[tuple[str, str]]:
+    """(품목, 반복 상한 대상 행위그룹) 조합 — 같은 테마 카드 과다 방지용."""
+    try:
+        comm, actions, _actors, _regions, _qty = _event_story_signature(
+            getattr(article, "title", "") or "", getattr(article, "description", "") or ""
+        )
+    except Exception:
+        return []
+    capped = actions & _THEME_CAP_ACTION_GROUPS
+    return [(c, g) for c in comm for g in capped]
+
+
+def _final_global_story_dedupe(
+    final_by_section: dict[str, list["Article"]],
+    raw_by_section: dict[str, list["Article"]] | None = None,
+    *,
+    max_passes: int = 2,
+    min_keep: int | None = None,
+) -> tuple[int, int]:
+    """발행 직전 전 섹션 대상 사건 단위 중복 제거 + 테마 반복 상한 + 중복 인지 refill.
+
+    후반 recovery/repair 단계들이 재유입시킨 (1) 매체만 다른 같은 사건,
+    (2) 같은 사건의 교차 섹션 재배치, (3) 같은 품목·행위 테마 반복을 정리한다.
+    raw_by_section이 주어지면 제거로 비는 슬롯을 중복이 아닌 후보로 보충한다.
+    """
+    if not isinstance(final_by_section, dict):
+        return (0, 0)
+    section_keys = [str(s.get("key") or "").strip() for s in SECTIONS if str(s.get("key") or "").strip()]
+    removed_total = 0
+    refilled_total = 0
+    blocked_idents: set[str] = set()
+
+    for _pass in range(max(1, int(max_passes))):
+        flat: list[tuple[str, "Article"]] = []
+        for sec in section_keys:
+            for article in (final_by_section.get(sec) or []):
+                if isinstance(article, Article):
+                    flat.append((sec, article))
+
+        # 1) 섹션 내 + 교차 섹션 사건 단위 중복 제거
+        to_remove: set[int] = set()
+        for i in range(len(flat)):
+            if id(flat[i][1]) in to_remove:
+                continue
+            for j in range(i + 1, len(flat)):
+                if id(flat[j][1]) in to_remove:
+                    continue
+                sec_a, art_a = flat[i]
+                sec_b, art_b = flat[j]
+                reason = _duplicate_story_pair_reason(art_a, art_b)
+                if not reason:
+                    continue
+                loser = art_b if _story_keep_priority(art_a) >= _story_keep_priority(art_b) else art_a
+                loser_sec = sec_b if loser is art_b else sec_a
+                to_remove.add(id(loser))
+                log.info(
+                    "[FINAL-EVENT-DEDUP] reason=%s keep=[%s] %s | drop=[%s] %s",
+                    reason,
+                    sec_a if loser is art_b else sec_b,
+                    ((art_a if loser is art_b else art_b).title or "")[:70],
+                    loser_sec,
+                    (loser.title or "")[:70],
+                )
+
+        # 2) 섹션 내 같은 (품목, 행위그룹) 테마 반복 상한
+        for sec in section_keys:
+            items = [a for a in (final_by_section.get(sec) or []) if isinstance(a, Article) and id(a) not in to_remove]
+            theme_groups: dict[tuple[str, str], list[Article]] = {}
+            for article in items:
+                for group_key in _section_theme_cap_groups(article):
+                    theme_groups.setdefault(group_key, []).append(article)
+            for group_key, group in theme_groups.items():
+                group = [a for a in group if id(a) not in to_remove]
+                if len(group) <= _SECTION_THEME_CAP:
+                    continue
+                ordered = sorted(group, key=_story_keep_priority, reverse=True)
+                for victim in ordered[_SECTION_THEME_CAP:]:
+                    to_remove.add(id(victim))
+                    log.info(
+                        "[FINAL-THEME-CAP] section=%s theme=%s drop=%s",
+                        sec, "/".join(group_key), (victim.title or "")[:70],
+                    )
+
+        if not to_remove:
+            break
+
+        for sec in section_keys:
+            old_list = [a for a in (final_by_section.get(sec) or []) if isinstance(a, Article)]
+            kept = [a for a in old_list if id(a) not in to_remove]
+            if min_keep is not None and raw_by_section is None and len(kept) < min_keep:
+                # refill이 불가능한 경로(렌더 직전)에서는 하한 이하로 줄이지 않는다
+                removed_in_sec = sorted(
+                    (a for a in old_list if id(a) in to_remove),
+                    key=_story_keep_priority,
+                    reverse=True,
+                )
+                for back in removed_in_sec:
+                    if len(kept) >= min_keep:
+                        break
+                    to_remove.discard(id(back))
+                    kept = [a for a in old_list if id(a) not in to_remove]
+            for a in old_list:
+                if id(a) in to_remove:
+                    blocked_idents.add(_article_ident_key(a))
+            removed_total += len(old_list) - len(kept)
+            final_by_section[sec] = kept
+
+        # 3) 중복 인지(refill 후보도 최종 기사 전체와 대조) 슬롯 보충
+        if raw_by_section:
+            all_final: list[Article] = [
+                a for sec in section_keys for a in (final_by_section.get(sec) or []) if isinstance(a, Article)
+            ]
+            for sec in section_keys:
+                needed = PREFERRED_PER_SECTION - len(final_by_section.get(sec) or [])
+                if needed <= 0:
+                    continue
+                existing_idents = {_article_ident_key(a) for a in all_final}
+                quality_floor = BASE_MIN_SCORE.get(sec, 6.0) + 1.5
+                candidates = sorted(
+                    (a for a in (raw_by_section.get(sec) or []) if isinstance(a, Article)),
+                    key=lambda a: (
+                        int(float(getattr(a, "score", 0.0) or 0.0) / 2.0),
+                        _final_swap_domain_newness(a, all_final),
+                        float(getattr(a, "score", 0.0) or 0.0),
+                    ),
+                    reverse=True,
+                )
+                for allow_soft in (False, True):
+                    if needed <= 0:
+                        break
+                    for cand in candidates:
+                        if needed <= 0:
+                            break
+                        ident = _article_ident_key(cand)
+                        if ident in existing_idents or ident in blocked_idents:
+                            continue
+                        if float(getattr(cand, "score", 0.0) or 0.0) < quality_floor:
+                            continue
+                        if _postbuild_article_reject_reason(cand, sec):
+                            continue
+                        if (not allow_soft) and _soft_news_core_demote_reason(cand):
+                            continue
+                        if (not allow_soft) and _is_stale_swap_candidate(cand, all_final):
+                            continue
+                        # refill은 보수적으로: 농업 신호가 없거나 외래 미관리 품목 중심이면 제외
+                        cand_text = _nfkc_lower(f"{cand.title or ''} {cand.description or ''}")
+                        if (
+                            count_any(cand_text, ("두리안", "망고", "바나나", "아보카도", "파인애플")) >= 1
+                            and count_any(cand_text, ("베트남", "중국", "태국", "미국", "일본", "해외", "현지")) >= 1
+                        ):
+                            continue
+                        try:
+                            if (
+                                agri_strength_score(cand_text) < 1
+                                and best_horti_score(cand.title or "", cand.description or "") < 1.2
+                            ):
+                                continue
+                        except Exception:
+                            pass
+                        if any(_duplicate_story_pair_reason(cand, b) for b in all_final):
+                            continue
+                        # 테마 상한 준수
+                        cand_groups = set(_section_theme_cap_groups(cand))
+                        if cand_groups:
+                            sec_items = final_by_section.get(sec) or []
+                            over_cap = False
+                            for group_key in cand_groups:
+                                same_theme = sum(
+                                    1 for b in sec_items if group_key in set(_section_theme_cap_groups(b))
+                                )
+                                if same_theme >= _SECTION_THEME_CAP:
+                                    over_cap = True
+                                    break
+                            if over_cap:
+                                continue
+                        cand.is_core = False
+                        cand.selection_stage = "final_dedupe_refill"
+                        cand.selection_note = "event_dedupe_slot_refill"
+                        fresh_fit = _fresh_section_fit(cand, sec)
+                        if fresh_fit > 0.0:
+                            cand.selection_fit_score = round(fresh_fit, 3)
+                        final_by_section.setdefault(sec, []).append(cand)
+                        all_final.append(cand)
+                        existing_idents.add(ident)
+                        refilled_total += 1
+                        needed -= 1
+                        log.info("[FINAL-EVENT-DEDUP-REFILL] section=%s title=%s", sec, (cand.title or "")[:70])
+
+    return (removed_total, refilled_total)
+
+
+def _fresh_section_fit(article: "Article", sec: str) -> float:
+    """현재 텍스트 기준으로 섹션 적합도를 재계산(스냅샷 메타데이터와 무관)."""
+    try:
+        sec_conf = next((s for s in SECTIONS if s.get("key") == sec), {})
+        return float(section_fit_score(
+            getattr(article, "title", "") or "", getattr(article, "description", "") or "",
+            sec_conf, getattr(article, "domain", "") or "", getattr(article, "press", "") or "",
+        ))
+    except Exception:
+        return 0.0
+
+
+def _ensure_final_selection_fit(final_by_section: dict[str, list["Article"]]) -> int:
+    """최종 카드의 selection 메타데이터 위생: 누락된 fit을 재계산하고
+    core인데 stage가 비어 있는 카드에 표준 'core' stage를 부여한다.
+    (후반 recovery 단계가 메타데이터 없이 카드를 재유입시키는 문제 보정)"""
+    if not isinstance(final_by_section, dict):
+        return 0
+    stamped = 0
+    for sec_conf in SECTIONS:
+        sec = str(sec_conf.get("key") or "").strip()
+        if not sec:
+            continue
+        for article in (final_by_section.get(sec) or []):
+            if not isinstance(article, Article):
+                continue
+            if float(getattr(article, "selection_fit_score", 0.0) or 0.0) <= 0.0:
+                fit = _fresh_section_fit(article, sec)
+                if fit > 0.0:
+                    article.selection_fit_score = round(fit, 3)
+                    stamped += 1
+            if bool(getattr(article, "is_core", False)) and not str(getattr(article, "selection_stage", "") or "").strip():
+                article.selection_stage = "core"
+                stamped += 1
+    return stamped
+
+
+def _section_score_percentile(article: "Article", sec: str, raw_by_section: dict[str, list["Article"]] | None) -> float:
+    """섹션 후보 풀 내 상대 순위(현재 점수 기준). 풀 정보가 없으면 중립값."""
+    if not raw_by_section:
+        return 0.7
+    pool = [float(getattr(a, "score", 0.0) or 0.0) for a in (raw_by_section.get(sec) or []) if isinstance(a, Article)]
+    if not pool:
+        return 0.7
+    score = float(getattr(article, "score", 0.0) or 0.0)
+    higher = sum(1 for s in pool if s > score)
+    return 1.0 - (higher / max(1, len(pool)))
+
+
+def _demote_soft_news_final_cores(
+    final_by_section: dict[str, list["Article"]],
+    raw_by_section: dict[str, list["Article"]] | None = None,
+) -> int:
+    """발행 직전 core 품질 게이트: 행사·홍보·교육·인사·칼럼성 core를 강등하고
+    가능한 경우 섹션 내 하드뉴스 후보를 core로 승격해 core 슬롯을 유지한다.
+    섹션 적합도나 후보 풀 내 상대 순위가 낮은 core도 더 나은 후보가 있으면 교체한다."""
+    if not isinstance(final_by_section, dict):
+        return 0
+    changed = 0
+    for sec_conf in SECTIONS:
+        sec = str(sec_conf.get("key") or "").strip()
+        if not sec:
+            continue
+        items = [a for a in (final_by_section.get(sec) or []) if isinstance(a, Article)]
+        if not items:
+            continue
+        prev_core_count = sum(1 for a in items if bool(getattr(a, "is_core", False)))
+
+        def _is_better_core_candidate(b: "Article") -> bool:
+            return (
+                not bool(getattr(b, "is_core", False))
+                and not _soft_news_core_demote_reason(b)
+                and not _postbuild_article_reject_reason(b, sec, apply_selection_fit=False)
+                and _fresh_section_fit(b, sec) >= 1.5
+                and _section_score_percentile(b, sec, raw_by_section) >= 0.7
+            )
+
+        demoted = 0
+        for article in items:
+            if not bool(getattr(article, "is_core", False)):
+                continue
+            # 발행 직전 강등은 보수적으로: 명백한 소프트뉴스(행사·교육·인사·판촉·칼럼)만 강등한다.
+            # (선정 단계의 정렬용 demote 사유는 정책 패키지 기사 등에서 오탐 여지가 있음)
+            reason = _soft_news_core_demote_reason(article)
+            if not reason and _fresh_section_fit(article, sec) < 0.95:
+                # 섹션 적합도가 낮은 core: 더 적합한 하드뉴스 후보가 있을 때만 교체
+                if any(_is_better_core_candidate(b) for b in items):
+                    reason = "low_section_fit_core_swap"
+            if not reason and _section_score_percentile(article, sec, raw_by_section) < 0.55:
+                # 후보 풀 내 상대 순위가 낮은 core: 상위 순위 후보가 있을 때만 교체
+                if any(_is_better_core_candidate(b) for b in items):
+                    reason = "low_rank_core_swap"
+            if not reason:
+                continue
+            article.is_core = False
+            article.selection_note = f"final_core_demote:{reason}"
+            demoted += 1
+            changed += 1
+            log.info("[FINAL-CORE-DEMOTE] section=%s reason=%s title=%s", sec, reason, (article.title or "")[:70])
+        if demoted or prev_core_count == 0:
+            # 앞선 리페어 단계가 core를 모두 박탈한 채 넘어온 섹션도 여기서 복구를 시도한다
+            target = min(2, max(1, prev_core_count))
+            current = sum(1 for a in items if bool(getattr(a, "is_core", False)))
+            if current < target:
+                def _core_repair_pool(relaxed: bool) -> list["Article"]:
+                    pool: list[Article] = []
+                    for a in items:
+                        if bool(getattr(a, "is_core", False)):
+                            continue
+                        if _soft_news_core_demote_reason(a):
+                            continue
+                        if _postbuild_article_reject_reason(a, sec, apply_selection_fit=False):
+                            continue
+                        if not relaxed and _editorial_safe_core_demote_reason(a, sec):
+                            continue
+                        if relaxed and _fresh_section_fit(a, sec) < 1.5:
+                            continue
+                        pool.append(a)
+                    return sorted(
+                        pool,
+                        key=lambda a: (
+                            # 교체 트리거 기준(적합도·상대순위 충족 후보)을 우선 — 트리거와 교체 선택의 불일치 방지
+                            1 if _is_better_core_candidate(a) else 0,
+                            round(_fresh_section_fit(a, sec), 2),
+                            round(_section_score_percentile(a, sec, raw_by_section), 3),
+                            float(getattr(a, "score", 0.0) or 0.0),
+                            press_priority(getattr(a, "press", "") or "", getattr(a, "domain", "") or ""),
+                        ),
+                        reverse=True,
+                    )
+
+                candidates = _core_repair_pool(relaxed=False)
+                if not candidates and current == 0:
+                    # core 공백 방지: 소프트뉴스가 아니고 적합도가 충분한 후보에 한해 완화 승격
+                    candidates = _core_repair_pool(relaxed=True)
+                for cand in candidates:
+                    if current >= target:
+                        break
+                    existing_cores = [a for a in items if bool(getattr(a, "is_core", False))]
+                    # core 간 사건·테마 중복 방지 (같은 품목·행위 사건이 core 2장을 차지하지 않도록)
+                    if any(_same_event_articles_reason(cand, c) for c in existing_cores):
+                        continue
+                    cand_groups = set(_section_theme_cap_groups(cand))
+                    if cand_groups and any(
+                        cand_groups & set(_section_theme_cap_groups(c)) for c in existing_cores
+                    ):
+                        continue
+                    cand.is_core = True
+                    cand.selection_stage = "final_core_quality_repair"
+                    cand.selection_note = "soft_news_core_replacement"
+                    current += 1
+                    changed += 1
+                    log.info("[FINAL-CORE-REPAIR] section=%s title=%s", sec, (cand.title or "")[:70])
+            final_by_section[sec] = sorted(
+                items,
+                key=lambda a: (
+                    1 if bool(getattr(a, "is_core", False)) else 0,
+                    float(getattr(a, "selection_fit_score", 0.0) or 0.0),
+                    float(getattr(a, "score", 0.0) or 0.0),
+                ),
+                reverse=True,
+            )
+    return changed
+
+
+def _violates_section_theme_cap(
+    cand: "Article",
+    sec: str,
+    final_by_section: dict[str, list["Article"]],
+    *,
+    exclude: "Article | None" = None,
+) -> bool:
+    """교체·보충 후보가 섹션 내 (품목, 행위그룹) 반복 상한을 넘게 만드는지 검사."""
+    cand_groups = set(_section_theme_cap_groups(cand))
+    if not cand_groups:
+        return False
+    sec_items = [a for a in (final_by_section.get(sec) or []) if isinstance(a, Article) and a is not exclude]
+    for group_key in cand_groups:
+        same_theme = sum(1 for b in sec_items if group_key in set(_section_theme_cap_groups(b)))
+        if same_theme >= _SECTION_THEME_CAP:
+            return True
+    return False
+
+
+def _final_swap_domain_newness(cand: "Article", final_articles: list["Article"]) -> int:
+    """교체 투입 후보가 최종 목록에 없는 매체이면 1 (다양성 tie-breaker)."""
+    try:
+        cand_domain = normalize_host(getattr(cand, "domain", "") or "")
+    except Exception:
+        cand_domain = (getattr(cand, "domain", "") or "").lower()
+    if not cand_domain:
+        return 0
+    for b in final_articles:
+        try:
+            if normalize_host(getattr(b, "domain", "") or "") == cand_domain:
+                return 0
+        except Exception:
+            continue
+    return 1
+
+
+def _is_stale_swap_candidate(cand: "Article", reference_articles: list["Article"]) -> bool:
+    """교체 후보가 기준 카드들 대비 72시간 이상 오래됐으면 신선도 저하로 제외."""
+    try:
+        cand_pub = getattr(cand, "pub_dt_kst", None)
+        if not isinstance(cand_pub, datetime):
+            return False
+        pubs = [
+            getattr(b, "pub_dt_kst", None) for b in reference_articles
+            if isinstance(getattr(b, "pub_dt_kst", None), datetime)
+        ]
+        if not pubs:
+            return False
+        return cand_pub < (max(pubs) - timedelta(hours=72))
+    except Exception:
+        return False
+
+
+def _swap_agri_irrelevant_final_cards(
+    final_by_section: dict[str, list["Article"]],
+    raw_by_section: dict[str, list["Article"]] | None,
+) -> int:
+    """제목+본문에 국내 농업 맥락 신호가 전혀 없는 최종 카드를
+    같은 사건의 농업 맥락 변형(다른 매체 보도) 또는 차순위 후보로 교체한다."""
+    if not isinstance(final_by_section, dict) or not raw_by_section:
+        return 0
+    section_keys = [str(s.get("key") or "").strip() for s in SECTIONS if str(s.get("key") or "").strip()]
+    swapped = 0
+    all_final = [a for sec in section_keys for a in (final_by_section.get(sec) or []) if isinstance(a, Article)]
+    for sec in section_keys:
+        sec_list = final_by_section.get(sec) or []
+        for idx, victim in enumerate(list(sec_list)):
+            if not isinstance(victim, Article):
+                continue
+            if _agri_context_hits(victim) >= 1:
+                continue
+            candidates = sorted(
+                (a for a in (raw_by_section.get(sec) or []) if isinstance(a, Article)),
+                key=lambda a: (
+                    1 if _same_event_articles_reason(a, victim) else 0,  # 같은 사건 변형 우선
+                    min(3, _agri_context_hits(a)),
+                    int(float(getattr(a, "score", 0.0) or 0.0) / 2.0),
+                    _final_swap_domain_newness(a, all_final),
+                    float(getattr(a, "score", 0.0) or 0.0),
+                ),
+                reverse=True,
+            )
+            for cand in candidates:
+                if cand is victim or _article_ident_key(cand) == _article_ident_key(victim):
+                    continue
+                if _agri_context_hits(cand) < 1:
+                    continue
+                if _postbuild_article_reject_reason(cand, sec):
+                    continue
+                if _soft_news_core_demote_reason(cand):
+                    continue
+                if any(
+                    b is not victim and (cand is b or _article_ident_key(cand) == _article_ident_key(b))
+                    for b in all_final
+                ):
+                    continue
+                if any(
+                    b is not victim and _duplicate_story_pair_reason(cand, b)
+                    for b in all_final
+                ):
+                    continue
+                if _violates_section_theme_cap(cand, sec, final_by_section, exclude=victim):
+                    continue
+                if _is_stale_swap_candidate(cand, [a for a in all_final if a is not victim]):
+                    continue
+                # core 배지는 core 품질 게이트를 통과하는 경우에만 승계 (무검증 core 승격 방지)
+                cand.is_core = (
+                    bool(getattr(victim, "is_core", False))
+                    and not _editorial_safe_core_demote_reason(cand, sec)
+                )
+                cand.selection_stage = "final_relevance_repair"
+                cand.selection_note = "agri_context_variant_swap"
+                if float(getattr(cand, "selection_fit_score", 0.0) or 0.0) <= 0.0:
+                    fresh = _fresh_section_fit(cand, sec)
+                    if fresh > 0.0:
+                        cand.selection_fit_score = round(fresh, 3)
+                sec_list[idx] = cand
+                all_final = [a for s2 in section_keys for a in (final_by_section.get(s2) or []) if isinstance(a, Article)]
+                swapped += 1
+                log.info(
+                    "[FINAL-RELEVANCE-SWAP] section=%s out=%s | in=%s",
+                    sec, (victim.title or "")[:56], (cand.title or "")[:56],
+                )
+                break
+    return swapped
+
+
+def _swap_soft_news_tails(
+    final_by_section: dict[str, list["Article"]],
+    raw_by_section: dict[str, list["Article"]] | None,
+    *,
+    max_swaps: int = 4,
+) -> int:
+    """행사·교육·판촉·자재지원·라운드업 성격의 tail 카드를
+    하드뉴스 후보(수급·시장 운영·병해충 실질 이슈)로 교체한다.
+    대체 후보가 없으면 그대로 둔다(억지 교체 금지)."""
+    if not isinstance(final_by_section, dict) or not raw_by_section:
+        return 0
+    section_keys = [str(s.get("key") or "").strip() for s in SECTIONS if str(s.get("key") or "").strip()]
+    swapped = 0
+    for sec in section_keys:
+        if swapped >= max_swaps:
+            break
+        sec_list = final_by_section.get(sec) or []
+        for idx, victim in enumerate(list(sec_list)):
+            if swapped >= max_swaps:
+                break
+            if not isinstance(victim, Article) or bool(getattr(victim, "is_core", False)):
+                continue
+            if not _soft_news_core_demote_reason(victim):
+                continue
+            all_final = [a for s2 in section_keys for a in (final_by_section.get(s2) or []) if isinstance(a, Article)]
+            quality_floor = BASE_MIN_SCORE.get(sec, 6.0) + 1.5
+            candidates = sorted(
+                (a for a in (raw_by_section.get(sec) or []) if isinstance(a, Article)),
+                key=lambda a: (
+                    # 매체 다양성 우선: 최종 목록에 없는 매체의 동급 후보를 먼저 시도
+                    _final_swap_domain_newness(a, all_final),
+                    int(float(getattr(a, "score", 0.0) or 0.0) / 2.0),
+                    round(_section_score_percentile(a, sec, raw_by_section), 2),
+                    float(getattr(a, "score", 0.0) or 0.0),
+                ),
+                reverse=True,
+            )
+            for cand in candidates:
+                if cand is victim or _article_ident_key(cand) == _article_ident_key(victim):
+                    continue
+                if float(getattr(cand, "score", 0.0) or 0.0) < quality_floor:
+                    continue
+                if _soft_news_core_demote_reason(cand):
+                    continue
+                if _postbuild_article_reject_reason(cand, sec):
+                    continue
+                try:
+                    if _preferred_tail_block_reason(
+                        cand, sec,
+                        current_count=PREFERRED_PER_SECTION,
+                        raw_count=PREFERRED_PER_SECTION * 4,
+                    ):
+                        continue
+                except Exception:
+                    pass
+                if _agri_context_hits(cand) < 1:
+                    continue
+                # 교체가 매체 다양성을 줄이지 않도록: 새로운 매체이거나 피해 카드와 같은 매체만 허용
+                try:
+                    _cand_dom = normalize_host(getattr(cand, "domain", "") or "")
+                    _victim_dom = normalize_host(getattr(victim, "domain", "") or "")
+                    if _cand_dom and _cand_dom != _victim_dom and any(
+                        b is not victim and normalize_host(getattr(b, "domain", "") or "") == _cand_dom
+                        for b in all_final
+                    ):
+                        continue
+                except Exception:
+                    pass
+                # pest는 키워드 기반 fit이 희소하므로 현장 리스크 기사(고사 등) 문턱을 낮춘다
+                if _fresh_section_fit(cand, sec) < (0.5 if sec == "pest" else 1.0):
+                    continue
+                if _is_stale_swap_candidate(cand, [a for a in all_final if a is not victim]):
+                    continue
+                if _violates_section_theme_cap(cand, sec, final_by_section, exclude=victim):
+                    continue
+                if any(
+                    b is not victim
+                    and (_article_ident_key(cand) == _article_ident_key(b) or _duplicate_story_pair_reason(cand, b))
+                    for b in all_final
+                ):
+                    continue
+                cand.is_core = False
+                cand.selection_stage = "final_soft_tail_replacement"
+                cand.selection_note = "soft_news_tail_swap"
+                if float(getattr(cand, "selection_fit_score", 0.0) or 0.0) <= 0.0:
+                    fresh = _fresh_section_fit(cand, sec)
+                    if fresh > 0.0:
+                        cand.selection_fit_score = round(fresh, 3)
+                sec_list[idx] = cand
+                swapped += 1
+                log.info(
+                    "[FINAL-SOFT-TAIL-SWAP] section=%s out=%s | in=%s",
+                    sec, (victim.title or "")[:56], (cand.title or "")[:56],
+                )
+                break
+    return swapped
+
+
+_FINAL_DOMAIN_CAP = 3
+
+
+def _cap_final_domain_concentration(
+    final_by_section: dict[str, list["Article"]],
+    raw_by_section: dict[str, list["Article"]] | None,
+    *,
+    max_per_domain: int = _FINAL_DOMAIN_CAP,
+) -> int:
+    """전 섹션 기준 단일 매체 편중 완화: 한 도메인이 상한을 초과하면
+    가장 약한 tail 카드를 다른 매체의 동급 후보로 교체한다(품질 게이트 유지)."""
+    if not isinstance(final_by_section, dict) or not raw_by_section:
+        return 0
+    section_keys = [str(s.get("key") or "").strip() for s in SECTIONS if str(s.get("key") or "").strip()]
+
+    def _domain_of(a: "Article") -> str:
+        try:
+            return normalize_host(getattr(a, "domain", "") or "")
+        except Exception:
+            return (getattr(a, "domain", "") or "").lower()
+
+    swapped = 0
+    exhausted_domains: set[str] = set()
+    for _pass in range(8):
+        all_final: list[tuple[str, Article]] = [
+            (sec, a) for sec in section_keys for a in (final_by_section.get(sec) or []) if isinstance(a, Article)
+        ]
+        if not all_final:
+            break
+        domain_counts = Counter(_domain_of(a) for _sec, a in all_final if _domain_of(a))
+        over = [d for d, c in domain_counts.items() if c > max_per_domain and d not in exhausted_domains]
+        if not over:
+            break
+        target_domain = max(over, key=lambda d: domain_counts[d])
+        def _victim_block_flag(pair: tuple[str, "Article"]) -> int:
+            try:
+                return 0 if _preferred_tail_block_reason(
+                    pair[1], pair[0],
+                    current_count=PREFERRED_PER_SECTION,
+                    raw_count=PREFERRED_PER_SECTION * 4,
+                ) else 1
+            except Exception:
+                return 1
+
+        victims = sorted(
+            (
+                (sec, a) for sec, a in all_final
+                if _domain_of(a) == target_domain and not bool(getattr(a, "is_core", False))
+            ),
+            key=lambda pair: (_victim_block_flag(pair), _story_keep_priority(pair[1])),
+        )
+        replaced = False
+        for sec, victim in victims:
+            final_articles = [a for s2 in section_keys for a in (final_by_section.get(s2) or [])]
+            quality_floor = BASE_MIN_SCORE.get(sec, 6.0) + 1.5
+            candidates = sorted(
+                (a for a in (raw_by_section.get(sec) or []) if isinstance(a, Article)),
+                key=lambda a: (
+                    # 편중 해소가 목적이므로 새로운 매체의 동급 후보를 먼저 시도
+                    _final_swap_domain_newness(a, final_articles),
+                    int(float(getattr(a, "score", 0.0) or 0.0) / 2.0),
+                    float(getattr(a, "score", 0.0) or 0.0),
+                ),
+                reverse=True,
+            )
+            for cand in candidates:
+                cand_domain = _domain_of(cand)
+                if not cand_domain or domain_counts.get(cand_domain, 0) >= max_per_domain:
+                    continue
+                if any(cand is b or _article_ident_key(cand) == _article_ident_key(b) for b in final_articles):
+                    continue
+                if float(getattr(cand, "score", 0.0) or 0.0) < quality_floor:
+                    continue
+                if _postbuild_article_reject_reason(cand, sec):
+                    continue
+                if _soft_news_core_demote_reason(cand):
+                    continue
+                try:
+                    if _preferred_tail_block_reason(
+                        cand, sec,
+                        current_count=PREFERRED_PER_SECTION,
+                        raw_count=PREFERRED_PER_SECTION * 4,
+                    ):
+                        continue
+                except Exception:
+                    pass
+                if _is_stale_swap_candidate(cand, final_articles):
+                    continue
+                if _violates_section_theme_cap(cand, sec, final_by_section, exclude=victim):
+                    continue
+                cand_text = _nfkc_lower(f"{cand.title or ''} {cand.description or ''}")
+                try:
+                    if (
+                        agri_strength_score(cand_text) < 1
+                        and best_horti_score(cand.title or "", cand.description or "") < 1.2
+                    ):
+                        continue
+                except Exception:
+                    pass
+                if any(_duplicate_story_pair_reason(cand, b) for b in final_articles if b is not victim):
+                    continue
+                cand.is_core = False
+                cand.selection_stage = "final_domain_diversity_repair"
+                cand.selection_note = f"replaced_over_concentrated:{target_domain}"
+                if float(getattr(cand, "selection_fit_score", 0.0) or 0.0) <= 0.0:
+                    fresh = _fresh_section_fit(cand, sec)
+                    if fresh > 0.0:
+                        cand.selection_fit_score = round(fresh, 3)
+                sec_list = final_by_section.get(sec) or []
+                idx = next((i for i, a in enumerate(sec_list) if a is victim), -1)
+                if idx < 0:
+                    continue
+                sec_list[idx] = cand
+                swapped += 1
+                replaced = True
+                log.info(
+                    "[FINAL-DOMAIN-CAP] section=%s swap out=[%s] %s | in=[%s] %s",
+                    sec, target_domain, (victim.title or "")[:56], cand_domain, (cand.title or "")[:56],
+                )
+                break
+            if replaced:
+                break
+        if not replaced:
+            # 이 도메인은 교체 가능한 후보가 없다 — 다른 초과 도메인을 계속 시도
+            exhausted_domains.add(target_domain)
+    return swapped
 
 
 def _cleanup_final_tail_noise_after_preferred_recovery(
@@ -34407,6 +35908,7 @@ def _promote_publish_dist_operational_cores(final_by_section: dict[str, list[Art
         for article in items
         if not _is_dist_editorial_promo_tail(article)
         and not _is_publish_dist_editorial_weak(article)
+        and not _editorial_safe_core_demote_reason(article, "dist")
         and not _postbuild_article_reject_reason(article, "dist", apply_selection_fit=False)
         and _publish_article_effective_fit("dist", article) >= 1.0
         and (
@@ -34463,6 +35965,7 @@ def _promote_publish_supply_market_cores(final_by_section: dict[str, list[Articl
         for article in items
         if _is_supply_editorial_market_replacement(article)
         and not _is_publish_supply_editorial_weak(article)
+        and not _editorial_safe_core_demote_reason(article, "supply")
         and not _postbuild_article_reject_reason(article, "supply", apply_selection_fit=False)
         and not _is_supply_editorial_weak_core(article)
     ]
@@ -45751,6 +47254,21 @@ def _finalize_sections_for_render(by_section: dict[str, list[Article]]) -> int:
         removed += _drop_final_story_duplicates(by_section, min_items=render_floor)
         removed += _drop_duplicate_pest_theme_tail(by_section, min_items=render_floor)
         removed += _drop_hard_postbuild_rejected_final_items(by_section, min_items=render_floor)
+        try:
+            # 사건 단위 중복은 슬롯 미달보다 독자 피해가 크므로 MIN_FALLBACK까지 허용해 제거
+            render_dedupe_removed, _render_refilled = _final_global_story_dedupe(
+                by_section, None, min_keep=MIN_FALLBACK_PER_SECTION
+            )
+            removed += render_dedupe_removed
+        except Exception as exc:
+            log.warning("[WARN] render event dedupe failed: %s", exc)
+        try:
+            render_meta_fixed = _ensure_final_selection_fit(by_section)
+            render_core_changed = _demote_soft_news_final_cores(by_section)
+            if render_meta_fixed or render_core_changed:
+                _sync_debug_with_final_sections(by_section)
+        except Exception as exc:
+            log.warning("[WARN] render soft-news core gate failed: %s", exc)
         if removed:
             log.info("[REBALANCE] render guard removed %d final noise item(s)", removed)
             _sync_debug_with_final_sections(by_section)
