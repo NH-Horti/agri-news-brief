@@ -1,9 +1,9 @@
 {
-  "report_date": "2026-06-30",
-  "generated_at_kst": "2026-07-04T13:37:17+09:00",
+  "report_date": "2026-07-01",
+  "generated_at_kst": "2026-07-04T13:41:57+09:00",
   "scores": {
     "section_alignment": 100.0,
-    "core_quality": 90.52,
+    "core_quality": 93.72,
     "commodity_board_quality": 88.0
   },
   "metrics": {
@@ -29,23 +29,24 @@
     "commodity_primary_title_issue_signal_rate": 1.0,
     "commodity_primary_strict_link_rate": 1.0,
     "commodity_primary_low_rank_rate": 0.0,
-    "commodity_primary_count": 6,
-    "commodity_active_today_total": 11,
-    "commodity_active_today_unlinked_total": 5,
-    "commodity_managed_unlinked_total": 27,
+    "commodity_primary_count": 5,
+    "commodity_active_today_total": 14,
+    "commodity_active_today_unlinked_total": 9,
+    "commodity_managed_unlinked_total": 28,
     "commodity_board_daily_min_primary_count": 6,
-    "commodity_board_low_coverage": false,
-    "commodity_board_coverage_rate": 0.1818,
+    "commodity_board_low_coverage": true,
+    "commodity_board_coverage_rate": 0.1515,
     "commodity_primary_title_item_missing_rate": 0.0,
     "commodity_primary_body_only_rate": 0.0,
     "commodity_primary_false_link_rate": 0.0,
-    "commodity_pool_count": 7,
+    "commodity_pool_count": 10,
     "commodity_pool_false_link_rate": 0.0,
-    "commodity_primary_dominant_section_rate": 0.8333
+    "commodity_primary_dominant_section_rate": 0.8
   },
   "selection_guardrails": {
     "driver_tags": [
-      "commodity_board"
+      "commodity_board",
+      "commodity_board_low_coverage"
     ],
     "section_card_min_fit": {
       "default": 0.8,
@@ -82,102 +83,102 @@
   "editorial_quality_samples": [],
   "reader_hard_issue_samples": [],
   "editorial": {
-    "score": 86.0,
+    "score": 84.0,
     "target_score": 95.0,
     "target_status": "needs_iteration",
     "section_count_score": 100.0,
     "section_count_status": "target_met",
     "scores": {
-      "article_selection": 86.0,
+      "article_selection": 82.0,
       "section_fit": 84.0,
-      "core_pick_quality": 85.0,
-      "summary_usefulness": 78.0,
-      "missed_opportunity": 82.0,
-      "noise_control": 80.0
+      "core_pick_quality": 78.0,
+      "summary_usefulness": 82.0,
+      "missed_opportunity": 75.0,
+      "noise_control": 79.0
     },
     "issues": [
       {
-        "type": "wrong_section",
+        "type": "wrong_section_or_weak_fit",
         "severity": "major",
-        "section": "dist",
-        "title": "화훼 산업, 이대로면 사라진다",
-        "reason": "화훼 생산기반·소비문화·정책 토론 성격으로 유통·물류·시장운영 기사와 거리가 있다.",
-        "suggested_action": "마늘 수급 안정 간담회, 한국청과 양파 출하조직 포장재 지원, APC 판로 확대 기사로 교체."
+        "section": "supply",
+        "title": "백성익 제주 감귤 연합회 회장, 수입농산물 관리 민간위원 선정",
+        "reason": "개인 위원 선정 중심의 정책성 인사 기사로 공급 동향성이 약하고 정책 10번과 같은 사안이다.",
+        "suggested_action": "공급에서는 마늘 수급안정 간담회나 영천 마늘·양파 작황 기사류로 대체한다."
       },
       {
-        "type": "missed_candidate",
+        "type": "missed_stronger_candidate",
         "severity": "major",
-        "section": "pest",
-        "title": "사과 나무 무더기로 죽었는데 원인 불명?…경찰 수사까지",
-        "reason": "사과 과수원 100여 그루 피해와 원인 조사라는 현장성 높은 병해·생육 리스크 후보를 누락했다.",
-        "suggested_action": "주간농사메모나 중복 고추 예방 기사 대신 포함."
-      },
-      {
-        "type": "duplication",
-        "severity": "medium",
-        "section": "pest",
-        "title": "해남군 '고온다습 장마철 '고추 병해충 예방 당부",
-        "reason": "경북 고추 탄저병·세균성점무늬병 확산 우려 기사와 주제가 겹치고 지역 안내성도 강하다.",
-        "suggested_action": "고추 병해충은 더 구체적인 경북 기사만 남기고 다른 작목·사건형 후보로 대체."
-      },
-      {
-        "type": "weak_tail",
-        "severity": "medium",
-        "section": "pest",
-        "title": "[주간농사메모] 병해충 발생 여부 수시 예찰",
-        "reason": "여러 작목 일반 관리요령을 나열한 정례 메모라 당일 뉴스성과 긴급성이 낮다.",
-        "suggested_action": "사과 피해, 과수화상병 확산, 특정 병해충 발생 기사 우선 선별."
-      },
-      {
-        "type": "promotional_or_event_filler",
-        "severity": "medium",
         "section": "policy",
-        "title": "농경연· 농식품부 , 주요 농정 현안 대응 협력 강화",
-        "reason": "정책연구협의회 개최 소식 중심으로 독자에게 필요한 구체 정책 변화가 약하다.",
-        "suggested_action": "물가 안정·농축수산물 할인·농자재 지원 등 실행 정책 후보가 있으면 우선."
+        "title": "한농연 “농산물 가격 안정의 해법은 수입 아닌 ‘국내 생산 기반’에”",
+        "reason": "정부 할당관세·수입 확대에 대한 농업계 반응으로 정책 핵심성이 높은데 누락됐다.",
+        "suggested_action": "저품질 GAP 자재지원 기사나 중복성 낮은 꼬리 기사 대신 포함한다."
       },
       {
-        "type": "weak_core",
-        "severity": "medium",
-        "section": "dist",
-        "title": "토마토 선별·포장, 로봇이 다 해줍니다",
-        "reason": "APC 자동화 소재는 적합하지만 사진설명형 짧은 기사라 핵심 카드로는 취재 밀도가 낮다.",
-        "suggested_action": "핵심 표시는 가락시장 시범휴업, 양파 수출, 출하예측 확대 같은 운영 영향 큰 기사에 부여."
+        "type": "summary_quality",
+        "severity": "major",
+        "section": "policy",
+        "title": "재경차관, 수입란 유통업체 찾아 수급 점검…\"가격안정 최선\"",
+        "reason": "요약에 ‘잠깐! 현재 Internet Explorer…’ 같은 크롤링 잡음이 포함됐다.",
+        "suggested_action": "본문 오염 문구를 제거하고 계란 수입·콜드체인 점검 요지로 재작성한다."
       },
       {
-        "type": "promotional_or_event_filler",
-        "severity": "minor",
-        "section": "dist",
-        "title": "대아청과·애월 농협 , 제주산 농산물 유통 활성화 '맞손'",
-        "reason": "간담회·협력 홍보 성격이 강해 구체 물류 변화나 거래 영향이 제한적이다.",
-        "suggested_action": "동일 섹션 내 더 구체적인 시장운영·포장물류·수급 안정 후보를 우선."
+        "type": "low_value_selection",
+        "severity": "major",
+        "section": "policy",
+        "title": "농산물 우수관리 인증 확대...\"영농자재 80% 싸게 공급\"",
+        "reason": "요약이 깨져 있고 지방 GAP·자재 지원 성격이 강해 전국 정책 브리핑 가치가 낮다.",
+        "suggested_action": "한농연 성명, 감자 계절관세 철폐, 하반기 농림 제도 변경 기사로 교체한다."
       },
       {
-        "type": "summary_noise",
-        "severity": "medium",
+        "type": "promotional_filler",
+        "severity": "major",
         "section": "dist",
-        "title": "전주시, 양파 대만 수출 확대…농가 판로 다변화",
-        "reason": "요약에 글자 크기, 번역 선택, AI 핵심 요약 등 페이지 UI 문구가 섞였다.",
-        "suggested_action": "출하량, 수출국, 가격하락 대응 효과 중심으로 요약을 재작성."
+        "title": "대신농협, 가락공판장 견학…간담회도 열어",
+        "reason": "견학·간담회 행사 중심으로 유통 운영 변화나 시장 영향이 약하다.",
+        "suggested_action": "화훼공판장 노후시설 운영 한계, aT 유통본부 회의, 마늘 수급안정 간담회로 대체한다."
+      },
+      {
+        "type": "promotional_filler",
+        "severity": "moderate",
+        "section": "dist",
+        "title": "'지역 농산물 판로확대 '... 동서울-영주낭주농협 '직거래장' 개점",
+        "reason": "직거래장 개점 홍보성 지역 기사로 유통·물류·시장운영 기사보다 우선순위가 낮다.",
+        "suggested_action": "공판장 구조개혁, 공동선별·수출, 물류센터 운영 같은 구체 운영 기사에 슬롯을 준다."
+      },
+      {
+        "type": "weak_core_pick",
+        "severity": "moderate",
+        "section": "pest",
+        "title": "고성군 밤나무병해충 무인항공기방제 13일부터 40일간 시행",
+        "reason": "지역 방제 일정 공지에 가까운데 core로 지정돼 있다.",
+        "suggested_action": "사과 화상병·탄저병 주의나 경북 고추 탄저병을 core로 올리고 밤 방제는 꼬리로 둔다."
+      },
+      {
+        "type": "missed_stronger_candidate",
+        "severity": "moderate",
+        "section": "dist",
+        "title": "화훼 생산자 “양재동 화훼공판장 노후시설 운영 한계”",
+        "reason": "공영 화훼 유통 중심지의 구조개혁 쟁점으로 견학·직거래장 개점보다 유통 섹션 적합도가 높다.",
+        "suggested_action": "유통 섹션 꼬리 기사 중 행사성 항목을 줄이고 포함한다."
       }
     ]
   },
   "editorial_suggested_guardrails": {
     "driver_tags": [
       "commodity_board",
-      "editorial_section_fit",
-      "editorial_duplicate_topic",
+      "commodity_board_low_coverage",
+      "editorial_noise_filter",
       "editorial_core_pick"
     ],
     "section_card_min_fit": {
       "default": 0.85,
-      "supply": 0.9,
-      "policy": 0.9,
-      "dist": 1.05,
-      "pest": 0.84
+      "supply": 0.87,
+      "policy": 0.87,
+      "dist": 1.0,
+      "pest": 0.83
     },
-    "section_low_fit_rescue_min": 0.15,
-    "high_score_low_fit_rescue_margin": 4.2,
+    "section_low_fit_rescue_min": 0.35,
+    "high_score_low_fit_rescue_margin": 3.0,
     "tail_score_floor_delta": 0.4,
     "core_fit_min": {
       "default": 1.3,
@@ -206,7 +207,7 @@
     "mode": "shadow_replay_loop",
     "proposal_only": true,
     "target_score": 95.0,
-    "current_editorial_score": 86.0,
+    "current_editorial_score": 84.0,
     "target_status": "needs_iteration",
     "iteration_budget": 3,
     "promotion_gates": {
@@ -223,7 +224,7 @@
         "supply": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 193,
+          "raw_candidates": 203,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -235,7 +236,7 @@
         "policy": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 81,
+          "raw_candidates": 111,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -247,12 +248,12 @@
         "dist": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 40,
+          "raw_candidates": 52,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
           "count_floor": 3,
-          "core_count": 2,
+          "core_count": 1,
           "fill_ratio": 1.0,
           "score": 100.0
         },
@@ -264,7 +265,7 @@
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
           "count_floor": 3,
-          "core_count": 1,
+          "core_count": 2,
           "fill_ratio": 1.0,
           "score": 100.0
         }
@@ -281,8 +282,7 @@
     },
     "guardrail_focus": [
       "core_quality",
-      "article_selection",
-      "section_fit"
+      "noise_control"
     ],
     "recommended_actions": [
       {
@@ -292,21 +292,16 @@
         "reason": "Core cards should not be filled by merely available articles."
       },
       {
-        "kind": "story_dedupe",
-        "target": "story_signature_gate",
+        "kind": "noise_filter",
+        "target": "semantic_false_positive_gate",
         "direction": "tighten",
-        "reason": "Multiple cards covered the same issue and reduced briefing breadth."
-      },
-      {
-        "kind": "section_fit",
-        "target": "section_card_min_fit",
-        "direction": "tighten",
-        "reason": "A selected card appears to fit another section better."
+        "reason": "Selected cards included low editorial-value noise."
       }
     ],
     "current_selection_guardrails": {
       "driver_tags": [
-        "commodity_board"
+        "commodity_board",
+        "commodity_board_low_coverage"
       ],
       "section_card_min_fit": {
         "default": 0.8,
