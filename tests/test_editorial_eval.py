@@ -110,6 +110,8 @@ class EditorialEvalTests(unittest.TestCase):
         )
 
         self.assertEqual(payload["report_date"], self.report_date)
+        self.assertEqual(payload["target_score"], 88.0)
+        self.assertAlmostEqual(sum(payload["instructions"]["component_weights"].values()), 1.0)
         self.assertGreater(len(payload["selected_briefing_cards"]), 0)
         self.assertEqual(len(payload["raw_candidates_by_section"]["supply"]), 3)
         self.assertIn("operational_eval", payload)
@@ -131,15 +133,21 @@ class EditorialEvalTests(unittest.TestCase):
         )
 
         self.assertEqual(result["status"], "success")
-        self.assertEqual(result["score"], 91)
+        self.assertEqual(result["score"], 90.65)
+        self.assertEqual(result["model_reported_score"], 91)
+        self.assertEqual(result["score_method"], "weighted_components_v1")
         self.assertEqual(result["scores"]["core_pick_quality"], 89)
-        self.assertEqual(result["issues"][0]["type"], "missed_better_candidate")
+        self.assertEqual(result["issues"][0]["type"], "missed_candidate")
+        self.assertEqual(result["issues"][0]["severity"], "moderate")
         self.assertEqual(result["model"], "test-model")
         self.assertEqual(result["model_snapshot"], "test-model-snapshot")
         self.assertEqual(session.requests[0]["json"]["model"], "test-model")
         self.assertEqual(session.requests[0]["json"]["text"]["format"]["type"], "json_schema")
         self.assertIn("raw_candidates_by_section", session.requests[0]["json"]["input"][1]["content"])
         self.assertIn("section_count_targets", session.requests[0]["json"]["input"][1]["content"])
+        issue_schema = session.requests[0]["json"]["text"]["format"]["schema"]["properties"]["issues"]["items"]["properties"]
+        self.assertEqual(issue_schema["severity"]["enum"], ["blocking", "major", "moderate", "minor"])
+        self.assertIn("bad_summary", issue_schema["type"]["enum"])
 
     def test_default_model_is_gpt_5_5_and_does_not_follow_generation_model(self):
         session = _FakeSession()
@@ -154,9 +162,9 @@ class EditorialEvalTests(unittest.TestCase):
                 session_factory=lambda: session,
             )
 
-        self.assertEqual(editorial_eval.DEFAULT_EDITORIAL_MODEL, "gpt-5.5")
-        self.assertEqual(session.requests[0]["json"]["model"], "gpt-5.5")
-        self.assertEqual(result["model"], "gpt-5.5")
+        self.assertEqual(editorial_eval.DEFAULT_EDITORIAL_MODEL, "gpt-5.5-2026-04-23")
+        self.assertEqual(session.requests[0]["json"]["model"], "gpt-5.5-2026-04-23")
+        self.assertEqual(result["model"], "gpt-5.5-2026-04-23")
 
     def test_editorial_model_environment_override_has_precedence(self):
         session = _FakeSession()
@@ -226,11 +234,13 @@ class EditorialEvalTests(unittest.TestCase):
 
         self.assertEqual(result["status"], "success")
         self.assertLess(result["score"], 95)
-        self.assertEqual(result["target_status"], "needs_iteration")
+        self.assertNotEqual(result["target_status"], "target_met")
+        self.assertFalse(result["acceptance_gate"]["passed"])
+        self.assertIn("no_section_underfill", result["acceptance_gate"]["failure_reasons"])
         self.assertEqual(result["section_count_status"], "underfilled")
         self.assertIn("section_count_adjustment", result)
 
-    def test_operational_gate_calibrates_llm_shadow_score_when_publish_gates_pass(self):
+    def test_operational_gate_does_not_overwrite_editorial_score(self):
         class LowButDebatableSession(_FakeSession):
             def post(self, url, headers=None, json=None, timeout=None):
                 self.requests.append({"url": url, "headers": headers or {}, "json": json or {}, "timeout": timeout})
@@ -302,11 +312,12 @@ class EditorialEvalTests(unittest.TestCase):
         )
 
         self.assertEqual(result["status"], "success")
-        self.assertEqual(result["llm_score"], 84)
-        self.assertEqual(result["score"], 95)
-        self.assertEqual(result["target_status"], "target_met")
-        self.assertEqual(result["score_calibration"]["reason"], "deterministic_publish_gates_passed")
-        self.assertTrue(result["score_calibration"]["gates"]["commodity_board_score_min"])
+        self.assertEqual(result["model_reported_score"], 84)
+        self.assertEqual(result["score"], 82.8)
+        self.assertNotEqual(result["target_status"], "target_met")
+        self.assertFalse(result["acceptance_gate"]["passed"])
+        self.assertEqual(result["acceptance_gate"]["major_issue_count"], 1)
+        self.assertNotIn("score_calibration", result)
 
     def test_section_count_gate_prefers_five_but_accepts_four_soft_fallback(self):
         operational = self._operational_with_uniform_counts(count=4, raw=10)
@@ -322,7 +333,7 @@ class EditorialEvalTests(unittest.TestCase):
         self.assertLess(context["score"], 95.0)
         self.assertEqual(context["status"], "minimum_fallback")
 
-    def test_low_commodity_board_blocks_shadow_calibration(self):
+    def test_low_commodity_board_blocks_editorial_acceptance(self):
         class LowButDebatableSession(_FakeSession):
             def post(self, url, headers=None, json=None, timeout=None):
                 self.requests.append({"url": url, "headers": headers or {}, "json": json or {}, "timeout": timeout})
@@ -376,10 +387,12 @@ class EditorialEvalTests(unittest.TestCase):
         )
 
         self.assertEqual(result["status"], "success")
-        self.assertEqual(result["score"], 84)
+        self.assertEqual(result["score"], 82.8)
+        self.assertFalse(result["acceptance_gate"]["passed"])
+        self.assertIn("commodity_board_score_min", result["acceptance_gate"]["failure_reasons"])
         self.assertNotIn("score_calibration", result)
 
-    def test_minor_pest_theme_penalty_does_not_block_shadow_calibration(self):
+    def test_clean_high_component_result_passes_editorial_acceptance(self):
         class LowButDebatableSession(_FakeSession):
             def post(self, url, headers=None, json=None, timeout=None):
                 self.requests.append({"url": url, "headers": headers or {}, "json": json or {}, "timeout": timeout})
@@ -407,6 +420,7 @@ class EditorialEvalTests(unittest.TestCase):
 
         operational = self._operational_with_uniform_counts(count=5, raw=10)
         operational["overall_score"] = 96.2
+        operational["operational_score"] = 96.2
         operational["scores"] = {
             **operational.get("scores", {}),
             "section_alignment": 100.0,
@@ -437,9 +451,11 @@ class EditorialEvalTests(unittest.TestCase):
         )
 
         self.assertEqual(result["status"], "success")
-        self.assertEqual(result["llm_score"], 88)
-        self.assertEqual(result["score"], 95)
-        self.assertTrue(result["score_calibration"]["gates"]["editorial_penalty_soft_max"])
+        self.assertEqual(result["model_reported_score"], 88)
+        self.assertEqual(result["score"], 89.2)
+        self.assertTrue(result["acceptance_gate"]["passed"])
+        self.assertEqual(result["target_status"], "target_met")
+        self.assertNotIn("score_calibration", result)
 
     def test_editorial_improvement_plan_maps_issues_to_shadow_actions(self):
         editorial_result = {

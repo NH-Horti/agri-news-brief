@@ -19,10 +19,15 @@ from report_eval import (
 )
 
 
-EDITORIAL_RUBRIC_VERSION = 2
-DEFAULT_EDITORIAL_MODEL = "gpt-5.5"
+EDITORIAL_RUBRIC_VERSION = 3
+DEFAULT_EDITORIAL_MODEL = "gpt-5.5-2026-04-23"
 DEFAULT_MAX_RAW_PER_SECTION = 24
 DEFAULT_TIMEOUT_SEC = 90
+EDITORIAL_DAILY_TARGET_SCORE = 88.0
+EDITORIAL_EXCELLENT_SCORE = 92.0
+EDITORIAL_STRETCH_SCORE = 95.0
+EDITORIAL_CRITICAL_COMPONENT_MIN = 85.0
+EDITORIAL_COMPONENT_MIN = 80.0
 SECTION_COUNT_TARGET_SCORE = 95.0
 COMMODITY_BOARD_TARGET_SCORE = 95.0
 
@@ -34,6 +39,53 @@ EDITORIAL_COMPONENTS = (
     "missed_opportunity",
     "noise_control",
 )
+
+EDITORIAL_COMPONENT_WEIGHTS = {
+    "article_selection": 0.25,
+    "section_fit": 0.15,
+    "core_pick_quality": 0.20,
+    "summary_usefulness": 0.15,
+    "missed_opportunity": 0.15,
+    "noise_control": 0.10,
+}
+
+EDITORIAL_CRITICAL_COMPONENTS = (
+    "article_selection",
+    "section_fit",
+    "core_pick_quality",
+    "summary_usefulness",
+)
+
+EDITORIAL_ISSUE_TYPES = (
+    "false_positive",
+    "off_topic",
+    "factual_error",
+    "unsafe_summary",
+    "duplicate_story",
+    "duplicate_theme",
+    "wrong_section",
+    "weak_core",
+    "missed_candidate",
+    "promotional_filler",
+    "bad_summary",
+    "underfill",
+    "noise",
+    "other",
+)
+
+EDITORIAL_SEVERITIES = (
+    "blocking",
+    "major",
+    "moderate",
+    "minor",
+)
+
+EDITORIAL_HARD_BLOCKING_TYPES = {
+    "false_positive",
+    "off_topic",
+    "factual_error",
+    "unsafe_summary",
+}
 
 
 def _score_schema() -> dict[str, Any]:
@@ -83,8 +135,14 @@ def _editorial_response_format() -> dict[str, Any]:
                                 "suggested_action",
                             ],
                             "properties": {
-                                "type": {"type": "string"},
-                                "severity": {"type": "string"},
+                                "type": {
+                                    "type": "string",
+                                    "enum": list(EDITORIAL_ISSUE_TYPES),
+                                },
+                                "severity": {
+                                    "type": "string",
+                                    "enum": list(EDITORIAL_SEVERITIES),
+                                },
                                 "section": {"type": "string"},
                                 "title": {"type": "string"},
                                 "reason": {"type": "string"},
@@ -129,34 +187,124 @@ def _clamp_score(value: Any, default: float = 0.0) -> float:
     return round(max(0.0, min(100.0, _as_float(value, default))), 2)
 
 
-def _score_status(score: float, target: float = 95.0) -> str:
+def _score_status(score: float, target: float = EDITORIAL_DAILY_TARGET_SCORE) -> str:
     if score >= target:
         return "target_met"
-    if score >= 90.0:
+    if score >= 85.0:
         return "needs_minor_iteration"
-    if score >= 82.0:
+    if score >= 80.0:
         return "needs_iteration"
     return "needs_major_iteration"
 
 
-def _issue_type(value: Any) -> str:
+def _quality_tier(score: float) -> str:
+    if score >= EDITORIAL_STRETCH_SCORE:
+        return "stretch"
+    if score >= EDITORIAL_EXCELLENT_SCORE:
+        return "excellent"
+    if score >= EDITORIAL_DAILY_TARGET_SCORE:
+        return "daily_pass"
+    if score >= 80.0:
+        return "needs_iteration"
+    return "needs_major_iteration"
+
+
+def _raw_issue_type(value: Any) -> str:
     raw = re.sub(r"[^a-z0-9_]+", "_", str(value or "").strip().lower()).strip("_")
     return raw or "editorial_issue"
+
+
+def _issue_type(value: Any) -> str:
+    raw = _raw_issue_type(value)
+    aliases = {
+        "irrelevant_article": "off_topic",
+        "duplicate": "duplicate_story",
+        "duplication": "duplicate_story",
+        "duplicate_url": "duplicate_story",
+        "hard_duplicate": "duplicate_story",
+        "same_issue_repeated": "duplicate_story",
+        "theme_duplicate": "duplicate_theme",
+        "theme_duplication": "duplicate_theme",
+        "cross_section_overlap": "duplicate_theme",
+        "section_mismatch": "wrong_section",
+        "section_fit": "wrong_section",
+        "weak_section_fit": "wrong_section",
+        "wrong_section_or_priority": "wrong_section",
+        "wrong_section_or_weak_fit": "wrong_section",
+        "weak_core_pick": "weak_core",
+        "core_pick_quality": "weak_core",
+        "missed_better_core": "weak_core",
+        "missed_opportunity": "missed_candidate",
+        "missed_better_candidate": "missed_candidate",
+        "missed_stronger_candidate": "missed_candidate",
+        "under_selected_high_value": "missed_candidate",
+        "summary_quality": "bad_summary",
+        "summary_noise": "bad_summary",
+        "summary_weak": "bad_summary",
+        "summary_usefulness": "bad_summary",
+        "thin_summary": "bad_summary",
+        "count_underfill": "underfill",
+        "promotional": "promotional_filler",
+        "promotional_tail": "promotional_filler",
+        "promotional_or_local_filler": "promotional_filler",
+        "promotional_or_event_filler": "promotional_filler",
+        "promotional_or_institutional": "promotional_filler",
+        "filler": "promotional_filler",
+        "weak_tail": "promotional_filler",
+        "low_value_selection": "promotional_filler",
+        "weak_selection": "noise",
+        "weak_pick": "noise",
+        "noisy_article": "noise",
+        "backfill_noise": "noise",
+    }
+    normalized = aliases.get(raw, raw)
+    return normalized if normalized in EDITORIAL_ISSUE_TYPES else "other"
+
+
+def _issue_severity(value: Any, issue_type: str) -> str:
+    raw = _raw_issue_type(value)
+    aliases = {
+        "critical": "blocking",
+        "fatal": "blocking",
+        "high": "major",
+        "severe": "major",
+        "medium": "moderate",
+        "warn": "moderate",
+        "warning": "moderate",
+        "low": "minor",
+    }
+    normalized = aliases.get(raw, raw)
+    if normalized not in EDITORIAL_SEVERITIES:
+        normalized = "moderate"
+    if issue_type in EDITORIAL_HARD_BLOCKING_TYPES:
+        return "blocking"
+    return normalized
+
+
+def _weighted_editorial_score(scores: dict[str, float]) -> float:
+    return _clamp_score(
+        sum(
+            _clamp_score(scores.get(component), 0.0) * weight
+            for component, weight in EDITORIAL_COMPONENT_WEIGHTS.items()
+        ),
+        0.0,
+    )
 
 
 def _clean_issue(item: Any) -> dict[str, Any]:
     if not isinstance(item, dict):
         return {
-            "type": "editorial_issue",
-            "severity": "medium",
+            "type": "other",
+            "severity": "moderate",
             "section": "",
             "title": "",
             "reason": _truncate(item, 300),
             "suggested_action": "",
         }
+    issue_type = _issue_type(item.get("type") or item.get("category"))
     return {
-        "type": _issue_type(item.get("type") or item.get("category")),
-        "severity": str(item.get("severity") or "medium").strip().lower(),
+        "type": issue_type,
+        "severity": _issue_severity(item.get("severity") or "moderate", issue_type),
         "section": str(item.get("section") or "").strip(),
         "title": _truncate(item.get("title"), 180),
         "reason": _truncate(item.get("reason") or item.get("evidence"), 360),
@@ -287,92 +435,93 @@ def _apply_section_count_gate(result: dict[str, Any], operational_result: dict[s
     return result
 
 
-def _apply_operational_shadow_calibration(result: dict[str, Any], operational_result: dict[str, Any]) -> dict[str, Any]:
-    """Stabilize the LLM shadow score when deterministic publish gates are all green."""
+def _apply_editorial_acceptance_gate(
+    result: dict[str, Any],
+    operational_result: dict[str, Any],
+) -> dict[str, Any]:
+    """Keep editorial judgment independent and decide whether the daily loop may stop."""
     score = _clamp_score(result.get("score"), 0.0)
-    if score >= 95.0:
-        return result
-    if score < 80.0:
-        return result
+    scores = result.get("scores", {})
+    if not isinstance(scores, dict):
+        scores = {}
+    issues = result.get("issues", [])
+    if not isinstance(issues, list):
+        issues = []
+
     section_count_context = result.get("section_count_context")
     if not isinstance(section_count_context, dict):
         section_count_context = _section_count_context(operational_result)
-    if _as_float(section_count_context.get("score"), 0.0) < SECTION_COUNT_TARGET_SCORE:
-        return result
-    if section_count_context.get("severe_underfilled_sections"):
-        return result
+    operational_scores = operational_result.get("scores", {})
+    if not isinstance(operational_scores, dict):
+        operational_scores = {}
 
-    op_score = _as_float(operational_result.get("overall_score"), _as_float(operational_result.get("operational_score"), 0.0))
-    scores = operational_result.get("scores", {})
-    metrics = operational_result.get("metrics", {})
-    counts = operational_result.get("counts", {})
-    if not isinstance(scores, dict):
-        scores = {}
-    if not isinstance(metrics, dict):
-        metrics = {}
-    if not isinstance(counts, dict):
-        counts = {}
-
-    section_counts_met = (
-        _as_float(section_count_context.get("score"), 0.0) >= SECTION_COUNT_TARGET_SCORE
-        and not section_count_context.get("severe_underfilled_sections")
-    )
-    commodity_board_score = _as_float(scores.get("commodity_board_quality"), 0.0)
-    editorial_penalty = _as_float(metrics.get("editorial_penalty"), _as_float(metrics.get("editorial_quality_penalty"), 0.0))
-
-    deterministic_gates = {
-        "operational_score_min": op_score >= 95.0,
-        "section_count_score_min": _as_float(section_count_context.get("score"), 0.0) >= SECTION_COUNT_TARGET_SCORE,
-        "section_counts_met": section_counts_met,
-        "commodity_board_score_min": commodity_board_score >= COMMODITY_BOARD_TARGET_SCORE,
-        "section_fit_min": _as_float(scores.get("section_fit"), _as_float(scores.get("section_alignment"), 0.0)) >= 98.0,
-        "core_score_min": _as_float(scores.get("core"), _as_float(scores.get("core_quality"), 0.0)) >= 98.0,
-        "summary_score_min": _as_float(scores.get("summary"), _as_float(scores.get("summary_quality"), 0.0)) >= 98.0,
-        "false_positive_zero": _as_float(
-            metrics.get("false_positive_rate"),
-            _as_float(metrics.get("content_false_positive_rate"), _as_float(metrics.get("false_positive"), 0.0)),
-        ) <= 0.0,
-        "weak_core_zero": _as_float(metrics.get("weak_core_rate"), _as_float(metrics.get("weak_core"), 0.0)) <= 0.0,
-        "editorial_penalty_soft_max": editorial_penalty <= 0.5,
-        "promotional_filler_zero": _as_float(metrics.get("promotional_filler_rate"), 0.0) <= 0.0,
-        "policy_wrong_section_zero": _as_float(metrics.get("policy_wrong_section_rate"), 0.0) <= 0.0,
-        "dist_weak_ops_zero": _as_float(metrics.get("dist_weak_ops_rate"), 0.0) <= 0.0,
-        "weak_core_editorial_zero": _as_float(metrics.get("weak_core_editorial_rate"), 0.0) <= 0.0,
-        "semantic_penalty_zero": _as_float(metrics.get("semantic_penalty"), _as_float(metrics.get("semantic_false_positive_penalty"), 0.0)) <= 0.0,
-    }
-    if not all(deterministic_gates.values()):
-        return result
-
-    blocking_types = {
-        "false_positive",
-        "off_topic",
-        "duplicate_url",
-        "hard_duplicate",
-        "factual_error",
-        "unsafe_summary",
-    }
     blocking_issues = [
-        issue for issue in result.get("issues", [])
+        issue
+        for issue in issues
         if isinstance(issue, dict)
-        and str(issue.get("severity", "")).lower() == "high"
-        and str(issue.get("type", "")).lower() in blocking_types
+        and str(issue.get("severity") or "").lower() == "blocking"
     ]
-    if blocking_issues:
-        return result
-
-    result["llm_score"] = score
-    result["score"] = 95.0
-    result["target_status"] = _score_status(95.0)
-    result["score_calibration"] = {
-        "before": score,
-        "after": 95.0,
-        "reason": "deterministic_publish_gates_passed",
-        "gates": deterministic_gates,
-        "note": (
-            "LLM shadow issues are retained for review, but the final editorial shadow score is floored "
-            "because operational, preferred section-count, commodity-board, section-fit, core, summary, and hard noise gates all passed."
-        ),
+    major_issues = [
+        issue
+        for issue in issues
+        if isinstance(issue, dict)
+        and str(issue.get("severity") or "").lower() == "major"
+    ]
+    critical_component_scores = {
+        component: _clamp_score(scores.get(component), 0.0)
+        for component in EDITORIAL_CRITICAL_COMPONENTS
     }
+    all_component_scores = {
+        component: _clamp_score(scores.get(component), 0.0)
+        for component in EDITORIAL_COMPONENTS
+    }
+
+    checks = {
+        "editorial_score_min": score >= EDITORIAL_DAILY_TARGET_SCORE,
+        "no_blocking_issues": not blocking_issues,
+        "no_major_issues": not major_issues,
+        "critical_components_min": all(
+            value >= EDITORIAL_CRITICAL_COMPONENT_MIN
+            for value in critical_component_scores.values()
+        ),
+        "all_components_min": all(
+            value >= EDITORIAL_COMPONENT_MIN
+            for value in all_component_scores.values()
+        ),
+        "operational_score_min": _as_float(
+            operational_result.get("operational_score"),
+            _as_float(operational_result.get("overall_score"), 0.0),
+        )
+        >= 95.0,
+        "section_count_score_min": _as_float(
+            section_count_context.get("score"),
+            0.0,
+        )
+        >= SECTION_COUNT_TARGET_SCORE,
+        "no_section_underfill": not section_count_context.get("underfilled_sections"),
+        "commodity_board_score_min": _as_float(
+            operational_scores.get("commodity_board_quality"),
+            0.0,
+        )
+        >= COMMODITY_BOARD_TARGET_SCORE,
+    }
+    passed = all(checks.values())
+    failure_reasons = [name for name, ok in checks.items() if not ok]
+    failed_status = _score_status(min(score, EDITORIAL_DAILY_TARGET_SCORE - 0.01))
+    result["acceptance_gate"] = {
+        "status": "target_met" if passed else failed_status,
+        "passed": passed,
+        "target_score": EDITORIAL_DAILY_TARGET_SCORE,
+        "excellent_score": EDITORIAL_EXCELLENT_SCORE,
+        "stretch_score": EDITORIAL_STRETCH_SCORE,
+        "blocking_issue_count": len(blocking_issues),
+        "major_issue_count": len(major_issues),
+        "critical_component_min": EDITORIAL_CRITICAL_COMPONENT_MIN,
+        "all_component_min": EDITORIAL_COMPONENT_MIN,
+        "checks": checks,
+        "failure_reasons": failure_reasons,
+    }
+    result["target_status"] = result["acceptance_gate"]["status"]
     return result
 
 
@@ -439,7 +588,7 @@ def build_editorial_payload(
     return {
         "rubric_version": EDITORIAL_RUBRIC_VERSION,
         "report_date": report_date,
-        "target_score": 95,
+        "target_score": EDITORIAL_DAILY_TARGET_SCORE,
         "window": snapshot_payload.get("window", {}),
         "selected_briefing_cards": selected,
         "raw_candidates_by_section": _raw_candidates(snapshot_payload, max_raw_per_section),
@@ -455,11 +604,13 @@ def build_editorial_payload(
         "instructions": {
             "audience": "NH horticulture/agricultural briefing readers in Korea",
             "score_meaning": {
-                "95_100": "near publish-quality selection with only tiny misses",
-                "90_94": "good briefing but at least one visible editorial weakness",
-                "82_89": "usable but misses important candidates or includes weak/noisy items",
-                "below_82": "selection logic needs material correction",
+                "95_100": "stretch quality with only tiny misses",
+                "92_94": "excellent daily briefing",
+                "88_91": "daily pass with no major editorial defect",
+                "80_87": "usable but needs iteration",
+                "below_80": "selection logic needs material correction",
             },
+            "component_weights": EDITORIAL_COMPONENT_WEIGHTS,
         },
     }
 
@@ -515,11 +666,11 @@ def _normalize_editorial_response(
         key: _clamp_score(raw_scores.get(key), 0.0)
         for key in EDITORIAL_COMPONENTS
     }
-    if any(scores.values()):
-        fallback_score = sum(scores.values()) / len(scores)
-    else:
-        fallback_score = 0.0
-    overall = _clamp_score(parsed.get("score", parsed.get("overall_score")), fallback_score)
+    model_reported_score = _clamp_score(
+        parsed.get("score", parsed.get("overall_score")),
+        0.0,
+    )
+    overall = _weighted_editorial_score(scores)
 
     issues = parsed.get("issues", [])
     if not isinstance(issues, list):
@@ -539,7 +690,13 @@ def _normalize_editorial_response(
         "model": model,
         "generated_at_kst": datetime.now(KST).isoformat(timespec="seconds"),
         "score": overall,
-        "target_score": 95.0,
+        "model_reported_score": model_reported_score,
+        "score_method": "weighted_components_v1",
+        "component_weights": EDITORIAL_COMPONENT_WEIGHTS,
+        "quality_tier": _quality_tier(overall),
+        "target_score": EDITORIAL_DAILY_TARGET_SCORE,
+        "excellent_score": EDITORIAL_EXCELLENT_SCORE,
+        "stretch_score": EDITORIAL_STRETCH_SCORE,
         "target_status": _score_status(overall),
         "scores": scores,
         "summary": _truncate(parsed.get("summary") or parsed.get("rationale"), 700),
@@ -550,7 +707,8 @@ def _normalize_editorial_response(
     }
     if operational_result is not None:
         result = _apply_section_count_gate(result, operational_result)
-        result = _apply_operational_shadow_calibration(result, operational_result)
+        result["quality_tier"] = _quality_tier(_clamp_score(result.get("score"), 0.0))
+        result = _apply_editorial_acceptance_gate(result, operational_result)
     return result
 
 
@@ -606,9 +764,16 @@ def evaluate_editorial_quality(
         "but they should not displace stronger national or operational candidates. "
         "For dist, prefer concrete distribution, logistics, export-disruption, market-operation, and sales-channel stories over local promotions. "
         "For pest, prefer fire-blight escalation/response and named crop pest risks over generic local notices. "
+        "Use only these issue types: "
+        + ", ".join(EDITORIAL_ISSUE_TYPES)
+        + ". Use only these severity levels: "
+        + ", ".join(EDITORIAL_SEVERITIES)
+        + ". Reserve blocking for false positives, off-topic items, factual errors, or unsafe summaries. "
+        "Use major for a defect that prevents daily editorial acceptance, moderate for a meaningful but non-blocking weakness, and minor for polish. "
         "Return JSON only with keys: score, scores, summary, issues, section_notes, improvement_suggestions. "
         "section_notes must include supply, policy, dist, and pest. "
         "scores must include article_selection, section_fit, core_pick_quality, summary_usefulness, missed_opportunity, noise_control, each 0-100. "
+        "Make the reported score consistent with the component scores; the application will recompute the authoritative score from fixed weights. "
         "Return at most 8 issues and at most 6 improvement suggestions. Keep every reason and suggested_action concise. "
         "issues should be objects with type, severity, section, title, reason, suggested_action."
     )
@@ -663,7 +828,7 @@ def build_editorial_improvement_plan(
     editorial_result: dict[str, Any],
     operational_result: dict[str, Any],
     *,
-    target_score: float = 95.0,
+    target_score: float = EDITORIAL_DAILY_TARGET_SCORE,
 ) -> dict[str, Any]:
     score = _clamp_score(editorial_result.get("score"), 0.0)
     issue_rows = editorial_result.get("issues", [])
@@ -674,7 +839,7 @@ def build_editorial_improvement_plan(
     actions: list[dict[str, Any]] = []
     guardrail_focus: list[str] = []
 
-    if {"weak_core", "weak_core_pick", "core_pick_quality", "missed_better_core"} & issue_types:
+    if "weak_core" in issue_types:
         actions.append(
             {
                 "kind": "selection_guardrail",
@@ -684,7 +849,7 @@ def build_editorial_improvement_plan(
             }
         )
         guardrail_focus.append("core_quality")
-    if {"missed_better_candidate", "missed_opportunity", "under_selected_high_value"} & issue_types:
+    if "missed_candidate" in issue_types:
         actions.append(
             {
                 "kind": "candidate_recall",
@@ -694,7 +859,7 @@ def build_editorial_improvement_plan(
             }
         )
         guardrail_focus.append("missed_opportunity")
-    if {"duplicate", "duplication", "duplicate_topic", "duplicate_story", "same_issue_repeated"} & issue_types:
+    if {"duplicate_story", "duplicate_theme"} & issue_types:
         actions.append(
             {
                 "kind": "story_dedupe",
@@ -704,7 +869,7 @@ def build_editorial_improvement_plan(
             }
         )
         guardrail_focus.append("article_selection")
-    if {"noisy_article", "irrelevant_article", "promotional", "promotional_filler", "weak_selection"} & issue_types:
+    if {"noise", "promotional_filler", "false_positive", "off_topic"} & issue_types:
         actions.append(
             {
                 "kind": "noise_filter",
@@ -714,7 +879,7 @@ def build_editorial_improvement_plan(
             }
         )
         guardrail_focus.append("noise_control")
-    if {"section_mismatch", "wrong_section", "section_fit", "weak_section_pick"} & issue_types:
+    if "wrong_section" in issue_types:
         actions.append(
             {
                 "kind": "section_fit",
@@ -724,7 +889,7 @@ def build_editorial_improvement_plan(
             }
         )
         guardrail_focus.append("section_fit")
-    if {"summary_weak", "summary_usefulness", "thin_summary"} & issue_types:
+    if {"bad_summary", "factual_error", "unsafe_summary"} & issue_types:
         actions.append(
             {
                 "kind": "summary_prompt",
@@ -734,8 +899,25 @@ def build_editorial_improvement_plan(
             }
         )
         guardrail_focus.append("summary_usefulness")
+    if "underfill" in issue_types:
+        actions.append(
+            {
+                "kind": "section_fill",
+                "target": "preferred_section_count",
+                "direction": "restore",
+                "reason": "Every section with enough candidates should reach its preferred card count.",
+            }
+        )
+        guardrail_focus.append("section_count")
 
-    if score < target_score and not actions:
+    acceptance_gate = editorial_result.get("acceptance_gate", {})
+    if not isinstance(acceptance_gate, dict):
+        acceptance_gate = {}
+    passed = bool(acceptance_gate.get("passed"))
+    plan_status = str(acceptance_gate.get("status") or "")
+    if not plan_status:
+        plan_status = _score_status(min(score, target_score - 0.01), target_score)
+    if not passed and not actions:
         actions.append(
             {
                 "kind": "manual_review",
@@ -752,10 +934,16 @@ def build_editorial_improvement_plan(
         "proposal_only": True,
         "target_score": float(target_score),
         "current_editorial_score": score,
-        "target_status": _score_status(score, target_score),
-        "iteration_budget": 3 if score < target_score else 0,
+        "model_reported_score": editorial_result.get("model_reported_score"),
+        "quality_tier": editorial_result.get("quality_tier"),
+        "target_status": plan_status,
+        "iteration_budget": 0 if passed else 3,
         "promotion_gates": {
             "editorial_score_min": float(target_score),
+            "critical_component_min": EDITORIAL_CRITICAL_COMPONENT_MIN,
+            "all_component_min": EDITORIAL_COMPONENT_MIN,
+            "no_blocking_issues": True,
+            "no_major_issues": True,
             "operational_score_min": 95.0,
             "section_count_score_min": SECTION_COUNT_TARGET_SCORE,
             "commodity_board_score_min": COMMODITY_BOARD_TARGET_SCORE,

@@ -135,7 +135,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          EDITORIAL_OPENAI_MODEL: gpt-5.5
+          EDITORIAL_OPENAI_MODEL: gpt-5.5-2026-04-23
         run: |
           set -euo pipefail
 
@@ -201,7 +201,7 @@ jobs:
             echo "- Trigger source: ${{ github.event.inputs.trigger_source || 'github' }}"
             echo "- Report date: ${{ steps.vars.outputs.report_date }}"
             echo "- Article generation model: gpt-5.5"
-            echo "- Editorial evaluation model: gpt-5.5"
+            echo "- Editorial evaluation model: gpt-5.5-2026-04-23"
             echo "- Kakao actual: ${{ steps.kakao_status.outputs.actual }}"
             echo "- Kakao refresh token renewed: ${{ steps.kakao_refresh_token.outputs.renewed }}"
             echo "- Main page: https://nh-horti.github.io/agri-news-brief/"

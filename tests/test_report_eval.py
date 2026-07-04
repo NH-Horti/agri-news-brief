@@ -64,11 +64,11 @@ class ReportEvalTests(unittest.TestCase):
 
         apply_editorial_quality_gate(result, editorial)
 
-        self.assertEqual(result["overall_score"], 96.63)
+        self.assertEqual(result["overall_score"], 94.38)
         self.assertEqual(result["operational_score"], 98.13)
         self.assertEqual(result["status"], "pass")
-        self.assertEqual(result["quality_gate"]["reason"], "editorial_below_target_bounded_penalty")
-        self.assertEqual(result["quality_gate"]["bounded_penalty"], 1.5)
+        self.assertEqual(result["quality_gate"]["reason"], "editorial_acceptance_gate_failed")
+        self.assertEqual(result["quality_gate"]["bounded_penalty"], 3.75)
         rendered = report_eval.render_evaluation_markdown(
             {
                 **result,
@@ -119,9 +119,10 @@ class ReportEvalTests(unittest.TestCase):
 
         apply_editorial_quality_gate(result, editorial)
 
-        self.assertEqual(result["overall_score"], 96.63)
-        self.assertEqual(result["quality_gate"]["reason"], "editorial_below_target_bounded_penalty")
+        self.assertEqual(result["overall_score"], 93.13)
+        self.assertEqual(result["quality_gate"]["reason"], "editorial_major_issue")
         self.assertEqual(result["quality_gate"]["blocking_issue_count"], 0)
+        self.assertEqual(result["quality_gate"]["major_issue_count"], 1)
 
     def test_parse_report_html_extracts_commodity_primary_metadata(self) -> None:
         html = """

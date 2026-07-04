@@ -41,6 +41,9 @@ The repo now includes a daily report quality harness.
 - Published artifacts: `docs/evals/`
 - Auto-feedback loop: `docs/evals/latest-feedback.txt` is fed back into the next OpenAI summary run
 - Selection guardrails: `docs/evals/latest-selection-feedback.json` is fed back into the next card/core/commodity selection run
+- Editorial score: fixed weighted sum of six rubric components; the model-reported total is diagnostic only
+- Daily editorial acceptance: weighted score >= 88, no blocking/major issue, critical components >= 85, all components >= 80, and deterministic publish gates passing
+- Quality tiers: 88 daily pass, 92 excellent, 95 stretch
 
 Local example:
 

@@ -14,7 +14,11 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from io_github import github_get_file, github_put_file
-from editorial_eval import build_editorial_improvement_plan, evaluate_editorial_quality
+from editorial_eval import (
+    EDITORIAL_DAILY_TARGET_SCORE,
+    build_editorial_improvement_plan,
+    evaluate_editorial_quality,
+)
 from report_eval import (
     build_selection_feedback_payload,
     evaluate_report,
@@ -158,8 +162,11 @@ def apply_editorial_quality_gate(result: dict[str, Any], editorial_result: dict[
         return result
     if editorial_result.get("status") != "success":
         return result
+    editorial_score_value = editorial_result.get("score")
+    if editorial_score_value is None:
+        return result
     try:
-        editorial_score = float(editorial_result.get("score"))
+        editorial_score = float(editorial_score_value)
     except (TypeError, ValueError):
         return result
     try:
@@ -171,40 +178,59 @@ def apply_editorial_quality_gate(result: dict[str, Any], editorial_result: dict[
     except (TypeError, ValueError):
         current_headline_score = operational_score
 
-    target_score = float(editorial_result.get("target_score", 95.0) or 95.0)
+    target_score = float(
+        editorial_result.get("target_score", EDITORIAL_DAILY_TARGET_SCORE)
+        or EDITORIAL_DAILY_TARGET_SCORE
+    )
     target_status = str(editorial_result.get("target_status") or "")
     gate_status = "target_met" if editorial_score >= target_score and target_status == "target_met" else (target_status or "needs_iteration")
-    blocking_types = {
-        "false_positive",
-        "off_topic",
-        "duplicate_url",
-        "hard_duplicate",
-        "factual_error",
-        "unsafe_summary",
-    }
     editorial_issues = editorial_result.get("issues", [])
     if not isinstance(editorial_issues, list):
         editorial_issues = []
+    hard_blocking_types = {
+        "false_positive",
+        "off_topic",
+        "factual_error",
+        "unsafe_summary",
+    }
     blocking_issues = [
         issue for issue in editorial_issues
         if isinstance(issue, dict)
-        and str(issue.get("severity", "")).lower() == "high"
-        and str(issue.get("type", "")).lower() in blocking_types
+        and (
+            str(issue.get("severity", "")).lower() in {"blocking", "critical"}
+            or (
+                str(issue.get("type", "")).lower() in hard_blocking_types
+                and str(issue.get("severity", "")).lower() in {"major", "high"}
+            )
+        )
     ]
+    major_issues = [
+        issue for issue in editorial_issues
+        if isinstance(issue, dict)
+        and str(issue.get("severity", "")).lower() in {"major", "high"}
+    ]
+    acceptance_gate = editorial_result.get("acceptance_gate", {})
+    if not isinstance(acceptance_gate, dict):
+        acceptance_gate = {}
+    editorial_failed = gate_status != "target_met"
     penalty = 0.0
     reason = "all_targets_met"
-    if editorial_score < target_score:
+    if editorial_failed:
         if blocking_issues:
             gated_score = min(current_headline_score, editorial_score)
             reason = "editorial_blocking_issue"
+        elif major_issues:
+            base_score = min(current_headline_score, operational_score) if operational_score > 0.0 else current_headline_score
+            gap = max(0.0, target_score - editorial_score)
+            penalty = min(8.0, max(2.0, round(gap * 0.25 + len(major_issues) * 1.25, 2)))
+            gated_score = max(0.0, base_score - penalty)
+            reason = "editorial_major_issue"
         else:
             base_score = min(current_headline_score, operational_score) if operational_score > 0.0 else current_headline_score
             gap = max(0.0, target_score - editorial_score)
-            penalty = min(6.0, round(gap * 0.10, 2))
-            if editorial_score < 70.0:
-                penalty = max(penalty, min(10.0, round((70.0 - editorial_score) * 0.25 + 3.0, 2)))
+            penalty = min(6.0, max(0.5, round(gap * 0.25, 2)))
             gated_score = max(0.0, base_score - penalty)
-            reason = "editorial_below_target_bounded_penalty"
+            reason = "editorial_acceptance_gate_failed"
     else:
         gated_score = current_headline_score
     result["quality_gate"] = {
@@ -217,8 +243,10 @@ def apply_editorial_quality_gate(result: dict[str, Any], editorial_result: dict[
         "reason": reason,
         "bounded_penalty": round(penalty, 2),
         "blocking_issue_count": len(blocking_issues),
+        "major_issue_count": len(major_issues),
+        "acceptance_failure_reasons": acceptance_gate.get("failure_reasons", []),
     }
-    if editorial_score < target_score:
+    if editorial_failed:
         result["overall_score"] = round(gated_score, 2)
         result["status"] = _score_status(gated_score)
         notes = result.get("score_notes")

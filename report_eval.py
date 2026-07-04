@@ -2588,8 +2588,12 @@ def build_selection_feedback_payload(result: dict[str, Any]) -> dict[str, Any]:
     if isinstance(editorial, dict) and editorial.get("status") == "success":
         payload["editorial"] = {
             "score": editorial.get("score"),
+            "model_reported_score": editorial.get("model_reported_score"),
+            "score_method": editorial.get("score_method"),
+            "quality_tier": editorial.get("quality_tier"),
             "target_score": editorial.get("target_score"),
             "target_status": editorial.get("target_status"),
+            "acceptance_gate": editorial.get("acceptance_gate", {}),
             "section_count_score": editorial.get("section_count_score"),
             "section_count_status": editorial.get("section_count_status"),
             "scores": editorial.get("scores", {}),
@@ -2751,6 +2755,9 @@ def render_evaluation_markdown(result: dict[str, Any]) -> str:
         if editorial.get("status") == "success":
             editorial_scores = editorial.get("scores", {})
             editorial_issues = editorial.get("issues", [])
+            editorial_acceptance = editorial.get("acceptance_gate", {})
+            if not isinstance(editorial_acceptance, dict):
+                editorial_acceptance = {}
             issue_lines = "\n".join(
                 f"- [{item.get('severity', 'medium')}] {item.get('type', 'issue')}: {item.get('title', '')} - {item.get('reason', '')}"
                 for item in editorial_issues[:5]
@@ -2766,11 +2773,28 @@ def render_evaluation_markdown(result: dict[str, Any]) -> str:
                     f" -> {float(calibration.get('after', editorial.get('score', 0.0)) or 0.0):.1f}"
                     f" ({calibration.get('reason', 'calibrated')})\n"
                 )
+            acceptance_failures = editorial_acceptance.get("failure_reasons", [])
+            if not isinstance(acceptance_failures, list):
+                acceptance_failures = []
+            acceptance_reason_text = ", ".join(str(item) for item in acceptance_failures) or "clear"
+            model_reported_score = editorial.get("model_reported_score")
+            model_reported_line = ""
+            if model_reported_score is not None:
+                model_reported_line = (
+                    f"- Model-reported score: {float(model_reported_score or 0.0):.2f}; "
+                    f"authoritative method={editorial.get('score_method', 'unknown')}\n"
+                )
             editorial_block = (
                 f"\n### Editorial Shadow Eval\n"
                 f"- Editorial: **{float(editorial.get('score', 0.0) or 0.0):.2f}** "
-                f"(target {float(editorial.get('target_score', 95.0) or 95.0):.0f}, {editorial.get('target_status', 'unknown')})\n"
+                f"(daily target {float(editorial.get('target_score', 88.0) or 88.0):.0f}, "
+                f"tier={editorial.get('quality_tier', 'unknown')}, {editorial.get('target_status', 'unknown')})\n"
                 f"{editorial_model_line}"
+                f"{model_reported_line}"
+                f"- Acceptance: {'pass' if editorial_acceptance.get('passed') else 'needs_iteration'} "
+                f"(blocking={int(editorial_acceptance.get('blocking_issue_count', 0) or 0)}, "
+                f"major={int(editorial_acceptance.get('major_issue_count', 0) or 0)}, "
+                f"reasons={acceptance_reason_text})\n"
                 f"- Section count gate: {float(editorial.get('section_count_score', 100.0) or 100.0):.1f} "
                 f"({editorial.get('section_count_status', 'unknown')})\n"
                 f"{calibration_line}"
@@ -2848,6 +2872,10 @@ def result_to_history_entry(result: dict[str, Any]) -> dict[str, Any]:
         "reader_quality_gate_status": reader_quality_gate.get("status"),
         "reader_quality_gate_reasons": reader_quality_gate.get("reasons", []),
         "editorial_score": result.get("editorial_score"),
+        "editorial_model_reported_score": (result.get("editorial") or {}).get("model_reported_score") if isinstance(result.get("editorial"), dict) else None,
+        "editorial_score_method": (result.get("editorial") or {}).get("score_method") if isinstance(result.get("editorial"), dict) else None,
+        "editorial_quality_tier": (result.get("editorial") or {}).get("quality_tier") if isinstance(result.get("editorial"), dict) else None,
+        "editorial_acceptance_passed": ((result.get("editorial") or {}).get("acceptance_gate") or {}).get("passed") if isinstance(result.get("editorial"), dict) else None,
         "editorial_status": (result.get("editorial") or {}).get("target_status") if isinstance(result.get("editorial"), dict) else None,
         "quality_gate_status": quality_gate.get("status"),
         "quality_gate_reason": quality_gate.get("reason"),
