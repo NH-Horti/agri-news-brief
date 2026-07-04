@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-07-04T13:46:10.080957+09:00",
+  "updated_at": "2026-07-04T13:51:42.936467+09:00",
   "items": [
     {
       "id": "47d37d76e756",
@@ -13,7 +13,7 @@
       "summary": "가 가 가 가 가 프린트 공유하기 공유 닫기 페이스북 네이버블로그 엑스 카카오톡 밴드 https://www.seoul.co. 가 가 가 가 가 프린트 공유하기 공유 닫기 페이스북 네이버블로그 엑스 카카오톡 밴드 https://www.seoul.co.",
       "url": "https://n.news.naver.com/mnews/article/081/0003657745?sid=101",
       "archive": "/agri-news-brief/archive/2026-07-03.html#sec-policy",
-      "score": 69.65,
+      "score": 69.45,
       "press_tier": 3
     },
     {
@@ -28,20 +28,6 @@
       "url": "https://n.news.naver.com/mnews/article/014/0005543115?sid=101",
       "archive": "/agri-news-brief/archive/2026-07-03.html#sec-policy",
       "score": 67.52,
-      "press_tier": 3
-    },
-    {
-      "id": "e2e1ccdff4a5",
-      "date": "2026-07-03",
-      "section": "dist",
-      "section_title": "유통 및 현장 (도매시장/APC/수출)",
-      "rank": 3,
-      "title": "경기동부 원예농협 , ‘햇사레 복숭아’ 출하협의회 열어",
-      "press": "농민신문",
-      "summary": "경기동부원예농협, ‘햇사레 복숭아’ 출하협의회 열어 조합원·농산물도매시장 관계자 등 300여 명 참석…출하 전략과 시장 전망 점검 유재웅 경기동부원예농협 조합장이 ‘2026년 햇사레 복숭아 출하협의회’에서 농민들의 노고를 치하하며 안정적인 출하...",
-      "url": "https://n.news.naver.com/mnews/article/662/0000098811?sid=102",
-      "archive": "/agri-news-brief/archive/2026-07-03.html#sec-dist",
-      "score": 64.7,
       "press_tier": 3
     },
     {
@@ -73,20 +59,6 @@
       "press_tier": 3
     },
     {
-      "id": "f152b38a7156",
-      "date": "2026-07-03",
-      "section": "supply",
-      "section_title": "품목 및 수급 동향",
-      "rank": 1,
-      "title": "정부, 여름배추 2만7000t 확보…폭염·폭우 수급 불안 막는다",
-      "press": "헤럴드경제",
-      "summary": "정부가 여름배추 수급 불안에 대비해 정부 가용물량을 확보한다. 폭염·폭우 대응 차원에서 2만7000t을 확보해 공급 안정에 나선다.",
-      "url": "https://n.news.naver.com/mnews/article/016/0002665025?sid=101",
-      "archive": "/agri-news-brief/archive/2026-07-03.html#sec-supply",
-      "score": 41.52,
-      "press_tier": 3
-    },
-    {
       "id": "33ad97b5d56d",
       "date": "2026-07-03",
       "section": "supply",
@@ -101,17 +73,17 @@
       "press_tier": 3
     },
     {
-      "id": "a4b3788dfb84",
+      "id": "b411aa53b5f4",
       "date": "2026-07-03",
       "section": "supply",
       "section_title": "품목 및 수급 동향",
       "rank": 5,
-      "title": "한 통에 9500원! ' 수박 오픈런'…고물가 속 '최저가' 찾기",
-      "press": "JTBC",
-      "summary": "이른바 '수박 오픈런'이 벌어진 것인데요. 할인 행사에 더 민감해질 수밖에 없는 이유 고유가 고환율에 밥상 물가도 부담이 커지고 있기 때문인데요. 실제로 지난달에는 소비자 물가 상승률이 2년 6개월 만에 가장 큰 폭으로 올라 3.2%를 기록했습니다.",
-      "url": "https://n.news.naver.com/mnews/article/437/0000499233?sid=101",
+      "title": "달걀 10%·쌀 11%↑ 밥상 물가 '껑충'...커지는 외식 부담",
+      "press": "YTN",
+      "summary": "쌀과 달걀 등 밥상 품목 가격 상승으로 외식 부담이 커지고 있다. 지난달 농축수산물 소비자물가는 3.2% 올랐고 달걀 10%, 쌀 11% 상승했다.",
+      "url": "https://n.news.naver.com/mnews/article/052/0002374047?sid=101",
       "archive": "/agri-news-brief/archive/2026-07-03.html#sec-supply",
-      "score": 29.4,
+      "score": 28.03,
       "press_tier": 3
     },
     {
@@ -129,17 +101,45 @@
       "press_tier": 2
     },
     {
+      "id": "a172096fef09",
+      "date": "2026-07-03",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 1,
+      "title": "배추 정부가용물량 2.7만t 확보…송미령 \"안정적 생산 총력\"",
+      "press": "뉴시스",
+      "summary": "강원 태백 고랭지 여름배추 생육을 정부가 점검하며 생산 안정 대응에 나섰다. 농식품부는 정부가용물량 2.7만t을 확보하고 수입안정보험을 도입했다.",
+      "url": "https://n.news.naver.com/mnews/article/003/0014043859?sid=101",
+      "archive": "/agri-news-brief/archive/2026-07-03.html#sec-supply",
+      "score": 47.62,
+      "press_tier": 2
+    },
+    {
       "id": "38e509449495",
       "date": "2026-07-03",
       "section": "policy",
       "section_title": "정책 및 주요 이슈",
-      "rank": 4,
+      "rank": 5,
       "title": "수입농산물 관리 민관협의체 출범",
       "press": "농업정보신문",
       "summary": "수입농산물 통관·검역·안전관리 개선을 위한 민관협의체가 출범했다. 사회대개혁위원회 과제로 생산자·소비자·관계 부처가 상설 협력체계를 구축한다.",
       "url": "http://www.nongup.net/news/articleView.html?idxno=33339",
       "archive": "/agri-news-brief/archive/2026-07-03.html#sec-policy",
       "score": 37.798,
+      "press_tier": 2
+    },
+    {
+      "id": "e6ed16e719dc",
+      "date": "2026-07-03",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 4,
+      "title": "가락·강서·양재 시장 , 이달 말 하계 휴업",
+      "press": "농수축산신문",
+      "summary": "[농수축산신문=김진오 기자]서울시농수산식품공사(사장 문영표)는 지난 1일 서울 가락동 농수산물도매시장과 강서구 농산물도매시장, 양재 양곡도매시장이 이달 말 하계휴업에 들어간다며 경매(거래)일정을 밝혔다.",
+      "url": "https://www.aflnews.co.kr/news/articleView.html?idxno=323583",
+      "archive": "/agri-news-brief/archive/2026-07-03.html#sec-dist",
+      "score": 35.22,
       "press_tier": 2
     },
     {
@@ -167,7 +167,7 @@
       "summary": "충남 논산시는 최근 기온이 급격히 상승함에 따라 지역 노지고추 재배지의 병해충 발생 및 생리장해 우려가 커져 농가의 철저한 관리가 요구된다고 2일 밝혔다.",
       "url": "http://www.chungnamilbo.co.kr/news/articleView.html?idxno=896818",
       "archive": "/agri-news-brief/archive/2026-07-03.html#sec-pest",
-      "score": 23.02,
+      "score": 22.82,
       "press_tier": 2
     },
     {
@@ -185,18 +185,18 @@
       "press_tier": 2
     },
     {
-      "id": "acfbff0c3e28",
+      "id": "3e0d3a6c9e2f",
       "date": "2026-07-03",
       "section": "policy",
       "section_title": "정책 및 주요 이슈",
-      "rank": 5,
-      "title": "청주 농업단체 \"농산물값 폭락 대책 마련하라\"",
-      "press": "뉴시스",
-      "summary": "충북 청주지역 농민들이 농산물 가격 폭락과 농자재값 상승에 항의하며 '밭 갈아엎기' 투쟁에 나섰다. 2026.07.02. 그러면서 \"농산물을 국민의 식량과 국가의 전략 자산으로 인식하고 농민 생존권을 보장하는 농정으로 전환해야 한다\"고 강조했다.",
-      "url": "https://n.news.naver.com/mnews/article/003/0014043478?sid=102",
+      "rank": 4,
+      "title": "[이로운체크] 6월 물가 3.2% 두 달째 3%대…정부, '장바구니 방어' 총력...",
+      "press": "이로운넷",
+      "summary": "이로운넷 = 조은결 기자6월 소비자물가 상승률이 3.2%를 기록하며 두 달 연속 3%대를 이어갔다. 국제유가 상승의 여파가 석유류 가격을 밀어 올렸고, 농축산물 가격도 오르면서 물가 부담이 커졌다.",
+      "url": "https://www.eroun.net/news/articleView.html?idxno=84488",
       "archive": "/agri-news-brief/archive/2026-07-03.html#sec-policy",
-      "score": 6.411,
-      "press_tier": 2
+      "score": 66.53,
+      "press_tier": 1
     },
     {
       "id": "3e53651564c1",
@@ -217,7 +217,7 @@
       "date": "2026-07-03",
       "section": "dist",
       "section_title": "유통 및 현장 (도매시장/APC/수출)",
-      "rank": 4,
+      "rank": 3,
       "title": "[2일 경북도] 'daily 여름과일 특별전' 진행 등",
       "press": "asiatime",
       "summary": "경북도가 사과·복숭아·포도·자두 등 여름과일 특별전을 진행한다. 과수통합브랜드 데일리 상품을 15일까지 선보여 장바구니 부담 완화를 노린다.",
@@ -237,7 +237,7 @@
       "summary": "전남 순천시가 벼 병해충과 과수화상병 방제를 병행해 여름 피해 차단에 나섰다. 농협중앙회 순천시지부·순천농협과 지난달 29일부터 공동 항공방제를 시작했다.",
       "url": "http://www.newsworker.co.kr/news/articleView.html?idxno=434359",
       "archive": "/agri-news-brief/archive/2026-07-03.html#sec-pest",
-      "score": 41.21,
+      "score": 41.01,
       "press_tier": 1
     },
     {
@@ -251,7 +251,7 @@
       "summary": "농식품부, 여름철 농축산물 수급안정 대책반 제2차 회의 신선란 2억개 추가 수입…7~8월 3천억원 규모 할인. 반면 공급 과잉으로 가격이 크게 하락한 양배추, 애호박, 오이 등은 소비 촉진을 통해 농가를 지원한다. 직거래.",
       "url": "https://www.livesnews.com/news/article.html?no=62330",
       "archive": "/agri-news-brief/archive/2026-07-03.html#sec-policy",
-      "score": 37.41,
+      "score": 37.21,
       "press_tier": 1
     },
     {
@@ -279,7 +279,7 @@
       "summary": "청주시는 갈색날개매미충 등 과수 돌발해충 피해를 줄이기 위해 6월 한 달간 일제 방제 기간을 운영하고 농가 대상 방제 약제 지원을 완료했다고 밝혔다. 올해 기상 자료 분석 결과 돌발해충 월동난 부화 시기가 평년보다 빨라질 것으로 예측됐다.",
       "url": "http://www.hortitimes.com/news/articleView.html?idxno=34215",
       "archive": "/agri-news-brief/archive/2026-07-03.html#sec-pest",
-      "score": 11.37,
+      "score": 11.17,
       "press_tier": 1
     },
     {
