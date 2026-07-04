@@ -4576,7 +4576,16 @@ def _extract_event_gov_actors(text: str) -> frozenset[str]:
 
 
 @lru_cache(maxsize=16384)
-def _event_story_signature(title: str, desc: str) -> tuple[frozenset, frozenset, frozenset, frozenset, frozenset]:
+def _event_story_signature(
+    title: str,
+    desc: str,
+) -> tuple[
+    frozenset[str],
+    frozenset[str],
+    frozenset[str],
+    frozenset[str],
+    frozenset[tuple[str, float]],
+]:
     """(품목, 행위그룹, 정부행위자, 지역, 수량) 시그니처.
     본문은 리드(앞부분)만 사용 — 전문 크롤링 본문의 잡다한 수치·지명 오탐 방지."""
     lead = (desc or "")[:400]
@@ -33267,7 +33276,9 @@ def _is_site_boilerplate_description(desc: str) -> bool:
     return "운영하는" in text and ("포털" in text or "사이트" in text) and "제공하는" in text
 
 
-def _story_keep_priority(article: "Article") -> tuple:
+def _story_keep_priority(
+    article: "Article",
+) -> tuple[int, float, int, int, int, float, datetime]:
     """중복 그룹에서 대표 기사 선정 우선순위:
     core > 섹션 적합도 > 농업 맥락 > 매체 신뢰도 > 정보량(수치) > 점수 > 최신성."""
     try:
@@ -33692,10 +33703,11 @@ def _is_stale_swap_candidate(cand: "Article", reference_articles: list["Article"
         cand_pub = getattr(cand, "pub_dt_kst", None)
         if not isinstance(cand_pub, datetime):
             return False
-        pubs = [
-            getattr(b, "pub_dt_kst", None) for b in reference_articles
-            if isinstance(getattr(b, "pub_dt_kst", None), datetime)
-        ]
+        pubs: list[datetime] = []
+        for article in reference_articles:
+            pub_dt = getattr(article, "pub_dt_kst", None)
+            if isinstance(pub_dt, datetime):
+                pubs.append(pub_dt)
         if not pubs:
             return False
         return cand_pub < (max(pubs) - timedelta(hours=72))
