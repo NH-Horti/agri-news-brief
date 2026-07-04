@@ -1,6 +1,6 @@
 {
   "report_date": "2026-07-02",
-  "generated_at_kst": "2026-07-04T09:27:03+09:00",
+  "generated_at_kst": "2026-07-04T13:46:28+09:00",
   "status": "pass",
   "overall_score": 98.8,
   "operational_score": 98.8,
@@ -299,100 +299,100 @@
     "status": "success",
     "rubric_version": 2,
     "model": "gpt-5.5",
-    "generated_at_kst": "2026-07-04T09:27:39+09:00",
+    "generated_at_kst": "2026-07-04T13:47:02+09:00",
     "score": 95.0,
     "target_score": 95.0,
     "target_status": "target_met",
     "scores": {
       "article_selection": 83.0,
-      "section_fit": 86.0,
-      "core_pick_quality": 82.0,
-      "summary_usefulness": 82.0,
-      "missed_opportunity": 78.0,
-      "noise_control": 79.0
+      "section_fit": 85.0,
+      "core_pick_quality": 86.0,
+      "summary_usefulness": 78.0,
+      "missed_opportunity": 80.0,
+      "noise_control": 76.0
     },
-    "summary": "전체 5개 섹션 슬롯은 모두 채웠고 주요 수급·정책·유통·병해충 이슈도 상당수 포착했다. 다만 정책과 병해충에서 같은 사안을 중복 채택했고, 공급 섹션에는 퀵커머스 같은 농업 현장성이 약한 소비 트렌드와 저임팩트 지역 실증 기사가 들어갔다. 원자료에 더 강한 정책 후보와 수출 검역·병해충 대응 후보가 보였는데 일부가 밀려 publish-quality에는 못 미친다.",
+    "summary": "분량은 4개 섹션 모두 5건으로 충족했고 핵심 기사 일부는 적절하지만, 같은 정부 수급대책과 정읍 화상병 기사가 중복 배치됐고 supply에는 일반 유통 트렌드·지역 실증성 꼬리기사가 섞였다. dist는 대체로 운영성은 있으나 토마토 대일 수출 검역 완화 같은 더 강한 유통·수출 후보를 놓쳤다. 일부 요약은 원문 스니펫을 그대로 끌어와 문장이 끊겨 독자 효용이 떨어진다.",
     "issues": [
       {
         "type": "duplicate_story",
         "severity": "major",
         "section": "policy",
         "title": "‘금(金)계란’ 되지 않도록…정부, 계란 전품목 20% 할인 등 농축산물...",
-        "reason": "3000억원 할인·계란 수입 대책은 이미 6번 카드와 같은 핵심 내용이다.",
-        "suggested_action": "중복을 빼고 ‘농산물 가격 안정 국내 생산 기반 확충’이나 쌀 수급조절용 벼 기사로 교체."
+        "reason": "정부 3000억 할인·계란 대응으로 6번 기사와 사실상 같은 정책 묶음이다.",
+        "suggested_action": "한 건만 남기고 ‘농산물 가격 안정 국내 생산 기반 확충’ 또는 쌀 수급조절용 벼 기사로 교체."
       },
       {
         "type": "duplicate_story",
         "severity": "major",
         "section": "pest",
         "title": "정읍시, 과수 전염병 ‘ 화상병 ’ 유입 막는다…현장 예찰 총력",
-        "reason": "17번 정읍 화상병 기사와 사실상 동일한 지역·사안 중복이다.",
-        "suggested_action": "‘고온기 육묘장 병해충 확산 우려’나 제주 장마 감귤 병해 대응 기사로 교체."
+        "reason": "17번 정읍 화상병 기사와 동일 지역·동일 대응 내용의 중복이다.",
+        "suggested_action": "‘고온기 육묘장 병해충 확산 우려’나 제주 장마철 감귤 병해 관리 기사로 교체."
       },
       {
         "type": "weak_section_fit",
-        "severity": "moderate",
+        "severity": "major",
         "section": "supply",
         "title": "“퇴근 전 주문, 요리 전 배송”…장보기 문화 바꾼 퀵커머스",
-        "reason": "일반 유통·소비 트렌드 기사로 농산물 생산·수급 신호가 약하다.",
-        "suggested_action": "스마트 저장, 폭염 시설원예 지원, 상추·고추 가격 등 더 농업적인 후보를 우선."
+        "reason": "일반 소비 유통 트렌드 중심으로 농산물 수급·생산 신호가 약하다.",
+        "suggested_action": "상추·고추 가격, 폭염 시설원예 지원, 스마트 저장 기술 등 농업 운영 후보로 교체."
       },
       {
-        "type": "low_impact_filler",
+        "type": "promotional_or_local_filler",
         "severity": "moderate",
         "section": "supply",
         "title": "제주, 딸기 농가 휴경기 '대체작목' 육성한다",
-        "reason": "지역 실증 사업 성격이 강하고 당일 전국 수급 브리핑 임팩트가 낮다.",
-        "suggested_action": "고온기 잎채소·시설원예 폭염 대응이나 배추 육묘 공급 기사와 비교해 선별."
+        "reason": "지역 실증사업 성격이 강하고 당일 수급 영향은 작다.",
+        "suggested_action": "꼬리기사로도 우선순위를 낮추고 더 넓은 가격·생산 리스크 기사 우선."
       },
       {
         "type": "missed_better_candidate",
-        "severity": "major",
+        "severity": "moderate",
         "section": "policy",
         "title": "농산물 가격 안정 국내 생산 기반 확충서 찾아야",
-        "reason": "수입 확대 기조와 국내 생산기반 논쟁을 다루는 상위 정책 후보가 누락됐다.",
-        "suggested_action": "중복 물가대책 카드 대신 정책 논쟁 축을 보강하는 카드로 채택."
+        "reason": "정부 수입·물가 대응에 대한 생산자단체 비판으로 정책 쟁점성이 높았으나 누락됐다.",
+        "suggested_action": "중복된 KBS 수급대책 카드 대신 포함."
       },
       {
         "type": "missed_better_candidate",
         "severity": "moderate",
         "section": "dist",
         "title": "국산 토마토 대일 수출 검역 규제 풀렸다",
-        "reason": "수출 검역 장벽 해소는 유통·수출 채널에 직접적인 운영 가치가 크다.",
-        "suggested_action": "가락시장 휴업 공지 같은 낮은 임팩트 카드와 교체 검토."
-      },
-      {
-        "type": "weak_core_pick",
-        "severity": "moderate",
-        "section": "supply",
-        "title": "대경사과원예농협, 군위 자두·복숭아 초출하",
-        "reason": "초출하 행사는 구체적이지만 지역 행사성이 있어 코어 기사로는 다소 약하다.",
-        "suggested_action": "마늘 가격·고온기 생산기술·전국 수급대책성 후보를 코어로 올리고 이 기사는 tail 처리."
+        "reason": "수출 검역 규제 완화는 유통·수출 채널에 직접적인 운영 영향이 있는 후보였다.",
+        "suggested_action": "제주 공동물류센터나 양파 판촉성 카드보다 우선 검토."
       },
       {
         "type": "summary_quality",
         "severity": "moderate",
-        "section": "multiple",
-        "title": "KBS 물가대책·정읍 화상병·영천 돌발해충 요약",
-        "reason": "일부 요약이 원문 파편과 말줄임표가 남아 읽기 흐름이 거칠다.",
-        "suggested_action": "핵심 수치·대상 작물·대응 조치 중심으로 1~2문장 재작성."
+        "section": "pest",
+        "title": "영천시, 과수·산림지 돌발해충 민관 합동방제 실시",
+        "reason": "요약 첫 문장이 중간에서 시작해 핵심 주어와 맥락이 불분명하다.",
+        "suggested_action": "해충명, 대상 작물, 방제 주체를 완전한 문장으로 재작성."
+      },
+      {
+        "type": "summary_quality",
+        "severity": "minor",
+        "section": "policy",
+        "title": "농산업 육성·지원 법적 근거 마련",
+        "reason": "요약이 원문 리드 일부를 길게 붙여 간결성이 떨어진다.",
+        "suggested_action": "시행령 시행일, 농산업 범위 확대, 지원 근거만 압축."
       }
     ],
     "section_notes": {
-      "supply": "고온기 잎채소 기술과 마늘 가격은 좋지만, 초출하 행사를 코어로 둔 점과 퀵커머스·지역 대체작목 꼬리 카드가 약하다. 더 강한 생산·가격·기상 대응 후보가 있었다.",
-      "policy": "정부 물가대책, 농산업 법적 근거, 수입농산물 협의체, 농협 개혁은 모두 정책성이 있다. 그러나 물가대책을 두 번 쓴 중복이 크고, 생산기반 확충 논쟁 후보를 놓친 점이 아쉽다.",
-      "dist": "마늘 산지경매, 양파 온라인 판매, APC, 제주 물류센터, 가락시장 휴업으로 섹션 정체성은 비교적 좋다. 다만 토마토 대일 수출 검역 해소 같은 더 강한 수출·시장 접근 후보가 빠졌다.",
-      "pest": "고추역병, 화상병, 토양소독, 돌발해충은 주제 자체는 적절하다. 하지만 정읍 화상병 중복 채택이 치명적이며, RDA 육묘장 병해충·제주 장마 감귤 병해 같은 대체 후보가 더 낫다."
+      "supply": "초출하·고온기 생산기술·마늘 가격은 유효하지만 퀵커머스와 제주 대체작목은 농업 일간 브리핑의 공급 섹션 꼬리로 약하다. 가격·폭염·저장 기술 후보를 더 우선했어야 한다.",
+      "policy": "정부 할인대책, 농산업 시행령, 수입농산물 협의체, 농협 개혁은 방향이 좋다. 다만 같은 정부 수급대책을 KBS 카드로 반복해 정책 다양성을 잃었다.",
+      "dist": "마늘 산지경매, 온라인도매·카카오 판매, 참외 APC, 가락시장 휴업은 섹션 적합성이 있다. 그러나 제주 공동물류센터는 농산물 직접성이 약하고, 토마토 대일 수출 검역 완화 같은 강한 수출·물류 후보 누락이 아쉽다.",
+      "pest": "화상병, 고추역병, 마늘·양파 토양소독, 돌발해충은 주제 자체는 적절하다. 하지만 정읍 화상병을 두 번 실어 슬롯을 낭비했고 일부 요약 품질이 낮다."
     },
     "improvement_suggestions": [
-      "동일 정부 발표나 동일 지자체 보도는 한 섹션에서 1건만 남기고 다른 각도의 후보로 대체한다.",
-      "코어 슬롯은 지역 행사성 초출하보다 가격 형성, 생산 차질, 전국 정책·기술 대응 기사에 우선 배정한다.",
-      "공급 섹션에서는 일반 소비·커머스 트렌드보다 작황, 재배기술, 저장, 가격·출하 데이터를 우선한다.",
-      "유통 섹션은 시장 휴업 공지보다 수출 검역, 물류 인프라, 도매시장 운영 변화, 판매 채널 확대를 우선한다.",
-      "병해충 섹션은 화상병 중복을 피하고 작물·지역·병해 유형을 다양화한다.",
-      "자동 요약 파편이 남은 카드는 발행 전 제목·본문을 근거로 문장형 요약을 재작성한다."
+      "같은 정책 발표나 같은 지자체 보도는 1건만 남기고 다른 쟁점·품목으로 다양화하라.",
+      "supply 꼬리기사는 일반 유통 트렌드보다 가격·생육·폭염·저장·출하 물량 신호를 우선하라.",
+      "dist에서는 판촉 행사보다 수출 검역, 도매시장 운영, 산지경매, 물류비 절감처럼 운영 영향이 큰 후보를 우선하라.",
+      "pest에서는 동일 화상병 보도 중복 대신 다른 작물·병해충 위험이나 RDA 전국성 경보를 넣어라.",
+      "스니펫 기반 요약은 반드시 주어와 핵심 조치가 완결된 문장인지 최종 점검하라.",
+      "정책 섹션은 정부 발표문 기사와 생산자단체 반응·입법 이슈를 균형 있게 섞어라."
     ],
-    "raw_response_excerpt": "{\"score\":84,\"scores\":{\"article_selection\":83,\"section_fit\":86,\"core_pick_quality\":82,\"summary_usefulness\":82,\"missed_opportunity\":78,\"noise_control\":79},\"summary\":\"전체 5개 섹션 슬롯은 모두 채웠고 주요 수급·정책·유통·병해충 이슈도 상당수 포착했다. 다만 정책과 병해충에서 같은 사안을 중복 채택했고, 공급 섹션에는 퀵커머스 같은 농업 현장성이 약한 소비 트렌드와 저임팩트 지역 실증 기사가 들어갔다. 원자료에 더 강한 정책 후보와 수출 검역·병해충 대응 후보가 보였는데 일부가 밀려 publish-quality에는 못 미친다.\",\"issues\":[{\"type\":\"duplicate_story\",\"severity\":\"major\",\"section\":\"policy\",\"title\":\"‘금(金)계란’ 되지 않도록…정부, 계란 전품목 20% 할인 등 농축산물...\",\"reason\":\"3000억원 할인·계란 수입 대책은 이미 6번 카드와 같은 핵심 내용이다.\",\"suggested_action\":\"중복을 빼고 ‘농산물 가격 안정 국내 생산 기반 확충’이나 쌀 수급조절용 벼 기사로 교체.\"},{\"type\":\"duplicate_story\",\"severity\":\"major\",\"section\":\"pest\",\"title\":\"정읍시, 과수 전염병 ‘ 화상병 ’ 유입 막는다…현장 예찰 총력\",\"reason\":\"17번 정읍 화상병 기사와 사실상 동일한 지역·사안 중복이다.\",\"suggested_action\":\"‘고온기 육묘장 병해충 확산 우려’나 제주 장마 감귤 병해 대응 기사로 교체.\"},{\"type\":\"weak_section_fit\",\"severity\":\"moderate\",\"section\":\"supply\",\"title\":\"“퇴근 전 주문, 요리 전 배송”…장보기 문화 바꾼 퀵커머스\",\"reason\":\"일반 유통·소비 트렌드 기사로 농산물 생산·수급 신호가 약하다.\",\"suggested_action\":\"스마트 저장, 폭염 시설원예 지원, 상추·고추 가격 등 더 농업적인 후보를 우선.\"},{\"type\":\"low_impact_filler\",\"severity\":\"moderate\",\"section\":\"supply\",\"title\":\"제주, 딸기 농가 휴경기 '대체작목' 육성한다\",\"reason\":\"지역 실증 사업 성격이...",
+    "raw_response_excerpt": "{\"score\":84,\"scores\":{\"article_selection\":83,\"section_fit\":85,\"core_pick_quality\":86,\"summary_usefulness\":78,\"missed_opportunity\":80,\"noise_control\":76},\"summary\":\"분량은 4개 섹션 모두 5건으로 충족했고 핵심 기사 일부는 적절하지만, 같은 정부 수급대책과 정읍 화상병 기사가 중복 배치됐고 supply에는 일반 유통 트렌드·지역 실증성 꼬리기사가 섞였다. dist는 대체로 운영성은 있으나 토마토 대일 수출 검역 완화 같은 더 강한 유통·수출 후보를 놓쳤다. 일부 요약은 원문 스니펫을 그대로 끌어와 문장이 끊겨 독자 효용이 떨어진다.\",\"issues\":[{\"type\":\"duplicate_story\",\"severity\":\"major\",\"section\":\"policy\",\"title\":\"‘금(金)계란’ 되지 않도록…정부, 계란 전품목 20% 할인 등 농축산물...\",\"reason\":\"정부 3000억 할인·계란 대응으로 6번 기사와 사실상 같은 정책 묶음이다.\",\"suggested_action\":\"한 건만 남기고 ‘농산물 가격 안정 국내 생산 기반 확충’ 또는 쌀 수급조절용 벼 기사로 교체.\"},{\"type\":\"duplicate_story\",\"severity\":\"major\",\"section\":\"pest\",\"title\":\"정읍시, 과수 전염병 ‘ 화상병 ’ 유입 막는다…현장 예찰 총력\",\"reason\":\"17번 정읍 화상병 기사와 동일 지역·동일 대응 내용의 중복이다.\",\"suggested_action\":\"‘고온기 육묘장 병해충 확산 우려’나 제주 장마철 감귤 병해 관리 기사로 교체.\"},{\"type\":\"weak_section_fit\",\"severity\":\"major\",\"section\":\"supply\",\"title\":\"“퇴근 전 주문, 요리 전 배송”…장보기 문화 바꾼 퀵커머스\",\"reason\":\"일반 소비 유통 트렌드 중심으로 농산물 수급·생산 신호가 약하다.\",\"suggested_action\":\"상추·고추 가격, 폭염 시설원예 지원, 스마트 저장 기술 등 농업 운영 후보로 교체.\"},{\"type\":\"promotional_or_local_filler\",\"severity\":\"moderate\",\"section\":\"supply\",\"title\":\"제주, 딸기 농가 휴경기 '대체작목' 육성한다\",\"r...",
     "section_count_score": 100.0,
     "section_count_status": "target_met",
     "section_count_context": {
@@ -563,17 +563,10 @@
       "scoring_rule": "Each section should try to carry 5 briefing cards when raw candidates exist. 4 cards is a soft fallback below target, 3 cards is a minimum fallback, and broad fallback use caps editorial shadow below 95."
     },
     "guardrail_focus": [
-      "core_quality",
       "missed_opportunity",
       "article_selection"
     ],
     "recommended_actions": [
-      {
-        "kind": "selection_guardrail",
-        "target": "core_fit_min",
-        "direction": "tighten",
-        "reason": "Core cards should not be filled by merely available articles."
-      },
       {
         "kind": "candidate_recall",
         "target": "raw_candidate_pool",
