@@ -1,29 +1,32 @@
-## Daily Eval (2026-07-03)
-- Overall: **95.16** (pass)
-- Operational: **96.26**
-- Reader quality: **96.26** (clear; penalty=0.0, cap=100.0, reasons=clear)
-- Quality gate: **95.16** (needs_iteration, editorial_below_target_bounded_penalty; editorial=84.0, operational=96.3)
-- Scores: completeness=100.0, diversity=100.0, summary=85.0, freshness=100.0, retrieval=83.8, section_fit=100.0, core=100.0, commodity=99.1
-- Briefing cards: 20 / Commodity cards: 42
-- Sections: supply:5/5 raw=189, policy:5/5 raw=191, dist:5/5 raw=93, pest:5/5 raw=40
-- Metrics: title_unique=1.00, domain_diversity=0.85, summary_presence=1.00, summary_numeric=0.95, fresh_72h=1.00, fit_avg=5.09, false_positive=0.00, hard_reader_issues=0, weak_core=0.00, editorial_penalty=0.0, commodity_weak=0.00, commodity_items=10, commodity_active_today=14, commodity_active_today_unlinked=4, commodity_coverage=0.30, commodity_strict_link=0.90, commodity_false_link=0.00, commodity_pool_false_link=0.00, commodity_dominant_section=0.50, semantic_penalty=0.0
+## Daily Eval (2026-07-06)
+- Overall: **84.50** (warn)
+- Operational: **97.01**
+- Reader quality: **90.00** (capped; penalty=4.7, cap=90.0, reasons=pest_theme_duplicate)
+- Quality gate: **84.50** (needs_iteration, editorial_major_issue; editorial=81.0, operational=97.0)
+- Scores: completeness=100.0, diversity=100.0, summary=100.0, freshness=90.0, retrieval=89.4, section_fit=97.2, core=100.0, commodity=100.0
+- Briefing cards: 20 / Commodity cards: 37
+- Sections: supply:5/5 raw=255, policy:5/5 raw=138, dist:5/5 raw=100, pest:5/5 raw=40
+- Metrics: title_unique=1.00, domain_diversity=0.75, summary_presence=1.00, summary_numeric=0.85, fresh_72h=1.00, fit_avg=4.24, false_positive=0.00, hard_reader_issues=0, weak_core=0.00, editorial_penalty=0.4, commodity_weak=0.00, commodity_items=12, commodity_active_today=15, commodity_active_today_unlinked=3, commodity_coverage=0.36, commodity_strict_link=1.00, commodity_false_link=0.00, commodity_pool_false_link=0.00, commodity_dominant_section=0.42, semantic_penalty=0.0
 
 
 ### Editorial Shadow Eval
-- Editorial: **84.00** (target 95, needs_iteration)
-- Model: gpt-5.5 (resolved gpt-5.5-2026-04-23)
+- Editorial: **81.00** (daily target 88, tier=needs_iteration, needs_iteration)
+- Model: gpt-5.5-2026-04-23 (resolved gpt-5.5-2026-04-23)
+- Model-reported score: 82.00; authoritative method=weighted_components_v1
+- Acceptance: needs_iteration (blocking=0, major=3, reasons=editorial_score_min, no_major_issues, critical_components_min, all_components_min)
 - Section count gate: 100.0 (target_met)
-- Components: article_selection=83.0, section_fit=82.0, core=79.0, summary=72.0, missed=77.0, noise=73.0
-- Summary: 분량은 4개 섹션 모두 5건으로 충족했고, 공급 섹션은 배추·강원 여름작물·양배추 폭락 등 핵심 수급 이슈를 잘 잡았다. 다만 정책 섹션은 6월 물가/최고가격제 기사 중복이 과하고, 한 카드의 요약이 본문이 아닌 공유 UI로 깨져 독자 효용을 크게 떨어뜨린다. 유통 섹션은 산지경매·도매시장 휴업은 적합하지만 정책성 할인 기사와 교육 행사성 기사가 핵심 유통 뉴스보다 앞섰다. 병해충 섹션은 화상병 대응은 적절하나 단감 탄저병·고추 탄저병·애호박 뿌리혹병 같은 더 구체적인 작물 병해 리스크를 일부 놓쳤다.
-- [major] bad_summary: 정부 “최고 가격 제 없었다면 6월 물가 상승률 3.2% 아닌 3.6%” - 요약이 공유·프린트 UI 문구 반복으로 기사 내용을 전달하지 못한다.
-- [major] duplicate_theme: 정부 “최고 가격 제 없었다면… / 24% 뛴 유가發… / [이로운체크] 6월 물가… - 세 카드가 같은 6월 물가와 정부 물가대책을 반복한다.
-- [moderate] weak_core_pick: 정부, 계란 공급 늘리고 농축산물 할인 확대 - 핵심 정책 이슈지만 출처·요약 품질이 약하고 더 선명한 전국 단위 후보가 있었다.
-- [moderate] wrong_section_or_priority: 정부, 농축산물 할인에 3000억원 투입…농할상품권 월 200억원 발행 - 판매채널 요소는 있으나 본질은 물가정책 기사라 유통 핵심 카드로는 약하다.
-- [moderate] promotional_filler: 청년 양돈농가, 공판장 서 축산유통 배웠다 - 교육 행사성 기사로 실제 물류·시장운영·출하 변화 신호가 약하다.
+- Components: article_selection=82.0, section_fit=84.0, core=78.0, summary=88.0, missed=74.0, noise=80.0
+- Summary: 분량은 4개 섹션 모두 5건으로 충족했고 주요 수급·유통·과수화상병 이슈도 상당수 잡았다. 다만 정책 섹션에서 전국 단위 핵심 후보를 놓치고 지역 지원사업을 코어로 올린 점, 유통과 병해충 섹션의 중복 기사, 공급 섹션의 지역 세일즈·수출성 기사 배치가 품질을 낮춘다. 일일 브리핑으로는 사용 가능하지만 기사 선택 우선순위와 중복 제어가 더 필요하다.
+- [major] weak_core: 예산군, 과수저장시설 신선도유지제 지원사업 추진 - 지역 단위 지원사업을 정책 코어로 세운 것은 전국 독자용 정책 중요도에 비해 약하다.
+- [major] missed_candidate: 농가당 26만원…쥐꼬리 ‘FTA직불금’ - 정책 raw 최상위권의 전국 제도 실효성 이슈인데 선정되지 않았다.
+- [moderate] missed_candidate: "농축산물 할인에 '3000억' 투입" 파격 카드...먹거리 물가 잡힐까 - 먹거리 물가 대응 예산은 농업 정책·가격 안정 독자 관심도가 높은 후보였다.
+- [moderate] duplicate_story: "농산물 유통역량 강화"···희망재단 '농업인 현장컨설팅' - 가락시장 현장컨설팅 기사로 12번 카드와 사실상 같은 행사와 메시지다.
+- [moderate] missed_candidate: 경북지역 조합공동사업법인, 농산물 판매확대로 농가소득 증대 앞장 - 산지유통 경쟁력·판매 확대 논의로 중복 컨설팅 카드보다 유통 섹션 적합도가 높다.
 
 ### Improvement Hints
-- 요약 문장 품질 편차가 큽니다. 품목·지역·수치·대응을 앞 문장에 명시하도록 프롬프트 피드백을 자동 반영하세요.
-- 리콜 시드 결손이 보입니다: supply, pest. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요.
+- 편집 품질상 약한 기사 선택이 감지되었습니다 (pest_theme_duplicate=5%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요.
 
 ### Next Summary Feedback
-- 각 기사 요약은 2문장으로 유지하고, 85~140자 안에서 품목·지역·핵심 변수만 남긴다.
+- 각 기사 요약은 2문장으로 유지하고 첫 문장에 품목·지역·핵심 이슈를 바로 적는다.
+- 기사에 수치가 있으면 1개 이상 남기고, 없으면 대응 주체나 시점을 분명히 적는다.
+- 비슷한 시작 표현을 반복하지 말고 원인과 대응을 분리해서 간결하게 쓴다.
