@@ -1,7 +1,107 @@
 {
-  "last_end_iso": "2026-07-06T06:00:00+09:00",
+  "last_end_iso": "2026-07-07T06:00:00+09:00",
   "recent_keep_days": 7,
   "recent_items": [
+    {
+      "date": "2026-07-07",
+      "canon": "https://namdonews.com/news/articleView.html?idxno=916018",
+      "norm": "url:e0953b9d15534b8fab5f26f0547bed31"
+    },
+    {
+      "date": "2026-07-07",
+      "canon": "https://fsnews.co.kr/news/articleView.html?idxno=61464",
+      "norm": "url:f6047efbe48191e464d093622771b33f"
+    },
+    {
+      "date": "2026-07-07",
+      "canon": "https://aflnews.co.kr/news/articleView.html?idxno=323788",
+      "norm": "url:c648bf243f71be14f1a24e7c56b9a3c5"
+    },
+    {
+      "date": "2026-07-07",
+      "canon": "https://aflnews.co.kr/news/articleView.html?idxno=323928",
+      "norm": "url:2a5e13566b2068605303f438a9a97e16"
+    },
+    {
+      "date": "2026-07-07",
+      "canon": "https://viva100.com/article/20260706500343",
+      "norm": "url:8de335222d662c528d1d9dbdc39f391f"
+    },
+    {
+      "date": "2026-07-07",
+      "canon": "https://segye.com/newsView/20260705509012",
+      "norm": "url:f9219fb0b39650b8cf4517e4534bc916"
+    },
+    {
+      "date": "2026-07-07",
+      "canon": "https://agrinet.co.kr/news/articleView.html?idxno=405467",
+      "norm": "url:911f00d5071414f2c98053b112d27de8"
+    },
+    {
+      "date": "2026-07-07",
+      "canon": "https://newsfarm.co.kr/news/articleView.html?idxno=101551",
+      "norm": "url:34cdef912f7e3bf6c21f55426a950700"
+    },
+    {
+      "date": "2026-07-07",
+      "canon": "https://bokuennews.com/news/article.html?no=280828",
+      "norm": "url:60a797ac1aec19809dc681f8bb6c8f35"
+    },
+    {
+      "date": "2026-07-07",
+      "canon": "https://inews365.com/news/article.html?no=926289",
+      "norm": "url:dd27844d0e98022b86ab0008431616fa"
+    },
+    {
+      "date": "2026-07-07",
+      "canon": "https://etoday.co.kr/news/view/2595689",
+      "norm": "url:7753ee619799f34c190fe5684beb2d43"
+    },
+    {
+      "date": "2026-07-07",
+      "canon": "https://polinews.co.kr/news/articleView.html?idxno=736159",
+      "norm": "url:c45ecd285b14bafa2ed47dddf940f900"
+    },
+    {
+      "date": "2026-07-07",
+      "canon": "https://news.mtn.co.kr/news-detail/2026070609274267784",
+      "norm": "url:07bfeff8cacb67f87da7bfdc0ce58f20"
+    },
+    {
+      "date": "2026-07-07",
+      "canon": "https://m-i.kr/news/articleView.html?idxno=1388461",
+      "norm": "url:0b6d1d1bf5783ccdc2a2f6411d97c687"
+    },
+    {
+      "date": "2026-07-07",
+      "canon": "https://eroun.net/news/articleView.html?idxno=84729",
+      "norm": "url:65c39f14dc4543b84a606167d82ba508"
+    },
+    {
+      "date": "2026-07-07",
+      "canon": "https://aflnews.co.kr/news/articleView.html?idxno=323879",
+      "norm": "url:7d1d54579deb8560151041d80b2563ce"
+    },
+    {
+      "date": "2026-07-07",
+      "canon": "https://mt.co.kr/policy/2026/07/06/2026070611125074317",
+      "norm": "url:70a9dff4a6d0a3763cc8964108d77e82"
+    },
+    {
+      "date": "2026-07-07",
+      "canon": "https://newsis.com/view/NISX20260706_0003697326",
+      "norm": "url:1e98f1ef55b204bd352d6694032fe2ff"
+    },
+    {
+      "date": "2026-07-07",
+      "canon": "https://chungnamilbo.co.kr/news/articleView.html?idxno=897311",
+      "norm": "url:906ca2e0b20e534985086f743edea109"
+    },
+    {
+      "date": "2026-07-07",
+      "canon": "https://newsam.co.kr/news/article.html?no=43426",
+      "norm": "url:8df7d3543ae41bdae06dab9822bcdc80"
+    },
     {
       "date": "2026-07-06",
       "canon": "https://newsis.com/view/NISX20260703_0003694715",
@@ -501,106 +601,6 @@
       "date": "2026-06-30",
       "canon": "https://gnnews.co.kr/news/articleView.html?idxno=640024",
       "norm": "url:20716472984303a26b449da0a759381b"
-    },
-    {
-      "date": "2026-06-29",
-      "canon": "https://hankyung.com/article/2026062823261",
-      "norm": "url:4a95d1b1d5a73803112a49ad4f35e7e7"
-    },
-    {
-      "date": "2026-06-29",
-      "canon": "https://news.kbs.co.kr/news/pc/view/view.do?ncd=8596090",
-      "norm": "url:caef0296193e6e04024e214668e3da73"
-    },
-    {
-      "date": "2026-06-29",
-      "canon": "https://hankyung.com/article/2026062608011",
-      "norm": "url:3b382fe49c3db697c259796aada6d9af"
-    },
-    {
-      "date": "2026-06-29",
-      "canon": "https://nongmin.com/article/20260626500531",
-      "norm": "url:629d58e88261386ff328800ebebcc3a9"
-    },
-    {
-      "date": "2026-06-29",
-      "canon": "https://kyongbuk.co.kr/news/articleView.html?idxno=4076750",
-      "norm": "url:377df7820f9ffaa9dfcc53d8d218fe2e"
-    },
-    {
-      "date": "2026-06-29",
-      "canon": "https://newspim.com/news/view/20260626000493",
-      "norm": "url:f1cd2fda9625e4bef1885191eddf6d57"
-    },
-    {
-      "date": "2026-06-29",
-      "canon": "https://seoul.co.kr/news/economy/2026/06/26/20260626500193?wlog_tag3=naver",
-      "norm": "url:7f008e4dbf36193c54c04cd2b48ed2f2"
-    },
-    {
-      "date": "2026-06-29",
-      "canon": "https://newstomato.com/ReadNews.aspx?no=1305342&inflow=N",
-      "norm": "url:3d643166b44ce71331016b65b10eef23"
-    },
-    {
-      "date": "2026-06-29",
-      "canon": "https://newstomato.com/ReadNews.aspx?no=1305310&inflow=N",
-      "norm": "url:0659b4ee87cc8a1ec838b7a4fced8ba4"
-    },
-    {
-      "date": "2026-06-29",
-      "canon": "https://ikpnews.net/news/articleView.html?idxno=70815",
-      "norm": "url:3dba04708cefa3ff54f16763c9773c9c"
-    },
-    {
-      "date": "2026-06-29",
-      "canon": "https://nongmin.com/article/20260626500586",
-      "norm": "url:735ebedced08a9f92f0cd04a1f81b424"
-    },
-    {
-      "date": "2026-06-29",
-      "canon": "https://ichannela.com/news/main/news_detailPage.do?publishId=000000536619",
-      "norm": "url:eec500a6549984349f3b66b2a2d0f727"
-    },
-    {
-      "date": "2026-06-29",
-      "canon": "https://nongmin.com/article/20260626500308",
-      "norm": "url:264917bd4967be5a1260ce9da85aac51"
-    },
-    {
-      "date": "2026-06-29",
-      "canon": "https://nongmin.com/article/20260626500512",
-      "norm": "url:6897a86a86476c29d59ec6dae4fc171b"
-    },
-    {
-      "date": "2026-06-29",
-      "canon": "https://jnilbo.com/news/articleView.html?idxno=90000045949",
-      "norm": "url:5a0dbd054b184d2b53f782e4111d1ac8"
-    },
-    {
-      "date": "2026-06-29",
-      "canon": "https://nongmin.com/article/20260626500550",
-      "norm": "url:e487a9eaaa94ecedc47b11540ae36607"
-    },
-    {
-      "date": "2026-06-29",
-      "canon": "https://gnnews.co.kr/news/articleView.html?idxno=639930",
-      "norm": "url:34bb3c349502c9d2f488727659050b16"
-    },
-    {
-      "date": "2026-06-29",
-      "canon": "https://news.kbs.co.kr/news/pc/view/view.do?ncd=8595355",
-      "norm": "url:d57c2b7e98620feff9e5fcb7856de9f7"
-    },
-    {
-      "date": "2026-06-29",
-      "canon": "https://chungnamilbo.co.kr/news/articleView.html?idxno=895794",
-      "norm": "url:6d9f1a9bf79ee38c2de4a341f25b159e"
-    },
-    {
-      "date": "2026-06-29",
-      "canon": "https://enewstoday.co.kr/news/articleView.html?idxno=2442383",
-      "norm": "url:fe55e30809ca939f6eb4e778d299545e"
     }
   ]
 }
