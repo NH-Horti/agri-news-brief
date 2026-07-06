@@ -1,27 +1,27 @@
 {
-  "report_date": "2026-07-06",
-  "generated_at_kst": "2026-07-06T06:19:44+09:00",
+  "report_date": "2026-07-07",
+  "generated_at_kst": "2026-07-07T06:20:29+09:00",
   "scores": {
-    "section_alignment": 97.19,
+    "section_alignment": 100.0,
     "core_quality": 100.0,
-    "commodity_board_quality": 100.0
+    "commodity_board_quality": 93.3
   },
   "metrics": {
     "section_alignment_low_fit_rate": 0.0,
-    "section_alignment_cross_gap_rate": 0.05,
+    "section_alignment_cross_gap_rate": 0.0,
     "content_false_positive_rate": 0.0,
     "reader_hard_issue_count": 0,
     "reader_hard_issue_rate": 0.0,
-    "reader_quality_penalty": 4.72,
+    "reader_quality_penalty": 8.7314,
     "reader_quality_cap": 90.0,
     "weak_core_rate": 0.0,
-    "policy_wrong_section_rate": 0.0,
+    "policy_wrong_section_rate": 0.05,
     "promotional_filler_rate": 0.0,
     "promotional_core_rate": 0.0,
-    "weak_core_editorial_rate": 0.0,
+    "weak_core_editorial_rate": 0.1429,
     "pest_theme_duplicate_rate": 0.05,
     "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 0.4,
+    "editorial_quality_penalty": 2.6286,
     "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0,
@@ -29,19 +29,19 @@
     "commodity_primary_title_issue_signal_rate": 1.0,
     "commodity_primary_strict_link_rate": 1.0,
     "commodity_primary_low_rank_rate": 0.0,
-    "commodity_primary_count": 12,
-    "commodity_active_today_total": 15,
+    "commodity_primary_count": 11,
+    "commodity_active_today_total": 14,
     "commodity_active_today_unlinked_total": 3,
-    "commodity_managed_unlinked_total": 21,
+    "commodity_managed_unlinked_total": 22,
     "commodity_board_daily_min_primary_count": 6,
     "commodity_board_low_coverage": false,
-    "commodity_board_coverage_rate": 0.3636,
+    "commodity_board_coverage_rate": 0.3333,
     "commodity_primary_title_item_missing_rate": 0.0,
     "commodity_primary_body_only_rate": 0.0,
     "commodity_primary_false_link_rate": 0.0,
-    "commodity_pool_count": 2,
+    "commodity_pool_count": 6,
     "commodity_pool_false_link_rate": 0.0,
-    "commodity_primary_dominant_section_rate": 0.4167
+    "commodity_primary_dominant_section_rate": 0.6364
   },
   "selection_guardrails": {
     "driver_tags": [],
@@ -79,8 +79,17 @@
   },
   "editorial_quality_samples": [
     {
-      "title": "폭염에 충북 과수화상병 소강 국면",
-      "href": "https://www.kmib.co.kr/article/view.asp?arcid=0030065384&code=61121111&cp=nv",
+      "title": "농산물값 하락에… 화천군수 직접 세일즈",
+      "href": "https://www.segye.com/newsView/20260705509012",
+      "section": "policy",
+      "is_core": true,
+      "reasons": [
+        "policy_price_report_without_policy_action"
+      ]
+    },
+    {
+      "title": "충청권 확산 과수화상병 유입 차단…나주시, 총력 대응",
+      "href": "https://www.newsis.com/view/NISX20260706_0003697326",
       "section": "pest",
       "is_core": false,
       "reasons": [
@@ -90,133 +99,134 @@
   ],
   "reader_hard_issue_samples": [],
   "editorial": {
-    "score": 81.0,
-    "model_reported_score": 82.0,
+    "score": 70.05,
+    "model_reported_score": 70.0,
     "score_method": "weighted_components_v1",
-    "quality_tier": "needs_iteration",
+    "quality_tier": "needs_major_iteration",
     "target_score": 88.0,
-    "target_status": "needs_iteration",
+    "target_status": "needs_major_iteration",
     "acceptance_gate": {
-      "status": "needs_iteration",
+      "status": "needs_major_iteration",
       "passed": false,
       "target_score": 88.0,
       "excellent_score": 92.0,
       "stretch_score": 95.0,
-      "blocking_issue_count": 0,
-      "major_issue_count": 3,
+      "blocking_issue_count": 1,
+      "major_issue_count": 6,
       "critical_component_min": 85.0,
       "all_component_min": 80.0,
       "checks": {
         "editorial_score_min": false,
-        "no_blocking_issues": true,
+        "no_blocking_issues": false,
         "no_major_issues": false,
         "critical_components_min": false,
         "all_components_min": false,
         "operational_score_min": true,
         "section_count_score_min": true,
         "no_section_underfill": true,
-        "commodity_board_score_min": true
+        "commodity_board_score_min": false
       },
       "failure_reasons": [
         "editorial_score_min",
+        "no_blocking_issues",
         "no_major_issues",
         "critical_components_min",
-        "all_components_min"
+        "all_components_min",
+        "commodity_board_score_min"
       ]
     },
     "section_count_score": 100.0,
     "section_count_status": "target_met",
     "scores": {
-      "article_selection": 82.0,
-      "section_fit": 84.0,
-      "core_pick_quality": 78.0,
+      "article_selection": 70.0,
+      "section_fit": 75.0,
+      "core_pick_quality": 68.0,
       "summary_usefulness": 88.0,
-      "missed_opportunity": 74.0,
-      "noise_control": 80.0
+      "missed_opportunity": 60.0,
+      "noise_control": 55.0
     },
     "issues": [
+      {
+        "type": "off_topic",
+        "severity": "blocking",
+        "section": "policy",
+        "title": "인물 동정 (7월 7일)",
+        "reason": "충북 단체장 일정과 SK하이닉스 투자지원 내용으로 농업 정책 브리핑과 실질 관련성이 거의 없다.",
+        "suggested_action": "제외하고 민생물가 대책, 농림위성, 농축수산물 할인·가격안정 기사로 교체."
+      },
+      {
+        "type": "duplicate_story",
+        "severity": "major",
+        "section": "pest",
+        "title": "나주시 과수화상병 유입 차단 3건",
+        "reason": "16·17·18번이 모두 나주시 4차 방제약제 공급이라는 같은 보도다. 병해충 섹션 5칸 중 3칸을 동일 이슈가 차지했다.",
+        "suggested_action": "나주 과수화상병은 1건만 남기고 고추 탄저병, 광주 고추 병해충, 오이 병해충 예찰 등으로 다양화."
+      },
+      {
+        "type": "duplicate_story",
+        "severity": "major",
+        "section": "policy",
+        "title": "\"가격 폭락·농자재 폭등·CPTPP까지\" / \"반값 농자재·농가소득 안전망 구축 시급\"",
+        "reason": "두 기사 모두 한종협 6일 기자회견과 같은 요구안을 다룬 동일 스토리다.",
+        "suggested_action": "한 건만 남기고 정부 물가·할인지원 또는 농림위성 등 별도 정책 이슈로 대체."
+      },
+      {
+        "type": "duplicate_story",
+        "severity": "major",
+        "section": "policy/dist",
+        "title": "농산물값 하락에… 화천군수 직접 세일즈 / 농산물 유통·복지·온라인몰로 강원 경제 '돌파구'",
+        "reason": "화천군수 가락시장 세일즈와 오이·애호박 가격 급락 대응 내용이 섹션을跨어 반복된다.",
+        "suggested_action": "한 건만 유통 또는 공급 꼬리로 유지하고 정책 핵심 슬롯에서는 제외."
+      },
       {
         "type": "weak_core",
         "severity": "major",
         "section": "policy",
-        "title": "예산군, 과수저장시설 신선도유지제 지원사업 추진",
-        "reason": "지역 단위 지원사업을 정책 코어로 세운 것은 전국 독자용 정책 중요도에 비해 약하다.",
-        "suggested_action": "코어에서는 FTA직불금, 농축산물 할인예산, 농림위성 등 전국 정책 후보를 우선하라."
+        "title": "농산물값 하락에… 화천군수 직접 세일즈",
+        "reason": "지자체장의 현장 판촉 행보로 정책 코어로 보기 어렵고 행사성 지역 기사 성격이 강하다.",
+        "suggested_action": "정책 코어는 전국 단위 물가안정, 수급대책, 제도 변화 기사로 선정."
       },
       {
         "type": "missed_candidate",
         "severity": "major",
         "section": "policy",
-        "title": "농가당 26만원…쥐꼬리 ‘FTA직불금’",
-        "reason": "정책 raw 최상위권의 전국 제도 실효성 이슈인데 선정되지 않았다.",
-        "suggested_action": "예산군 지원사업이나 의견성 카드 중 하나를 대체하라."
+        "title": "[미리보는 하반기 경제성장전략] 유가 꺾여도 3%대 물가…정부, '민생물...'",
+        "reason": "정부 민생물가 총력전과 농축수산물 할인 등 전국 정책성이 강한 후보가 있었지만 인물동정·중복 기사에 밀렸다.",
+        "suggested_action": "정책 섹션 상위권 후보로 반영."
       },
       {
         "type": "missed_candidate",
-        "severity": "moderate",
-        "section": "policy",
-        "title": "\"농축산물 할인에 '3000억' 투입\" 파격 카드...먹거리 물가 잡힐까",
-        "reason": "먹거리 물가 대응 예산은 농업 정책·가격 안정 독자 관심도가 높은 후보였다.",
-        "suggested_action": "정책 섹션에서 지역 지원·칼럼성 기사보다 우선 검토하라."
-      },
-      {
-        "type": "duplicate_story",
-        "severity": "moderate",
-        "section": "dist",
-        "title": "\"농산물 유통역량 강화\"···희망재단 '농업인 현장컨설팅'",
-        "reason": "가락시장 현장컨설팅 기사로 12번 카드와 사실상 같은 행사와 메시지다.",
-        "suggested_action": "둘 중 하나만 남기고 경북 조공법인 판매확대나 추가 마늘 경매 운영 기사로 교체하라."
-      },
-      {
-        "type": "missed_candidate",
-        "severity": "moderate",
-        "section": "dist",
-        "title": "경북지역 조합공동사업법인, 농산물 판매확대로 농가소득 증대 앞장",
-        "reason": "산지유통 경쟁력·판매 확대 논의로 중복 컨설팅 카드보다 유통 섹션 적합도가 높다.",
-        "suggested_action": "중복된 현장컨설팅 카드의 대체 후보로 사용하라."
-      },
-      {
-        "type": "duplicate_theme",
         "severity": "major",
-        "section": "pest",
-        "title": "폭염에 충북 과수화상병 소강 국면",
-        "reason": "16·17·18번이 모두 충북 과수화상병 소강·예찰 흐름에 집중돼 병해충 다양성이 낮다.",
-        "suggested_action": "충북 화상병은 1~2건만 유지하고 순천 4차 방제, 고추 탄저병, 경남 예찰 대응 등으로 분산하라."
-      },
-      {
-        "type": "wrong_section",
-        "severity": "moderate",
-        "section": "supply",
-        "title": "'전주한옥애뜰 양파 ' 대만식탁에 오른다",
-        "reason": "대만 수출·판로 확대 기사로 공급 수급보다 유통/수출 성격이 강하고 11번 양파 판로 기사와도 겹친다.",
-        "suggested_action": "공급 섹션에서는 오이·애호박 가격 폭락, KREI 과채 관측, 마늘 시세 기사로 대체하라."
+        "section": "dist",
+        "title": "국산 배, 이집트 시장 진출 길 확보…포도, 호주에 전품종 수출",
+        "reason": "수출 검역 협상과 해외 판로 확대라는 유통·수출 핵심 후보가 있었는데 지역 계획성 기사보다 후순위 처리됐다.",
+        "suggested_action": "청송 사과 계획 또는 중복 화천 기사 대신 채택."
       },
       {
         "type": "promotional_filler",
         "severity": "moderate",
         "section": "supply",
-        "title": "김세훈 군수, 화천 농산물 가격 안정 위한 발 빠른 현장 세일즈",
-        "reason": "군수 현장 세일즈 중심의 지역 홍보성 카드로, raw의 더 실질적인 가격 폭락 기사보다 약하다.",
-        "suggested_action": "‘오이 한 상자 5200원’ 등 농가 가격 피해가 직접 드러나는 후보를 우선하라."
+        "title": "NH농협손보, 양파 값 폭락에 팔 걷었다…농가·취약계층 동시 지원",
+        "reason": "양파 가격 하락 맥락은 있으나 보험사 CSR·나눔 캠페인 중심이라 공급 핵심 기사로는 약하다.",
+        "suggested_action": "단양마늘 수매가, 청양 멜론 출하, 마늘 경매 등 실제 가격·출하 후보로 교체."
       }
     ]
   },
   "editorial_suggested_guardrails": {
     "driver_tags": [
-      "editorial_section_fit",
       "editorial_noise_filter",
       "editorial_duplicate_topic",
       "editorial_core_pick"
     ],
     "section_card_min_fit": {
-      "default": 0.9,
-      "supply": 0.95,
-      "policy": 0.95,
-      "dist": 1.1,
-      "pest": 0.89
+      "default": 0.85,
+      "supply": 0.87,
+      "policy": 0.87,
+      "dist": 1.0,
+      "pest": 0.83
     },
     "section_low_fit_rescue_min": 0.35,
-    "high_score_low_fit_rescue_margin": 4.2,
+    "high_score_low_fit_rescue_margin": 3.0,
     "tail_score_floor_delta": 0.8,
     "core_fit_min": {
       "default": 1.3,
@@ -245,10 +255,10 @@
     "mode": "shadow_replay_loop",
     "proposal_only": true,
     "target_score": 88.0,
-    "current_editorial_score": 81.0,
-    "model_reported_score": 82.0,
-    "quality_tier": "needs_iteration",
-    "target_status": "needs_iteration",
+    "current_editorial_score": 70.05,
+    "model_reported_score": 70.0,
+    "quality_tier": "needs_major_iteration",
+    "target_status": "needs_major_iteration",
     "iteration_budget": 3,
     "promotion_gates": {
       "editorial_score_min": 88.0,
@@ -268,7 +278,7 @@
         "supply": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 255,
+          "raw_candidates": 250,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -280,7 +290,7 @@
         "policy": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 138,
+          "raw_candidates": 109,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -292,7 +302,7 @@
         "dist": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 100,
+          "raw_candidates": 84,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -304,12 +314,12 @@
         "pest": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 40,
+          "raw_candidates": 53,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
           "count_floor": 3,
-          "core_count": 2,
+          "core_count": 1,
           "fill_ratio": 1.0,
           "score": 100.0
         }
@@ -328,8 +338,7 @@
       "core_quality",
       "missed_opportunity",
       "article_selection",
-      "noise_control",
-      "section_fit"
+      "noise_control"
     ],
     "recommended_actions": [
       {
@@ -355,12 +364,6 @@
         "target": "semantic_false_positive_gate",
         "direction": "tighten",
         "reason": "Selected cards included low editorial-value noise."
-      },
-      {
-        "kind": "section_fit",
-        "target": "section_card_min_fit",
-        "direction": "tighten",
-        "reason": "A selected card appears to fit another section better."
       }
     ],
     "current_selection_guardrails": {
