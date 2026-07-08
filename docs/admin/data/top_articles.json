@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-08T01:42:30+09:00",
+  "generated_at": "2026-07-09T01:12:11+09:00",
   "rows": [
     {
       "date": "2026-05-20",
@@ -442,19 +442,6 @@
       "users": 2,
       "archive_url": "/agri-news-brief/archive/2026-06-30.html#sec-supply",
       "source_url": "http://www.hansbiz.co.kr/news/articleView.html?idxno=846737"
-    },
-    {
-      "date": "2026-07-07",
-      "article_id": "a8069b9e33f4",
-      "title": "\"가격 폭락·농자재 폭등·CPTPP까지\"···3중 악재에 농업계 거센 반발",
-      "report_date": "2026-07-07",
-      "section": "policy",
-      "surface": "briefing_card",
-      "target_domain": "www.agrinet.co.kr",
-      "clicks": 4,
-      "users": 1,
-      "archive_url": "/agri-news-brief/archive/2026-07-07.html#sec-policy",
-      "source_url": "https://www.agrinet.co.kr/news/articleView.html?idxno=405467"
     },
     {
       "date": "2026-04-01",
@@ -949,6 +936,32 @@
       "users": 2,
       "archive_url": "",
       "source_url": ""
+    },
+    {
+      "date": "2026-07-08",
+      "article_id": "3e2fe68b742f",
+      "title": "재고 쌓인데다 생산량 증가···여름 배추 약세 이어질 듯",
+      "report_date": "2026-07-08",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.agrinet.co.kr",
+      "clicks": 3,
+      "users": 2,
+      "archive_url": "/agri-news-brief/archive/2026-07-08.html#sec-supply",
+      "source_url": "https://www.agrinet.co.kr/news/articleView.html?idxno=405485"
+    },
+    {
+      "date": "2026-07-08",
+      "article_id": "dccfb1c8e7ec",
+      "title": "[현장] \"오이 1개 180원\" 벼랑 끝 내몰린 농민들 \"농산물 소비로 연대해...",
+      "report_date": "2026-07-08",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.newsclaim.co.kr",
+      "clicks": 3,
+      "users": 3,
+      "archive_url": "/agri-news-brief/archive/2026-07-08.html#sec-supply",
+      "source_url": "https://www.newsclaim.co.kr/news/articleView.html?idxno=3068697"
     },
     {
       "date": "2026-04-01",
@@ -2720,6 +2733,19 @@
     },
     {
       "date": "2026-07-07",
+      "article_id": "a8069b9e33f4",
+      "title": "\"가격 폭락·농자재 폭등·CPTPP까지\"···3중 악재에 농업계 거센 반발",
+      "report_date": "2026-07-07",
+      "section": "policy",
+      "surface": "briefing_card",
+      "target_domain": "www.agrinet.co.kr",
+      "clicks": 2,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-07-07.html#sec-policy",
+      "source_url": "https://www.agrinet.co.kr/news/articleView.html?idxno=405467"
+    },
+    {
+      "date": "2026-07-07",
       "article_id": "c8c00caed1e1",
       "title": "농산물 유통·복지·온라인몰로 강원 경제 '돌파구'",
       "report_date": "2026-07-07",
@@ -2730,6 +2756,71 @@
       "users": 1,
       "archive_url": "/agri-news-brief/archive/2026-07-07.html#sec-dist",
       "source_url": "https://news.mtn.co.kr/news-detail/2026070609274267784"
+    },
+    {
+      "date": "2026-07-08",
+      "article_id": "565a29b8c0ea",
+      "title": "또 3% 오른 소비자물가… 안정 대책 없나",
+      "report_date": "2026-07-08",
+      "section": "policy",
+      "surface": "briefing_card",
+      "target_domain": "www.jndn.com",
+      "clicks": 2,
+      "users": 2,
+      "archive_url": "/agri-news-brief/archive/2026-07-08.html#sec-policy",
+      "source_url": "http://www.jndn.com/article.php?aid=1783416320435684008"
+    },
+    {
+      "date": "2026-07-08",
+      "article_id": "7c7db5e58935",
+      "title": "가격 무너지고, 비용 치솟고…벼랑 끝 농업계 \"CPTPP가입 멈춰라\"",
+      "report_date": "2026-07-08",
+      "section": "policy",
+      "surface": "briefing_open",
+      "target_domain": "www.mt.co.kr",
+      "clicks": 2,
+      "users": 2,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-07-08",
+      "article_id": "84f9a0f01438",
+      "title": "[동정] 강호동 농협중앙회장, 여름철 기상재해 대비 농산물 수급 점검",
+      "report_date": "2026-07-08",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.yna.co.kr",
+      "clicks": 2,
+      "users": 2,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-07-08",
+      "article_id": "84f9a0f01438",
+      "title": "[동정] 강호동 농협중앙회장, 여름철 기상재해 대비 농산물 수급 점검",
+      "report_date": "2026-07-08",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.yna.co.kr",
+      "clicks": 2,
+      "users": 2,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-07-08",
+      "article_id": "dccfb1c8e7ec",
+      "title": "[현장] \"오이 1개 180원\" 벼랑 끝 내몰린 농민들 \"농산물 소비로 연대해...",
+      "report_date": "2026-07-08",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.newsclaim.co.kr",
+      "clicks": 2,
+      "users": 2,
+      "archive_url": "/agri-news-brief/archive/2026-07-08.html#sec-supply",
+      "source_url": "https://www.newsclaim.co.kr/news/articleView.html?idxno=3068697"
     },
     {
       "date": "2026-03-30",
@@ -9698,6 +9789,136 @@
       "users": 1,
       "archive_url": "/agri-news-brief/archive/2026-07-07.html#sec-policy",
       "source_url": "https://www.agrinet.co.kr/news/articleView.html?idxno=405467"
+    },
+    {
+      "date": "2026-07-08",
+      "article_id": "077392effc69",
+      "title": "농협, 수급 관리·AI 자산관리·푸드테크 지원 확대…하반기 사업 본격...",
+      "report_date": "2026-07-08",
+      "section": "policy",
+      "surface": "briefing_card",
+      "target_domain": "www.e-science.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-07-08.html#sec-policy",
+      "source_url": "https://www.e-science.co.kr/news/articleView.html?idxno=131592"
+    },
+    {
+      "date": "2026-07-08",
+      "article_id": "1f8c585f8b60",
+      "title": "\"가격 급락 막고 소득 지킨다\"…'농산물 가격안정제' 내달 도입",
+      "report_date": "2026-07-08",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.news1.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-07-08",
+      "article_id": "1f8c585f8b60",
+      "title": "\"가격 급락 막고 소득 지킨다\"…'농산물 가격안정제' 내달 도입",
+      "report_date": "2026-07-08",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.news1.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-07-08",
+      "article_id": "71078f09ba60",
+      "title": "‘무조건 매몰’ 안한다?…‘ 과수화상병 ’ 감염가지 선 제거 방식 시범...",
+      "report_date": "2026-07-08",
+      "section": "pest",
+      "surface": "briefing_card",
+      "target_domain": "www.nongmin.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-07-08",
+      "article_id": "a3941d5b993e",
+      "title": "농산물 값↓·농자재값↑…정부, 농가 경영부담 완화에 총력",
+      "report_date": "2026-07-08",
+      "section": "dist",
+      "surface": "briefing_card",
+      "target_domain": "www.newsis.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-07-08",
+      "article_id": "b2f6f8a75431",
+      "title": "농산물 가격 급락하면 정부가 보전…농식품부, 8월 ' 가격안정제 ' 첫 도...",
+      "report_date": "2026-07-08",
+      "section": "policy",
+      "surface": "briefing_open",
+      "target_domain": "www.newspim.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-07-08.html#sec-policy",
+      "source_url": "https://www.newspim.com/news/view/20260707000937"
+    },
+    {
+      "date": "2026-07-08",
+      "article_id": "b3587115f667",
+      "title": "청송 사과, 장마가 올해 농사 가른다…폭염· 탄저병 대응 총력",
+      "report_date": "2026-07-08",
+      "section": "pest",
+      "surface": "briefing_card",
+      "target_domain": "www.kyongbuk.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-07-08.html#sec-pest",
+      "source_url": "https://www.kyongbuk.co.kr/news/articleView.html?idxno=4077599"
+    },
+    {
+      "date": "2026-07-08",
+      "article_id": "c7f6c3d47532",
+      "title": "가락시장 제10대 시장 관리 운영 위 출범···김성훈 위원장 선임",
+      "report_date": "2026-07-08",
+      "section": "dist",
+      "surface": "briefing_card",
+      "target_domain": "www.agrinet.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-07-08.html#sec-dist",
+      "source_url": "https://www.agrinet.co.kr/news/articleView.html?idxno=405526"
+    },
+    {
+      "date": "2026-07-08",
+      "article_id": "e0a28e5261e5",
+      "title": "제주 농산물 항공운송 ‘이중고’… 운임 치솟고 적재공간 줄어 농가 한...",
+      "report_date": "2026-07-08",
+      "section": "dist",
+      "surface": "briefing_card",
+      "target_domain": "www.nongmin.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-07-08",
+      "article_id": "fed7ddaffaf4",
+      "title": "경북도 \"장마철 고추 탄저병 비상, 예방이 최우선!\"",
+      "report_date": "2026-07-08",
+      "section": "pest",
+      "surface": "briefing_open",
+      "target_domain": "www.newsfarm.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-07-08.html#sec-pest",
+      "source_url": "http://www.newsfarm.co.kr/news/articleView.html?idxno=101603"
     }
   ]
 }

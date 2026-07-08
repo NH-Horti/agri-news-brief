@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-08T01:42:30+09:00",
+  "generated_at": "2026-07-09T01:12:11+09:00",
   "section_jump": [
     {
       "date": "2026-03-31",
@@ -725,6 +725,12 @@
     },
     {
       "date": "2026-07-07",
+      "count": 1,
+      "from_view": "briefing",
+      "to_view": "commodity"
+    },
+    {
+      "date": "2026-07-08",
       "count": 1,
       "from_view": "briefing",
       "to_view": "commodity"
