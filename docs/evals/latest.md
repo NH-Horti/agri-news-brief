@@ -1,32 +1,30 @@
-## Daily Eval (2026-07-09)
-- Overall: **77.62** (warn)
-- Operational: **97.64**
-- Reader quality: **84.00** (capped; penalty=7.0, cap=84.0, reasons=pest_theme_duplicate, commodity_false_link, commodity_false_link_severe)
-- Quality gate: **77.62** (needs_major_iteration, editorial_major_issue; editorial=77.5, operational=97.6)
-- Scores: completeness=100.0, diversity=100.0, summary=98.5, freshness=100.0, retrieval=90.0, section_fit=97.2, core=100.0, commodity=88.4
-- Briefing cards: 20 / Commodity cards: 16
-- Sections: supply:5/5 raw=222, policy:5/5 raw=190, dist:5/5 raw=68, pest:5/5 raw=39
-- Metrics: title_unique=1.00, domain_diversity=0.90, summary_presence=1.00, summary_numeric=0.85, fresh_72h=1.00, fit_avg=4.34, false_positive=0.00, hard_reader_issues=0, weak_core=0.00, editorial_penalty=0.4, commodity_weak=0.00, commodity_items=8, commodity_active_today=11, commodity_active_today_unlinked=3, commodity_coverage=0.24, commodity_strict_link=0.88, commodity_false_link=0.12, commodity_pool_false_link=0.00, commodity_dominant_section=0.75, semantic_penalty=0.0
+## Daily Eval (2026-07-10)
+- Overall: **72.05** (warn)
+- Operational: **98.72**
+- Reader quality: **98.72** (clear; penalty=0.0, cap=100.0, reasons=clear)
+- Quality gate: **72.05** (needs_major_iteration, editorial_blocking_issue; editorial=72.0, operational=98.7)
+- Scores: completeness=100.0, diversity=100.0, summary=98.5, freshness=100.0, retrieval=87.5, section_fit=100.0, core=100.0, commodity=99.1
+- Briefing cards: 20 / Commodity cards: 52
+- Sections: supply:5/5 raw=200, policy:5/5 raw=145, dist:5/5 raw=91, pest:5/5 raw=40
+- Metrics: title_unique=1.00, domain_diversity=0.85, summary_presence=1.00, summary_numeric=0.85, fresh_72h=1.00, fit_avg=4.85, false_positive=0.00, hard_reader_issues=0, weak_core=0.00, editorial_penalty=0.0, commodity_weak=0.00, commodity_items=6, commodity_active_today=13, commodity_active_today_unlinked=7, commodity_coverage=0.18, commodity_strict_link=1.00, commodity_false_link=0.00, commodity_pool_false_link=0.00, commodity_dominant_section=0.50, semantic_penalty=0.0
 
 
 ### Editorial Shadow Eval
-- Editorial: **77.50** (daily target 88, tier=needs_major_iteration, needs_major_iteration)
+- Editorial: **72.05** (daily target 88, tier=needs_major_iteration, needs_major_iteration)
 - Model: gpt-5.5-2026-04-23 (resolved gpt-5.5-2026-04-23)
-- Model-reported score: 79.00; authoritative method=weighted_components_v1
-- Acceptance: needs_iteration (blocking=0, major=3, reasons=editorial_score_min, no_major_issues, critical_components_min, all_components_min, commodity_board_score_min)
+- Model-reported score: 72.00; authoritative method=weighted_components_v1
+- Acceptance: needs_iteration (blocking=1, major=3, reasons=editorial_score_min, no_blocking_issues, no_major_issues, critical_components_min, all_components_min)
 - Section count gate: 100.0 (target_met)
-- Components: article_selection=76.0, section_fit=84.0, core=75.0, summary=88.0, missed=70.0, noise=72.0
-- Summary: 분량과 신선도는 충족했지만, 병해충 섹션이 사실상 고창군 동일 보도 4건으로 채워져 일일 브리핑의 다양성과 핵심성이 크게 훼손됐다. 정책은 전국 단위 물가 점검·KREI 분석 같은 더 강한 후보를 놓치고 가격폭락 대응 보도를 중복 배치했고, 유통도 온라인도매시장 물류센터 같은 동일 이슈를 두 장으로 반복했다. 공급 섹션은 대체로 적합하나 과일류 농업관측 같은 수급 핵심 후보를 놓친 점이 아쉽다.
-- [major] duplicate_story: 고창군 병해충 방제사업 관련 4건 - 16~19번이 모두 같은 고창군 3억5290만원 병해충 방제·과수화상병 예찰 보도를 반복한다.
-- [major] weak_core: 고창군, 돌발해충·탄저병 등 방제 약제 농가 공급 - 핵심 카드가 직전 고창군 과수화상병 카드와 동일 사안이라 core slot을 낭비했다.
-- [major] missed_candidate: 민생안정지원단, 계란·축산물 등 먹거리 물가 현장점검 - 상위 raw 후보이자 전국 단위 먹거리 물가 정책 점검인데, 지역 성명·중복 보도보다 우선순위가 높다.
-- [moderate] duplicate_story: 농식품부, 농가 경영 안정을 위해 총력 대응 - 공급 1번의 가격폭락·정부 총력대응 보도와 같은 정부 대응 내용을 반복한다.
-- [moderate] duplicate_story: 전국 물류허브 첫발… 호남 농산물 유통 새 판 - 12번 aT 온라인도매시장 거점물류센터와 같은 회의·시범사업을 지역 각도로 재포장한 중복 카드다.
+- Components: article_selection=74.0, section_fit=75.0, core=66.0, summary=84.0, missed=62.0, noise=72.0
+- Summary: 물량은 20건으로 채웠고 dist·pest 일부 핵심은 좋지만, supply 핵심에 농업과 무관한 노후주택 호우 안전 기사가 들어간 것이 큰 결함입니다. 양파 수급 안정 기사가 여러 섹션에 반복돼 지면 효율이 떨어졌고, policy 코어에 행사·금융 브리핑성 기사가 들어가 핵심성이 약합니다. 도매시장 제도 개선, 장마 뒤 채소값 상승 조짐, 농진청·도 단위 병해충 대응 등 더 나은 후보도 일부 누락됐습니다.
+- [blocking] off_topic: [전국 톡톡] 장마철 장대비에 빨간불 켜진 '노후주택' - 노후주택·축대 안전 기사로 농산물 수급·생산·유통과 직접 관련이 없는데 supply 코어로 선정됐다.
+- [major] weak_core: [농협] K-라이스페스타 접수 / NH콕뱅크 10주년 이벤트 / 양파 수급 안정 ... - 행사 접수와 금융 이벤트가 섞인 홍보성 브리핑으로 정책 코어로 보기 어렵다.
+- [major] duplicate_theme: 양파 수급 안정·가격 반등 기사 다수 - supply·policy·dist에 양파 가격 회복/농협 수급대책이 반복돼 같은 논점을 과점한다.
+- [major] missed_candidate: 공공성 강화·농협공판장 기능 확대 추진 - 도매시장 제도 개선·공판장 기능 강화는 dist의 핵심 시장운영 후보인데 지역 브랜드/수출 꼬리기사에 밀렸다.
+- [moderate] missed_candidate: 장맛비 끝나면 채소값 오르나…산지 출하 감소에 가격 상승 '조짐' - 당일 호우와 산지 출하 감소가 채소 가격에 미칠 영향을 다룬 supply 적합 후보가 누락됐다.
 
 ### Improvement Hints
-- 품목 보드 대표기사가 품목 핵심 이슈를 충분히 대변하지 못합니다. 제목에서 품목명과 수급·가격·병해충 신호가 함께 보이는 기사, representative rank 상위 후보, 비수급 섹션의 직접 이슈 후보를 우선하세요.
-- 리콜 시드 결손이 보입니다: supply. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요.
-- 편집 품질상 약한 기사 선택이 감지되었습니다 (pest_theme_duplicate=5%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요.
+- 전반적으로 안정적입니다. 점수 추세가 3일 이상 하락할 때만 임계치 조정이나 query 보강을 수행하면 됩니다.
 
 ### Next Summary Feedback
 - 각 기사 요약은 2문장으로 유지하고 첫 문장에 품목·지역·핵심 이슈를 바로 적는다.
