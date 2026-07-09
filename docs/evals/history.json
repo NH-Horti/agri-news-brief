@@ -2,29 +2,29 @@
   "reports": [
     {
       "report_date": "2026-07-10",
-      "generated_at_kst": "2026-07-10T06:23:44+09:00",
-      "overall_score": 72.05,
-      "operational_score": 98.72,
-      "reader_quality_score": 98.72,
+      "generated_at_kst": "2026-07-10T07:32:41+09:00",
+      "overall_score": 65.45,
+      "operational_score": 98.64,
+      "reader_quality_score": 98.64,
       "reader_quality_gate_status": "clear",
       "reader_quality_gate_reasons": [],
-      "editorial_score": 72.05,
-      "editorial_model_reported_score": 72.0,
+      "editorial_score": 65.45,
+      "editorial_model_reported_score": 66.0,
       "editorial_score_method": "weighted_components_v1",
       "editorial_quality_tier": "needs_major_iteration",
       "editorial_acceptance_passed": false,
       "editorial_status": "needs_major_iteration",
       "quality_gate_status": "needs_major_iteration",
       "quality_gate_reason": "editorial_blocking_issue",
-      "status": "warn",
+      "status": "fail",
       "section_alignment": 100.0,
-      "core_quality": 100.0,
-      "commodity_board_quality": 99.14,
+      "core_quality": 99.25,
+      "commodity_board_quality": 94.86,
       "briefing_total": 20,
-      "commodity_total": 52,
-      "commodity_active_today_total": 13,
-      "commodity_active_today_unlinked_total": 7,
-      "commodity_managed_unlinked_total": 27,
+      "commodity_total": 53,
+      "commodity_active_today_total": 15,
+      "commodity_active_today_unlinked_total": 10,
+      "commodity_managed_unlinked_total": 28,
       "summary_presence_rate": 1.0,
       "within_72h_rate": 1.0,
       "briefing_title_unique_rate": 1.0,
@@ -38,7 +38,9 @@
       "promotional_filler_rate": 0.0,
       "promotional_core_rate": 0.0,
       "pest_theme_duplicate_rate": 0.0,
-      "guardrail_driver_tags": []
+      "guardrail_driver_tags": [
+        "commodity_board_low_coverage"
+      ]
     },
     {
       "report_date": "2026-07-09",
@@ -1708,5 +1710,5 @@
       "briefing_title_unique_rate": 1.0
     }
   ],
-  "updated_at_kst": "2026-07-10T06:23:44+09:00"
+  "updated_at_kst": "2026-07-10T07:32:41+09:00"
 }
