@@ -1,27 +1,27 @@
 {
   "report_date": "2026-07-10",
-  "generated_at_kst": "2026-07-10T12:20:40+09:00",
+  "generated_at_kst": "2026-07-10T13:11:49+09:00",
   "scores": {
-    "section_alignment": 100.0,
-    "core_quality": 100.0,
+    "section_alignment": 97.19,
+    "core_quality": 99.53,
     "commodity_board_quality": 94.86
   },
   "metrics": {
     "section_alignment_low_fit_rate": 0.0,
-    "section_alignment_cross_gap_rate": 0.0,
+    "section_alignment_cross_gap_rate": 0.05,
     "content_false_positive_rate": 0.0,
     "reader_hard_issue_count": 0,
     "reader_hard_issue_rate": 0.0,
-    "reader_quality_penalty": 1.8789,
-    "reader_quality_cap": 95.0,
+    "reader_quality_penalty": 0.54,
+    "reader_quality_cap": 100.0,
     "weak_core_rate": 0.0,
     "policy_wrong_section_rate": 0.0,
-    "promotional_filler_rate": 0.1053,
+    "promotional_filler_rate": 0.15,
     "promotional_core_rate": 0.0,
     "weak_core_editorial_rate": 0.0,
     "pest_theme_duplicate_rate": 0.0,
     "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 0.2105,
+    "editorial_quality_penalty": 0.3,
     "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0,
@@ -99,121 +99,126 @@
       "reasons": [
         "promotional_or_event_filler"
       ]
+    },
+    {
+      "title": "합천군, 사과 대추 유통 경쟁력 강화",
+      "href": "http://www.enewstoday.co.kr/news/articleView.html?idxno=2446922",
+      "section": "dist",
+      "is_core": false,
+      "reasons": [
+        "promotional_or_event_filler"
+      ]
     }
   ],
   "reader_hard_issue_samples": [],
   "editorial": {
-    "score": 75.5,
-    "model_reported_score": 77.0,
+    "score": 85.8,
+    "model_reported_score": 86.0,
     "score_method": "weighted_components_v1",
-    "quality_tier": "needs_major_iteration",
+    "quality_tier": "needs_iteration",
     "target_score": 88.0,
-    "target_status": "needs_major_iteration",
+    "target_status": "needs_minor_iteration",
     "acceptance_gate": {
-      "status": "needs_major_iteration",
+      "status": "needs_minor_iteration",
       "passed": false,
       "target_score": 88.0,
       "excellent_score": 92.0,
       "stretch_score": 95.0,
-      "blocking_issue_count": 1,
-      "major_issue_count": 3,
+      "blocking_issue_count": 0,
+      "major_issue_count": 0,
       "critical_component_min": 85.0,
       "all_component_min": 80.0,
       "checks": {
         "editorial_score_min": false,
-        "no_blocking_issues": false,
-        "no_major_issues": false,
+        "no_blocking_issues": true,
+        "no_major_issues": true,
         "critical_components_min": false,
-        "all_components_min": false,
+        "all_components_min": true,
         "operational_score_min": true,
         "section_count_score_min": true,
-        "no_section_underfill": false,
+        "no_section_underfill": true,
         "commodity_board_score_min": false
       },
       "failure_reasons": [
         "editorial_score_min",
-        "no_blocking_issues",
-        "no_major_issues",
         "critical_components_min",
-        "all_components_min",
-        "no_section_underfill",
         "commodity_board_score_min"
       ]
     },
-    "section_count_score": 98.0,
-    "section_count_status": "soft_fallback",
+    "section_count_score": 100.0,
+    "section_count_status": "target_met",
     "scores": {
-      "article_selection": 78.0,
-      "section_fit": 74.0,
-      "core_pick_quality": 73.0,
-      "summary_usefulness": 81.0,
-      "missed_opportunity": 71.0,
-      "noise_control": 75.0
+      "article_selection": 87.0,
+      "section_fit": 88.0,
+      "core_pick_quality": 85.0,
+      "summary_usefulness": 84.0,
+      "missed_opportunity": 85.0,
+      "noise_control": 85.0
     },
     "issues": [
       {
-        "type": "off_topic",
-        "severity": "blocking",
-        "section": "policy",
-        "title": "몽골산 ‘캐시미어’·희토류 수입 관세 없앴다… 韓 화장품·의약품 수...",
-        "reason": "농업·원예 독자에게 직접성이 낮은 통상 일반 기사이며 요약도 농산물 관련 내용이 없다고 인정한다.",
-        "suggested_action": "삭제하고 농산물 가격안정 사설이나 농협 대전환 같은 농정 후보로 교체."
+        "type": "weak_core",
+        "severity": "moderate",
+        "section": "dist",
+        "title": "대관령원협, 산지공판장 초매식 개최",
+        "reason": "산지 출하 개시로 유통 관련성은 있지만 초매식 중심의 지역 행사성 기사라 핵심 유통 카드로는 약하다.",
+        "suggested_action": "도매시장 TF나 온라인도매시장 물류센터 같은 제도·운영 영향이 큰 기사를 core로 올리고 이 건은 tail로 낮추라."
       },
       {
         "type": "wrong_section",
-        "severity": "major",
-        "section": "policy",
-        "title": "장맛비 끝나면 채소값 오르나…산지 출하 감소에 가격 상승 '조짐'",
-        "reason": "정책보다 기상 이후 산지 출하·채소 가격 전망 기사로 supply 성격이 강한데 policy 코어로 배치됐다.",
-        "suggested_action": "공급 섹션으로 이동하거나 정책 코어는 가격안정 대책·농정 개혁 기사로 대체."
-      },
-      {
-        "type": "weak_core",
-        "severity": "major",
-        "section": "supply",
-        "title": "농림위성으로 첨단농업 실현 기대",
-        "reason": "농림위성 활용 전망은 R&D·기술 정책에 가까워 공급/수급 코어로는 약하다.",
-        "suggested_action": "코어에서 내리고 실제 가격·출하·수급 기사로 교체."
-      },
-      {
-        "type": "underfill",
         "severity": "moderate",
         "section": "supply",
-        "title": "supply section",
-        "reason": "원자료가 충분한데 공급 섹션이 목표 5건이 아닌 4건으로 마감됐다.",
-        "suggested_action": "정책에 들어간 채소값 전망 기사를 supply로 옮기거나 독립 수급 후보를 추가."
+        "title": "충북 포도, 수출 현장 이상 無 ··· 품질․안전 모두 잡았다",
+        "reason": "수출 품질·검역·판로 성격이 강해 공급보다 유통/수출 섹션에 더 적합하다.",
+        "suggested_action": "dist로 이동하거나 공급 섹션에는 국내 생산·출하·가격 후보를 우선 배치하라."
+      },
+      {
+        "type": "noise",
+        "severity": "moderate",
+        "section": "supply",
+        "title": "“수입 70%는 데이터 팔아 얻죠”…중국 ‘AI 상추재배기지’ 무슨 일?",
+        "reason": "해외 스마트팜 소개성 기사로 당일 국내 수급 브리핑의 실무성은 낮다.",
+        "suggested_action": "국내 수급·작황 후보가 부족할 때만 후순위로 쓰고, 평시에는 국내 시장 영향 기사로 교체하라."
       },
       {
         "type": "promotional_filler",
         "severity": "moderate",
         "section": "supply",
         "title": "청양군농업기술센터, 가을 배추 우량묘 110만 본 공급",
-        "reason": "지역 신청 안내 성격이 강해 전국 농업 브리핑의 공급 카드로는 꼬리 기사 품질이 낮다.",
-        "suggested_action": "더 큰 수급·가격·출하 영향이 있는 후보가 있으면 교체."
+        "reason": "군 단위 신청 안내 성격이 강해 전국 독자에게 주는 수급 정보 가치가 제한적이다.",
+        "suggested_action": "카드 수 보전용 tail로만 쓰고 더 넓은 작황·가격·출하 후보가 있으면 교체하라."
       },
       {
-        "type": "missed_candidate",
-        "severity": "major",
-        "section": "policy",
-        "title": "[사설] 농산물 장기 시세 침체…가격 안정 대책 시급",
-        "reason": "가격 하락과 정책 대응 필요성을 다룬 상위 후보가 보였는데 정책 섹션에서 빠졌다.",
-        "suggested_action": "몽골 관세 기사 대신 정책 카드로 채택하거나 주요 논점으로 반영."
+        "type": "promotional_filler",
+        "severity": "moderate",
+        "section": "dist",
+        "title": "합천군, 사과 대추 유통 경쟁력 강화",
+        "reason": "지역 공선출하 협약 홍보에 가깝고 구체적 물류·시장 운영 변화가 약하다.",
+        "suggested_action": "블루베리 공동 선별·출하, 온라인도매시장 물류망 등 더 운영성이 강한 후보를 우선하라."
       },
       {
         "type": "missed_candidate",
         "severity": "moderate",
-        "section": "pest",
-        "title": "장마 철 달팽이 피해 예방…\"등록 농약 활용 방제\" 당부",
-        "reason": "농진청발 전국성·구체 해충 방제 기사인데 generic한 영광군 호우 관리 기사보다 우선도가 높다.",
-        "suggested_action": "영광군 일반 당부 기사를 달팽이 방제 기사로 교체."
+        "section": "dist",
+        "title": "블루베리 공동 선별·출하 ‘호평’",
+        "reason": "APC 기반 공동선별·물량조절·수취값 개선을 다뤄 선택된 지역 협약 기사보다 유통 실무성이 높다.",
+        "suggested_action": "합천 사과대추 협약 같은 약한 tail 대신 이 후보를 채택하라."
       },
       {
         "type": "bad_summary",
         "severity": "moderate",
         "section": "policy",
         "title": "‘농협 대전환’…조직 쇄신·농민 지원 16개 과제 추진",
-        "reason": "요약이 원문 도입부를 길게 붙인 뒤 말줄임으로 끝나 독자용 브리핑 문장으로 정리되지 않았다.",
-        "suggested_action": "16개 과제, 감사 독립성, 농가소득 2200억원 지원 등 핵심만 1~2문장으로 재작성."
+        "reason": "요약이 제목을 반복하고 본문이 중간에서 끊겨 핵심 16개 과제와 농가 지원 규모가 명확히 정리되지 않는다.",
+        "suggested_action": "감사 독립성, 책임경영, 농가소득 2200억원 등 핵심 조치만 1~2문장으로 재작성하라."
+      },
+      {
+        "type": "duplicate_theme",
+        "severity": "minor",
+        "section": "policy",
+        "title": "농민들 울분 터졌다…“농산물 가격 폭락·생산비 폭등 대책 세우라”",
+        "reason": "정책 섹션에서 물가·가격침체·농민대회가 같은 가격위기 테마로 다소 겹친다.",
+        "suggested_action": "가격 위기 2건은 유지하되 한 자리는 제도개혁·인력·무역 등 다른 정책 축으로 분산하라."
       }
     ]
   },
@@ -263,10 +268,10 @@
     "mode": "shadow_replay_loop",
     "proposal_only": true,
     "target_score": 88.0,
-    "current_editorial_score": 75.5,
-    "model_reported_score": 77.0,
-    "quality_tier": "needs_major_iteration",
-    "target_status": "needs_major_iteration",
+    "current_editorial_score": 85.8,
+    "model_reported_score": 86.0,
+    "quality_tier": "needs_iteration",
+    "target_status": "needs_minor_iteration",
     "iteration_budget": 3,
     "promotion_gates": {
       "editorial_score_min": 88.0,
@@ -280,11 +285,11 @@
       "no_section_underfill": true
     },
     "section_count_context": {
-      "score": 98.0,
-      "status": "soft_fallback",
+      "score": 100.0,
+      "status": "target_met",
       "sections": {
         "supply": {
-          "actual": 4,
+          "actual": 5,
           "expected": 5,
           "raw_candidates": 188,
           "preferred_count": 5,
@@ -292,8 +297,8 @@
           "minimum_fallback_count": 3,
           "count_floor": 3,
           "core_count": 2,
-          "fill_ratio": 0.8,
-          "score": 92.0
+          "fill_ratio": 1.0,
+          "score": 100.0
         },
         "policy": {
           "actual": 5,
@@ -327,17 +332,13 @@
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
           "count_floor": 3,
-          "core_count": 2,
+          "core_count": 1,
           "fill_ratio": 1.0,
           "score": 100.0
         }
       },
-      "underfilled_sections": [
-        "supply"
-      ],
-      "soft_fallback_sections": [
-        "supply"
-      ],
+      "underfilled_sections": [],
+      "soft_fallback_sections": [],
       "minimum_fallback_sections": [],
       "severe_underfilled_sections": [],
       "preferred_count": 5,
@@ -349,10 +350,10 @@
     "guardrail_focus": [
       "core_quality",
       "missed_opportunity",
+      "article_selection",
       "noise_control",
       "section_fit",
-      "summary_usefulness",
-      "section_count"
+      "summary_usefulness"
     ],
     "recommended_actions": [
       {
@@ -366,6 +367,12 @@
         "target": "raw_candidate_pool",
         "direction": "expand_or_rerank",
         "reason": "The raw pool contained stronger alternatives than selected cards."
+      },
+      {
+        "kind": "story_dedupe",
+        "target": "story_signature_gate",
+        "direction": "tighten",
+        "reason": "Multiple cards covered the same issue and reduced briefing breadth."
       },
       {
         "kind": "noise_filter",
@@ -384,12 +391,6 @@
         "target": "latest-feedback.txt",
         "direction": "add_editorial_feedback",
         "reason": "Summaries should explain impact and decision value, not just restate titles."
-      },
-      {
-        "kind": "section_fill",
-        "target": "preferred_section_count",
-        "direction": "restore",
-        "reason": "Every section with enough candidates should reach its preferred card count."
       }
     ],
     "current_selection_guardrails": {
