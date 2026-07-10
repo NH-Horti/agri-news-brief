@@ -23036,8 +23036,6 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str, *, apply_se
         return "garbled_article_text"
     if is_non_agri_foodservice_equipment_promo_context(a.title or "", a.description or ""):
         return "non_agri_foodservice_equipment_promo"
-    if section_key == "policy" and _is_policy_community_noise_context(a.title or "", a.description or ""):
-        return "policy_community_noise"
     if (
         section_key == "dist"
         and "홈플러스" in text
@@ -23360,6 +23358,9 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str, *, apply_se
             return "policy_internal_award_filler"
         if ("일자리사업" in text and "창업기업지원사업" in text and "성과" in text) or ("창업기업지원사업" in text and "글로벌 진출" in text):
             return "policy_regional_project_promo"
+        # 기존의 구체적인 판촉·민간지원 사유를 우선한 뒤, 남은 기부·나눔 잡음을 보완 차단한다.
+        if _is_policy_community_noise_context(a.title or "", a.description or ""):
+            return "policy_community_noise"
     if section_key == "dist":
         # 농협개혁/조직개편/거버넌스 기사는 유통 현장과 거리가 있음
         _ttl_dist = (a.title or "").lower()
