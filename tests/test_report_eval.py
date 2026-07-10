@@ -18,8 +18,17 @@ class ReportEvalTests(unittest.TestCase):
         )
 
     @staticmethod
-    def _briefing_card(section: str, title: str, href: str, *, core: bool = False, stage: str = "tail") -> str:
+    def _briefing_card(
+        section: str,
+        title: str,
+        href: str,
+        *,
+        core: bool = False,
+        stage: str = "tail",
+        press_tier: int | None = None,
+    ) -> str:
         core_attr = ' data-is-core="1"' if core else ""
+        tier_attr = f' data-press-tier="{press_tier}"' if press_tier is not None else ""
         badge = '<span class="badgeCore">핵심</span>' if core else ""
         return f"""
         <div
@@ -32,6 +41,7 @@ class ReportEvalTests(unittest.TestCase):
           data-selection-fit="1.6"
           data-selection-stage="{stage}"
           {core_attr}
+          {tier_attr}
         >
           {badge}
           <div class="sum">{title} 관련 수급과 현장 변화가 보고됐다.</div>
@@ -195,6 +205,31 @@ class ReportEvalTests(unittest.TestCase):
         self.assertTrue(article.is_core)
         self.assertAlmostEqual(article.selection_fit_score, 1.72)
         self.assertEqual(article.selection_stage, "core_final")
+
+    def test_parse_report_html_extracts_press_tier(self) -> None:
+        html = self._briefing_card(
+            "pest",
+            "토마토 담배가루이 초기 방제 당부",
+            "https://example.com/pest",
+            press_tier=2,
+        )
+
+        article = report_eval.parse_report_html(html)[0]
+
+        self.assertEqual(article.press_tier, 2)
+
+    def test_evaluate_report_caps_excessive_low_tier_source_mix(self) -> None:
+        html = self.html_text.replace(
+            'data-surface="briefing_card"',
+            'data-surface="briefing_card" data-press-tier="1"',
+        )
+
+        result = report_eval.evaluate_report(self.report_date, html, self.snapshot_payload)
+
+        self.assertEqual(result["counts"]["low_tier_source_total"], 15)
+        self.assertEqual(result["metrics"]["low_tier_source_rate"], 1.0)
+        self.assertGreater(result["metrics"]["low_tier_source_excess_count"], 0)
+        self.assertIn("low_tier_source_concentration", result["reader_quality_gate"]["reasons"])
 
     def test_evaluate_report_returns_scores_and_feedback(self) -> None:
         result = report_eval.evaluate_report(self.report_date, self.html_text, self.snapshot_payload)

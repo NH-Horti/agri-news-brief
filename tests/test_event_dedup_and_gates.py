@@ -4,6 +4,7 @@ import sys
 import unittest
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
@@ -176,6 +177,140 @@ class TestSameEventMultiOutlet(unittest.TestCase):
         )
         self.assertEqual(reason, "")
 
+    def test_ganghwa_county_pest_reports_are_same_event(self):
+        self.assertIn("강화군", main._region_set("강화군 고추 탄저병 주의"))
+        reason = main._same_event_story_reason(
+            "강화군 고추 탄저병 주의",
+            "강화군은 노지 고추 탄저병 확산에 대비해 현장 방제를 당부했다",
+            "강화군, '탄저병·역병 확산' 비상…노지 고추 현장관리 강화",
+            "강화군 농업기술센터가 고추 탄저병 예찰과 방제를 강화했다",
+        )
+        self.assertTrue(reason)
+
+    def test_online_wholesale_logistics_reports_are_same_program(self):
+        reason = main._same_event_story_reason(
+            "온라인 도매시장 권역별 거점물류센터 4곳 9월 가동",
+            "농식품부와 aT가 온라인 도매시장 물류망을 구축한다",
+            "농식품부·aT, 거점물류센터 시범사업 협의체 첫 회의",
+            "온라인도매시장 권역 물류망 구축과 센터 운영을 논의했다",
+        )
+        self.assertEqual(reason, "same_online_market_logistics_program")
+
+    def test_onion_price_recovery_reports_are_same_event(self):
+        reason = main._same_event_story_reason(
+            "양파값 회복에 882억 투입한 농협, 효과 봤다",
+            "정부와 지자체의 수급안정 대책으로 1kg당 570원에서 1022원으로 회복됐다",
+            "농협, 정부·지자체와 양파 수급 잡고 가격 회복세",
+            "882억원 규모 대책 이후 양파 도매가격이 kg당 1022원으로 올랐다",
+        )
+        self.assertTrue(reason)
+
+    def test_price_recovery_dedupe_survives_truncated_republication_body(self):
+        reason = main._same_event_story_reason(
+            "양파값 회복에 882억 투입한 농협, 효과 봤다",
+            "정부 수급안정 대책으로 양파 도매가격이 570원에서 1022원으로 회복됐다",
+            "농협·정부·지자체 전방위 대책으로 양파값 두 달 만에 80% 회복",
+            "중생종 양파 출하를 늦추는 농가의 손실을 보전했다",
+        )
+        self.assertEqual(reason, "same_commodity_price_recovery")
+
+    def test_verb_endings_are_not_regions(self):
+        self.assertNotIn("따르면", main._region_set("농협 발표에 따르면 양파 가격이 회복됐다"))
+        self.assertNotIn("발생하면", main._region_set("병해충이 발생하면 즉시 방제한다"))
+
+
+class TestFinalSourceQualityBudget(unittest.TestCase):
+    """모든 후반 보정 뒤에도 저티어 매체 예산을 지킨다."""
+
+    def test_press_tier_recognizes_established_secondary_outlets(self):
+        self.assertEqual(main.press_tier("신아일보", "shinailbo.co.kr"), 2)
+        self.assertEqual(main.press_tier("오마이뉴스", "ohmynews.com"), 2)
+        self.assertEqual(main.press_tier("뉴스클레임", "newsclaim.co.kr"), 1)
+        self.assertEqual(main.press_tier("gpkorea", "gpkorea.com"), 1)
+
+    def test_excess_low_tier_cards_are_replaced_by_qualified_sources(self):
+        low = [
+            _mk("pest", f"고추 병해충 현장 점검 {idx}", press=f"인터넷매체{idx}",
+                domain=f"low{idx}.example.com", score=11.0)
+            for idx in range(5)
+        ]
+        trusted = [
+            _mk("pest", f"과수 병해충 예찰 강화 {idx}", press=press_name,
+                domain=f"trusted{idx}.example.com", score=20.0 + idx)
+            for idx, press_name in enumerate(("연합뉴스", "농민신문", "한국농어민신문", "신아일보"))
+        ]
+        final = {"supply": [], "policy": [], "dist": [], "pest": list(low)}
+        raw = {"supply": [], "policy": [], "dist": [], "pest": list(low) + trusted}
+
+        with (
+            patch.object(main, "_fresh_section_fit", return_value=2.0),
+            patch.object(main, "_postbuild_article_reject_reason", return_value=""),
+            patch.object(main, "_soft_news_core_demote_reason", return_value=""),
+            patch.object(main, "_preferred_tail_block_reason", return_value=""),
+            patch.object(main, "_is_stale_swap_candidate", return_value=False),
+            patch.object(main, "_violates_section_theme_cap", return_value=False),
+            patch.object(main, "_duplicate_story_pair_reason", return_value=""),
+        ):
+            changed = main._cap_final_low_tier_sources(
+                final,
+                raw,
+                max_per_section=1,
+                max_total=4,
+            )
+
+        self.assertGreaterEqual(changed, 4)
+        self.assertEqual(len(final["pest"]), 5)
+        self.assertLessEqual(
+            sum(main.press_tier(article.press, article.domain) == 1 for article in final["pest"]),
+            1,
+        )
+
+    def test_named_authoritative_pest_warning_beats_generic_weather_notice(self):
+        victim = _mk(
+            "pest",
+            "외식 가맹점 장비 지원",
+            press="인터넷매체",
+            domain="low.example.com",
+            score=10.0,
+        )
+        generic = _mk(
+            "pest",
+            "충남도 농기원, 여름철 농작물 고온·장마·해충 피해 선제 대응",
+            "농업기술원이 장마 피해 예방과 시설물 관리를 당부했다",
+            press="농수축산신문",
+            domain="generic.example.com",
+            score=25.13,
+        )
+        whitefly = _mk(
+            "pest",
+            "농진청, 토마토 농가 담배가루이 초기 방제 총력 당부",
+            "농촌진흥청은 토마토황화잎말림바이러스 확산을 막기 위해 담배가루이 예찰과 방제를 당부했다",
+            press="농축유통신문",
+            domain="whitefly.example.com",
+            score=19.89,
+        )
+        final = {"supply": [], "policy": [], "dist": [], "pest": [victim]}
+        raw = {"supply": [], "policy": [], "dist": [], "pest": [victim, generic, whitefly]}
+
+        with (
+            patch.object(main, "_fresh_section_fit", return_value=2.0),
+            patch.object(main, "_postbuild_article_reject_reason", return_value=""),
+            patch.object(main, "_soft_news_core_demote_reason", return_value=""),
+            patch.object(main, "_preferred_tail_block_reason", return_value=""),
+            patch.object(main, "_is_stale_swap_candidate", return_value=False),
+            patch.object(main, "_violates_section_theme_cap", return_value=False),
+            patch.object(main, "_duplicate_story_pair_reason", return_value=""),
+        ):
+            changed = main._cap_final_low_tier_sources(
+                final,
+                raw,
+                max_per_section=0,
+                max_total=0,
+            )
+
+        self.assertEqual(changed, 1)
+        self.assertIs(final["pest"][0], whitefly)
+
 
 class TestCrossSectionDedupe(unittest.TestCase):
     """같은 사건이 supply와 policy에 동시 배치되면 하나만 남긴다."""
@@ -277,6 +412,23 @@ class TestPestSectionGate(unittest.TestCase):
         self.assertFalse(main._has_pest_or_growth_risk_signal(
             "폭염에 전력수요 최고치 경신", "전력거래소는 전력 수요가 급증했다고 밝혔다"))
 
+    def test_authoritative_whitefly_warning_is_not_a_weak_notice(self):
+        article = _mk(
+            "pest",
+            "농진청, 토마토 농가 담배가루이 초기 방제 총력 당부",
+            "농촌진흥청은 토마토황화잎말림바이러스 확산을 막기 위해 담배가루이 예찰과 초기 방제를 당부했다",
+            press="농축유통신문",
+            domain="amnews.co.kr",
+            score=19.89,
+        )
+        self.assertTrue(main._has_named_pest_signal(article.title))
+        self.assertFalse(main._is_weak_pest_tail(article))
+        self.assertFalse(main._is_generic_pest_notice_tail(article))
+        self.assertEqual(
+            main._preferred_tail_block_reason(article, "pest", current_count=5, raw_count=30),
+            "",
+        )
+
 
 class TestPolicyOrgEventGate(unittest.TestCase):
     """조합·단체 행사 기사는 정책 섹션에 들어오지 못한다."""
@@ -294,6 +446,38 @@ class TestPolicyOrgEventGate(unittest.TestCase):
     def test_org_event_with_policy_action_kept(self):
         self.assertFalse(main._is_policy_org_event_without_policy_action(
             "농협, 할당관세 확대 건의…정부 협의회 참석", "관세 정책 건의"))
+
+    def test_school_food_donation_is_rejected_from_policy_refill(self):
+        article = _mk(
+            "policy",
+            "학생들의 정성이 이웃의 밥상을 채웠다…양파 절...",
+            "학생들이 직접 재배한 양파로 만든 음식을 어려운 이웃에게 기부했다. "
+            "양파절임을 나눔냉장고에 전달해 훈훈함을 더했다. "
+            + ("지역사회 나눔 활동을 설명하는 내용이다. " * 40)
+            + "관련 기사 푸터에는 소비자정책심의위원회 소식도 포함됐다.",
+            press="중도일보",
+            domain="joongdo.co.kr",
+        )
+        self.assertEqual(
+            main._postbuild_article_reject_reason(article, "policy", apply_selection_fit=False),
+            "policy_community_noise",
+        )
+
+
+class TestSectionPlacementSignals(unittest.TestCase):
+    """가격 전망은 supply, 물류 운영은 dist로 보내는 신호를 보존한다."""
+
+    def test_vegetable_price_outlook_is_supply_context(self):
+        self.assertTrue(main.is_supply_price_outlook_context(
+            "장맛비 끝나면 채소값 오르나…산지 출하 감소에 가격 상승 조짐",
+            "장마 뒤 산지 출하량이 줄어 도매가격과 채솟값이 오를 수 있다는 전망이다",
+        ))
+
+    def test_online_wholesale_logistics_is_distribution_context(self):
+        self.assertTrue(main.is_dist_market_ops_context(
+            "농식품부·aT, 거점물류센터 시범사업 협의체 첫 회의",
+            "온라인도매시장 4대 권역 물류망 구축과 센터 가동 방안을 논의했다",
+        ))
 
 
 class TestFoodserviceMenuGate(unittest.TestCase):
@@ -313,6 +497,25 @@ class TestFoodserviceMenuGate(unittest.TestCase):
     def test_farm_price_story_kept(self):
         self.assertFalse(main.is_foodservice_menu_price_story(
             "양파 도매가격 급락…산지 출하 몰려", "도매시장 반입이 늘었다"))
+
+    def test_franchise_kitchen_equipment_promo_is_rejected(self):
+        article = _mk(
+            "pest",
+            "나나방콕, 가맹점 자동 칼질기계 도입비 전액 지원",
+            "외식 프랜차이즈 본사가 가맹점주의 주방 조리 효율을 위해 장비 구매비를 지원한다",
+            press="gpkorea",
+            domain="gpkorea.com",
+        )
+        self.assertEqual(
+            main._postbuild_article_reject_reason(article, "pest", apply_selection_fit=False),
+            "non_agri_foodservice_equipment_promo",
+        )
+
+    def test_real_agricultural_sorting_equipment_story_is_kept(self):
+        self.assertFalse(main.is_non_agri_foodservice_equipment_promo_context(
+            "농협 APC, 양파 공동선별 자동화 장비 도입",
+            "산지 농가의 양파 공동선별과 공선출하 효율을 높이는 설비다",
+        ))
 
 
 class TestStrongCandidatePriority(unittest.TestCase):

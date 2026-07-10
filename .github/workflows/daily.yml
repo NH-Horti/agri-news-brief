@@ -93,6 +93,8 @@ jobs:
 
           MAX_PER_SECTION: '5'
           PAGE_TAIL_MARGIN_EXTRA: '4.0'
+          FINAL_LOW_TIER_MAX_PER_SECTION: '1'
+          FINAL_LOW_TIER_MAX_TOTAL: '4'
 
           NAVER_MAX_WORKERS: '6'
           NAVER_MIN_INTERVAL_SEC: '0.3'

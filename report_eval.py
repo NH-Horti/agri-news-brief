@@ -316,6 +316,7 @@ class SurfaceArticle:
     board_score: float = 0.0
     selection_fit_score: float = 0.0
     selection_stage: str = ""
+    press_tier: int = -1
 
 
 def _float_attr(value: Any) -> float:
@@ -362,6 +363,7 @@ class ReportHTMLParser(HTMLParser):
                 is_core=_bool_attr(attr_map.get("data-is-core")),
                 selection_fit_score=_float_attr(attr_map.get("data-selection-fit")),
                 selection_stage=str(attr_map.get("data-selection-stage", "")).strip(),
+                press_tier=_int_attr(attr_map.get("data-press-tier"), default=-1),
             )
             self._card_div_depth = 1
             self._summary_div_depth = 0
@@ -386,6 +388,7 @@ class ReportHTMLParser(HTMLParser):
                     board_score=_float_attr(attr_map.get("data-board-score")),
                     selection_fit_score=_float_attr(attr_map.get("data-selection-fit")),
                     selection_stage=str(attr_map.get("data-selection-stage", "")).strip(),
+                    press_tier=_int_attr(attr_map.get("data-press-tier"), default=-1),
                 )
             )
             return
@@ -1303,16 +1306,41 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
     unique_signatures = {normalize_title_key(article.title) for article in briefing_articles if article.title}
     title_unique_rate = _rate(len(unique_signatures), len(briefing_articles), default=1.0)
     domain_diversity_rate = _rate(len(unique_domains), len(briefing_articles), default=1.0)
+    source_tier_articles = [article for article in briefing_articles if article.press_tier >= 1]
+    low_tier_source_count = sum(1 for article in source_tier_articles if article.press_tier == 1)
+    low_tier_source_rate = _rate(low_tier_source_count, len(source_tier_articles), default=0.0)
+    low_tier_source_by_section = {
+        section: sum(
+            1
+            for article in source_tier_articles
+            if article.section == section and article.press_tier == 1
+        )
+        for section in SECTION_KEYS
+    }
+    source_quality_score = (
+        100.0 * _score_inverse(low_tier_source_rate, 0.15, 0.40)
+        if source_tier_articles
+        else 100.0
+    )
 
     article_id_counts = Counter(article.article_id or normalize_title_key(article.title) for article in all_surface_articles)
     repeated_surface_articles = sum(max(0, count - 2) for count in article_id_counts.values())
     surface_reuse_penalty = _rate(repeated_surface_articles, len(all_surface_articles), default=0.0)
 
-    diversity_score = 100.0 * (
-        _score_between(title_unique_rate, 0.65, 0.9) * 0.45
-        + _score_between(domain_diversity_rate, 0.35, 0.7) * 0.35
-        + _score_inverse(surface_reuse_penalty, 0.05, 0.22) * 0.20
-    )
+    if source_tier_articles:
+        diversity_score = 100.0 * (
+            _score_between(title_unique_rate, 0.65, 0.9) * 0.35
+            + _score_between(domain_diversity_rate, 0.35, 0.7) * 0.25
+            + _score_inverse(surface_reuse_penalty, 0.05, 0.22) * 0.20
+            + (source_quality_score / 100.0) * 0.20
+        )
+    else:
+        # 과거 아카이브에는 data-press-tier가 없으므로 기존 점수와 호환한다.
+        diversity_score = 100.0 * (
+            _score_between(title_unique_rate, 0.65, 0.9) * 0.45
+            + _score_between(domain_diversity_rate, 0.35, 0.7) * 0.35
+            + _score_inverse(surface_reuse_penalty, 0.05, 0.22) * 0.20
+        )
 
     summary_lengths = [len(article.summary.strip()) for article in briefing_articles if article.summary.strip()]
     summary_presence_rate = _rate(len(summary_lengths), len(briefing_articles), default=1.0)
@@ -1950,6 +1978,12 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
         + pest_theme_duplicate_rate * 8.0
         + weak_core_editorial_rate * 10.0,
     )
+    low_tier_allowed_count = min(4, max(1, int((len(source_tier_articles) * 0.20) + 0.999))) if source_tier_articles else 0
+    low_tier_excess_count = max(0, low_tier_source_count - low_tier_allowed_count)
+    source_quality_penalty = min(
+        10.0,
+        (low_tier_excess_count * 1.5) + (max(0.0, low_tier_source_rate - 0.25) * 12.0),
+    )
     operational_score = (
         completeness_score * 0.20
         + diversity_score * 0.18
@@ -1968,6 +2002,7 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
             - semantic_false_positive_penalty
             - story_duplicate_penalty
             - editorial_quality_penalty
+            - source_quality_penalty
             - preferred_slot_penalty,
         ),
     )
@@ -1980,6 +2015,7 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
         and commodity_primary_false_link_rate == 0.0
         and commodity_pool_false_link_rate == 0.0
         and editorial_quality_penalty <= 0.0
+        and low_tier_excess_count == 0
     )
     preferred_slot_reader_penalty_weight = 0.75 if clean_quality_surface else 1.5
     reader_quality_penalty = min(
@@ -1990,6 +2026,7 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
         + len(story_duplicate_indices) * 4.0
         + pest_theme_duplicate_count * 4.0
         + editorial_quality_penalty * 1.8
+        + source_quality_penalty
         + preferred_slot_gap_total * preferred_slot_reader_penalty_weight
         + commodity_primary_false_link_rate * 18.0
         + commodity_pool_false_link_rate * 12.0,
@@ -2028,6 +2065,8 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
         _cap(86.0, "commodity_pool_false_link_severe")
     if preferred_slot_gap_total > 0:
         _cap(95.0, "preferred_slot_underfill")
+    if len(source_tier_articles) >= 8 and low_tier_source_rate > 0.35:
+        _cap(90.0, "low_tier_source_concentration")
 
     reader_quality_score = max(
         0.0,
@@ -2057,6 +2096,10 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
     if section_alignment_score < 78.0 or section_alignment_low_fit_rate > 0.18 or section_alignment_cross_gap_rate > 0.1:
         improvement_hints.append(
             "섹션 오배치 의심 기사가 보입니다. section-fit이 낮거나 다른 섹션에서 더 적합한 후보가 있었던 기사들을 우선 재배치하세요."
+        )
+    if low_tier_excess_count > 0:
+        improvement_hints.append(
+            "최하위 매체 비중이 높습니다. 섹션당 tier-1 1건, 전체 20% 이하를 목표로 하고 같은 이슈의 tier-2+ 원문으로 교체하세요."
         )
     if core_quality_score < 78.0 or weak_core_rate > 0.18:
         improvement_hints.append(
@@ -2145,6 +2188,7 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
         "scores": {
             "completeness": round(completeness_score, 2),
             "diversity": round(diversity_score, 2),
+            "source_quality": round(source_quality_score, 2),
             "summary_quality": round(summary_score, 2),
             "freshness": round(freshness_score, 2),
             "retrieval_support": round(retrieval_score, 2),
@@ -2169,10 +2213,15 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
             "soft_fallback_briefing_by_section": soft_fallback_counts,
             "minimum_fallback_briefing_by_section": minimum_fallback_counts,
             "preferred_slot_gap_by_section": preferred_slot_gaps,
+            "low_tier_source_total": int(low_tier_source_count),
+            "low_tier_source_by_section": low_tier_source_by_section,
         },
         "metrics": {
             "briefing_title_unique_rate": round(title_unique_rate, 4),
             "briefing_domain_diversity_rate": round(domain_diversity_rate, 4),
+            "low_tier_source_rate": round(low_tier_source_rate, 4),
+            "low_tier_source_excess_count": int(low_tier_excess_count),
+            "source_quality_penalty": round(source_quality_penalty, 4),
             "surface_reuse_penalty": round(surface_reuse_penalty, 4),
             "summary_presence_rate": round(summary_presence_rate, 4),
             "summary_length_ok_rate": round(summary_length_ok_rate, 4),
@@ -2332,6 +2381,7 @@ def build_selection_guardrails(result: dict[str, Any]) -> dict[str, Any]:
     section_alignment_cross_gap_rate = float(metrics.get("section_alignment_cross_gap_rate", 0.0) or 0.0)
     content_false_positive_rate = float(metrics.get("content_false_positive_rate", 0.0) or 0.0)
     reader_hard_issue_count = int(metrics.get("reader_hard_issue_count", 0) or 0)
+    low_tier_source_excess_count = int(metrics.get("low_tier_source_excess_count", 0) or 0)
     weak_core_rate = float(metrics.get("weak_core_rate", 0.0) or 0.0)
     commodity_primary_item_focus_rate = float(metrics.get("commodity_primary_item_focus_rate", 1.0) or 1.0)
     commodity_primary_issue_signal_rate = float(metrics.get("commodity_primary_issue_signal_rate", 1.0) or 1.0)
@@ -2381,6 +2431,9 @@ def build_selection_guardrails(result: dict[str, Any]) -> dict[str, Any]:
     commodity_require_direct_item_focus = False
 
     reasons: list[str] = []
+
+    if low_tier_source_excess_count > 0:
+        reasons.append("low_tier_source_concentration")
 
     if content_false_positive_rate > 0.0:
         reasons.append("semantic_false_positive")
@@ -2514,6 +2567,8 @@ def build_selection_guardrails(result: dict[str, Any]) -> dict[str, Any]:
         "core_fit_min": _round_map(core_fit_min),
         "core_relaxed_min_fit": _round_map(core_relaxed_min_fit),
         "disable_relaxed_core_fill": bool(disable_relaxed_core_fill),
+        "final_low_tier_max_per_section": 1,
+        "final_low_tier_max_total": 4,
         "commodity_active_min_rank": int(commodity_active_min_rank),
         "commodity_program_core_min_rank": int(commodity_program_core_min_rank),
         "commodity_require_issue_signal": bool(commodity_require_issue_signal),
@@ -2821,6 +2876,7 @@ def render_evaluation_markdown(result: dict[str, Any]) -> str:
         f"{reader_quality_line}"
         f"{quality_gate_line}"
         f"- Scores: completeness={scores.get('completeness', 0):.1f}, diversity={scores.get('diversity', 0):.1f}, "
+        f"source={scores.get('source_quality', 100):.1f}, "
         f"summary={scores.get('summary_quality', 0):.1f}, freshness={scores.get('freshness', 0):.1f}, "
         f"retrieval={scores.get('retrieval_support', 0):.1f}, section_fit={scores.get('section_alignment', 0):.1f}, "
         f"core={scores.get('core_quality', 0):.1f}, commodity={scores.get('commodity_board_quality', 0):.1f}\n"
@@ -2828,6 +2884,7 @@ def render_evaluation_markdown(result: dict[str, Any]) -> str:
         f"- Sections: {section_summary}\n"
         f"- Metrics: title_unique={metrics.get('briefing_title_unique_rate', 0):.2f}, "
         f"domain_diversity={metrics.get('briefing_domain_diversity_rate', 0):.2f}, "
+        f"low_tier={metrics.get('low_tier_source_rate', 0):.2f}, "
         f"summary_presence={metrics.get('summary_presence_rate', 0):.2f}, "
         f"summary_numeric={metrics.get('summary_numeric_rate', 0):.2f}, "
         f"fresh_72h={metrics.get('within_72h_rate', 0):.2f}, "
@@ -2891,6 +2948,8 @@ def result_to_history_entry(result: dict[str, Any]) -> dict[str, Any]:
         "summary_presence_rate": metrics.get("summary_presence_rate", 0),
         "within_72h_rate": metrics.get("within_72h_rate", 0),
         "briefing_title_unique_rate": metrics.get("briefing_title_unique_rate", 0),
+        "low_tier_source_rate": metrics.get("low_tier_source_rate", 0),
+        "low_tier_source_excess_count": metrics.get("low_tier_source_excess_count", 0),
         "content_false_positive_rate": metrics.get("content_false_positive_rate", 0),
         "reader_hard_issue_count": metrics.get("reader_hard_issue_count", 0),
         "reader_quality_penalty": metrics.get("reader_quality_penalty", 0),

@@ -489,6 +489,10 @@ MAX_PER_SECTION = max(1, min(MAX_PER_SECTION, int(os.getenv("MAX_PER_SECTION_CAP
 PREFERRED_PER_SECTION = max(1, min(MAX_PER_SECTION, int(os.getenv("PREFERRED_ARTICLES_PER_SECTION", "5") or "5")))
 SOFT_MIN_PER_SECTION = max(1, min(PREFERRED_PER_SECTION, int(os.getenv("SOFT_MIN_ARTICLES_PER_SECTION", "4") or "4")))
 MIN_FALLBACK_PER_SECTION = max(1, min(SOFT_MIN_PER_SECTION, int(os.getenv("MIN_FALLBACK_ARTICLES_PER_SECTION", "3") or "3")))
+# 독자가 체감하는 출처 품질을 보장하기 위한 발행 직전 예산. 농업 전문지·지역 일간지는
+# tier 2로 보존하고, 검증되지 않은 인터넷/재전송 매체(tier 1)만 제한한다.
+FINAL_LOW_TIER_MAX_PER_SECTION = max(0, int(os.getenv("FINAL_LOW_TIER_MAX_PER_SECTION", "1") or "1"))
+FINAL_LOW_TIER_MAX_TOTAL = max(0, int(os.getenv("FINAL_LOW_TIER_MAX_TOTAL", "4") or "4"))
 
 # 최소 기사 수(섹션별)
 MIN_PER_SECTION = int(os.getenv("MIN_PER_SECTION", os.getenv("MIN_ARTICLES_PER_SECTION", "0")) or 0)
@@ -4479,6 +4483,9 @@ _EVENT_ACTION_GROUPS: dict[str, tuple[str, ...]] = {
     "pest_control": ("방제", "예찰", "약제 살포", "공동방제", "항공방제"),
     "price_up": ("급등", "폭등", "오름세", "치솟", "올랐다", "강세"),
     "price_down": ("급락", "폭락", "반토막", "와르르", "내림세", "약세", "떨어져", "떨어지"),
+    "price_recovery": ("가격 회복", "가격회복", "값 회복", "회복세", "회복했다", "회복 성과"),
+    "market_governance": ("도매시장 공공성", "공공성 강화", "공공성 약화", "농협공판장 기능", "공판장 역할"),
+    "online_market_logistics": ("거점물류센터", "거점 물류센터", "권역 물류망", "물류망 구축"),
 }
 # 사건 시그니처 품목 확장: 원예 외에 정책·물가 기사에서 반복 등장하는 기초 품목
 _EVENT_EXTRA_COMMODITY_TERMS = ("계란", "달걀", "한우", "돼지고기", "닭고기", "쌀")
@@ -4594,7 +4601,10 @@ def _event_story_signature(
     actions = _extract_event_actions(full)
     actors = _extract_event_gov_actors(full)
     try:
-        regions = frozenset(_region_set(_nfkc_lower(full)))
+        # 본문의 '따르면/발생하면' 같은 동사 어미가 읍·면으로 오인되는 것을 막고,
+        # 제목에 명시된 지역을 우선 사용한다.
+        title_regions = _region_set(_nfkc_lower(title or ""))
+        regions = frozenset(title_regions or _region_set(_nfkc_lower(lead)))
     except Exception:
         regions = frozenset()
     quantities = _extract_event_quantities(full)
@@ -4624,10 +4634,38 @@ def _same_event_story_reason(title_a: str, desc_a: str, title_b: str, desc_b: st
             return ""
     except Exception:
         pass
+    # 품목이 없는 유통 제도/인프라 기사도 같은 회의·사업을 여러 매체가 반복 보도한다.
+    # 일반 단어가 아니라 두 개 이상의 구체 앵커가 양쪽에 모두 있을 때만 묶는다.
+    if all(
+        "도매시장" in text
+        and "공공성" in text
+        and any(term in text for term in ("농협공판장", "공판장 기능", "공판장 역할"))
+        for text in (text_a, text_b)
+    ):
+        return "same_market_governance_program"
+    if all(
+        any(term in text for term in ("온라인도매시장", "온라인 도매시장"))
+        and any(term in text for term in ("거점물류센터", "거점 물류센터", "권역 물류망", "물류망 구축"))
+        for text in (text_a, text_b)
+    ):
+        return "same_online_market_logistics_program"
+    # 본문이 짧거나 잘못 잘린 재전송 기사도 제목에 같은 품목의 가격 회복이 명시되면
+    # 동일한 정부·공공 수급대책 보도로 묶는다.
+    if (
+        shared_comm
+        and both_gov
+        and all(
+            "회복" in text and any(term in text for term in ("가격", "값", "도매가", "시세"))
+            for text in (text_a, text_b)
+        )
+    ):
+        return "same_commodity_price_recovery"
     if shared_comm and shared_qty:
         return "same_commodity_quantity"
     if shared_comm and shared_act and (both_gov or shared_reg):
         return "same_commodity_action_context"
+    if shared_act & {"market_governance", "online_market_logistics"} and both_gov:
+        return "same_specific_program_action"
     if shared_comm and len(shared_act) >= 2:
         return "same_commodity_multi_action"
     # 품목이 없는 정부 대책 사건: 우연히 겹치기 쉬운 소액·비율 수치는 제외하고
@@ -6699,7 +6737,7 @@ def is_pest_control_policy_context(text: str) -> bool:
     local_gov_hits = count_any(t, [w.lower() for w in ("시", "도", "시청", "도청", "군", "군청", "구", "구청", "지자체")])
 
     # 명시 해충명(예: 토마토뿔나방) 패턴 보강
-    named_pest = re.search(r"[가-힣]{1,8}(나방|진딧물|응애|노린재|총채벌레|깍지벌레|선충)", t) is not None
+    named_pest = re.search(r"[가-힣]{1,8}(나방|진딧물|가루이|응애|노린재|총채벌레|깍지벌레|선충)", t) is not None
 
     pest_signal = (strict_hits >= 1) or (weather_hits >= 1) or named_pest
     # 정책 일반(관세/통상) 신호가 과한 경우는 제외
@@ -6723,7 +6761,7 @@ _PEST_ROUNDUP_TITLE_TERMS = (
 def _has_named_pest_signal(text: str) -> bool:
     t = (text or "").lower()
     return (
-        re.search(r"[가-힣]{1,8}(나방|진딧물|응애|노린재|총채벌레|깍지벌레|선충)", t) is not None
+        re.search(r"[가-힣]{1,8}(나방|진딧물|가루이|응애|노린재|총채벌레|깍지벌레|선충)", t) is not None
         or any(term in t for term in ("풀무치", "메뚜기"))
     )
 
@@ -7822,6 +7860,7 @@ _DIST_MARKET_OPS_MARKET_TERMS = (
     "\uc628\ub77c\uc778\ub3c4\ub9e4\uc2dc\uc7a5", "\uc628\ub77c\uc778 \ub3c4\ub9e4\uc2dc\uc7a5", "\ub18d\uc218\uc0b0\ubb3c \uc628\ub77c\uc778\ub3c4\ub9e4\uc2dc\uc7a5",
     "\ub18d\uc218\uc0b0\ubb3c \uc628\ub77c\uc778 \ub3c4\ub9e4\uc2dc\uc7a5", "\uac00\ub77d\uc2dc\uc7a5", "\ub3c4\ub9e4\uc2dc\uc7a5", "\uacf5\ud310\uc7a5", "\uc2dc\uc7a5\uad00\ub9ac\uc6b4\uc601\uc704\uc6d0\ud68c",
     "\uad11\uc5ed\uc218\uae09\uad00\ub9ac\uc13c\ud130", "\uc218\uae09\uad00\ub9ac\uc13c\ud130",
+    "거점물류센터", "거점 물류센터", "권역 물류망", "물류망",
 )
 _DIST_MARKET_OPS_TERMS = (
     "\uc81c\ub3c4\uac1c\uc120", "\ud65c\uc131\ud654", "\ub0b4\uc2e4\ud654", "\uc2dc\uc7a5\uad00\ub9ac\uc6b4\uc601\uc704\uc6d0\ud68c", "\uc6b4\uc601\uc704\uc6d0\ud68c",
@@ -7830,6 +7869,7 @@ _DIST_MARKET_OPS_TERMS = (
     "\uc218\uae09 \uad00\ub9ac", "\uc120\uc81c \uad00\ub9ac", "\uc2dc\ubc94\uc0ac\uc5c5",
     "\ucd9c\ud558\ube44\uc6a9 \uc9c0\uc6d0", "\ucd9c\ud558 \ube44\uc6a9 \uc9c0\uc6d0", "\ucd9c\ud558\ube44\uc6a9 \ubcf4\uc804", "\ucd9c\ud558 \ube44\uc6a9 \ubcf4\uc804",
     "\ubb3c\ub958 \ud601\uc2e0", "\uc720\ud1b5\xb7\ubb3c\ub958 \ud6a8\uc728\ud654", "\uc720\ud1b5 \ubb3c\ub958 \ud6a8\uc728\ud654",
+    "물류망 구축", "거점 물류", "가동", "협의체",
     "\uc2a4\ub9c8\ud2b8 \ub3c4\ub9e4\uc2dc\uc7a5", "\uc790\ub3d9\ud654", "\uc790\ub3d9\ud654 \uae30\uc220", "\uc2e4\uc99d", "\ud558\uc5ed",
 )
 _DIST_MARKET_OPS_ACTOR_TERMS = (
@@ -8253,6 +8293,7 @@ _PEST_INPUT_MARKETING_TERMS = (
 )
 _SUPPLY_PRICE_OUTLOOK_GROUP_TERMS = (
     "저장채소", "시설채소", "과채류", "채소류", "과일류", "양념채소", "엽채류",
+    "채소값", "채솟값", "농산물값", "산지 출하",
 )
 _SUPPLY_PRICE_OUTLOOK_TREND_TERMS = (
     "상승", "하락", "약세", "강세", "오르고", "내리고", "줄 듯", "늘 듯",
@@ -8483,6 +8524,24 @@ def _is_policy_community_noise_context(title: str, desc: str) -> bool:
     mix = f"{ttl} {body}".lower()
     if not mix:
         return False
+    # 크롤링 본문에는 관련기사·푸터의 '정책' 문구가 섞일 수 있으므로 제목을 우선한다.
+    title_community_hits = count_any(
+        ttl.lower(),
+        [w.lower() for w in (*_POLICY_COMMUNITY_NOISE_TERMS, "나눔", "이웃돕기", "이웃 돕기")],
+    )
+    title_policy_hits = count_any(ttl.lower(), [w.lower() for w in _POLICY_NOISE_WHITELIST_TERMS])
+    if title_community_hits >= 1 and title_policy_hits == 0:
+        return True
+    lead = f"{ttl} {(body or '')[:600]}".lower()
+    lead_community_hits = count_any(
+        lead,
+        [w.lower() for w in (*_POLICY_COMMUNITY_NOISE_TERMS, "나눔", "이웃", "훈훈")],
+    )
+    lead_policy_hits = count_any(lead, [w.lower() for w in _POLICY_NOISE_WHITELIST_TERMS])
+    if (lead_community_hits >= 2 and lead_policy_hits == 0) or (
+        lead_community_hits >= 3 and lead_policy_hits <= 1
+    ):
+        return True
     community_hits = count_any(mix, [w.lower() for w in _POLICY_COMMUNITY_NOISE_TERMS])
     retail_hits = count_any(mix, [w.lower() for w in _POLICY_RETAIL_NOISE_TERMS])
     if community_hits == 0 and retail_hits == 0:
@@ -12986,6 +13045,18 @@ MID_TIER_PRESS = {
     "뉴스핌",
 }
 
+# 전국 단위 보도 경험이 있거나 지역 일간지로 편집 책임 체계가 확인되는 매체.
+# '메이저 가점'이 아니라 미분류 인터넷 매체와 같은 최하 티어로 떨어지는 오분류를
+# 막기 위한 보수적인 tier-2 allowlist다.
+TRUSTED_SECONDARY_PRESS = {
+    "오마이뉴스", "노컷뉴스", "CBS노컷뉴스", "전자신문", "한국일보",
+    "부산일보", "국제신문", "매일신문", "영남일보", "강원일보",
+    "경기일보", "경인일보", "인천일보", "대전일보", "중도일보",
+    "충청일보", "충북일보", "충청타임즈", "금강일보", "신아일보",
+    "전북일보", "전남일보", "광주일보", "경남신문", "경남일보",
+    "제주일보", "제민일보",
+}
+
 _UGC_HOST_HINTS = ("blog.", "tistory.", "brunch.", "post.naver.", "cafe.naver.", "youtube.", "youtu.be")
 
 def press_priority(press: str, domain: str) -> int:
@@ -13008,7 +13079,7 @@ def press_priority(press: str, domain: str) -> int:
         return 3
 
     # 중간: 농업전문/중소/지방/연구·지자체
-    if p in MID_TIER_PRESS:
+    if p in MID_TIER_PRESS or p in TRUSTED_SECONDARY_PRESS:
         return 2
     if d.endswith(".go.kr") or d.endswith(".re.kr") or d in ALLOWED_GO_KR:
         return 2
@@ -13124,7 +13195,7 @@ def press_tier(press: str, domain: str) -> int:
     # 지자체/연구기관(.go.kr/.re.kr) 및 중간 티어 힌트
     if d.endswith('.go.kr') or d.endswith('.re.kr') or d in ALLOWED_GO_KR:
         return 2
-    if p in MID_TIER_PRESS:
+    if p in MID_TIER_PRESS or p in TRUSTED_SECONDARY_PRESS:
         return 2
     if p and ('방송' in p and p not in MAJOR_PRESS):
         return 2
@@ -15942,7 +16013,8 @@ _REGION_RX = re.compile(r"(?:" + _PROVINCE_RX.pattern + r")|(?:" + _CITY_COUNTY_
 # 지역처럼 보이지만 실제로는 농업/기사 용어인 경우가 많아 제외(보수적)
 _REGION_STOP_PREFIX = {
     "방제","예찰","지원","대책","정책","수급","출하","가격","물량","품질","생산","소비","확대","감소",
-    "개최","진행","발표","추진","확보","개선","강화","단속","점검","조사","확산","주의","경보","전망",
+    "개최","진행","발표","추진","확보","개선","단속","점검","조사","확산","주의","경보","전망",
+    "따르","발생하",
 }
 
 def _region_set(s: str) -> set[str]:
@@ -22351,6 +22423,7 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
         policy_general_macro_tail = is_policy_general_macro_tail_context(a.title or "", a.description or "", dom, press)
         dist_export_field_like = is_dist_export_field_context(a.title or "", a.description or "", dom, press)
         policy_export_support_like = is_policy_export_support_brief_context(a.title or "", a.description or "", dom, press)
+        supply_price_outlook_like = is_supply_price_outlook_context(a.title or "", a.description or "")
 
         # candidate set: current + (supply/dist/policy/pest)
         cand_keys = []
@@ -22486,6 +22559,14 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
             and (cand_fits.get("policy", float("-inf")) + 0.2 >= cur_fit)
             and (cand_scores.get("policy", float("-inf")) + 0.6 >= cur_score)
         )
+        prefer_move_to_supply = (
+            cur != "supply"
+            and supply_price_outlook_like
+            and not policy_domain_override(dom, txt)
+            and ("supply" in cand_scores)
+            and (cand_fits.get("supply", float("-inf")) + 0.2 >= cur_fit)
+            and (cand_scores.get("supply", float("-inf")) + 1.5 >= cur_score)
+        )
         if preserve_dist_owner:
             if best_key in ("supply", "policy"):
                 best_key = cur
@@ -22518,6 +22599,13 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
                 if best_fit_key == "policy":
                     best_fit_key = cur
                     best_fit_score = cur_fit
+        if cur == "supply" and supply_price_outlook_like:
+            best_key = cur
+            best_score = cur_score
+            prefer_move_to_policy = False
+            if best_fit_key == "policy":
+                best_fit_key = cur
+                best_fit_score = cur_fit
 
         # 이동 기준: 점수 이득이 충분할 때만(오분류/진동 방지)
         if force_move_to_pest:
@@ -22535,6 +22623,11 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
             _remember_reassign(a, cur)
             a.section = "dist"
             a.score = float(cand_scores["dist"])
+            moved += 1
+        elif prefer_move_to_supply:
+            _remember_reassign(a, cur)
+            a.section = "supply"
+            a.score = float(cand_scores["supply"])
             moved += 1
         elif prefer_move_to_policy:
             _remember_reassign(a, cur)
@@ -22798,7 +22891,7 @@ _PEST_NAMED_DISEASE_TERMS = (
     "화상병", "탄저병", "역병", "노균병", "흰가루병", "갈색날개매미충", "미국선녀벌레",
     "꽃매미", "매미충", "응애", "진딧물", "총채벌레", "나방", "멸구", "풀무치", "메뚜기",
     "선충", "궤양병", "뿌리혹", "시들음", "바이러스", "병원균", "깍지벌레", "혹병",
-    "노린재", "돌발해충", "잿빛곰팡이", "무름병", "갈반병",
+    "노린재", "가루이", "담배가루이", "돌발해충", "잿빛곰팡이", "무름병", "갈반병",
 )
 _PEST_CONTROL_ACTION_TERMS = (
     "방제", "예찰", "약제", "살포", "방역", "검역", "병해충", "병충해", "병해", "해충",
@@ -22836,6 +22929,51 @@ _SUPPLY_DIRECT_MARKET_TITLE_TERMS = (
     "산지", "도매", "경락", "경매", "출하", "수급", "작황", "농가", "재배",
     "생산량", "물량", "반입", "폐기", "비축",
 )
+
+
+def is_non_agri_foodservice_equipment_promo_context(title: str, desc: str) -> bool:
+    """외식 프랜차이즈의 점포 장비·운영비 지원 PR을 농업 기사로 오인하지 않는다.
+
+    본문에 야채·양파 같은 식재료명이 등장해도 산지·재배·출하·도매·방제 맥락이
+    없고 제목이 가맹점 장비/비용 지원에 집중되면 원예 브리핑 범위 밖이다.
+    """
+    ttl = _nfkc_lower(title or "")
+    text = _nfkc_lower(f"{title or ''} {desc or ''}")
+    if not ttl:
+        return False
+    foodservice_hits = count_any(
+        text,
+        [w.lower() for w in (
+            "프랜차이즈", "가맹점", "가맹점주", "매장 운영", "외식업", "음식점",
+            "주방", "조리 효율", "직영점", "본사 지원",
+        )],
+    )
+    equipment_hits = count_any(
+        ttl,
+        [w.lower() for w in (
+            "기계", "장비", "도입비", "구매비", "비용 전액", "전액 지원", "자동화 기기",
+            "칼질", "절단기", "조리기기", "주방기기",
+        )],
+    )
+    if foodservice_hits < 2 or equipment_hits < 2:
+        return False
+    title_agri_hits = count_any(
+        ttl,
+        [w.lower() for w in (
+            "농업", "농가", "농산물", "원예", "재배", "산지", "출하", "수확",
+            "도매시장", "공판장", "경락", "병해충", "방제", "예찰", "작황",
+        )],
+    )
+    if title_agri_hits > 0:
+        return False
+    field_hits = count_any(
+        text,
+        [w.lower() for w in (
+            "계약재배", "산지 농가", "공동선별", "공선출하", "도매가격", "경락가격",
+            "재배면적", "생산량", "출하량", "병해충 방제",
+        )],
+    )
+    return field_hits < 2
 
 
 def is_foodservice_menu_price_story(title: str, desc: str) -> bool:
@@ -22896,6 +23034,10 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str, *, apply_se
     text = ((a.title or "") + " " + (a.description or "")).lower()
     if is_garbled_article_text(a.title or "", a.description or ""):
         return "garbled_article_text"
+    if is_non_agri_foodservice_equipment_promo_context(a.title or "", a.description or ""):
+        return "non_agri_foodservice_equipment_promo"
+    if section_key == "policy" and _is_policy_community_noise_context(a.title or "", a.description or ""):
+        return "policy_community_noise"
     if (
         section_key == "dist"
         and "홈플러스" in text
@@ -26494,6 +26636,16 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
             d = normalize_host(a.domain or "")
             p = (a.press or "").strip()
             tpc = (a.topic or "").strip()
+            if is_supply_price_outlook_context(a.title or "", a.description or "") and not policy_domain_override(d, txt):
+                try:
+                    if is_relevant(a.title, a.description, d, a.canon_url or a.url, supply_conf, p):
+                        a.section = "supply"
+                        a.score = compute_rank_score(a.title, a.description, d, a.pub_dt_kst, supply_conf, p)
+                        raw_by_section.setdefault("supply", []).append(a)
+                        moved_ps += 1
+                        continue
+                except Exception:
+                    pass
             if is_supply_price_collapse_field_context(a.title or "", a.description or "", d, p) and not policy_domain_override(d, txt):
                 try:
                     if is_relevant(a.title, a.description, d, a.canon_url or a.url, supply_conf, p):
@@ -27951,6 +28103,23 @@ def _build_sections_phase123(
         log.warning("[WARN] final soft-news tail swap failed: %s", e)
 
     try:
+        # 후반 relevance/soft-tail 교체가 같은 사건의 다른 매체 기사를 다시 넣을 수 있다.
+        # 도메인·매체 품질 상한 적용 전에 사건 중복을 다시 제거하고 안전하게 보충한다.
+        late_dedupe_removed, late_dedupe_refilled = _final_global_story_dedupe(
+            final_by_section,
+            raw_by_section,
+        )
+        if late_dedupe_removed or late_dedupe_refilled:
+            log.info(
+                "[REBALANCE] late event dedupe removed=%d refilled=%d",
+                late_dedupe_removed,
+                late_dedupe_refilled,
+            )
+            _sync_debug_with_final_sections(final_by_section)
+    except Exception as e:
+        log.warning("[WARN] late event dedupe failed: %s", e)
+
+    try:
         # 단일 매체 편중 완화 (전 섹션 도메인 상한)
         domain_swapped = _cap_final_domain_concentration(final_by_section, raw_by_section)
         if domain_swapped:
@@ -27958,6 +28127,18 @@ def _build_sections_phase123(
             _sync_debug_with_final_sections(final_by_section)
     except Exception as e:
         log.warning("[WARN] final domain diversity cap failed: %s", e)
+
+    try:
+        # 모든 refill/repair 경로가 끝난 뒤 최하위 매체 예산을 강제한다.
+        source_quality_changed = _cap_final_low_tier_sources(final_by_section, raw_by_section)
+        if source_quality_changed:
+            log.info(
+                "[REBALANCE] final source quality changed=%d",
+                source_quality_changed,
+            )
+            _sync_debug_with_final_sections(final_by_section)
+    except Exception as e:
+        log.warning("[WARN] final source quality cap failed: %s", e)
 
     try:
         # 최종 카드 selection 메타데이터 위생 (fit 재계산·core stage 표준화)
@@ -32980,6 +33161,8 @@ def _drop_preferred_tail_blocked_items(
 
 _HARD_FINAL_POSTBUILD_REJECT_REASONS = frozenset(
     {
+        "non_agri_foodservice_equipment_promo",
+        "policy_community_noise",
         "commodity_consumer_storage_tip",
         "commodity_consumer_guide_tail",
         "commodity_corporate_stock_context",
@@ -33885,6 +34068,200 @@ def _swap_soft_news_tails(
                 )
                 break
     return swapped
+
+
+def _is_final_low_tier_source(article: "Article") -> bool:
+    try:
+        return press_tier(article.press or "", article.domain or "") <= 1
+    except Exception:
+        return True
+
+
+def _cap_final_low_tier_sources(
+    final_by_section: dict[str, list["Article"]],
+    raw_by_section: dict[str, list["Article"]] | None,
+    *,
+    max_per_section: int | None = None,
+    max_total: int | None = None,
+) -> int:
+    """Replace excessive tier-1 sources with qualified tier-2+ alternatives.
+
+    Early selection has source caps, but late refill/repair passes intentionally use a
+    wider pool and could reintroduce many low-tier cards. This is the final budget that
+    every path must obey. Specialized agricultural and established regional outlets are
+    tier 2, so the cap targets only unverified internet/republication sources.
+    """
+    if not isinstance(final_by_section, dict) or not isinstance(raw_by_section, dict):
+        return 0
+    per_section_cap = FINAL_LOW_TIER_MAX_PER_SECTION if max_per_section is None else max(0, int(max_per_section))
+    total_cap = FINAL_LOW_TIER_MAX_TOTAL if max_total is None else max(0, int(max_total))
+    section_keys = [str(s.get("key") or "").strip() for s in SECTIONS if str(s.get("key") or "").strip()]
+    changed = 0
+
+    def _domain(article: "Article") -> str:
+        try:
+            return normalize_host(article.domain or "")
+        except Exception:
+            return (article.domain or "").lower()
+
+    for _pass in range(max(8, PREFERRED_PER_SECTION * len(section_keys) + 4)):
+        all_final: list[tuple[str, Article]] = [
+            (sec, article)
+            for sec in section_keys
+            for article in (final_by_section.get(sec) or [])
+            if isinstance(article, Article)
+        ]
+        low_by_section = {
+            sec: [article for owner, article in all_final if owner == sec and _is_final_low_tier_source(article)]
+            for sec in section_keys
+        }
+        low_total = sum(len(items) for items in low_by_section.values())
+        over_sections = {sec for sec, items in low_by_section.items() if len(items) > per_section_cap}
+        if not over_sections and low_total <= total_cap:
+            break
+
+        victim_pool = [
+            (sec, article)
+            for sec, article in all_final
+            if _is_final_low_tier_source(article)
+            and (sec in over_sections or (not over_sections and low_total > total_cap))
+        ]
+        victim_pool.sort(
+            key=lambda pair: (
+                1 if bool(getattr(pair[1], "is_core", False)) else 0,
+                float(getattr(pair[1], "selection_fit_score", 0.0) or 0.0),
+                float(getattr(pair[1], "score", 0.0) or 0.0),
+            )
+        )
+        if not victim_pool:
+            break
+
+        replaced_or_dropped = False
+        for sec, victim in victim_pool:
+            sec_list = [a for a in (final_by_section.get(sec) or []) if isinstance(a, Article)]
+            victim_idx = next((i for i, article in enumerate(sec_list) if article is victim), -1)
+            if victim_idx < 0:
+                continue
+            other_final = [article for owner, article in all_final if article is not victim]
+            existing_idents = {_article_ident_key(article) for article in other_final}
+            domain_counts = Counter(_domain(article) for article in other_final if _domain(article))
+            quality_floor = BASE_MIN_SCORE.get(sec, 6.0) + 1.5
+            min_fit = max(
+                0.65,
+                _selection_guardrail_number("section_card_min_fit", 0.8, section_key=sec) * 0.8,
+            )
+
+            def _replacement_rank(article: "Article") -> tuple[float, float, int, datetime]:
+                tier = press_tier(article.press or "", article.domain or "")
+                fit = _fresh_section_fit(article, sec)
+                score = float(getattr(article, "score", 0.0) or 0.0)
+                source_bonus = {4: 3.0, 3: 2.0, 2: 0.5}.get(tier, 0.0)
+                editorial_bonus = 0.0
+                if sec == "pest":
+                    title_l = _nfkc_lower(article.title or "")
+                    text_l = _nfkc_lower(f"{article.title or ''} {article.description or ''}")
+                    if _has_named_pest_signal(title_l) or count_any(
+                        title_l,
+                        [w.lower() for w in _PEST_NAMED_DISEASE_TERMS],
+                    ) >= 1:
+                        editorial_bonus += 5.0
+                    if any(actor in text_l for actor in ("농촌진흥청", "농진청", "농림축산검역본부")):
+                        editorial_bonus += 4.0
+                    if (
+                        best_horti_score(article.title or "", article.description or "") >= 1.6
+                        and count_any(title_l, [w.lower() for w in ("방제", "예찰", "피해", "확산", "발생")]) >= 1
+                    ):
+                        editorial_bonus += 3.0
+                    if _is_pest_weather_disaster_noise(article):
+                        editorial_bonus -= 5.0
+                return (
+                    score + source_bonus + editorial_bonus,
+                    fit,
+                    tier,
+                    getattr(article, "pub_dt_kst", None) or datetime.min.replace(tzinfo=KST),
+                )
+
+            candidates = sorted(
+                (article for article in (raw_by_section.get(sec) or []) if isinstance(article, Article)),
+                key=_replacement_rank,
+                reverse=True,
+            )
+            replacement: Article | None = None
+            for candidate in candidates:
+                tier = press_tier(candidate.press or "", candidate.domain or "")
+                if tier <= 1:
+                    continue
+                ident = _article_ident_key(candidate)
+                if ident in existing_idents:
+                    continue
+                if float(getattr(candidate, "score", 0.0) or 0.0) < quality_floor:
+                    continue
+                if _fresh_section_fit(candidate, sec) < min_fit:
+                    continue
+                if _postbuild_article_reject_reason(candidate, sec):
+                    continue
+                if _soft_news_core_demote_reason(candidate):
+                    continue
+                try:
+                    if _preferred_tail_block_reason(
+                        candidate,
+                        sec,
+                        current_count=len(sec_list),
+                        raw_count=len(raw_by_section.get(sec) or []),
+                    ):
+                        continue
+                except Exception:
+                    pass
+                if _is_stale_swap_candidate(candidate, other_final):
+                    continue
+                candidate_domain = _domain(candidate)
+                if candidate_domain and domain_counts.get(candidate_domain, 0) >= _FINAL_DOMAIN_CAP:
+                    continue
+                if _violates_section_theme_cap(candidate, sec, final_by_section, exclude=victim):
+                    continue
+                if any(_duplicate_story_pair_reason(candidate, article) for article in other_final):
+                    continue
+                replacement = candidate
+                break
+
+            if replacement is not None:
+                replacement.section = sec
+                replacement.is_core = bool(getattr(victim, "is_core", False))
+                replacement.selection_stage = "final_source_quality_replacement"
+                replacement.selection_note = f"replace_low_tier:{(victim.press or victim.domain or 'unknown')[:48]}"
+                replacement.selection_fit_score = round(_fresh_section_fit(replacement, sec), 3)
+                sec_list[victim_idx] = replacement
+                final_by_section[sec] = sec_list
+                changed += 1
+                replaced_or_dropped = True
+                log.info(
+                    "[FINAL-SOURCE-QUALITY] section=%s out=[tier1:%s] %s | in=[tier%d:%s] %s",
+                    sec,
+                    victim.press or victim.domain,
+                    (victim.title or "")[:56],
+                    press_tier(replacement.press or "", replacement.domain or ""),
+                    replacement.press or replacement.domain,
+                    (replacement.title or "")[:56],
+                )
+                break
+
+            # 후보풀이 정말 얕은 날에는 저티어 카드로 5칸을 억지로 채우기보다
+            # 최소 3칸의 신뢰 가능한 브리핑을 우선한다.
+            if len(sec_list) > MIN_FALLBACK_PER_SECTION:
+                sec_list.pop(victim_idx)
+                final_by_section[sec] = sec_list
+                changed += 1
+                replaced_or_dropped = True
+                log.info(
+                    "[FINAL-SOURCE-QUALITY] section=%s dropped excess tier1 without qualified replacement: %s",
+                    sec,
+                    (victim.title or "")[:70],
+                )
+                break
+
+        if not replaced_or_dropped:
+            break
+    return changed
 
 
 _FINAL_DOMAIN_CAP = 3
@@ -43803,6 +44180,7 @@ def render_daily_page(report_date: str, start_kst: datetime, end_kst: datetime, 
                 f' data-selection-fit="{selection_fit:.3f}"'
                 f' data-selection-stage="{esc(selection_stage)}"'
                 f' data-is-core="{"1" if is_core else "0"}"'
+                f' data-press-tier="{press_tier(press_label, a.domain or domain_of(url or ""))}"'
             )
             button_attrs = _analytics_article_attrs_html(
                 report_date,
