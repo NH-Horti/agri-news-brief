@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-10T01:43:18+09:00",
+  "generated_at": "2026-07-11T01:34:28+09:00",
   "rows": [
     {
       "date": "2026-05-20",
@@ -988,6 +988,58 @@
       "users": 2,
       "archive_url": "/agri-news-brief/archive/2026-07-09.html#sec-supply",
       "source_url": "https://www.farminsight.net/news/articleView.html?idxno=16629"
+    },
+    {
+      "date": "2026-07-10",
+      "article_id": "27e9e9b132a5",
+      "title": "양파값 회복에 882억 투입한 농협 , 효과 봤다",
+      "report_date": "2026-07-10",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.shinailbo.co.kr",
+      "clicks": 3,
+      "users": 2,
+      "archive_url": "/agri-news-brief/archive/2026-07-10.html#sec-supply",
+      "source_url": "https://www.shinailbo.co.kr/news/articleView.html?idxno=5039300"
+    },
+    {
+      "date": "2026-07-10",
+      "article_id": "337d39463d5b",
+      "title": "해남서 ‘한국 마늘 산업 박람회’ 개막",
+      "report_date": "2026-07-10",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.seoul.co.kr",
+      "clicks": 3,
+      "users": 2,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-07-10",
+      "article_id": "e380ce5f93ff",
+      "title": "장맛비 끝나면 채소값 오르나…산지 출하 감소에 가격 상승 '조짐'",
+      "report_date": "2026-07-10",
+      "section": "policy",
+      "surface": "briefing_card",
+      "target_domain": "www.newspim.com",
+      "clicks": 3,
+      "users": 3,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-07-10",
+      "article_id": "e380ce5f93ff",
+      "title": "장맛비 끝나면 채소값 오르나…산지 출하 감소에 가격 상승 '조짐'",
+      "report_date": "2026-07-10",
+      "section": "policy",
+      "surface": "briefing_open",
+      "target_domain": "www.newspim.com",
+      "clicks": 3,
+      "users": 3,
+      "archive_url": "",
+      "source_url": ""
     },
     {
       "date": "2026-04-01",
@@ -10075,6 +10127,71 @@
       "users": 1,
       "archive_url": "/agri-news-brief/archive/2026-07-09.html#sec-supply",
       "source_url": "http://www.amnews.co.kr/news/articleView.html?idxno=73399"
+    },
+    {
+      "date": "2026-07-10",
+      "article_id": "337d39463d5b",
+      "title": "해남서 ‘한국 마늘 산업 박람회’ 개막",
+      "report_date": "2026-07-10",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.seoul.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-07-10",
+      "article_id": "37044f7e7679",
+      "title": "농협, 선제적 수급 대책으로 양파 도매가격 안정화 견인",
+      "report_date": "2026-07-10",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.lcnews.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-07-10",
+      "article_id": "3d273ddf3ee6",
+      "title": "양파값 두달 만에 80% 반등… 농협 “수급조절 효과”",
+      "report_date": "2026-07-10",
+      "section": "policy",
+      "surface": "briefing_open",
+      "target_domain": "www.sedaily.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-07-10",
+      "article_id": "74502c48c878",
+      "title": "\" 도매시장 공공성 약화·농협공판장 역할 부진\"",
+      "report_date": "2026-07-10",
+      "section": "dist",
+      "surface": "briefing_open",
+      "target_domain": "www.newsfarm.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-07-10.html#sec-dist",
+      "source_url": "http://www.newsfarm.co.kr/news/articleView.html?idxno=101622"
+    },
+    {
+      "date": "2026-07-10",
+      "article_id": "a1c152644c65",
+      "title": "나나방콕, 가맹점 자동 칼질기계 도입비 전액 지원",
+      "report_date": "2026-07-10",
+      "section": "pest",
+      "surface": "briefing_card",
+      "target_domain": "www.gpkorea.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
     }
   ]
 }
