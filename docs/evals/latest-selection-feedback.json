@@ -1,9 +1,9 @@
 {
   "report_date": "2026-07-10",
-  "generated_at_kst": "2026-07-10T07:32:41+09:00",
+  "generated_at_kst": "2026-07-10T12:20:40+09:00",
   "scores": {
     "section_alignment": 100.0,
-    "core_quality": 99.25,
+    "core_quality": 100.0,
     "commodity_board_quality": 94.86
   },
   "metrics": {
@@ -12,16 +12,16 @@
     "content_false_positive_rate": 0.0,
     "reader_hard_issue_count": 0,
     "reader_hard_issue_rate": 0.0,
-    "reader_quality_penalty": 0.0,
-    "reader_quality_cap": 100.0,
+    "reader_quality_penalty": 1.8789,
+    "reader_quality_cap": 95.0,
     "weak_core_rate": 0.0,
     "policy_wrong_section_rate": 0.0,
-    "promotional_filler_rate": 0.0,
+    "promotional_filler_rate": 0.1053,
     "promotional_core_rate": 0.0,
     "weak_core_editorial_rate": 0.0,
     "pest_theme_duplicate_rate": 0.0,
     "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 0.0,
+    "editorial_quality_penalty": 0.2105,
     "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0,
@@ -72,6 +72,8 @@
       "pest": 1.0
     },
     "disable_relaxed_core_fill": false,
+    "final_low_tier_max_per_section": 1,
+    "final_low_tier_max_total": 4,
     "commodity_active_min_rank": 1,
     "commodity_program_core_min_rank": 1,
     "commodity_require_issue_signal": false,
@@ -79,11 +81,30 @@
     "commodity_strict_primary_only": true,
     "commodity_disable_primary_fallback": true
   },
-  "editorial_quality_samples": [],
+  "editorial_quality_samples": [
+    {
+      "title": "‘농협 대전환’…조직 쇄신·농민 지원 16개 과제 추진",
+      "href": "https://www.nongmin.com/article/20260708500471",
+      "section": "policy",
+      "is_core": false,
+      "reasons": [
+        "promotional_or_event_filler"
+      ]
+    },
+    {
+      "title": "\"밭작물 수확부터 유통까지\" 청년농업인 작업 대행 조직화 추진... 김천...",
+      "href": "http://www.fnnews.com/news/202607091353147135",
+      "section": "policy",
+      "is_core": false,
+      "reasons": [
+        "promotional_or_event_filler"
+      ]
+    }
+  ],
   "reader_hard_issue_samples": [],
   "editorial": {
-    "score": 65.45,
-    "model_reported_score": 66.0,
+    "score": 75.5,
+    "model_reported_score": 77.0,
     "score_method": "weighted_components_v1",
     "quality_tier": "needs_major_iteration",
     "target_score": 88.0,
@@ -106,7 +127,7 @@
         "all_components_min": false,
         "operational_score_min": true,
         "section_count_score_min": true,
-        "no_section_underfill": true,
+        "no_section_underfill": false,
         "commodity_board_score_min": false
       },
       "failure_reasons": [
@@ -115,83 +136,84 @@
         "no_major_issues",
         "critical_components_min",
         "all_components_min",
+        "no_section_underfill",
         "commodity_board_score_min"
       ]
     },
-    "section_count_score": 100.0,
-    "section_count_status": "target_met",
+    "section_count_score": 98.0,
+    "section_count_status": "soft_fallback",
     "scores": {
-      "article_selection": 60.0,
-      "section_fit": 62.0,
-      "core_pick_quality": 78.0,
-      "summary_usefulness": 82.0,
-      "missed_opportunity": 55.0,
-      "noise_control": 50.0
+      "article_selection": 78.0,
+      "section_fit": 74.0,
+      "core_pick_quality": 73.0,
+      "summary_usefulness": 81.0,
+      "missed_opportunity": 71.0,
+      "noise_control": 75.0
     },
     "issues": [
       {
         "type": "off_topic",
         "severity": "blocking",
-        "section": "pest",
-        "title": "나나방콕, 가맹점 자동 칼질기계 도입비 전액 지원",
-        "reason": "프랜차이즈 주방장비 지원 PR로 병해충·농업 현안과 무관하다.",
-        "suggested_action": "삭제하고 딸기 탄저병, 토마토 담배가루이/TYLCV, 영광 호우 후 병해 관리 후보로 교체."
-      },
-      {
-        "type": "duplicate_story",
-        "severity": "major",
-        "section": "pest",
-        "title": "강화군, \" 탄저병 ·역병 확산\" 비상…'노지 고추' 현장관리 강화",
-        "reason": "16번 강화군 고추 탄저병 기사와 같은 사안이다.",
-        "suggested_action": "한 건만 남기고 충남 딸기 육묘장 탄저병 또는 농진청 토마토 담배가루이 기사로 대체."
-      },
-      {
-        "type": "duplicate_theme",
-        "severity": "major",
         "section": "policy",
-        "title": "농협·정부·지자체 전방위 대책으로 양파값 두 달 만에 80% 회복",
-        "reason": "공급 섹션 핵심 양파 기사와 8번 정책 기사까지 같은 보도자료성 내용이 반복된다.",
-        "suggested_action": "정책 섹션에서는 양파 중복을 1건 이하로 줄이고 가격안정 사설·밥상물가·농협 대전환 등으로 교체."
+        "title": "몽골산 ‘캐시미어’·희토류 수입 관세 없앴다… 韓 화장품·의약품 수...",
+        "reason": "농업·원예 독자에게 직접성이 낮은 통상 일반 기사이며 요약도 농산물 관련 내용이 없다고 인정한다.",
+        "suggested_action": "삭제하고 농산물 가격안정 사설이나 농협 대전환 같은 농정 후보로 교체."
       },
       {
         "type": "wrong_section",
-        "severity": "moderate",
+        "severity": "major",
         "section": "policy",
         "title": "장맛비 끝나면 채소값 오르나…산지 출하 감소에 가격 상승 '조짐'",
-        "reason": "정책 결정이나 제도보다 산지 출하·가격 전망 기사에 가깝다.",
-        "suggested_action": "supply로 보내거나 정책 핵심은 농산물 가격안정 대책 사설·농협 개혁 과제 기사로 선정."
+        "reason": "정책보다 기상 이후 산지 출하·채소 가격 전망 기사로 supply 성격이 강한데 policy 코어로 배치됐다.",
+        "suggested_action": "공급 섹션으로 이동하거나 정책 코어는 가격안정 대책·농정 개혁 기사로 대체."
       },
       {
-        "type": "wrong_section",
-        "severity": "moderate",
-        "section": "policy",
-        "title": "농식품부·aT, '거점물류센터 시범사업 협의체' 첫 회의",
-        "reason": "온라인도매시장 물류망 운영 기사로 dist 섹션 적합도가 더 높고 dist에서도 같은 이야기가 반복된다.",
-        "suggested_action": "dist 한 건으로 통합하고 policy에는 제도·예산·개혁 후보를 배치."
+        "type": "weak_core",
+        "severity": "major",
+        "section": "supply",
+        "title": "농림위성으로 첨단농업 실현 기대",
+        "reason": "농림위성 활용 전망은 R&D·기술 정책에 가까워 공급/수급 코어로는 약하다.",
+        "suggested_action": "코어에서 내리고 실제 가격·출하·수급 기사로 교체."
       },
       {
-        "type": "duplicate_story",
-        "severity": "moderate",
-        "section": "dist",
-        "title": "공공성 강화·농협공판장 기능 확대 추진",
-        "reason": "11번 도매시장 공공성·농협공판장 TF 기사와 같은 회의·같은 논점이다.",
-        "suggested_action": "둘 중 한 건만 남기고 블루베리 공동선별·출하, 가락시장 주5일제 논란 등 다른 유통 현안으로 교체."
-      },
-      {
-        "type": "noise",
+        "type": "underfill",
         "severity": "moderate",
         "section": "supply",
-        "title": "옥수수·전복· 복숭아 …7월에 꼭 먹어야 할 제철 식재료",
-        "reason": "소비자 생활정보성 제철 식재료 기사로 수급·생산·가격 정보가 약하다.",
-        "suggested_action": "공급 섹션에서는 장기 시세 침체 사설, 채소가격 상승 조짐, 품목별 가격 변동 기사 우선."
+        "title": "supply section",
+        "reason": "원자료가 충분한데 공급 섹션이 목표 5건이 아닌 4건으로 마감됐다.",
+        "suggested_action": "정책에 들어간 채소값 전망 기사를 supply로 옮기거나 독립 수급 후보를 추가."
+      },
+      {
+        "type": "promotional_filler",
+        "severity": "moderate",
+        "section": "supply",
+        "title": "청양군농업기술센터, 가을 배추 우량묘 110만 본 공급",
+        "reason": "지역 신청 안내 성격이 강해 전국 농업 브리핑의 공급 카드로는 꼬리 기사 품질이 낮다.",
+        "suggested_action": "더 큰 수급·가격·출하 영향이 있는 후보가 있으면 교체."
       },
       {
         "type": "missed_candidate",
         "severity": "major",
+        "section": "policy",
+        "title": "[사설] 농산물 장기 시세 침체…가격 안정 대책 시급",
+        "reason": "가격 하락과 정책 대응 필요성을 다룬 상위 후보가 보였는데 정책 섹션에서 빠졌다.",
+        "suggested_action": "몽골 관세 기사 대신 정책 카드로 채택하거나 주요 논점으로 반영."
+      },
+      {
+        "type": "missed_candidate",
+        "severity": "moderate",
         "section": "pest",
-        "title": "농진청, 토마토 농가 담배가루이 초기 방제 총력 당부",
-        "reason": "국가기관의 구체적 해충·바이러스 경보인데 중복·오프토픽 기사에 밀렸다.",
-        "suggested_action": "pest 핵심 또는 상위 카드로 반영해 named pest 위험도를 높일 것."
+        "title": "장마 철 달팽이 피해 예방…\"등록 농약 활용 방제\" 당부",
+        "reason": "농진청발 전국성·구체 해충 방제 기사인데 generic한 영광군 호우 관리 기사보다 우선도가 높다.",
+        "suggested_action": "영광군 일반 당부 기사를 달팽이 방제 기사로 교체."
+      },
+      {
+        "type": "bad_summary",
+        "severity": "moderate",
+        "section": "policy",
+        "title": "‘농협 대전환’…조직 쇄신·농민 지원 16개 과제 추진",
+        "reason": "요약이 원문 도입부를 길게 붙인 뒤 말줄임으로 끝나 독자용 브리핑 문장으로 정리되지 않았다.",
+        "suggested_action": "16개 과제, 감사 독립성, 농가소득 2200억원 지원 등 핵심만 1~2문장으로 재작성."
       }
     ]
   },
@@ -199,24 +221,25 @@
     "driver_tags": [
       "commodity_board_low_coverage",
       "editorial_section_fit",
-      "editorial_duplicate_topic"
+      "editorial_noise_filter",
+      "editorial_core_pick"
     ],
     "section_card_min_fit": {
-      "default": 0.85,
-      "supply": 0.9,
-      "policy": 0.9,
-      "dist": 1.05,
-      "pest": 0.84
+      "default": 0.9,
+      "supply": 0.95,
+      "policy": 0.95,
+      "dist": 1.1,
+      "pest": 0.89
     },
-    "section_low_fit_rescue_min": 0.15,
+    "section_low_fit_rescue_min": 0.35,
     "high_score_low_fit_rescue_margin": 4.2,
     "tail_score_floor_delta": 0.4,
     "core_fit_min": {
-      "default": 1.2,
-      "supply": 1.4,
-      "policy": 1.4,
-      "dist": 1.6,
-      "pest": 1.2
+      "default": 1.3,
+      "supply": 1.5,
+      "policy": 1.5,
+      "dist": 1.7,
+      "pest": 1.3
     },
     "core_relaxed_min_fit": {
       "default": 1.0,
@@ -225,7 +248,9 @@
       "dist": 1.35,
       "pest": 1.0
     },
-    "disable_relaxed_core_fill": false,
+    "disable_relaxed_core_fill": true,
+    "final_low_tier_max_per_section": 1,
+    "final_low_tier_max_total": 4,
     "commodity_active_min_rank": 1,
     "commodity_program_core_min_rank": 1,
     "commodity_require_issue_signal": false,
@@ -238,8 +263,8 @@
     "mode": "shadow_replay_loop",
     "proposal_only": true,
     "target_score": 88.0,
-    "current_editorial_score": 65.45,
-    "model_reported_score": 66.0,
+    "current_editorial_score": 75.5,
+    "model_reported_score": 77.0,
     "quality_tier": "needs_major_iteration",
     "target_status": "needs_major_iteration",
     "iteration_budget": 3,
@@ -255,20 +280,20 @@
       "no_section_underfill": true
     },
     "section_count_context": {
-      "score": 100.0,
-      "status": "target_met",
+      "score": 98.0,
+      "status": "soft_fallback",
       "sections": {
         "supply": {
-          "actual": 5,
+          "actual": 4,
           "expected": 5,
           "raw_candidates": 188,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
           "count_floor": 3,
-          "core_count": 1,
-          "fill_ratio": 1.0,
-          "score": 100.0
+          "core_count": 2,
+          "fill_ratio": 0.8,
+          "score": 92.0
         },
         "policy": {
           "actual": 5,
@@ -307,8 +332,12 @@
           "score": 100.0
         }
       },
-      "underfilled_sections": [],
-      "soft_fallback_sections": [],
+      "underfilled_sections": [
+        "supply"
+      ],
+      "soft_fallback_sections": [
+        "supply"
+      ],
       "minimum_fallback_sections": [],
       "severe_underfilled_sections": [],
       "preferred_count": 5,
@@ -318,23 +347,25 @@
       "scoring_rule": "Each section should try to carry 5 briefing cards when raw candidates exist. 4 cards is a soft fallback below target, 3 cards is a minimum fallback, and broad fallback use caps editorial shadow below 95."
     },
     "guardrail_focus": [
+      "core_quality",
       "missed_opportunity",
-      "article_selection",
       "noise_control",
-      "section_fit"
+      "section_fit",
+      "summary_usefulness",
+      "section_count"
     ],
     "recommended_actions": [
+      {
+        "kind": "selection_guardrail",
+        "target": "core_fit_min",
+        "direction": "tighten",
+        "reason": "Core cards should not be filled by merely available articles."
+      },
       {
         "kind": "candidate_recall",
         "target": "raw_candidate_pool",
         "direction": "expand_or_rerank",
         "reason": "The raw pool contained stronger alternatives than selected cards."
-      },
-      {
-        "kind": "story_dedupe",
-        "target": "story_signature_gate",
-        "direction": "tighten",
-        "reason": "Multiple cards covered the same issue and reduced briefing breadth."
       },
       {
         "kind": "noise_filter",
@@ -347,6 +378,18 @@
         "target": "section_card_min_fit",
         "direction": "tighten",
         "reason": "A selected card appears to fit another section better."
+      },
+      {
+        "kind": "summary_prompt",
+        "target": "latest-feedback.txt",
+        "direction": "add_editorial_feedback",
+        "reason": "Summaries should explain impact and decision value, not just restate titles."
+      },
+      {
+        "kind": "section_fill",
+        "target": "preferred_section_count",
+        "direction": "restore",
+        "reason": "Every section with enough candidates should reach its preferred card count."
       }
     ],
     "current_selection_guardrails": {
@@ -378,6 +421,8 @@
         "pest": 1.0
       },
       "disable_relaxed_core_fill": false,
+      "final_low_tier_max_per_section": 1,
+      "final_low_tier_max_total": 4,
       "commodity_active_min_rank": 1,
       "commodity_program_core_min_rank": 1,
       "commodity_require_issue_signal": false,
