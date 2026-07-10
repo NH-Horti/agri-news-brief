@@ -5033,5 +5033,159 @@ class TestRecentItemsRebuild(unittest.TestCase):
         self.assertIn(apple_issue.title, picked_titles)
         self.assertNotIn(promo.title, picked_titles)
 
+    def test_non_agri_trade_basket_is_hard_rejected_from_policy(self):
+        article = self._make_article(
+            "policy",
+            "몽골산 캐시미어·희토류 수입 관세 없앴다…화장품·의약품 수출 확대",
+            "양국 CEPA로 광물과 자동차 부품의 관세를 철폐하고 화장품 수출을 확대한다.",
+            "https://www.seoul.co.kr/news/economy/2026/07/10/trade",
+        )
+        self.assertTrue(main.is_non_agri_trade_policy_context(article.title, article.description))
+        reason = main._postbuild_article_reject_reason(article, "policy", apply_selection_fit=False)
+        self.assertEqual(reason, "non_agri_trade_policy_noise")
+        self.assertTrue(main._is_hard_final_postbuild_reject_reason(reason))
+
+    def test_agri_price_stability_editorial_is_policy_tail_not_core(self):
+        article = self._make_article(
+            "policy",
+            "[사설] 농산물 장기 시세 침체…가격 안정 대책 시급",
+            "농산물 가격 하락과 농가 경영난이 장기화돼 정부의 가격안정 대책과 수급 대책이 시급하다.",
+            "https://www.nongmin.com/article/202607100001",
+        )
+        article.press = "농민신문"
+        article.domain = "nongmin.com"
+        article.is_core = True
+        self.assertTrue(main._is_high_value_policy_market_opinion_tail(article))
+        self.assertTrue(main._is_publish_editorial_candidate("policy", article))
+        self.assertEqual(main._editorial_safe_core_demote_reason(article, "policy"), "opinion_column_core")
+        self.assertEqual(
+            main._preferred_tail_block_reason(
+                article,
+                "policy",
+                current_count=4,
+                raw_count=5,
+            ),
+            "",
+        )
+
+    def test_final_reader_quality_moves_outlook_and_refills_policy_with_market_issues(self):
+        supply = [
+            self._make_article(
+                "supply",
+                f"{crop} 산지 출하량 변화…도매가격 수급 점검",
+                f"{crop} 출하량과 도매가격, 생산량 변화를 점검한 시장 기사다.",
+                f"https://example.com/supply-{idx}",
+            )
+            for idx, crop in enumerate(("사과", "배", "양파", "배추"), start=1)
+        ]
+        outlook = self._make_article(
+            "policy",
+            "장맛비 끝나면 채소값 오르나…산지 출하 감소에 가격 상승 조짐",
+            "장마 뒤 배추와 채소 산지 출하량 감소로 도매가격과 수급 변동 가능성이 커졌다.",
+            "https://www.newspim.com/news/view/202607100001",
+        )
+        trade = self._make_article(
+            "policy",
+            "몽골산 캐시미어·희토류 수입 관세 없앴다…화장품·의약품 수출 확대",
+            "CEPA로 광물과 자동차 부품 관세를 철폐하고 화장품 수출을 확대한다.",
+            "https://www.seoul.co.kr/news/economy/2026/07/10/trade-2",
+        )
+        policy_fillers = [
+            self._make_article(
+                "policy",
+                f"농업 정책 실행계획 {idx} 확정",
+                "농식품부가 농가 지원 제도와 예산 실행계획을 확정했다.",
+                f"https://example.com/policy-{idx}",
+            )
+            for idx in range(1, 4)
+        ]
+        opinion = self._make_article(
+            "policy",
+            "[사설] 농산물 장기 시세 침체…가격 안정 대책 시급",
+            "농산물 가격 하락과 농가 경영난이 장기화돼 정부 가격안정 대책과 수급 대책이 시급하다.",
+            "https://www.nongmin.com/article/202607100002",
+        )
+        opinion.press = "농민신문"
+        opinion.domain = "nongmin.com"
+        demand = self._make_article(
+            "supply",
+            "농민들 울분 터졌다…농산물 가격 폭락·생산비 폭등 대책 세우라",
+            "농민단체가 농자재값과 생산비 폭등, 농산물 가격 폭락에 정부 대책을 촉구했다.",
+            "https://www.nongmin.com/article/202607100003",
+        )
+        demand.press = "농민신문"
+        demand.domain = "nongmin.com"
+        self.assertTrue(main._is_high_value_policy_market_opinion_tail(opinion))
+        self.assertEqual(
+            main._postbuild_article_reject_reason(opinion, "policy", apply_selection_fit=False),
+            "",
+        )
+        self.assertTrue(main._is_policy_stakeholder_market_demand_story(demand))
+        final = {
+            "supply": supply,
+            "policy": [outlook, trade, *policy_fillers],
+            "dist": [],
+            "pest": [],
+        }
+        raw = {
+            "supply": [*supply, outlook, demand],
+            "policy": [outlook, trade, *policy_fillers, opinion],
+            "dist": [],
+            "pest": [],
+        }
+
+        changed = main._repair_final_reader_quality_floor(final, raw)
+        supply_titles = {article.title for article in final["supply"]}
+        policy_titles = {article.title for article in final["policy"]}
+
+        self.assertGreaterEqual(changed, 4)
+        self.assertEqual(len(final["supply"]), 5)
+        self.assertEqual(
+            len(final["policy"]),
+            5,
+            msg=str([(article.title, article.selection_note) for article in final["policy"]]),
+        )
+        self.assertIn(outlook.title, supply_titles)
+        self.assertNotIn(outlook.title, policy_titles)
+        self.assertNotIn(trade.title, policy_titles)
+        self.assertIn(opinion.title, policy_titles)
+        self.assertIn(demand.title, policy_titles)
+
+    def test_named_snail_control_replaces_generic_weather_notice(self):
+        generic = self._make_article(
+            "pest",
+            "영광군, 장마철 집중호우 대비 농작물 관리 철저 당부",
+            "집중호우에 대비해 농작물과 시설을 점검하라는 일반 안내다.",
+            "https://example.com/generic-weather-notice",
+        )
+        snail = self._make_article(
+            "pest",
+            "장마철 달팽이 피해 예방…등록 농약 활용 방제 당부",
+            "농촌진흥청이 시설재배 농작물의 달팽이 피해 예방을 위해 등록 농약과 적용 약제 사용을 안내했다.",
+            "https://www.newsis.com/view/NISX20260709_0003702623",
+        )
+        others = [
+            self._make_article(
+                "pest",
+                f"{crop} 탄저병 발생 주의…예찰·방제 강화",
+                f"농업기술원이 {crop} 농가에 탄저병 예찰과 방제를 당부했다.",
+                f"https://example.com/pest-{idx}",
+            )
+            for idx, crop in enumerate(("고추", "사과", "포도", "복숭아"), start=1)
+        ]
+        final = {"supply": [], "policy": [], "dist": [], "pest": [generic, *others]}
+        raw = {"supply": [], "policy": [], "dist": [], "pest": [generic, snail, *others]}
+
+        main._repair_final_reader_quality_floor(final, raw)
+        titles = {article.title for article in final["pest"]}
+
+        self.assertNotIn(generic.title, titles)
+        self.assertIn(snail.title, titles)
+
+    def test_established_daily_press_labels_are_not_low_tier(self):
+        self.assertGreaterEqual(main.press_priority("내일신문", "naeil.com"), 2)
+        self.assertGreaterEqual(main.press_priority("충남일보", "chungnamilbo.co.kr"), 2)
+        self.assertGreaterEqual(main.press_priority("서울파이낸스", "seoulfn.com"), 2)
+
 if __name__ == "__main__":
     unittest.main()
