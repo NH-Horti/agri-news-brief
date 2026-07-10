@@ -4049,6 +4049,8 @@ def _editorial_safe_core_demote_reason(article: "Article", section_key: str) -> 
     text = _editorial_safe_text(article)
     title_l = _nfkc_lower(getattr(article, "title", "") or "")
     if section_key == "supply":
+        if _is_supply_agritech_research_story(article):
+            return "supply_agritech_research_core"
         if is_dist_market_education_tail_context(getattr(article, "title", "") or "", getattr(article, "description", "") or ""):
             return "supply_dist_market_education_tail"
         nonfood_hits = count_any(text, tuple(term.lower() for term in _EDITORIAL_SAFE_SUPPLY_NONFOOD_PRODUCT_TERMS))
@@ -6762,7 +6764,7 @@ def _has_named_pest_signal(text: str) -> bool:
     t = (text or "").lower()
     return (
         re.search(r"[가-힣]{1,8}(나방|진딧물|가루이|응애|노린재|총채벌레|깍지벌레|선충)", t) is not None
-        or any(term in t for term in ("풀무치", "메뚜기"))
+        or any(term in t for term in ("풀무치", "메뚜기", "달팽이", "민달팽이"))
     )
 
 
@@ -7534,6 +7536,45 @@ def is_non_agri_transport_policy_context(title: str, desc: str) -> bool:
         )],
     )
     return transport_hits >= 1 and policy_hits >= 1
+
+
+def is_non_agri_trade_policy_context(title: str, desc: str) -> bool:
+    """Reject trade-policy news whose traded goods are outside agriculture.
+
+    Trade agreements and tariff changes often inherit a high policy score even
+    when every named product is an industrial material or consumer good.  Keep
+    genuine agricultural trade coverage through the title anchor guard, then
+    require both an explicit trade action and a clearly non-agricultural basket.
+    """
+    ttl = _nfkc_lower(title or "")
+    txt = _nfkc_lower(f"{title or ''} {desc or ''}".strip())
+    if not ttl or _has_title_agri_policy_anchor(title):
+        return False
+    trade_hits = count_any(
+        ttl,
+        [w.lower() for w in (
+            "관세 없앴", "관세 철폐", "무관세", "관세 인하", "상품시장 개방",
+            "cepa", "fta", "무역협정", "수입 관세", "수출 관세",
+        )],
+    )
+    non_agri_title_goods = count_any(
+        ttl,
+        [w.lower() for w in (
+            "캐시미어", "희토류", "광물", "화장품", "의약품", "자동차",
+            "반도체", "철강", "섬유", "배터리", "원유", "천연가스",
+        )],
+    )
+    non_agri_goods = count_any(
+        txt,
+        [w.lower() for w in (
+            "캐시미어", "희토류", "광물", "화장품", "의약품", "자동차",
+            "반도체", "철강", "섬유", "배터리", "원유", "천연가스",
+        )],
+    )
+    # A long agreement explainer may mention one agricultural tariff line deep
+    # in the body.  The briefing decision follows the title's traded basket:
+    # two or more named non-agricultural goods with no agricultural title anchor.
+    return trade_hits >= 1 and non_agri_title_goods >= 2 and non_agri_goods >= 2
 
 
 def is_non_agri_consumer_export_promo_context(title: str, desc: str) -> bool:
@@ -13055,6 +13096,9 @@ TRUSTED_SECONDARY_PRESS = {
     "충청일보", "충북일보", "충청타임즈", "금강일보", "신아일보",
     "전북일보", "전남일보", "광주일보", "경남신문", "경남일보",
     "제주일보", "제민일보",
+    # Established national/regional dailies that otherwise fall through the
+    # URL-label heuristic and are incorrectly counted as unverified tier 1.
+    "내일신문", "충남일보", "서울파이낸스",
 }
 
 _UGC_HOST_HINTS = ("blog.", "tistory.", "brunch.", "post.naver.", "cafe.naver.", "youtube.", "youtu.be")
@@ -22891,7 +22935,8 @@ _PEST_NAMED_DISEASE_TERMS = (
     "화상병", "탄저병", "역병", "노균병", "흰가루병", "갈색날개매미충", "미국선녀벌레",
     "꽃매미", "매미충", "응애", "진딧물", "총채벌레", "나방", "멸구", "풀무치", "메뚜기",
     "선충", "궤양병", "뿌리혹", "시들음", "바이러스", "병원균", "깍지벌레", "혹병",
-    "노린재", "가루이", "담배가루이", "돌발해충", "잿빛곰팡이", "무름병", "갈반병",
+    "노린재", "가루이", "담배가루이", "돌발해충", "달팽이", "민달팽이",
+    "잿빛곰팡이", "무름병", "갈반병",
 )
 _PEST_CONTROL_ACTION_TERMS = (
     "방제", "예찰", "약제", "살포", "방역", "검역", "병해충", "병충해", "병해", "해충",
@@ -23135,6 +23180,8 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str, *, apply_se
             return "supply_production_tech_tail"
     if section_key == "policy" and is_non_agri_transport_policy_context(a.title or "", a.description or ""):
         return "non_agri_transport_policy_noise"
+    if section_key == "policy" and is_non_agri_trade_policy_context(a.title or "", a.description or ""):
+        return "non_agri_trade_policy_noise"
     if section_key == "policy" and is_non_agri_consumer_export_promo_context(a.title or "", a.description or ""):
         return "non_agri_export_promo_noise"
     if section_key == "policy" and is_non_agri_education_opinion_policy_context(a.title or "", a.description or ""):
@@ -28142,6 +28189,31 @@ def _build_sections_phase123(
         log.warning("[WARN] final source quality cap failed: %s", e)
 
     try:
+        # Diversity/source-tier substitutions can satisfy their own constraints
+        # while weakening section roles.  Reassert the reader-facing quality
+        # floor with tier-2+ replacements, then recheck dedup/source budgets.
+        reader_quality_changed = _repair_final_reader_quality_floor(
+            final_by_section,
+            raw_by_section,
+        )
+        if reader_quality_changed:
+            reader_dedupe_removed, reader_dedupe_refilled = _final_global_story_dedupe(
+                final_by_section,
+                raw_by_section,
+            )
+            reader_source_changed = _cap_final_low_tier_sources(final_by_section, raw_by_section)
+            log.info(
+                "[REBALANCE] final reader quality changed=%d dedupe=%d/%d source=%d",
+                reader_quality_changed,
+                reader_dedupe_removed,
+                reader_dedupe_refilled,
+                reader_source_changed,
+            )
+            _sync_debug_with_final_sections(final_by_section)
+    except Exception as e:
+        log.warning("[WARN] final reader quality floor failed: %s", e)
+
+    try:
         # 최종 카드 selection 메타데이터 위생 (fit 재계산·core stage 표준화)
         fit_stamped = _ensure_final_selection_fit(final_by_section)
         if fit_stamped:
@@ -31524,6 +31596,14 @@ def _preferred_tail_block_reason(
     if demote_reason == "pest_no_active_risk_core":
         # core 전용 신호(예방·기술 기사) — tail 배치는 허용한다
         demote_reason = ""
+    if (
+        section_key == "policy"
+        and demote_reason == "opinion_column_core"
+        and _is_high_value_policy_market_opinion_tail(article)
+    ):
+        # Evidence-rich market editorials can add a useful policy perspective,
+        # but opinions remain tail-only and never receive a core badge.
+        demote_reason = ""
     if demote_reason.startswith("soft_news") and _extract_event_gov_actors(getattr(article, "title", "") or ""):
         # 정부 행위자가 제목에 드러난 실행 기사(협약·행사 형식이라도)는 tail로 유지
         demote_reason = ""
@@ -33176,6 +33256,7 @@ _HARD_FINAL_POSTBUILD_REJECT_REASONS = frozenset(
         "supply_lifestyle_column_tail",
         "supply_production_tech_tail",
         "non_agri_transport_policy_noise",
+        "non_agri_trade_policy_noise",
         "non_agri_export_promo_noise",
         "non_agri_education_opinion_noise",
         "housing_market_noise",
@@ -34455,7 +34536,7 @@ def _is_pest_direct_gap_story(article: Article) -> bool:
         return False
     pest_hits = count_any(
         text,
-        [w.lower() for w in ("돌발해충", "노린재", "뿌리응애", "응애", "과수화상병", "화상병", "탄저병", "총채벌레", "진딧물")],
+        [w.lower() for w in ("돌발해충", "노린재", "뿌리응애", "응애", "달팽이", "민달팽이", "과수화상병", "화상병", "탄저병", "총채벌레", "진딧물")],
     )
     crop_disease_hits = count_any(
         text,
@@ -36922,7 +37003,7 @@ def _is_policy_stakeholder_market_demand_story(article: Article) -> bool:
         term in title
         for term in (
             "대책 마련하라", "대책 마련 촉구", "공공수급제", "가격보장",
-            "최저가격 보장", "생산비 보장", "대책 촉구", "경영난 해소 대책",
+            "최저가격 보장", "생산비 보장", "대책 촉구", "대책 세우라", "경영난 해소 대책",
         )
     )
     agri_actor = any(
@@ -36930,6 +37011,64 @@ def _is_policy_stakeholder_market_demand_story(article: Article) -> bool:
         for term in ("농민", "농가", "농업인", "농민단체", "농업인단체")
     )
     return market_crisis and policy_demand and agri_actor
+
+
+def _is_high_value_policy_market_opinion_tail(article: Article) -> bool:
+    """Allow a narrowly scoped agricultural market editorial as policy tail."""
+    if not isinstance(article, Article):
+        return False
+    title = _publish_editorial_title(article)
+    text = _publish_editorial_text(article)
+    opinion = any(marker in title for marker in ("[사설]", "【사설】", "[칼럼]", "[기고]"))
+    agri_market = any(term in title for term in ("농산물", "농가", "원예", "채소", "과수"))
+    distress = count_any(
+        text,
+        [w.lower() for w in (
+            "가격 폭락", "가격폭락", "시세 침체", "장기 시세 침체", "가격 하락",
+            "생산비 폭등", "수급 불안", "농가 경영난",
+        )],
+    )
+    policy_action = count_any(
+        text,
+        [w.lower() for w in (
+            "가격 안정 대책", "가격안정 대책", "가격안정제", "최저가격",
+            "공공수급", "시장격리", "수급 대책", "정부 대책", "대책 시급",
+        )],
+    )
+    return bool(
+        opinion
+        and agri_market
+        and distress >= 1
+        and policy_action >= 1
+        and press_priority(article.press, article.domain) >= 2
+    )
+
+
+def _is_supply_agritech_research_story(article: Article) -> bool:
+    """Identify R&D/technology outlooks that should not occupy a supply core."""
+    if not isinstance(article, Article):
+        return False
+    title = _publish_editorial_title(article)
+    text = _publish_editorial_text(article)
+    technology = count_any(
+        title,
+        [w.lower() for w in (
+            "농림위성", "농업위성", "첨단농업", "스마트농업 기술", "농업 r&d",
+            "연구개발", "실증 연구", "기술 개발",
+        )],
+    )
+    market_title = count_any(
+        title,
+        [w.lower() for w in (
+            "가격", "시세", "수급", "출하", "생산량", "작황", "경락", "반입",
+            "시장격리", "수매", "공급 부족", "공급과잉",
+        )],
+    )
+    concrete_market_evidence = count_any(
+        text,
+        [w.lower() for w in ("도매가격", "경락가", "출하량", "반입량", "수매량", "생산량")],
+    )
+    return technology >= 1 and market_title == 0 and concrete_market_evidence == 0
 
 
 def _is_publish_supply_editorial_weak(article: Article) -> bool:
@@ -36947,6 +37086,11 @@ def _is_publish_supply_editorial_weak(article: Article) -> bool:
     if _is_publish_information_light(article):
         return True
     if _is_supply_publish_wrong_section_noise(article):
+        return True
+    if (
+        any(term in title for term in ("정례조회", "월례조회", "사업성과 격려"))
+        and any(term in text for term in ("우수 농협", "우수 농·축협", "사업성과", "격려"))
+    ):
         return True
     if any(term in title for term in (
         "과잉생산 딜레마", "상당 제품 배추 될 운명", "상생 캠페인", "첫 산지폐기 시범사업",
@@ -37192,6 +37336,29 @@ def _is_dist_export_logistics_program_story(article: Article) -> bool:
     )
 
 
+def _is_dist_market_measurement_enforcement_story(article: Article) -> bool:
+    title = _publish_editorial_title(article)
+    text = _publish_editorial_text(article)
+    return bool(
+        any(term in title for term in ("도매시장", "농산물 도매 시장"))
+        and any(term in title for term in ("중량 미달", "표시 중량", "중량 점검"))
+        and any(term in text for term in ("합동 점검", "특별 점검", "단속", "거래 질서"))
+    )
+
+
+def _is_dist_food_safety_check_without_market_ops(article: Article) -> bool:
+    title = _publish_editorial_title(article)
+    food_safety = any(term in title for term in ("잔류농약", "안전성 검사", "안심하고 드세요"))
+    market_ops = count_any(
+        title,
+        [w.lower() for w in (
+            "도매시장", "공판장", "경매", "정산", "물류", "수매", "선별",
+            "출하", "반입", "중량 미달", "거래 질서",
+        )],
+    )
+    return food_safety and market_ops == 0
+
+
 def _is_dist_photo_filler_story(article: Article) -> bool:
     title = _publish_editorial_title(article)
     if not any(term in title for term in ("[포토]", "[포토뉴스]", "포토]")):
@@ -37219,10 +37386,29 @@ def _is_pest_named_crop_disease_warning(article: Article) -> bool:
 
 def _is_pest_generic_or_equipment_tail(article: Article) -> bool:
     title = _publish_editorial_title(article)
-    return any(term in title for term in (
+    generic_weather_notice = bool(
+        any(term in title for term in ("집중호우 대비", "장마철 농작물 관리", "농작물 관리 철저"))
+        and not _has_named_pest_signal(title)
+        and count_any(title, [w.lower() for w in _PEST_NAMED_DISEASE_TERMS]) == 0
+    )
+    return generic_weather_notice or any(term in title for term in (
         "주간농사정보", "주간농사메모", "최신 방제기로", "방제장비 지원",
         "농가 맞춤 지원",
     ))
+
+
+def _is_pest_specific_named_control_story(article: Article) -> bool:
+    if not isinstance(article, Article):
+        return False
+    title = _publish_editorial_title(article)
+    text = _publish_editorial_text(article)
+    named = any(term in text for term in ("달팽이", "민달팽이")) or _has_named_pest_signal(title)
+    control = any(term in text for term in ("방제", "예방", "등록 농약", "적용 약제", "예찰"))
+    crop_context = any(term in text for term in ("농작물", "채소", "시설재배", "노지", "농가", "재배지"))
+    authority = any(term in text for term in (
+        "농촌진흥청", "농업기술원", "농업기술센터", "농림축산검역본부", "검역본부",
+    ))
+    return bool(named and control and crop_context and authority)
 
 
 def _is_pest_quantified_named_control_program(article: Article) -> bool:
@@ -37396,6 +37582,8 @@ def _is_publish_policy_editorial_weak(article: Article) -> bool:
     text = _publish_editorial_text(article)
     if _is_publish_stale_reprint(article):
         return True
+    if _is_high_value_policy_market_opinion_tail(article):
+        return False
     if _is_non_agri_venture_policy_story(article):
         return True
     if (
@@ -37411,6 +37599,7 @@ def _is_publish_policy_editorial_weak(article: Article) -> bool:
         return False
     if (
         is_non_agri_transport_policy_context(article.title or "", article.description or "")
+        or is_non_agri_trade_policy_context(article.title or "", article.description or "")
         or is_non_agri_auto_market_context(article.title or "", article.description or "")
         or is_non_agri_ai_robot_industry_context(article.title or "", article.description or "")
         or is_commodity_corporate_stock_context(article.title or "", article.description or "")
@@ -38229,6 +38418,8 @@ def _is_publish_editorial_candidate(section_key: str, article: Article) -> bool:
             or quantified_shipment
         )
     if section_key == "policy":
+        if _is_high_value_policy_market_opinion_tail(article):
+            return True
         if _is_publish_policy_editorial_weak(article):
             return False
         signature = _publish_editorial_event_signature(article)
@@ -40980,6 +41171,344 @@ def _repair_publish_daily_editorial_floor(
             supply_items[replace_idx] = replacement
             final_by_section["supply"] = supply_items[:MAX_PER_SECTION]
             changed += 1
+
+    changed += _rebalance_publish_core_badges_for_editorial_target(final_by_section)
+    return changed
+
+
+def _repair_final_reader_quality_floor(
+    final_by_section: dict[str, list[Article]],
+    raw_by_section: dict[str, list[Article]] | None,
+) -> int:
+    """Enforce reader-facing scope, section roles, and actionable pest priority.
+
+    This pass intentionally runs after diversity and source-tier repairs.  Those
+    generic repairs can reintroduce a valid-but-wrong-section article or choose a
+    broad local notice over a more actionable warning from the same daily pool.
+    """
+    if not isinstance(final_by_section, dict) or not isinstance(raw_by_section, dict):
+        return 0
+    changed = 0
+    section_conf = {
+        str(section.get("key") or ""): section
+        for section in SECTIONS
+        if str(section.get("key") or "")
+    }
+
+    def _conflicts(
+        candidate: Article,
+        owner: str,
+        *,
+        exclude: Article | None = None,
+    ) -> bool:
+        ident = _article_selection_identity(candidate)
+        distinct_policy_market_angle = bool(
+            owner == "policy"
+            and (
+                _is_high_value_policy_market_opinion_tail(candidate)
+                or _is_policy_stakeholder_market_demand_story(candidate)
+            )
+        )
+        for existing_section, section_items in final_by_section.items():
+            for existing in section_items or []:
+                if not isinstance(existing, Article) or existing is exclude:
+                    continue
+                existing_ident = _article_selection_identity(existing)
+                if ident and existing_ident and ident == existing_ident:
+                    return True
+                if str(existing_section) == owner:
+                    if (
+                        _publish_editorial_duplicate_story(owner, candidate, existing)
+                        and not distinct_policy_market_angle
+                    ):
+                        return True
+                elif _same_event_articles_reason(candidate, existing) and not distinct_policy_market_angle:
+                    return True
+        return False
+
+    supply_items = [
+        article for article in (final_by_section.get("supply") or [])
+        if isinstance(article, Article)
+    ]
+    policy_items = [
+        article for article in (final_by_section.get("policy") or [])
+        if isinstance(article, Article)
+    ]
+
+    # Price/outlook reporting belongs to supply even if policy vocabulary in the
+    # body made its raw policy fit slightly higher.
+    market_outlooks = [
+        article for article in policy_items
+        if is_supply_price_outlook_context(article.title or "", article.description or "")
+    ]
+    for article in market_outlooks:
+        policy_items.remove(article)
+        final_by_section["policy"] = policy_items
+        if not _conflicts(article, "supply"):
+            replacement = _mark_editorial_replacement(
+                article,
+                "supply",
+                section_conf.get("supply", {}),
+                "final_reader_quality_role_repair",
+                "move_price_outlook_from_policy_to_supply",
+            )
+            if len(supply_items) < PREFERRED_PER_SECTION:
+                supply_items.append(replacement)
+            else:
+                replace_idx = min(
+                    range(len(supply_items)),
+                    key=lambda idx: (
+                        0 if _is_supply_agritech_research_story(supply_items[idx]) else 1,
+                        0 if not bool(getattr(supply_items[idx], "is_core", False)) else 1,
+                        _publish_article_effective_fit("supply", supply_items[idx]),
+                        float(getattr(supply_items[idx], "score", 0.0) or 0.0),
+                    ),
+                )
+                supply_items[replace_idx] = replacement
+            changed += 1
+
+    # A technology outlook may remain as a useful tail, but cannot own one of
+    # the two supply core slots when direct price/outlook reporting is present.
+    for article in supply_items:
+        if bool(getattr(article, "is_core", False)) and _is_supply_agritech_research_story(article):
+            article.is_core = False
+            article.selection_note = "final_reader_quality_demote:supply_agritech_research_core"
+            changed += 1
+
+    supply_victim_indexes = [
+        idx for idx, article in enumerate(supply_items)
+        if _is_publish_supply_editorial_weak(article)
+    ]
+    supply_candidates = [
+        candidate
+        for source_section in ("supply", "policy")
+        for candidate in (raw_by_section.get(source_section, []) or [])
+        if isinstance(candidate, Article)
+        and not _is_high_value_policy_market_opinion_tail(candidate)
+        and not _is_policy_stakeholder_market_demand_story(candidate)
+        and (
+            _is_publish_editorial_candidate("supply", candidate)
+            or _is_supply_agritech_research_story(candidate)
+        )
+        and not _postbuild_article_reject_reason(candidate, "supply", apply_selection_fit=False)
+        and not _conflicts(candidate, "supply")
+    ]
+    supply_candidates.sort(
+        key=lambda article: (
+            2 if _is_publish_editorial_candidate("supply", article) else 1,
+            press_priority(article.press, article.domain),
+            _publish_article_effective_fit("supply", article),
+            float(getattr(article, "score", 0.0) or 0.0),
+        ),
+        reverse=True,
+    )
+    for replace_idx in supply_victim_indexes:
+        if not supply_candidates:
+            break
+        replacement = _mark_editorial_replacement(
+            supply_candidates.pop(0),
+            "supply",
+            section_conf.get("supply", {}),
+            "final_reader_quality_supply_replacement",
+            "replace_internal_admin_notice_with_market_or_research_tail",
+        )
+        replacement.is_core = False
+        supply_items[replace_idx] = replacement
+        final_by_section["supply"] = supply_items
+        changed += 1
+    final_by_section["supply"] = supply_items[:MAX_PER_SECTION]
+
+    # Remove clearly non-agricultural trade baskets even when a late relaxed
+    # refill selected them to meet the preferred card count.
+    clean_policy: list[Article] = []
+    for article in policy_items:
+        if is_non_agri_trade_policy_context(article.title or "", article.description or ""):
+            changed += 1
+            continue
+        clean_policy.append(article)
+    policy_items = clean_policy
+    final_by_section["policy"] = policy_items
+
+    candidate_seen: set[str] = set()
+    policy_candidates: list[Article] = []
+    for source_section in ("policy", "supply"):
+        for candidate in raw_by_section.get(source_section, []) or []:
+            if not isinstance(candidate, Article):
+                continue
+            explicit_market_issue = bool(
+                _is_high_value_policy_market_opinion_tail(candidate)
+                or _is_policy_stakeholder_market_demand_story(candidate)
+            )
+            normal_candidate = _is_publish_editorial_candidate("policy", candidate)
+            if not explicit_market_issue and not normal_candidate:
+                continue
+            if is_supply_price_outlook_context(candidate.title or "", candidate.description or ""):
+                continue
+            if is_non_agri_trade_policy_context(candidate.title or "", candidate.description or ""):
+                continue
+            if _postbuild_article_reject_reason(candidate, "policy", apply_selection_fit=False):
+                continue
+            ident = _article_selection_identity(candidate)
+            if ident and ident in candidate_seen:
+                continue
+            if ident:
+                candidate_seen.add(ident)
+            policy_candidates.append(candidate)
+    policy_candidates.sort(
+        key=lambda article: (
+            4 if _is_high_value_policy_market_opinion_tail(article)
+            else 3 if _is_policy_stakeholder_market_demand_story(article)
+            else 2 if _is_policy_domestic_production_import_response_story(article)
+            else 1,
+            press_priority(article.press, article.domain),
+            _publish_article_effective_fit("policy", article),
+            float(getattr(article, "score", 0.0) or 0.0),
+            article.pub_dt_kst or datetime.min.replace(tzinfo=KST),
+        ),
+        reverse=True,
+    )
+
+    for candidate in policy_candidates:
+        if len(policy_items) < PREFERRED_PER_SECTION:
+            if _conflicts(candidate, "policy"):
+                continue
+            replacement = _mark_editorial_replacement(
+                candidate,
+                "policy",
+                section_conf.get("policy", {}),
+                "final_reader_quality_policy_refill",
+                "prefer_direct_agri_market_policy_issue",
+            )
+            replacement.is_core = False
+            policy_items.append(replacement)
+            final_by_section["policy"] = policy_items
+            changed += 1
+            continue
+        if not (
+            _is_high_value_policy_market_opinion_tail(candidate)
+            or _is_policy_stakeholder_market_demand_story(candidate)
+        ):
+            continue
+        victim_indexes = [
+            idx for idx, existing in enumerate(policy_items)
+            if _is_publish_policy_editorial_weak(existing)
+            and not _is_high_value_policy_market_opinion_tail(existing)
+            and not _is_policy_stakeholder_market_demand_story(existing)
+        ]
+        if not victim_indexes:
+            continue
+        replace_idx = min(
+            victim_indexes,
+            key=lambda idx: (
+                press_priority(policy_items[idx].press, policy_items[idx].domain),
+                _publish_article_effective_fit("policy", policy_items[idx]),
+                float(getattr(policy_items[idx], "score", 0.0) or 0.0),
+            ),
+        )
+        victim = policy_items[replace_idx]
+        if _conflicts(candidate, "policy", exclude=victim):
+            continue
+        replacement = _mark_editorial_replacement(
+            candidate,
+            "policy",
+            section_conf.get("policy", {}),
+            "final_reader_quality_policy_replacement",
+            "replace_weak_policy_filler_with_direct_market_issue",
+        )
+        replacement.is_core = False
+        policy_items[replace_idx] = replacement
+        final_by_section["policy"] = policy_items
+        changed += 1
+
+    final_by_section["policy"] = policy_items[:MAX_PER_SECTION]
+
+    dist_items = [
+        article for article in (final_by_section.get("dist") or [])
+        if isinstance(article, Article)
+    ]
+    dist_victim_indexes = [
+        idx for idx, article in enumerate(dist_items)
+        if _is_dist_food_safety_check_without_market_ops(article)
+    ]
+    dist_candidates = [
+        candidate
+        for source_section in ("dist", "policy", "supply")
+        for candidate in (raw_by_section.get(source_section, []) or [])
+        if isinstance(candidate, Article)
+        and (
+            _is_dist_market_measurement_enforcement_story(candidate)
+            or _is_dist_operational_upgrade_candidate(candidate)
+        )
+        and not _postbuild_article_reject_reason(candidate, "dist", apply_selection_fit=False)
+        and not _conflicts(candidate, "dist")
+    ]
+    dist_candidates.sort(
+        key=lambda article: (
+            3 if _is_dist_market_measurement_enforcement_story(article) else 2,
+            press_priority(article.press, article.domain),
+            _publish_article_effective_fit("dist", article),
+            float(getattr(article, "score", 0.0) or 0.0),
+        ),
+        reverse=True,
+    )
+    for replace_idx in dist_victim_indexes:
+        if not dist_candidates:
+            break
+        replacement = _mark_editorial_replacement(
+            dist_candidates.pop(0),
+            "dist",
+            section_conf.get("dist", {}),
+            "final_reader_quality_dist_replacement",
+            "replace_food_safety_tail_with_market_enforcement_or_operations",
+        )
+        replacement.is_core = bool(getattr(dist_items[replace_idx], "is_core", False))
+        dist_items[replace_idx] = replacement
+        final_by_section["dist"] = dist_items[:MAX_PER_SECTION]
+        changed += 1
+
+    pest_items = [
+        article for article in (final_by_section.get("pest") or [])
+        if isinstance(article, Article)
+    ]
+    generic_indexes = [
+        idx for idx, article in enumerate(pest_items)
+        if _is_pest_generic_or_equipment_tail(article)
+    ]
+    pest_candidates = [
+        candidate
+        for candidate in (raw_by_section.get("pest") or [])
+        if isinstance(candidate, Article)
+        and _is_pest_specific_named_control_story(candidate)
+        and not _conflicts(candidate, "pest")
+    ]
+    pest_candidates.sort(
+        key=lambda article: (
+            press_priority(article.press, article.domain),
+            _publish_article_effective_fit("pest", article),
+            float(getattr(article, "score", 0.0) or 0.0),
+            article.pub_dt_kst or datetime.min.replace(tzinfo=KST),
+        ),
+        reverse=True,
+    )
+    if generic_indexes and pest_candidates:
+        replace_idx = min(
+            generic_indexes,
+            key=lambda idx: (
+                _publish_article_effective_fit("pest", pest_items[idx]),
+                float(getattr(pest_items[idx], "score", 0.0) or 0.0),
+            ),
+        )
+        replacement = _mark_editorial_replacement(
+            pest_candidates[0],
+            "pest",
+            section_conf.get("pest", {}),
+            "final_reader_quality_pest_replacement",
+            "replace_generic_weather_notice_with_named_control_guidance",
+        )
+        replacement.is_core = bool(getattr(pest_items[replace_idx], "is_core", False))
+        pest_items[replace_idx] = replacement
+        final_by_section["pest"] = pest_items[:MAX_PER_SECTION]
+        changed += 1
 
     changed += _rebalance_publish_core_badges_for_editorial_target(final_by_section)
     return changed
