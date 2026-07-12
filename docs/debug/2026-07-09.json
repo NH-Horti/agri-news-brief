@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-07-12T13:47:03+09:00",
-  "build_tag": "38c82bc",
+  "generated_at_kst": "2026-07-12T18:47:55+09:00",
+  "build_tag": "694af22",
   "filter_rejects": [
     {
       "section": "policy",
@@ -20011,7 +20011,7 @@
       "hf_semantic_enabled": false,
       "hf_semantic_hits": 0,
       "total_candidates": 214,
-      "total_selected": 4,
+      "total_selected": 5,
       "top": [
         {
           "selected": true,
@@ -20526,7 +20526,7 @@
           }
         },
         {
-          "selected": false,
+          "selected": true,
           "is_core": false,
           "score": 26.53,
           "semantic_similarity": 0.0,
@@ -20539,9 +20539,9 @@
           "domain": "andongmbc.co.kr",
           "title": "[R]풍년의 역설 ' 양파 '..소비 촉진으로 돕기",
           "url": "http://andongmbc.co.kr/adboard/NewsView83538",
-          "reason": "postbuild_pruned",
+          "reason": "",
           "fit_score": 3.45,
-          "selection_stage": "postbuild_pruned",
+          "selection_stage": "supply_underfill_recovery",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "",
@@ -21083,9 +21083,9 @@
           "domain": "ikpnews.net",
           "title": "지속된 애 호박 헐값에...\"출하해도 걱정\"",
           "url": "http://www.ikpnews.net/news/articleView.html?idxno=70898",
-          "reason": "postbuild_pruned",
+          "reason": "below_threshold",
           "fit_score": 2.16,
-          "selection_stage": "postbuild_pruned",
+          "selection_stage": "below_threshold",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "",
@@ -21352,38 +21352,6 @@
             "market_hits": 0,
             "strength": 1,
             "korea": 0,
-            "offtopic_pen": 0,
-            "press_tier": 2,
-            "press_weight": 2.5
-          }
-        },
-        {
-          "selected": false,
-          "is_core": false,
-          "score": 16.63,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 1,
-          "press": "뉴스경남",
-          "domain": "newsgn.com",
-          "title": "합천유통, 사과 대추 공선출하회 조직 협약 체결",
-          "url": "https://www.newsgn.com/news/articleView.html?idxno=561136",
-          "reason": "below_threshold",
-          "fit_score": 1.7,
-          "selection_stage": "below_threshold",
-          "selection_note": "",
-          "origin_section": "supply",
-          "reassigned_from": "",
-          "source_query": "사과 농가",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 1.95,
-            "market_hits": 0,
-            "strength": 2,
-            "korea": 3,
             "offtopic_pen": 0,
             "press_tier": 2,
             "press_weight": 2.5
@@ -21931,6 +21899,38 @@
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -1.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 11.42,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 1,
+          "press": "뉴스경남",
+          "domain": "newsgn.com",
+          "title": "합천유통, 사과 대추 공선출하회 조직 협약 체결",
+          "url": "https://www.newsgn.com/news/articleView.html?idxno=561136",
+          "reason": "below_threshold",
+          "fit_score": 1.33,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "",
+          "source_query": "사과 농가",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 0,
+            "strength": 2,
+            "korea": 3,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 2.5
           }
         },
         {
@@ -24256,7 +24256,7 @@
           }
         },
         {
-          "selected": false,
+          "selected": true,
           "is_core": false,
           "score": 55.68,
           "semantic_similarity": 0.0,
@@ -24269,10 +24269,10 @@
           "domain": "wonyesanup.co.kr",
           "title": "대관령원예농협, 산지공판장 초매식 개최",
           "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=65165",
-          "reason": "similar_story",
+          "reason": "",
           "fit_score": 7.76,
-          "selection_stage": "similar_story",
-          "selection_note": "",
+          "selection_stage": "dist_publish_editorial_core",
+          "selection_note": "final_core_demote:dist_market_ceremony_core",
           "origin_section": "policy",
           "reassigned_from": "supply",
           "source_query": "배추 수급 안정",
@@ -24333,9 +24333,9 @@
           "domain": "newsworker.co.kr",
           "title": "aT, ' 온라인도매 물류체계' 구축... 9월 거점센터 본격 운영",
           "url": "http://www.newsworker.co.kr/news/articleView.html?idxno=435371",
-          "reason": "postbuild_pruned",
+          "reason": "similar_story",
           "fit_score": 4.07,
-          "selection_stage": "postbuild_pruned",
+          "selection_stage": "similar_story",
           "selection_note": "",
           "origin_section": "policy",
           "reassigned_from": "policy",
@@ -24481,38 +24481,6 @@
         },
         {
           "selected": true,
-          "is_core": false,
-          "score": 33.57,
-          "semantic_similarity": 0.0,
-          "semantic_noise_similarity": 0.0,
-          "semantic_margin": 0.0,
-          "semantic_boost": 0.0,
-          "semantic_model": "",
-          "tier": 2,
-          "press": "원예산업신문",
-          "domain": "wonyesanup.co.kr",
-          "title": "농협경제지주, 농산물 유통사업 발전 협업그룹 발대",
-          "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=65206",
-          "reason": "",
-          "fit_score": 3.33,
-          "selection_stage": "final_dedupe_refill",
-          "selection_note": "event_dedupe_slot_refill",
-          "origin_section": "dist",
-          "reassigned_from": "",
-          "source_query": "도매시장 수급",
-          "source_channel": "naver_api",
-          "signals": {
-            "horti_sc": 0.0,
-            "market_hits": 1,
-            "strength": 5,
-            "korea": 4,
-            "offtopic_pen": 0,
-            "press_tier": 2,
-            "press_weight": 3.7
-          }
-        },
-        {
-          "selected": true,
           "is_core": true,
           "score": 33.06,
           "semantic_similarity": 0.0,
@@ -24527,8 +24495,8 @@
           "url": "https://www.news1.kr/economy/trend/6221735",
           "reason": "",
           "fit_score": 3.29,
-          "selection_stage": "dist_publish_operational_core",
-          "selection_note": "late_editorial_operational_core",
+          "selection_stage": "final_core_quality_repair",
+          "selection_note": "soft_news_core_replacement",
           "origin_section": "dist",
           "reassigned_from": "dist",
           "source_query": "도매시장 운영 개선",
@@ -24541,6 +24509,38 @@
             "offtopic_pen": 0,
             "press_tier": 2,
             "press_weight": 1.7
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 33.57,
+          "semantic_similarity": 0.0,
+          "semantic_noise_similarity": 0.0,
+          "semantic_margin": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 2,
+          "press": "원예산업신문",
+          "domain": "wonyesanup.co.kr",
+          "title": "농협경제지주, 농산물 유통사업 발전 협업그룹 발대",
+          "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=65206",
+          "reason": "below_threshold",
+          "fit_score": 3.33,
+          "selection_stage": "below_threshold",
+          "selection_note": "",
+          "origin_section": "dist",
+          "reassigned_from": "",
+          "source_query": "도매시장 수급",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 0.0,
+            "market_hits": 1,
+            "strength": 5,
+            "korea": 4,
+            "offtopic_pen": 0,
+            "press_tier": 2,
+            "press_weight": 3.7
           }
         },
         {
@@ -25101,16 +25101,16 @@
           "domain": "gndomin.com",
           "title": "합천유통, 사과 대추 공선출하회 조직 협약 체결",
           "url": "http://www.gndomin.com/news/articleView.html?idxno=481494",
-          "reason": "postbuild_pruned",
-          "fit_score": 3.12,
-          "selection_stage": "postbuild_pruned",
+          "reason": "below_threshold",
+          "fit_score": 2.86,
+          "selection_stage": "below_threshold",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "supply",
           "source_query": "사과 농가",
           "source_channel": "naver_api",
           "signals": {
-            "horti_sc": 1.95,
+            "horti_sc": 0.0,
             "market_hits": 0,
             "strength": 5,
             "korea": 4,
@@ -25442,7 +25442,7 @@
         {
           "selected": true,
           "is_core": false,
-          "score": 11.39,
+          "score": 10.59,
           "semantic_similarity": 0.0,
           "semantic_noise_similarity": 0.0,
           "semantic_margin": 0.0,
@@ -25454,7 +25454,7 @@
           "title": "합천유통· 사과 대추 공선 출하 회, 공동 출하 협약 …\"시장 경쟁력 높여\"",
           "url": "https://www.newsis.com/view/NISX20260708_0003700876",
           "reason": "",
-          "fit_score": 2.72,
+          "fit_score": 2.46,
           "selection_stage": "final_cross_day_dist_upgrade",
           "selection_note": "replace_recurring_weak_or_wrong_role_article",
           "origin_section": "supply",
@@ -25462,7 +25462,7 @@
           "source_query": "사과 출하",
           "source_channel": "naver_api",
           "signals": {
-            "horti_sc": 1.95,
+            "horti_sc": 0.0,
             "market_hits": 0,
             "strength": 5,
             "korea": 4,
@@ -26106,6 +26106,36 @@
             "market_hits": 0,
             "strength": 0,
             "korea": 2,
+            "offtopic_pen": 0,
+            "press_tier": 1,
+            "press_weight": -2.5
+          }
+        },
+        {
+          "selected": false,
+          "is_core": false,
+          "score": 21.06,
+          "semantic_similarity": 0.0,
+          "semantic_boost": 0.0,
+          "semantic_model": "",
+          "tier": 1,
+          "press": "딜사이트TV",
+          "domain": "news.dealsitetv.com",
+          "title": "해남, AI 스마트농업 메가클러스터 구축…\"대한민국 농어촌수도 도약\"",
+          "url": "https://news.dealsitetv.com/articles/173013",
+          "reason": "postbuild_pruned",
+          "fit_score": 1.83,
+          "selection_stage": "postbuild_pruned",
+          "selection_note": "",
+          "origin_section": "supply",
+          "reassigned_from": "policy",
+          "source_query": "마늘 기후변화",
+          "source_channel": "naver_api",
+          "signals": {
+            "horti_sc": 1.6,
+            "market_hits": 3,
+            "strength": 4,
+            "korea": 7,
             "offtopic_pen": 0,
             "press_tier": 1,
             "press_weight": -2.5
@@ -29036,8 +29066,8 @@
       {
         "stage": "maintenance_publish",
         "status": "start",
-        "elapsed_sec": 97.848,
-        "at_kst": "2026-07-12T13:46:53+09:00",
+        "elapsed_sec": 174.963,
+        "at_kst": "2026-07-12T18:47:31+09:00",
         "details": {
           "action": "maintenance replay_date",
           "report_date": "2026-07-09"
@@ -29046,14 +29076,14 @@
       {
         "stage": "maintenance_publish_list_archives",
         "status": "start",
-        "elapsed_sec": 97.848,
-        "at_kst": "2026-07-12T13:46:53+09:00"
+        "elapsed_sec": 174.963,
+        "at_kst": "2026-07-12T18:47:31+09:00"
       },
       {
         "stage": "maintenance_publish_list_archives",
         "status": "done",
-        "elapsed_sec": 98.024,
-        "at_kst": "2026-07-12T13:46:53+09:00",
+        "elapsed_sec": 175.133,
+        "at_kst": "2026-07-12T18:47:31+09:00",
         "details": {
           "archive_count": 129
         }
@@ -29061,23 +29091,23 @@
       {
         "stage": "maintenance_publish_render",
         "status": "start",
-        "elapsed_sec": 98.024,
-        "at_kst": "2026-07-12T13:46:53+09:00"
+        "elapsed_sec": 175.133,
+        "at_kst": "2026-07-12T18:47:31+09:00"
       },
       {
         "stage": "maintenance_publish_render",
         "status": "done",
-        "elapsed_sec": 98.469,
-        "at_kst": "2026-07-12T13:46:54+09:00",
+        "elapsed_sec": 175.913,
+        "at_kst": "2026-07-12T18:47:32+09:00",
         "details": {
-          "html_bytes": 301244
+          "html_bytes": 303559
         }
       },
       {
         "stage": "maintenance_publish_archive",
         "status": "start",
-        "elapsed_sec": 98.469,
-        "at_kst": "2026-07-12T13:46:54+09:00",
+        "elapsed_sec": 175.913,
+        "at_kst": "2026-07-12T18:47:32+09:00",
         "details": {
           "path": "docs/archive/2026-07-09.html"
         }
@@ -29085,8 +29115,8 @@
       {
         "stage": "maintenance_publish_archive",
         "status": "done",
-        "elapsed_sec": 108.313,
-        "at_kst": "2026-07-12T13:47:03+09:00",
+        "elapsed_sec": 198.971,
+        "at_kst": "2026-07-12T18:47:55+09:00",
         "details": {
           "path": "docs/archive/2026-07-09.html"
         }
@@ -29094,8 +29124,8 @@
       {
         "stage": "maintenance_publish_debug",
         "status": "start",
-        "elapsed_sec": 108.313,
-        "at_kst": "2026-07-12T13:47:03+09:00",
+        "elapsed_sec": 198.971,
+        "at_kst": "2026-07-12T18:47:55+09:00",
         "details": {
           "path": "docs/debug/2026-07-09.json"
         }
@@ -29104,13 +29134,13 @@
     "last_stage": {
       "stage": "maintenance_publish_debug",
       "status": "start",
-      "elapsed_sec": 108.313,
-      "at_kst": "2026-07-12T13:47:03+09:00",
+      "elapsed_sec": 198.971,
+      "at_kst": "2026-07-12T18:47:55+09:00",
       "details": {
         "path": "docs/debug/2026-07-09.json"
       }
     },
-    "elapsed_sec": 108.313
+    "elapsed_sec": 198.971
   },
   "commodity_board_audit": {
     "summary": {
@@ -29274,7 +29304,7 @@
         "managed": true,
         "active_today": true,
         "linked": true,
-        "matched_count": 8,
+        "matched_count": 9,
         "active_today_candidate_count": 1,
         "qualified_count": 1,
         "linked_count": 1,
@@ -29283,6 +29313,7 @@
         "unlinked_reason": "",
         "source_sections": [
           "pest",
+          "dist",
           "supply",
           "policy"
         ],
@@ -29811,8 +29842,8 @@
         "source_sections": [
           "pest",
           "supply",
-          "policy",
-          "dist"
+          "dist",
+          "policy"
         ],
         "qualified_source_sections": [
           "pest"
@@ -30154,7 +30185,7 @@
         "managed": true,
         "active_today": false,
         "linked": false,
-        "matched_count": 3,
+        "matched_count": 4,
         "active_today_candidate_count": 0,
         "qualified_count": 0,
         "linked_count": 0,
@@ -30163,7 +30194,8 @@
         "unlinked_reason": "matched_but_not_visible",
         "source_sections": [
           "policy",
-          "supply"
+          "supply",
+          "dist"
         ],
         "qualified_source_sections": [],
         "top_article": {},
@@ -30224,8 +30256,8 @@
             "section": "supply",
             "press": "한국농정신문",
             "score": 16.965,
-            "selection_fit_score": 2.16,
-            "selection_stage": "supply_editorial_market_replacement",
+            "selection_fit_score": 0.0,
+            "selection_stage": "",
             "is_core": false,
             "representative_rank": 3,
             "representative_score": 328.231,
@@ -30240,20 +30272,20 @@
             "weak_stage_story": false
           },
           {
-            "id": "https://newsam.co.kr/news/article.html?no=43447",
-            "title": "농식품부, 농가 경영 안정 을 위해 총력 대응",
-            "url": "https://www.newsam.co.kr/news/article.html?no=43447",
-            "section": "policy",
-            "press": "농기자재신문",
-            "score": 47.93,
-            "selection_fit_score": 3.99,
-            "selection_stage": "policy_priority_core",
-            "is_core": true,
-            "representative_rank": 0,
-            "representative_score": 188.182,
-            "board_score": 218.182,
+            "id": "https://wonyesanup.co.kr/news/articleView.html?idxno=65165",
+            "title": "대관령원예농협, 산지공판장 초매식 개최",
+            "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=65165",
+            "section": "dist",
+            "press": "원예산업신문",
+            "score": 55.68,
+            "selection_fit_score": 7.76,
+            "selection_stage": "dist_publish_editorial_core",
+            "is_core": false,
+            "representative_rank": 1,
+            "representative_score": 226.844,
+            "board_score": 216.844,
             "board_eligible": true,
-            "direct_item_focus": true,
+            "direct_item_focus": false,
             "title_primary_hits": 0,
             "title_issue_hits": 0,
             "operational_issue_signal": true,
@@ -30619,8 +30651,8 @@
         "managed": true,
         "active_today": true,
         "linked": true,
-        "matched_count": 9,
-        "active_today_candidate_count": 4,
+        "matched_count": 5,
+        "active_today_candidate_count": 1,
         "qualified_count": 1,
         "linked_count": 1,
         "active_today_unlinked": false,
@@ -30629,32 +30661,31 @@
         "source_sections": [
           "pest",
           "supply",
-          "dist",
           "policy"
         ],
         "qualified_source_sections": [
-          "supply"
+          "pest"
         ],
         "top_article": {
-          "id": "https://newsgn.com/news/articleView.html?idxno=561136",
-          "title": "합천유통, 사과 대추 공선출하회 조직 협약 체결",
-          "url": "https://www.newsgn.com/news/articleView.html?idxno=561136",
-          "section": "supply",
-          "press": "뉴스경남",
-          "score": 16.63,
-          "selection_fit_score": 0.0,
-          "selection_stage": "",
-          "is_core": false,
-          "representative_rank": 3,
-          "representative_score": 371.726,
-          "board_score": 298.426,
+          "id": "https://wonyesanup.co.kr/news/articleView.html?idxno=65158",
+          "title": "농사포인트 - 사과 갈색무늬병 16~28℃ 수분존재 시간 길어질수록 발생...",
+          "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=65158",
+          "section": "pest",
+          "press": "원예산업신문",
+          "score": 16.99,
+          "selection_fit_score": 4.67,
+          "selection_stage": "pest_publish_editorial_core",
+          "is_core": true,
+          "representative_rank": 4,
+          "representative_score": 390.644,
+          "board_score": 284.644,
           "board_eligible": true,
           "direct_item_focus": true,
           "title_primary_hits": 1,
-          "title_issue_hits": 1,
+          "title_issue_hits": 0,
           "operational_issue_signal": true,
-          "issue_bucket": "",
-          "feature_kind": "field",
+          "issue_bucket": "farm_action",
+          "feature_kind": "issue",
           "weak_stage_story": false
         },
         "top_candidate": {
@@ -30705,50 +30736,6 @@
             "operational_issue_signal": true,
             "issue_bucket": "farm_action",
             "feature_kind": "issue",
-            "weak_stage_story": false
-          },
-          {
-            "id": "https://newsgn.com/news/articleView.html?idxno=561136",
-            "title": "합천유통, 사과 대추 공선출하회 조직 협약 체결",
-            "url": "https://www.newsgn.com/news/articleView.html?idxno=561136",
-            "section": "supply",
-            "press": "뉴스경남",
-            "score": 16.63,
-            "selection_fit_score": 0.0,
-            "selection_stage": "",
-            "is_core": false,
-            "representative_rank": 3,
-            "representative_score": 371.726,
-            "board_score": 298.426,
-            "board_eligible": true,
-            "direct_item_focus": true,
-            "title_primary_hits": 1,
-            "title_issue_hits": 1,
-            "operational_issue_signal": true,
-            "issue_bucket": "",
-            "feature_kind": "field",
-            "weak_stage_story": false
-          },
-          {
-            "id": "https://gndomin.com/news/articleView.html?idxno=481494",
-            "title": "합천유통, 사과 대추 공선출하회 조직 협약 체결",
-            "url": "http://www.gndomin.com/news/articleView.html?idxno=481494",
-            "section": "dist",
-            "press": "경남도민신문",
-            "score": 15.64,
-            "selection_fit_score": 3.12,
-            "selection_stage": "dist_preferred_count_recovery",
-            "is_core": false,
-            "representative_rank": 0,
-            "representative_score": 321.082,
-            "board_score": 317.582,
-            "board_eligible": true,
-            "direct_item_focus": true,
-            "title_primary_hits": 1,
-            "title_issue_hits": 1,
-            "operational_issue_signal": true,
-            "issue_bucket": "",
-            "feature_kind": "field",
             "weak_stage_story": false
           }
         ]
