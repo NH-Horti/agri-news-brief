@@ -1,6 +1,52 @@
 {
   "reports": [
     {
+      "report_date": "2026-07-13",
+      "generated_at_kst": "2026-07-13T06:24:32+09:00",
+      "overall_score": 89.92,
+      "operational_score": 94.62,
+      "reader_quality_score": 93.87,
+      "reader_quality_gate_status": "capped",
+      "reader_quality_gate_reasons": [
+        "preferred_slot_underfill"
+      ],
+      "editorial_score": 82.2,
+      "editorial_model_reported_score": 83.0,
+      "editorial_score_method": "weighted_components_v1",
+      "editorial_quality_tier": "needs_iteration",
+      "editorial_acceptance_passed": false,
+      "editorial_status": "needs_iteration",
+      "quality_gate_status": "needs_iteration",
+      "quality_gate_reason": "editorial_major_issue",
+      "status": "pass",
+      "section_alignment": 96.94,
+      "core_quality": 99.74,
+      "commodity_board_quality": 89.96,
+      "briefing_total": 19,
+      "commodity_total": 40,
+      "commodity_active_today_total": 17,
+      "commodity_active_today_unlinked_total": 10,
+      "commodity_managed_unlinked_total": 26,
+      "summary_presence_rate": 1.0,
+      "within_72h_rate": 1.0,
+      "briefing_title_unique_rate": 1.0,
+      "low_tier_source_rate": 0.1579,
+      "low_tier_source_excess_count": 0,
+      "content_false_positive_rate": 0.0,
+      "reader_hard_issue_count": 0,
+      "reader_quality_penalty": 0.75,
+      "editorial_quality_penalty": 0.0,
+      "commodity_primary_false_link_rate": 0.0,
+      "commodity_pool_false_link_rate": 0.0,
+      "policy_wrong_section_rate": 0.0,
+      "promotional_filler_rate": 0.0,
+      "promotional_core_rate": 0.0,
+      "pest_theme_duplicate_rate": 0.0,
+      "guardrail_driver_tags": [
+        "commodity_board"
+      ]
+    },
+    {
       "report_date": "2026-07-10",
       "generated_at_kst": "2026-07-10T13:11:49+09:00",
       "overall_score": 96.69,
@@ -1716,5 +1762,5 @@
       "briefing_title_unique_rate": 1.0
     }
   ],
-  "updated_at_kst": "2026-07-12T18:48:08+09:00"
+  "updated_at_kst": "2026-07-13T06:24:32+09:00"
 }
