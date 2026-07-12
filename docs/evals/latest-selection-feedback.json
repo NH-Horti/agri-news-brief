@@ -1,6 +1,6 @@
 {
   "report_date": "2026-07-09",
-  "generated_at_kst": "2026-07-12T13:36:16+09:00",
+  "generated_at_kst": "2026-07-12T13:47:11+09:00",
   "scores": {
     "section_alignment": 100.0,
     "core_quality": 83.14,
@@ -104,8 +104,8 @@
   ],
   "reader_hard_issue_samples": [],
   "editorial": {
-    "score": 80.7,
-    "model_reported_score": 81.0,
+    "score": 82.85,
+    "model_reported_score": 83.0,
     "score_method": "weighted_components_v1",
     "quality_tier": "needs_iteration",
     "target_score": 88.0,
@@ -117,13 +117,13 @@
       "excellent_score": 92.0,
       "stretch_score": 95.0,
       "blocking_issue_count": 0,
-      "major_issue_count": 1,
+      "major_issue_count": 0,
       "critical_component_min": 85.0,
       "all_component_min": 80.0,
       "checks": {
         "editorial_score_min": false,
         "no_blocking_issues": true,
-        "no_major_issues": false,
+        "no_major_issues": true,
         "critical_components_min": false,
         "all_components_min": false,
         "operational_score_min": false,
@@ -133,7 +133,6 @@
       },
       "failure_reasons": [
         "editorial_score_min",
-        "no_major_issues",
         "critical_components_min",
         "all_components_min",
         "operational_score_min",
@@ -144,77 +143,77 @@
     "section_count_score": 98.0,
     "section_count_status": "soft_fallback",
     "scores": {
-      "article_selection": 82.0,
-      "section_fit": 85.0,
-      "core_pick_quality": 83.0,
-      "summary_usefulness": 77.0,
-      "missed_opportunity": 76.0,
-      "noise_control": 79.0
+      "article_selection": 85.0,
+      "section_fit": 86.0,
+      "core_pick_quality": 84.0,
+      "summary_usefulness": 78.0,
+      "missed_opportunity": 80.0,
+      "noise_control": 82.0
     },
     "issues": [
       {
         "type": "underfill",
         "severity": "moderate",
         "section": "supply",
-        "title": "supply section",
-        "reason": "원자료 222건으로 충분한데 5장 목표를 채우지 못하고 4장에 그쳤다.",
-        "suggested_action": "가격·작황·출하 관련 후보 1장을 추가해 기본 5장 구성을 맞춰라."
+        "title": "공급 섹션 4건 편성",
+        "reason": "raw 후보가 충분한데 목표 5건을 채우지 못했다.",
+        "suggested_action": "가격·수급 후보 중 1건을 추가해 5건을 맞춰라."
       },
       {
-        "type": "noise",
+        "type": "promotional_filler",
         "severity": "moderate",
         "section": "supply",
         "title": "[농가월령가] 충남 멜론 의 미래 품종 다변화와 프리미엄 전략에 달렸다",
-        "reason": "일일 수급 브리핑보다는 칼럼성 품종전략 글로 공급 섹션 후순위 filler에 가깝다.",
-        "suggested_action": "양파 과잉·공판장 출하·수급 점검처럼 당일 시장성이 큰 기사로 교체하라."
+        "reason": "칼럼성·전략 홍보 성격이 강하고 당일 수급 뉴스성이 약하다.",
+        "suggested_action": "양파 소비촉진·가격 회복, 강서공판장 수급 점검 등 더 실무적인 후보로 교체하라."
+      },
+      {
+        "type": "weak_core",
+        "severity": "moderate",
+        "section": "policy",
+        "title": "농지조사·CPTPP·수확기 쌀값…하반기 농업정책 변수",
+        "reason": "하반기 전망성 기사로 당일 정책 실행·현장 영향의 긴급성이 낮다.",
+        "suggested_action": "가격안정제 도입이나 민생안정지원단 점검을 core로 올리고 이 기사는 tail로 낮춰라."
       },
       {
         "type": "duplicate_theme",
         "severity": "minor",
         "section": "policy",
-        "title": "농산물 가격 폭락에 농민 울분…정부, 경영 안정 위해 '총력 대응' / 농산물 가격 하락분 지원… 가격안정제 도 입",
-        "reason": "가격 폭락 대응과 가격안정제 설명이 일부 중복돼 정책 섹션의 의제 폭이 좁아졌다.",
-        "suggested_action": "한 장은 유지하고 다른 한 장은 수출·농협개혁·친환경 꾸러미 등 별도 정책 축으로 대체 검토하라."
+        "title": "농산물 가격 폭락에 농민 울분…정부, 경영 안정 위해 '총력 대응'",
+        "reason": "가격 폭락·물가 대응·가격안정제 카드가 한 섹션에 과밀하다.",
+        "suggested_action": "임산부 친환경 꾸러미나 수입농산물 관리 등 별도 정책축을 1건 섞어라."
       },
       {
         "type": "missed_candidate",
         "severity": "moderate",
         "section": "dist",
         "title": "대관령원예농협, 산지공판장 초매식 개최",
-        "reason": "고랭지 배추·무·감자 첫 경매와 3개월 공판장 운영이라는 구체적 유통 운영 기사였으나 누락됐다.",
-        "suggested_action": "지역 협약·발대식성 카드보다 산지공판장 운영 후보를 우선 배치하라."
+        "reason": "고랭지 배추·무·감자 첫 경매와 공판장 운영이라는 구체 유통성이 selected 로컬 협약보다 강하다.",
+        "suggested_action": "합천 사과대추 협약 또는 행사성 농협 협업그룹 카드 대신 채택하라."
       },
       {
         "type": "promotional_filler",
-        "severity": "moderate",
+        "severity": "minor",
         "section": "dist",
         "title": "농협경제지주, 농산물 유통사업 발전 협업그룹 발대",
-        "reason": "발대식 중심 기사로 실제 거래·물류 변화가 아직 약해 dist 후반 카드로도 다소 느슨하다.",
-        "suggested_action": "강서공판장 수급 점검, 공영도매시장 검사, 거점물류센터 운영 기사 등 실행성이 큰 후보를 우선하라."
-      },
-      {
-        "type": "weak_core",
-        "severity": "moderate",
-        "section": "dist",
-        "title": "농협중앙회, AI 도축로봇·스마트APC 확대…농업 디지털 전환 속도",
-        "reason": "스마트APC 언급은 있지만 기사 중심은 농협 디지털 전환·도축로봇이며 요약도 문장 반복이 있다.",
-        "suggested_action": "유통·물류 효과가 직접 드러나는 스마트APC 또는 온라인도매 물류 기사로 한정해 선별하라."
-      },
-      {
-        "type": "bad_summary",
-        "severity": "major",
-        "section": "pest",
-        "title": "농사포인트 - 사과 갈색무늬병 16~28℃ 수분존재 시간 길어질수록 발생...",
-        "reason": "제목은 사과 갈색무늬병인데 요약은 고랭지 배추·무 장마 사후대책으로 맞지 않아 핵심 정보가 흐려졌다.",
-        "suggested_action": "본문에서 사과 갈색무늬병 발생 조건과 방제 요령을 뽑아 요약을 재작성하라."
+        "reason": "발대식 중심이라 실제 거래·물류 변화 정보가 제한적이다.",
+        "suggested_action": "운영 일정·반입량·경매·물류비 개선 등 실행 정보가 있는 기사 우선으로 낮춰라."
       },
       {
         "type": "wrong_section",
         "severity": "moderate",
         "section": "pest",
         "title": "충남도 농기원, 지각 장마에 멜론 초기 생육관리 주의",
-        "reason": "병해충보다 멜론 초기 생육·장마 관리 안내에 가까워 pest 섹션 적합도가 낮다.",
-        "suggested_action": "화순 벼 병해충 예찰, 고온기 원예작물 복합해충, 나주 과수화상병 약제 지원 등 명명 병해충 후보를 우선하라."
+        "reason": "수분·착과 등 생육관리 중심으로 병해충 리스크 기사로 보기 어렵다.",
+        "suggested_action": "화순 벼 병해충 예찰 강화나 고온기 복합 해충 위험 기사로 교체하라."
+      },
+      {
+        "type": "bad_summary",
+        "severity": "moderate",
+        "section": "policy",
+        "title": "\"취약계층, 농식품 물가 상승 직격탄 맞아\"",
+        "reason": "요약에 '생활 필 일률적...' 등 원문 파편과 문장 훼손이 남았다.",
+        "suggested_action": "핵심 연구결과와 정책 제언을 완전한 문장 2개로 재작성하라."
       }
     ]
   },
@@ -265,8 +264,8 @@
     "mode": "shadow_replay_loop",
     "proposal_only": true,
     "target_score": 88.0,
-    "current_editorial_score": 80.7,
-    "model_reported_score": 81.0,
+    "current_editorial_score": 82.85,
+    "model_reported_score": 83.0,
     "quality_tier": "needs_iteration",
     "target_status": "needs_iteration",
     "iteration_budget": 3,
