@@ -1,0 +1,106 @@
+#< CLIXML
+2026-07-12 01:11:23,413 [INFO] [ENV] loaded local env file(s): .env.dev.local, .env.local
+2026-07-12 01:11:23,418 [INFO] [HF-INIT] token=SET rerank=True board_rerank=True model=intfloat/multilingual-e5-large
+2026-07-12 01:11:23,453 [INFO] [EVAL-FEEDBACK] loaded selection guardrails from docs/evals/latest-selection-feedback.json
+2026-07-12 01:11:23,465 [INFO] [BUILD] local-replay-20260706
+2026-07-12 01:11:23,468 [INFO] [LOCAL DRY RUN] output root: C:\Users\reonw\Documents\GitHub\agri-news-brief\tmp\replay-final-20260706
+2026-07-12 01:11:23,522 [INFO] [REPLAY] loaded snapshot: C:\Users\reonw\Documents\GitHub\agri-news-brief\docs\replay\2026-07-06.snapshot.json
+2026-07-12 01:12:35,566 [INFO] [REPLAY] rescored 533 article(s) with current scoring logic
+2026-07-12 01:12:35,677 [INFO] [OVERRIDE1] supply-horti-protect: kept in supply title=“오이 한 상자 5200원”…과채류 가격 폭락에 농가 비상
+2026-07-12 01:12:35,689 [INFO] [OVERRIDE1] supply-price-collapse-protect: kept in supply title=배값 강세 이어진다… 사과 ·포도·복숭아 가격은 하락 전망
+2026-07-12 01:12:35,689 [INFO] [OVERRIDE1] supply-horti-protect: kept in supply title=배값 강세 이어진다… 사과 ·포도·복숭아 가격은 하락 전망
+2026-07-12 01:12:35,697 [INFO] [OVERRIDE1] supply-horti-protect: kept in supply title=생산비도 못 건지는 양배추 값...밭 갈아엎은 농민들
+2026-07-12 01:12:35,812 [INFO] [OVERRIDE1] supply-horti-protect: kept in supply title=7월 배추·양배추값 하락, 무는 보합 전망
+2026-07-12 01:12:35,849 [INFO] [OVERRIDE1] supply-horti-protect: kept in supply title=7월 과일값은 배만 오름세 전망
+2026-07-12 01:12:35,858 [INFO] [OVERRIDE1] supply-horti-protect: kept in supply title=“몸에 좋은 우리 양파 많이 드세요”…값하락에 어려움 겪는 농가 지원...
+2026-07-12 01:12:35,908 [INFO] [OVERRIDE1] supply-price-collapse-protect: kept in supply title=한국사과연합회·대한민국GAP연합회, 사과 안전관리 강화
+2026-07-12 01:12:35,909 [INFO] [OVERRIDE1] supply-horti-protect: kept in supply title=한국사과연합회·대한민국GAP연합회, 사과 안전관리 강화
+2026-07-12 01:12:35,984 [INFO] [OVERRIDE1] supply-price-collapse-protect: kept in supply title=예산군, " 사과 는 더 신선하게, 농가 소득은 더 높게"
+2026-07-12 01:12:35,985 [INFO] [OVERRIDE1] supply-horti-protect: kept in supply title=예산군, " 사과 는 더 신선하게, 농가 소득은 더 높게"
+2026-07-12 01:12:36,020 [INFO] [OVERRIDE1] supply-horti-protect: kept in supply title=냉장고부터 멀티탭까지…주방에서 돈 새는 습관 8가지
+2026-07-12 01:12:36,213 [INFO] [OVERRIDE1] supply-price-collapse-protect: kept in supply title=농협·고향주부모임, ' 가격 폭락' 양파 소비촉진 캠페인
+2026-07-12 01:12:36,214 [INFO] [OVERRIDE1] supply-horti-protect: kept in supply title=농협·고향주부모임, ' 가격 폭락' 양파 소비촉진 캠페인
+2026-07-12 01:12:36,900 [INFO] [OVERRIDE1] supply-horti-protect: kept in supply title=여름철 무더위·장마 견딜 먹거리·패션아이템 사볼까...
+2026-07-12 01:12:36,908 [INFO] [OVERRIDE1] supply-price-collapse-protect: kept in supply title=김세훈 화천군수 지역 농산물 세일즈 행보 본격화
+2026-07-12 01:12:36,909 [INFO] [OVERRIDE1] supply-horti-protect: kept in supply title=김세훈 화천군수 지역 농산물 세일즈 행보 본격화
+2026-07-12 01:12:37,337 [INFO] [OVERRIDE1] supply-price-collapse-protect: kept in supply title=단양농협, 한지형 단양 마늘 특별판매 행사 성공적 개최
+2026-07-12 01:12:37,338 [INFO] [OVERRIDE1] supply-horti-protect: kept in supply title=단양농협, 한지형 단양 마늘 특별판매 행사 성공적 개최
+2026-07-12 01:12:37,413 [INFO] [OVERRIDE1] supply-price-collapse-protect: kept in supply title=취임 사흘 만에 가락시장 찾은 김세훈 화천군수…" 농산물 제값 받도록 ...
+2026-07-12 01:12:37,415 [INFO] [OVERRIDE1] supply-horti-protect: kept in supply title=취임 사흘 만에 가락시장 찾은 김세훈 화천군수…" 농산물 제값 받도록 ...
+2026-07-12 01:12:37,425 [INFO] [OVERRIDE1] supply-price-collapse-protect: kept in supply title="화천 농산물 팔러온 김세훈 화천군수 입니다"··· 취임식 사흘 만에 ...
+2026-07-12 01:12:37,425 [INFO] [OVERRIDE1] supply-horti-protect: kept in supply title="화천 농산물 팔러온 김세훈 화천군수 입니다"··· 취임식 사흘 만에 ...
+2026-07-12 01:12:37,551 [INFO] [OVERRIDE1] supply-price-collapse-protect: kept in dist title=강원 정선농협·여량농협, 지역 농산물 가공식품 미국 수출
+2026-07-12 01:12:37,632 [INFO] [OVERRIDE1] supply-price-collapse-protect: kept in dist title="화천 농산물 팔러온 김세훈 화천군수 입니다"··· 취임식 사흘 만에 ...
+2026-07-12 01:12:37,634 [INFO] [OVERRIDE1] supply-horti-protect: kept in dist title="화천 농산물 팔러온 김세훈 화천군수 입니다"··· 취임식 사흘 만에 ...
+2026-07-12 01:12:37,868 [INFO] [OVERRIDE1] supply-price-collapse-protect: kept in dist title=취임 사흘 만에 가락시장 찾은 김세훈 화천군수…" 농산물 제값 받도록 ...
+2026-07-12 01:12:37,868 [INFO] [OVERRIDE1] supply-horti-protect: kept in dist title=취임 사흘 만에 가락시장 찾은 김세훈 화천군수…" 농산물 제값 받도록 ...
+2026-07-12 01:12:37,880 [INFO] [OVERRIDE1] supply-price-collapse-protect: kept in dist title=김세훈 화천군수 지역 농산물 세일즈 행보 본격화
+2026-07-12 01:12:37,881 [INFO] [OVERRIDE1] supply-horti-protect: kept in dist title=김세훈 화천군수 지역 농산물 세일즈 행보 본격화
+2026-07-12 01:12:37,909 [INFO] [OVERRIDE1] supply-horti-protect: kept in dist title=7월 과일값은 배만 오름세 전망
+2026-07-12 01:12:37,922 [INFO] [OVERRIDE1] supply-price-collapse-protect: kept in dist title=배값 강세 이어진다… 사과 ·포도·복숭아 가격 은 하락 전망
+2026-07-12 01:12:37,923 [INFO] [OVERRIDE1] supply-horti-protect: kept in dist title=배값 강세 이어진다… 사과 ·포도·복숭아 가격 은 하락 전망
+2026-07-12 01:12:40,448 [INFO] [REBALANCE] moved 10 item(s) from policy -> supply/dist (retail-trend + NH-field)
+2026-07-12 01:12:46,664 [INFO] [REBALANCE] moved 26 item(s) by policy-like override: -> policy
+2026-07-12 01:12:46,681 [INFO] [SUPPLY CLEAN] removed 1 non-horti article(s) from supply
+2026-07-12 01:13:58,676 [INFO] [REASSIGN] moved 47 item(s) by global rescoring
+2026-07-12 01:13:59,466 [INFO] [REBALANCE] moved 1 pest-context item(s): policy -> pest
+2026-07-12 01:14:46,347 [INFO] [AUDIT] drop section=policy reason=non_agri_transport_policy_noise title=세계 식량가격 두 달 연속 하락…곡물·유제품·설탕 가격 내려
+2026-07-12 01:15:02,313 [INFO] [AUDIT] drop section=dist reason=agri_training_recruitment title=경북지역 조합공동사업법인, 농산물 판매확대로 농가소득 증대 앞장
+2026-07-12 01:16:03,967 [INFO] [REBALANCE] blocked unsafe supply board promote: reason=promotional_or_event_filler title=한국청과, 양파 출하조직에 파렛트용 그물랩 지원
+2026-07-12 01:16:03,973 [INFO] [REBALANCE] promoted 1 program-core board story(s) into final supply
+2026-07-12 01:16:03,987 [INFO] [AUDIT] drop section=supply reason=supply_market_ops_not_supply title=창녕군, 햇 마늘 경매 현장 방문…"경쟁력 향상에 최선"
+2026-07-12 01:16:04,184 [INFO] [AUDIT] pruned 1 final item(s) after section normalization
+2026-07-12 01:16:08,386 [INFO] [REBALANCE] recovered 3 supply underfill item(s) from raw pool
+2026-07-12 01:16:11,854 [INFO] [REBALANCE] recovered 1 policy underfill item(s) from raw pool
+2026-07-12 01:16:12,269 [INFO] [REBALANCE] dropped 1 optional weak policy macro tail item(s)
+2026-07-12 01:16:45,913 [INFO] [REBALANCE] replaced 1 optional weak dist tail item(s)
+2026-07-12 01:16:46,184 [INFO] [REBALANCE] promoted 1 priority fire-blight item(s)
+2026-07-12 01:16:47,434 [INFO] [REBALANCE] replaced 2 duplicate-theme pest tail item(s)
+2026-07-12 01:16:47,586 [INFO] [REBALANCE] dropped 1 final weak policy tail item(s)
+2026-07-12 01:17:12,012 [INFO] [REBALANCE] recovered 3 preferred-count tail item(s) from raw pool
+2026-07-12 01:17:12,304 [INFO] [REBALANCE] dropped 1 weak final tail item(s) after preferred-count recovery
+2026-07-12 01:17:15,659 [INFO] [REBALANCE] refined 1 preferred-count tail item(s) after final cleanup
+2026-07-12 01:17:27,637 [INFO] [REBALANCE] editorial tail guard replaced supply=1 policy=3 dist=2 item(s)
+2026-07-12 01:17:28,182 [INFO] [REBALANCE] editorial issue fallback replaced policy=1 supply=0 dist=0 item(s)
+2026-07-12 01:17:28,570 [INFO] [REBALANCE] repaired 1 editorial shadow issue item(s)
+2026-07-12 01:17:31,909 [INFO] [AUDIT] drop section=supply reason=fit_near_zero fit=-0.07 score=27.78 core=False title=中 수출길 뚫고 AI 영농 확대… 올해 ‘성주 참외’ 매출 7000억 도약 원...
+2026-07-12 01:17:32,045 [INFO] [AUDIT] drop section=dist reason=dist_consumer_tail title=양구수박 올해 첫 출하…13㎏ 최고가 3만5,000원
+2026-07-12 01:17:32,083 [INFO] [REBALANCE] final quality sweep pruned 2 residual item(s)
+2026-07-12 01:17:47,698 [INFO] [REBALANCE] post-sweep refilled 2 item(s), cleaned dupes=0 hard=0 audit=0
+2026-07-12 01:17:48,001 [INFO] [REBALANCE] final editorial shadow repair fixed 1 item(s)
+2026-07-12 01:17:57,219 [INFO] [REBALANCE] publish quality guard repaired supply=1 policy=1 dist=1, refilled dist=0, supply-core=1, dist-core=1
+2026-07-12 01:18:29,940 [INFO] [REBALANCE] final publish editorial selection repaired 7 visible card(s)
+2026-07-12 01:18:36,018 [INFO] [REBALANCE] post-publish dist ops replaced 1 promotional tail item(s)
+2026-07-12 01:18:36,263 [INFO] [AUDIT] drop section=supply reason=fit_near_zero fit=-0.07 score=27.78 core=False title=中 수출길 뚫고 AI 영농 확대… 올해 ‘성주 참외’ 매출 7000억 도약 원...
+2026-07-12 01:18:36,299 [INFO] [AUDIT] drop section=policy reason=selection_feedback_low_fit title=농식품부, 국내 최초 농림위성 7일 발사 '과학농정 체계 구축' ...스페이...
+2026-07-12 01:18:50,235 [INFO] [AUDIT] drop section=policy reason=selection_feedback_low_fit title=농식품부, 국내 최초 농림위성 7일 발사 '과학농정 체계 구축' ...스페이...
+2026-07-12 01:18:50,677 [INFO] [REBALANCE] post-publish final hard sweep pruned=0/0 refilled=0/2 audit=2/1
+2026-07-12 01:18:52,619 [INFO] [REBALANCE] post-publish editorial follow-up repaired 2 card/core target(s)
+2026-07-12 01:19:05,032 [INFO] [REBALANCE] post-followup structural quality repaired 1 visible card(s)
+2026-07-12 01:19:21,850 [INFO] [REBALANCE] post-followup quality refill added=1 repaired=0
+2026-07-12 01:19:21,951 [INFO] [FINAL-DOMAIN-CAP] section=pest swap out=[nongmin.com] 기후변화· 병해충 으로 작목 전환하는 고랭지 채소밭 | in=[kmib.co.kr] 폭염에 충북 과수화상병 소강 국면
+2026-07-12 01:19:21,952 [INFO] [REBALANCE] final domain diversity swapped 1 card(s)
+2026-07-12 01:19:22,277 [INFO] [FINAL-SOURCE-QUALITY] section=dist out=[tier1:thepublic] 농협, 산지부터 소매까지 유통망 통합 관리 나선다 | in=[tier2:강원도민일보] 양구수박 올해 첫 출하…경매 최고가 3만5000원 기록
+2026-07-12 01:19:22,279 [INFO] [REBALANCE] final source quality changed=1
+2026-07-12 01:19:44,142 [INFO] [FINAL-EVENT-DEDUP] reason=same_commodity_multi_action keep=[supply] 생산비도 못 건지는 양배추 값...밭 갈아엎은 농민들 | drop=[supply] "양배추 가격폭락에 벼랑 끝"···청주 농민들, 밭 갈아엎어
+2026-07-12 01:19:44,177 [INFO] [FINAL-EVENT-DEDUP-REFILL] section=supply title=7월 배추·양배추값 하락, 무는 보합 전망
+2026-07-12 01:20:05,257 [INFO] [REBALANCE] final reader quality changed=14 dedupe=1/1 source=0 reassert=9
+2026-07-12 01:20:05,333 [INFO] [MAINT] replay_date 2026-07-06 window: 2026-07-03T06:00:00+09:00 ~ 2026-07-06T06:00:00+09:00
+2026-07-12 01:20:05,335 [INFO] [STAGE] maintenance_publish start elapsed=521.9s {'action': 'maintenance replay_date', 'report_date': '2026-07-06'}
+2026-07-12 01:20:05,338 [INFO] [STAGE] maintenance_publish_list_archives start elapsed=521.9s 
+2026-07-12 01:20:05,706 [INFO] [STAGE] maintenance_publish_list_archives done elapsed=522.3s {'archive_count': 129}
+2026-07-12 01:20:05,708 [INFO] [STAGE] maintenance_publish_render start elapsed=522.3s 
+2026-07-12 01:20:11,358 [INFO] [HF] commodity board pre-cached 23 profiles (dim=1024)
+2026-07-12 01:20:23,614 [WARNING] [HF] commodity board API failed 1 times, giving up after carrot
+2026-07-12 01:20:25,555 [INFO] [STAGE] maintenance_publish_render done elapsed=542.1s {'html_bytes': 321963}
+2026-07-12 01:20:25,555 [INFO] [STAGE] maintenance_publish_archive start elapsed=542.1s {'path': 'docs/archive/2026-07-06.html'}
+2026-07-12 01:20:46,342 [INFO] [LOCAL DRY RUN] write C:\Users\reonw\Documents\GitHub\agri-news-brief\tmp\replay-final-20260706\main\docs\archive\2026-07-06.html
+2026-07-12 01:20:46,343 [INFO] [MAINT PUT] docs/archive/2026-07-06.html
+2026-07-12 01:20:46,343 [INFO] [STAGE] maintenance_publish_archive done elapsed=562.9s {'path': 'docs/archive/2026-07-06.html'}
+2026-07-12 01:20:46,344 [INFO] [STAGE] maintenance_publish_debug start elapsed=562.9s {'path': 'docs/debug/2026-07-06.json'}
+2026-07-12 01:20:46,345 [INFO] [STAGE] maintenance_publish_fast_exit done elapsed=562.9s {'reason': 'local_dry_run_after_archive'}
+2026-07-12 01:20:46,365 [INFO] [LOCAL DRY RUN] write C:\Users\reonw\Documents\GitHub\agri-news-brief\tmp\replay-final-20260706\main\docs\debug\2026-07-06.json
+2026-07-12 01:20:46,366 [INFO] [MAINT PUT] docs/debug/2026-07-06.json
+2026-07-12 01:20:46,366 [INFO] [STAGE] maintenance_publish_debug done elapsed=562.9s {'path': 'docs/debug/2026-07-06.json'}
+2026-07-12 01:20:46,367 [INFO] [LOCAL DRY RUN] fast exit after archive/debug publish; set LOCAL_DRY_RUN_FAST_EXIT_AFTER_ARCHIVE=0 to run index/manifest follow-up
+<Objs Version="1.1.0.1" xmlns="http://schemas.microsoft.com/powershell/2004/04"><Obj S="progress" RefId="0"><TN RefId="0"><T>System.Management.Automation.PSCustomObject</T><T>System.Object</T></TN><MS><I64 N="SourceId">1</I64><PR N="Record"><AV>처음 사용하기 위해 모듈을 준비하는 중입니다.</AV><AI>0</AI><Nil /><PI>-1</PI><PC>-1</PC><T>Completed</T><SR>-1</SR><SD> </SD></PR></MS></Obj></Objs>

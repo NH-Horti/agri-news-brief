@@ -1,0 +1,314 @@
+{
+  "report_date": "2026-07-07",
+  "generated_at_kst": "2026-07-12T08:09:12+09:00",
+  "status": "pass",
+  "overall_score": 89.41,
+  "operational_score": 93.21,
+  "reader_quality_score": 89.41,
+  "reader_quality_gate": {
+    "status": "capped",
+    "headline_score": 89.41,
+    "operational_score": 93.21,
+    "penalty": 3.8,
+    "cap": 95.0,
+    "reasons": [
+      "preferred_slot_underfill"
+    ]
+  },
+  "scores": {
+    "completeness": 92.8,
+    "diversity": 98.67,
+    "source_quality": 93.33,
+    "summary_quality": 96.67,
+    "freshness": 100.0,
+    "retrieval_support": 87.5,
+    "section_alignment": 96.67,
+    "core_quality": 100.0,
+    "commodity_board_quality": 89.4,
+    "reader_quality": 89.41
+  },
+  "counts": {
+    "briefing_total": 18,
+    "commodity_total": 41,
+    "commodity_primary_total": 11,
+    "commodity_pool_total": 6,
+    "commodity_active_today_total": 14,
+    "commodity_active_today_unlinked_total": 3,
+    "commodity_managed_unlinked_total": 22,
+    "briefing_by_section": {
+      "supply": 4,
+      "policy": 5,
+      "dist": 5,
+      "pest": 4
+    },
+    "core_by_section": {
+      "supply": 1,
+      "policy": 1,
+      "dist": 2,
+      "pest": 2
+    },
+    "commodity_by_section": {
+      "supply": 15,
+      "policy": 0,
+      "dist": 16,
+      "pest": 10
+    },
+    "raw_by_section": {
+      "supply": 250,
+      "policy": 109,
+      "dist": 84,
+      "pest": 53
+    },
+    "expected_briefing_by_section": {
+      "supply": 5,
+      "policy": 5,
+      "dist": 5,
+      "pest": 5
+    },
+    "soft_fallback_briefing_by_section": {
+      "supply": 4,
+      "policy": 4,
+      "dist": 4,
+      "pest": 4
+    },
+    "minimum_fallback_briefing_by_section": {
+      "supply": 3,
+      "policy": 3,
+      "dist": 3,
+      "pest": 3
+    },
+    "preferred_slot_gap_by_section": {
+      "supply": 1,
+      "policy": 0,
+      "dist": 0,
+      "pest": 1
+    },
+    "low_tier_source_total": 3,
+    "low_tier_source_by_section": {
+      "supply": 0,
+      "policy": 1,
+      "dist": 1,
+      "pest": 1
+    }
+  },
+  "metrics": {
+    "briefing_title_unique_rate": 1.0,
+    "briefing_domain_diversity_rate": 0.8333,
+    "low_tier_source_rate": 0.1667,
+    "low_tier_source_excess_count": 0,
+    "source_quality_penalty": 0.0,
+    "surface_reuse_penalty": 0.0339,
+    "summary_presence_rate": 1.0,
+    "summary_length_ok_rate": 0.8889,
+    "summary_numeric_rate": 0.8333,
+    "summary_opening_diversity": 1.0,
+    "matched_article_rate": 1.0,
+    "within_48h_rate": 1.0,
+    "within_72h_rate": 1.0,
+    "stale_over_96h_rate": 0.0,
+    "freshness_window_mode": "regular",
+    "seed_coverage_score": 0.5833,
+    "section_alignment_fit_avg": 4.2306,
+    "section_alignment_low_fit_rate": 0.0556,
+    "section_alignment_cross_gap_rate": 0.0556,
+    "section_alignment_weak_stage_rate": 0.0,
+    "content_false_positive_rate": 0.0,
+    "reader_hard_issue_count": 0,
+    "reader_hard_issue_rate": 0.0,
+    "reader_hard_core_issue_count": 0,
+    "reader_quality_penalty": 3.8,
+    "reader_quality_cap": 95.0,
+    "preferred_slot_reader_penalty_weight": 1.5,
+    "off_scope_foreign_rate": 0.0,
+    "story_duplicate_rate": 0.0,
+    "cross_section_duplicate_rate": 0.0,
+    "content_irrelevant_rate": 0.0,
+    "semantic_false_positive_penalty": 0.0,
+    "story_duplicate_penalty": 0.0,
+    "policy_wrong_section_rate": 0.0,
+    "promotional_filler_rate": 0.0,
+    "promotional_core_rate": 0.0,
+    "weak_core_editorial_rate": 0.0,
+    "pest_theme_duplicate_rate": 0.0,
+    "dist_weak_ops_rate": 0.0556,
+    "editorial_quality_penalty": 0.4444,
+    "preferred_slot_gap_rate": 0.1,
+    "preferred_slot_gap_total": 2,
+    "preferred_slot_penalty": 2.2,
+    "core_fit_avg": 5.315,
+    "core_rank_percentile_avg": 0.9124,
+    "core_stage_core_rate": 1.0,
+    "weak_core_rate": 0.0,
+    "commodity_primary_item_focus_rate": 1.0,
+    "commodity_primary_issue_signal_rate": 1.0,
+    "commodity_primary_weak_rate": 0.0,
+    "commodity_primary_fit_avg": 4.1536,
+    "commodity_primary_rank_avg": 3.2727,
+    "commodity_primary_title_item_focus_rate": 1.0,
+    "commodity_primary_title_issue_signal_rate": 1.0,
+    "commodity_primary_strict_link_rate": 1.0,
+    "commodity_primary_low_rank_rate": 0.0,
+    "commodity_primary_count": 11,
+    "commodity_active_today_total": 14,
+    "commodity_active_today_unlinked_total": 3,
+    "commodity_managed_unlinked_total": 22,
+    "commodity_board_daily_min_primary_count": 6,
+    "commodity_board_low_coverage": false,
+    "commodity_board_coverage_rate": 0.3333,
+    "commodity_primary_title_item_missing_rate": 0.0,
+    "commodity_primary_body_only_rate": 0.0,
+    "commodity_primary_false_link_rate": 0.0,
+    "commodity_pool_count": 6,
+    "commodity_pool_false_link_rate": 0.0,
+    "commodity_primary_dominant_section_rate": 0.7273,
+    "commodity_primary_section_balance_score": 0.1169
+  },
+  "section_scores": {
+    "briefing_fill": {
+      "supply": 0.8,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 0.8
+    },
+    "core_fill": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "retrieval_pool": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "seed_coverage": {
+      "supply": 0.6667,
+      "policy": 0.5,
+      "dist": 0.6667,
+      "pest": 0.5
+    },
+    "section_alignment": {
+      "supply": 0.7682,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "core_quality": {
+      "supply": 1.0,
+      "policy": 0.9797,
+      "dist": 1.0,
+      "pest": 0.9636
+    }
+  },
+  "freshness_samples": [
+    {
+      "title": "고 물가 가 바꾼 유통 단계...정부는 온라인도매 키우고, 이커머스 ‘산지...",
+      "section": "dist",
+      "age_hours": 24.0
+    },
+    {
+      "title": "전주원협 양파 대만 수출… 수급안정 총력",
+      "section": "dist",
+      "age_hours": 23.0
+    },
+    {
+      "title": "여름 제철 과일 복숭아· 포도 생산량 늘어 가격 하락 전망",
+      "section": "supply",
+      "age_hours": 20.2
+    },
+    {
+      "title": "고온기 나방·총채벌레 피해 증가, 복합해충 관리 중요",
+      "section": "pest",
+      "age_hours": 19.8
+    },
+    {
+      "title": "농산물 유통·복지·온라인몰로 강원 경제 '돌파구'",
+      "section": "dist",
+      "age_hours": 19.7
+    },
+    {
+      "title": "FAO 세계식량가격지수 0.3% 하락…곡물·설탕 내리고 유지류 상승",
+      "section": "policy",
+      "age_hours": 19.5
+    },
+    {
+      "title": "예산군, 병해충 조기진단으로 농작물 피해 줄인다",
+      "section": "pest",
+      "age_hours": 19.5
+    },
+    {
+      "title": "배 이집트 수출길 열렸다…토마토 대일 수출 규제도 완화",
+      "section": "dist",
+      "age_hours": 19.0
+    }
+  ],
+  "content_false_positive_samples": [],
+  "reader_hard_issue_samples": [],
+  "story_duplicate_samples": [],
+  "commodity_primary_linkage_samples": [],
+  "commodity_pool_linkage_samples": [],
+  "editorial_quality_samples": [
+    {
+      "title": "경남 농가, 400만t 중국 단감시장 진출 '예약'",
+      "href": "http://www.gnmaeil.com/news/articleView.html?idxno=590138",
+      "section": "dist",
+      "is_core": false,
+      "reasons": [
+        "dist_event_or_development_without_ops"
+      ]
+    }
+  ],
+  "improvement_hints": [
+    "품목 보드 대표기사가 품목 핵심 이슈를 충분히 대변하지 못합니다. 제목에서 품목명과 수급·가격·병해충 신호가 함께 보이는 기사, representative rank 상위 후보, 비수급 섹션의 직접 이슈 후보를 우선하세요.",
+    "raw 후보가 충분한데 선호 카드 수(섹션당 5개)에 못 미친 섹션이 있습니다: supply(-1), pest(-1). 빈 5번째 슬롯에는 고품질 수급·유통 cross-fill 후보를 재검토하세요.",
+    "편집 품질상 약한 기사 선택이 감지되었습니다 (dist_weak_ops=6%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요."
+  ],
+  "selection_guardrails": {
+    "driver_tags": [
+      "commodity_board"
+    ],
+    "section_card_min_fit": {
+      "default": 0.8,
+      "supply": 0.82,
+      "policy": 0.82,
+      "dist": 0.95,
+      "pest": 0.78
+    },
+    "section_low_fit_rescue_min": 0.15,
+    "high_score_low_fit_rescue_margin": 3.0,
+    "tail_score_floor_delta": 0.0,
+    "core_fit_min": {
+      "default": 1.2,
+      "supply": 1.4,
+      "policy": 1.4,
+      "dist": 1.6,
+      "pest": 1.2
+    },
+    "core_relaxed_min_fit": {
+      "default": 1.0,
+      "supply": 1.18,
+      "policy": 1.15,
+      "dist": 1.35,
+      "pest": 1.0
+    },
+    "disable_relaxed_core_fill": false,
+    "final_low_tier_max_per_section": 1,
+    "final_low_tier_max_total": 4,
+    "commodity_active_min_rank": 2,
+    "commodity_program_core_min_rank": 3,
+    "commodity_require_issue_signal": false,
+    "commodity_require_direct_item_focus": false,
+    "commodity_strict_primary_only": true,
+    "commodity_disable_primary_fallback": true
+  },
+  "summary_prompt_feedback": [
+    "각 기사 요약은 2문장으로 유지하고, 85~140자 안에서 품목·지역·핵심 변수만 남긴다."
+  ],
+  "score_notes": {
+    "overall_score": "Headline reader-quality score. It preserves operational coverage but is capped by hard reader-facing quality issues.",
+    "operational_score": "Deterministic operational harness score for format, coverage, freshness, and metadata.",
+    "reader_quality_score": "Deterministic reader-facing score with hard caps for off-topic articles, duplicate topics, and weak commodity linkage.",
+    "editorial_score": "LLM shadow score for article choice, missed opportunities, noise, and summary usefulness."
+  }
+}
