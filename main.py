@@ -5023,6 +5023,8 @@ _SHORT_TERM_FALSE_POSITIVE_WORDS: dict[str, tuple[str, ...]] = {
     "매실": ("판매실", "거래실", "매실적"),
     "감자": ("투자감자", "감자본"),  # 주식 감자(감자본)
     "딸기": ("산딸기", "뱀딸기", "멍석딸기", "겨울딸기", "땅딸기", "복분자딸기", "산딸기나무"),
+    # 사과대추는 대추의 한 품종으로, 사과 품목 기사로 연결하면 안 된다.
+    "사과": ("사과대추", "사과 대추"),
 }
 
 
@@ -6297,6 +6299,10 @@ def is_edible_apple_context(text: str) -> bool:
     if "사과" not in t:
         return False
 
+    # '사과대추'에 포함된 문자열만 있는 경우는 사과(apple)가 아니다.
+    if "사과" not in re.sub(r"사과\s*대추", "", t):
+        return False
+
     # 1) 강한 오탐(사회과학대학 약칭 등)
     hard_false = (
         "사과대", "사과대학", "사회과학", "사회과학대", "사회과학대학", "사과계열", "사과 계열"
@@ -7532,8 +7538,12 @@ def _is_supply_authoritative_multi_price_context(title: str, desc: str) -> bool:
     managed = _managed_commodity_match_summary(title or "", desc or "")
     managed_count = int(managed.get("count") or 0)
     program_core_count = int(managed.get("program_core_count") or 0)
-    official_source = "한국농수산식품유통공사" in txt
-    broad_price = any(term in ttl for term in ("농산물값", "농산물 값", "농산물 가격"))
+    official_source = any(term in txt for term in (
+        "한국농수산식품유통공사", "한국물가협회", "물가협회",
+    ))
+    broad_price = any(term in ttl for term in (
+        "농산물값", "농산물 값", "농산물 가격", "식재료 물가", "생활물가",
+    ))
     quantified_moves = len(re.findall(r"\d+(?:\.\d+)?\s*%", txt))
     both_directions = (
         any(term in txt for term in ("하락", "내렸", "낮아", "↓"))
@@ -10356,6 +10366,33 @@ def is_supply_price_collapse_field_context(title: str, desc: str, dom: str = "",
         )],
     )
     return price_or_demand_hits >= 1 and field_hits >= 1
+
+
+def _is_supply_price_collapse_editorial_context(
+    title: str,
+    desc: str,
+    dom: str = "",
+    press: str = "",
+) -> bool:
+    """Keep direct price-collapse reporting without admitting incidental body mentions."""
+    if not is_supply_price_collapse_field_context(title, desc, dom, press):
+        return False
+    ttl = _nfkc_lower(title or "")
+    txt = _nfkc_lower(f"{title or ''} {desc or ''}".strip())
+    promo_frame = count_any(
+        ttl,
+        [w.lower() for w in ("풍년의 역설", "소비 촉진", "소비촉진", "농가 돕기")],
+    ) >= 1
+    field_crisis = count_any(
+        txt,
+        [w.lower() for w in ("공급 과잉", "가격 폭락", "값이 폭락", "산지폐기", "갈아엎", "수확을 포기")],
+    ) >= 2
+    title_price_signal = count_any(ttl, [w.lower() for w in (
+        "가격", "값", "시세", "폭락", "급락", "하락", "반토막", "최저", "바닥",
+    )]) >= 1
+    if title_price_signal and not promo_frame:
+        return True
+    return bool(promo_frame and field_crisis)
 
 
 def is_dist_apc_nh_core_context(title: str, desc: str) -> bool:
@@ -31371,9 +31408,18 @@ def _commodity_board_article_is_active_candidate(
         )
     )
     _title_issue_hits = _commodity_board_title_issue_hits(_cb_title)
+    # 병명 자체가 제목의 핵심 이슈인 방제 기사는 '병해충'이라는 일반어가
+    # 없어도 품목보드 대표 후보가 될 수 있다.
+    _named_pest_title_issue = bool(
+        str(getattr(article, "section", "") or "").strip() == "pest"
+        and (
+            _has_named_pest_signal(_cb_title)
+            or count_any(_nfkc_lower(_cb_title), [w.lower() for w in _PEST_NAMED_DISEASE_TERMS]) >= 1
+        )
+    )
     if not _title_item_focus_ok:
         return False
-    if _title_issue_hits == 0:
+    if _title_issue_hits == 0 and not _named_pest_title_issue:
         return False
     _has_operational_issue = _commodity_board_has_operational_issue_signal(article_metrics)
     if not _has_operational_issue:
@@ -35762,6 +35808,13 @@ def _is_supply_editorial_weak_tail(article: Article) -> bool:
         return False
     title_l = _nfkc_lower(article.title or "")
     text_l = _nfkc_lower(f"{article.title or ''} {article.description or ''}")
+    if (
+        _is_supply_price_collapse_editorial_context(
+            article.title or "", article.description or "", article.domain or "", article.press or "",
+        )
+        or _is_supply_authoritative_multi_price_context(article.title or "", article.description or "")
+    ):
+        return False
     if _is_supply_publish_wrong_section_noise(article):
         return True
     preferred_reason = _preferred_tail_block_reason(
@@ -37703,6 +37756,13 @@ def _is_supply_agritech_research_story(article: Article) -> bool:
 def _is_publish_supply_editorial_weak(article: Article) -> bool:
     title = _publish_editorial_title(article)
     text = _publish_editorial_text(article)
+    if (
+        _is_supply_price_collapse_editorial_context(
+            article.title or "", article.description or "", article.domain or "", article.press or "",
+        )
+        or _is_supply_authoritative_multi_price_context(article.title or "", article.description or "")
+    ):
+        return False
     # A freshly published shipment report with volumes and a concrete market
     # route remains operationally useful even when the launch ceremony itself
     # occurred a few days earlier.
@@ -42129,7 +42189,15 @@ def _supply_issue_family(article: Article) -> str:
 
 
 def _is_cross_day_supply_candidate(article: Article) -> bool:
-    if not isinstance(article, Article) or _is_supply_reader_role_misfit(article):
+    if not isinstance(article, Article):
+        return False
+    direct_field_collapse = _is_supply_price_collapse_editorial_context(
+        article.title or "", article.description or "", article.domain or "", article.press or "",
+    )
+    authoritative_multi_price = _is_supply_authoritative_multi_price_context(
+        article.title or "", article.description or "",
+    )
+    if _is_supply_reader_role_misfit(article) and not (direct_field_collapse or authoritative_multi_price):
         return False
     if _postbuild_article_reject_reason(article, "supply", apply_selection_fit=False):
         return False
@@ -42156,7 +42224,9 @@ def _is_cross_day_supply_candidate(article: Article) -> bool:
         and count_any(text, [w.lower() for w in ("출하", "생산", "농가", "판매", "도매시장", "공판장")]) >= 2
     )
     return bool(
-        quantified_crop_shipment
+        direct_field_collapse
+        or authoritative_multi_price
+        or quantified_crop_shipment
         or ((managed >= 1 or broad_horti) and market >= 1 and (quantified or market >= 2))
     )
 
@@ -42402,7 +42472,7 @@ def _is_dist_market_ceremony_story(article: Article) -> bool:
     return any(term in title for term in (
         "초매식", "개장식", "첫 경매", "경매 개시",
         "공판사업소 개장", "공판장 개장",
-        "운영위 출범", "운영위원회 출범", "위원장 선임", "발대식",
+        "운영위 출범", "운영위원회 출범", "위원장 선임", "발대식", "발대",
     ))
 
 
@@ -42421,7 +42491,20 @@ def _has_dist_market_operating_facts(article: Article) -> bool:
             "반입량", "수수료", "정산", "처리량", "공동선별", "분산출하", "수매가",
         )],
     )
-    return bool(metric and operating >= 1)
+    if metric and operating >= 1:
+        return True
+
+    # 개장·초매 기사라도 실제 운영 기간, 시설 규모, 취급 품목과 첫 경매가
+    # 함께 확인되면 단순 기념행사가 아니라 유통 운영 정보로 본다.
+    operating_period = re.search(r"\d+(?:\.\d+)?\s*(?:개월|평)", text) is not None
+    operating_facts = count_any(
+        text,
+        [w.lower() for w in (
+            "가동에 들어", "집중 운영", "첫 경매", "경매동", "창고동", "공판사업소",
+            "취급 품목", "거래됐다", "판로 확보", "유통 거점",
+        )],
+    )
+    return bool(operating_period and operating_facts >= 2)
 
 
 def _is_replaceable_low_tier_dist_tail(article: Article) -> bool:

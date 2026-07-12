@@ -5273,6 +5273,64 @@ class TestRecentItemsRebuild(unittest.TestCase):
 
         self.assertNotIn(ceremony, final["dist"])
 
+    def test_supply_refill_accepts_quantified_multi_price_bulletin(self):
+        bulletin = self._make_article(
+            "supply",
+            "품목별 엇갈린 식재료 물가",
+            (
+                "한국물가협회 주간 생활물가 동향에 따르면 감자 출하량 증가로 21.0% 하락했고 "
+                "파프리카는 7.9%, 마늘은 8.8% 내렸다. 상추는 생산량 감소와 시장 반입량 감소로 "
+                "5.3% 상승했으며 배추·무·양파도 전주 대비 가격 변동을 보였다."
+            ),
+            "https://example.com/weekly-multi-price-bulletin",
+        )
+
+        self.assertTrue(main._is_supply_authoritative_multi_price_context(bulletin.title, bulletin.description))
+        self.assertFalse(main._is_publish_supply_editorial_weak(bulletin))
+        self.assertTrue(main._is_cross_day_supply_candidate(bulletin))
+
+    def test_supply_refill_keeps_field_price_collapse_despite_promotion_headline(self):
+        onion = self._make_article(
+            "supply",
+            "풍년의 역설 양파…소비 촉진으로 돕기",
+            (
+                "수입 물량과 좋은 작황이 겹쳐 공급 과잉으로 양파 가격이 폭락했다. "
+                "농민들이 수확을 앞둔 밭을 갈아엎어 산지 농가의 피해가 커지고 있다."
+            ),
+            "https://example.com/onion-price-collapse",
+        )
+
+        self.assertTrue(
+            main._is_supply_price_collapse_editorial_context(
+                onion.title, onion.description, onion.domain, onion.press,
+            )
+        )
+        self.assertFalse(main._is_publish_supply_editorial_weak(onion))
+        self.assertTrue(main._is_cross_day_supply_candidate(onion))
+
+    def test_dist_refill_prefers_operating_auction_over_launch_group(self):
+        auction = self._make_article(
+            "dist",
+            "대관령원예농협, 산지공판장 초매식 개최",
+            (
+                "공판사업소가 11월 초까지 약 3개월간 집중 운영된다. 첫 경매에서 배추·무·감자 등이 "
+                "거래됐고 경매동 614평, 창고동 400평 규모로 농가 판로 확보를 지원한다."
+            ),
+            "https://example.com/produce-auction-opening",
+        )
+        launch_group = self._make_article(
+            "dist",
+            "농협경제지주, 농산물 유통사업 발전 협업그룹 발대",
+            "실무자들이 협업그룹 발대식을 열고 향후 산지 출하정보를 공유할 계획이라고 밝혔다.",
+            "https://example.com/distribution-launch-group",
+        )
+
+        self.assertTrue(main._has_dist_market_operating_facts(auction))
+        self.assertFalse(main._is_dist_reader_filler(auction))
+        self.assertTrue(main._is_cross_day_dist_candidate(auction))
+        self.assertTrue(main._is_dist_reader_filler(launch_group))
+        self.assertFalse(main._is_cross_day_dist_candidate(launch_group))
+
     def test_cross_day_pest_refill_rejects_weather_and_branded_cold_device(self):
         weather = self._make_article(
             "pest",
