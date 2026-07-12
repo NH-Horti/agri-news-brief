@@ -43159,8 +43159,16 @@ def _repair_final_reader_quality_floor(
             return not _is_cross_day_pest_candidate(article)
         return False
 
+    def _hard_reader_cleanup_for_section(
+        section_key: str,
+    ) -> Callable[[Article], bool]:
+        def _predicate(article: Article) -> bool:
+            return _hard_reader_cleanup(section_key, article)
+
+        return _predicate
+
     hard_cleanup: dict[str, Callable[[Article], bool]] = {
-        section_key: (lambda article, key=section_key: _hard_reader_cleanup(key, article))
+        section_key: _hard_reader_cleanup_for_section(section_key)
         for section_key in ("policy", "dist", "supply", "pest")
     }
     upgrade_victim: dict[str, Callable[[Article], bool]] = {
