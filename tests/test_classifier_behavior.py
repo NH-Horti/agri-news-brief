@@ -5926,5 +5926,24 @@ class TestRecentItemsRebuild(unittest.TestCase):
         self.assertNotIn("URL 복사", normalized)
         self.assertIn("주 6일 거래", normalized)
 
+    def test_replay_summary_prioritizes_headline_disease_in_long_guidance(self):
+        article = self._make_article(
+            "pest",
+            "농사포인트 - 사과 갈색무늬병 16~28℃ 수분 존재 시간이 길수록 발생",
+            (
+                "고랭지 배추는 장마 뒤 배수로를 정비하고 토양 유실을 복구해야 한다. "
+                "무 재배지는 물이 빠진 뒤 웃거름을 주고 무름병 예방 약제를 살포한다. "
+                "시설채소 농가는 손상된 피복재를 교체하고 쓰러진 포기를 세워야 한다. "
+                "사과 갈색무늬병은 16~28℃에서 잎의 수분 존재 시간이 길수록 발생량이 증가한다. "
+                "사과 농가는 장마철 예찰을 강화하고 등록 약제로 적기에 방제해야 한다."
+            ),
+            "https://example.com/apple-brown-spot-guidance",
+        )
+
+        normalized = main._normalize_article_summary(article, article.description)
+
+        self.assertIn("사과 갈색무늬병", normalized)
+        self.assertNotIn("고랭지 배추", normalized)
+
 if __name__ == "__main__":
     unittest.main()

@@ -29235,11 +29235,40 @@ def _extract_clean_replay_summary(article: Article) -> str:
         if any(re.sub(r"[\s\W]+", "", old).lower() == norm for old in candidates):
             continue
         candidates.append(sentence)
-        if len(candidates) >= 2:
+        # Long agricultural guidance articles often cover several crops before
+        # reaching the disease named in the headline.  Keep enough sentences to
+        # rank by headline overlap instead of blindly taking the opening pair.
+        if len(candidates) >= 48:
             break
     if not candidates:
         return ""
-    value = _trim_summary_text(" ".join(candidates))
+    title_terms = [
+        token
+        for token in re.findall(r"[가-힣A-Za-z]{2,}", clean_title)
+        if token not in {
+            "농사포인트", "농업", "농가", "발생", "주의", "관리", "대응",
+            "길어질수록", "시간", "존재", "관련", "전망",
+        }
+    ]
+    ranked: list[tuple[int, int, str]] = []
+    for index, sentence in enumerate(candidates):
+        sentence_norm = re.sub(r"[\s\W]+", "", sentence).lower()
+        overlap = sum(
+            1
+            for token in title_terms
+            if re.sub(r"[\s\W]+", "", token).lower() in sentence_norm
+        )
+        ranked.append((overlap, index, sentence))
+    if title_terms and ranked and max(item[0] for item in ranked) >= 2:
+        chosen = sorted(
+            ranked,
+            key=lambda item: (item[0], -item[1]),
+            reverse=True,
+        )[:2]
+        summary_sentences = [item[2] for item in chosen]
+    else:
+        summary_sentences = candidates[:2]
+    value = _trim_summary_text(" ".join(summary_sentences))
     return _repair_summary_truncation(value)
 
 
@@ -29294,6 +29323,16 @@ def _normalize_article_summary(article: Article, summary: str) -> str:
     if value and not _SUMMARY_COMPLETE_END_RX.search(value):
         extracted = _extract_clean_replay_summary(article)
         if extracted and _SUMMARY_COMPLETE_END_RX.search(extracted):
+            value = extracted
+    description_fallback = _clean_summary_text(
+        getattr(article, "description", "") or ""
+    )
+    if (
+        len(value) > SUMMARY_TARGET_MAX_CHARS
+        and raw_summary == description_fallback
+    ):
+        extracted = _extract_clean_replay_summary(article)
+        if extracted:
             value = extracted
     if len(value) > SUMMARY_TARGET_MAX_CHARS:
         value = _trim_summary_text(value)
