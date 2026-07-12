@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-07-12T13:47:05.555027+09:00",
+  "updated_at": "2026-07-12T18:47:56.927367+09:00",
   "items": [
     {
       "id": "c030dcbc3140",
@@ -339,6 +339,20 @@
       "press_tier": 2
     },
     {
+      "id": "f098ad393197",
+      "date": "2026-07-09",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 3,
+      "title": "대관령원예농협, 산지공판장 초매식 개최",
+      "press": "원예산업신문",
+      "summary": "강원 평창 대관령원예농협 산지공판장이 2026년산 고랭지 농산물 출하를 시작했다. 6일 초매식에는 출하 농가와 중도매인 등 300여 명이 참석해 공판사업 가동을 알렸다.",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=65165",
+      "archive": "/agri-news-brief/archive/2026-07-09.html#sec-dist",
+      "score": 55.68,
+      "press_tier": 2
+    },
+    {
       "id": "bde4cead279b",
       "date": "2026-07-09",
       "section": "dist",
@@ -395,20 +409,6 @@
       "press_tier": 2
     },
     {
-      "id": "71e207de0d74",
-      "date": "2026-07-09",
-      "section": "dist",
-      "section_title": "유통 및 현장 (도매시장/APC/수출)",
-      "rank": 3,
-      "title": "농협경제지주, 농산물 유통사업 발전 협업그룹 발대",
-      "press": "원예산업신문",
-      "summary": "농협경제지주(농업경제대표이사 김주양)는 지난달 30일 서울 서대문구 농협생명빌딩에서 농산물 유통사업 발전 협업그룹 발대식을 개최했다고 밝혔다.",
-      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=65206",
-      "archive": "/agri-news-brief/archive/2026-07-09.html#sec-dist",
-      "score": 33.57,
-      "press_tier": 2
-    },
-    {
       "id": "ef470a55fb5a",
       "date": "2026-07-09",
       "section": "dist",
@@ -434,6 +434,20 @@
       "url": "https://www.ggilbo.com/news/articleView.html?idxno=1168305",
       "archive": "/agri-news-brief/archive/2026-07-09.html#sec-supply",
       "score": 29.74,
+      "press_tier": 2
+    },
+    {
+      "id": "2066c3e06e21",
+      "date": "2026-07-09",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 5,
+      "title": "[R]풍년의 역설 ' 양파 '..소비 촉진으로 돕기",
+      "press": "안동MBC",
+      "summary": "김건엽 기자 지난 5월, 양파 재배 농민들이 수확을 앞둔 밭을 트랙터로 갈아엎었습니다. 적지 않은 수입 물량에 올해는 작황도 좋아 공급 과잉으로 양파값이 폭락했기 때문입니다.",
+      "url": "http://andongmbc.co.kr/adboard/NewsView83538",
+      "archive": "/agri-news-brief/archive/2026-07-09.html#sec-supply",
+      "score": 26.53,
       "press_tier": 2
     },
     {
@@ -489,7 +503,7 @@
       "summary": "합천군은 공선출하회 조직을 계기로 참여 농가를 지속적으로 확대하고, 고품질 생산기술 지도와 공동선별·공동출하 체계를 정착시켜 사과대추의 시장 경쟁력을 높여 나갈 방침이다.",
       "url": "https://n.news.naver.com/mnews/article/003/0014053841?sid=102",
       "archive": "/agri-news-brief/archive/2026-07-09.html#sec-dist",
-      "score": 11.39,
+      "score": 10.59,
       "press_tier": 2
     },
     {
