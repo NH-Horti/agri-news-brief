@@ -1,6 +1,6 @@
 {
-  "generated_at_kst": "2026-07-12T13:35:17+09:00",
-  "build_tag": "c4f287e",
+  "generated_at_kst": "2026-07-12T13:47:03+09:00",
+  "build_tag": "38c82bc",
   "filter_rejects": [
     {
       "section": "policy",
@@ -20093,8 +20093,8 @@
           "url": "http://www.fsnews.co.kr/news/articleView.html?idxno=61509",
           "reason": "",
           "fit_score": 4.15,
-          "selection_stage": "supply_editorial_market_replacement",
-          "selection_note": "replace_weak_supply_tail",
+          "selection_stage": "supply_underfill_recovery",
+          "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "",
           "source_query": "오이 가격",
@@ -20315,9 +20315,9 @@
           "domain": "news.kbs.co.kr",
           "title": "낙석에 도로 침수까지…장맛비 피해 잇따라",
           "url": "https://news.kbs.co.kr/news/pc/view/view.do?ncd=8605888",
-          "reason": "postbuild_pruned",
+          "reason": "tail_cut",
           "fit_score": 1.26,
-          "selection_stage": "postbuild_pruned",
+          "selection_stage": "tail_cut",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "",
@@ -20539,9 +20539,9 @@
           "domain": "andongmbc.co.kr",
           "title": "[R]풍년의 역설 ' 양파 '..소비 촉진으로 돕기",
           "url": "http://andongmbc.co.kr/adboard/NewsView83538",
-          "reason": "below_threshold",
+          "reason": "postbuild_pruned",
           "fit_score": 3.45,
-          "selection_stage": "below_threshold",
+          "selection_stage": "postbuild_pruned",
           "selection_note": "",
           "origin_section": "supply",
           "reassigned_from": "",
@@ -29036,8 +29036,8 @@
       {
         "stage": "maintenance_publish",
         "status": "start",
-        "elapsed_sec": 178.88,
-        "at_kst": "2026-07-12T13:34:53+09:00",
+        "elapsed_sec": 97.848,
+        "at_kst": "2026-07-12T13:46:53+09:00",
         "details": {
           "action": "maintenance replay_date",
           "report_date": "2026-07-09"
@@ -29046,14 +29046,14 @@
       {
         "stage": "maintenance_publish_list_archives",
         "status": "start",
-        "elapsed_sec": 178.88,
-        "at_kst": "2026-07-12T13:34:53+09:00"
+        "elapsed_sec": 97.848,
+        "at_kst": "2026-07-12T13:46:53+09:00"
       },
       {
         "stage": "maintenance_publish_list_archives",
         "status": "done",
-        "elapsed_sec": 178.976,
-        "at_kst": "2026-07-12T13:34:53+09:00",
+        "elapsed_sec": 98.024,
+        "at_kst": "2026-07-12T13:46:53+09:00",
         "details": {
           "archive_count": 129
         }
@@ -29061,23 +29061,23 @@
       {
         "stage": "maintenance_publish_render",
         "status": "start",
-        "elapsed_sec": 178.976,
-        "at_kst": "2026-07-12T13:34:53+09:00"
+        "elapsed_sec": 98.024,
+        "at_kst": "2026-07-12T13:46:53+09:00"
       },
       {
         "stage": "maintenance_publish_render",
         "status": "done",
-        "elapsed_sec": 179.793,
-        "at_kst": "2026-07-12T13:34:54+09:00",
+        "elapsed_sec": 98.469,
+        "at_kst": "2026-07-12T13:46:54+09:00",
         "details": {
-          "html_bytes": 301333
+          "html_bytes": 301244
         }
       },
       {
         "stage": "maintenance_publish_archive",
         "status": "start",
-        "elapsed_sec": 179.793,
-        "at_kst": "2026-07-12T13:34:54+09:00",
+        "elapsed_sec": 98.469,
+        "at_kst": "2026-07-12T13:46:54+09:00",
         "details": {
           "path": "docs/archive/2026-07-09.html"
         }
@@ -29085,8 +29085,8 @@
       {
         "stage": "maintenance_publish_archive",
         "status": "done",
-        "elapsed_sec": 202.852,
-        "at_kst": "2026-07-12T13:35:17+09:00",
+        "elapsed_sec": 108.313,
+        "at_kst": "2026-07-12T13:47:03+09:00",
         "details": {
           "path": "docs/archive/2026-07-09.html"
         }
@@ -29094,8 +29094,8 @@
       {
         "stage": "maintenance_publish_debug",
         "status": "start",
-        "elapsed_sec": 202.852,
-        "at_kst": "2026-07-12T13:35:17+09:00",
+        "elapsed_sec": 108.313,
+        "at_kst": "2026-07-12T13:47:03+09:00",
         "details": {
           "path": "docs/debug/2026-07-09.json"
         }
@@ -29104,13 +29104,13 @@
     "last_stage": {
       "stage": "maintenance_publish_debug",
       "status": "start",
-      "elapsed_sec": 202.852,
-      "at_kst": "2026-07-12T13:35:17+09:00",
+      "elapsed_sec": 108.313,
+      "at_kst": "2026-07-12T13:47:03+09:00",
       "details": {
         "path": "docs/debug/2026-07-09.json"
       }
     },
-    "elapsed_sec": 202.852
+    "elapsed_sec": 108.313
   },
   "commodity_board_audit": {
     "summary": {
@@ -29214,7 +29214,7 @@
           "weak_stage_story": false
         },
         "thresholds": {
-          "active_min_rank": 2,
+          "active_min_rank": 3,
           "require_issue_signal": false,
           "require_direct_item_focus": false
         },
@@ -29334,7 +29334,7 @@
           "weak_stage_story": false
         },
         "thresholds": {
-          "active_min_rank": 2,
+          "active_min_rank": 3,
           "require_issue_signal": false,
           "require_direct_item_focus": false
         },
@@ -29408,7 +29408,7 @@
           "weak_stage_story": false
         },
         "thresholds": {
-          "active_min_rank": 2,
+          "active_min_rank": 3,
           "require_issue_signal": false,
           "require_direct_item_focus": false
         },
@@ -29503,7 +29503,7 @@
           "weak_stage_story": false
         },
         "thresholds": {
-          "active_min_rank": 2,
+          "active_min_rank": 3,
           "require_issue_signal": false,
           "require_direct_item_focus": false
         },
@@ -29725,8 +29725,8 @@
           "section": "supply",
           "press": "안동MBC",
           "score": 26.53,
-          "selection_fit_score": 0.0,
-          "selection_stage": "",
+          "selection_fit_score": 3.45,
+          "selection_stage": "supply_underfill_recovery",
           "is_core": false,
           "representative_rank": 3,
           "representative_score": 395.612,
@@ -29741,7 +29741,7 @@
           "weak_stage_story": false
         },
         "thresholds": {
-          "active_min_rank": 2,
+          "active_min_rank": 3,
           "require_issue_signal": false,
           "require_direct_item_focus": false
         },
@@ -29753,8 +29753,8 @@
             "section": "supply",
             "press": "안동MBC",
             "score": 26.53,
-            "selection_fit_score": 0.0,
-            "selection_stage": "",
+            "selection_fit_score": 3.45,
+            "selection_stage": "supply_underfill_recovery",
             "is_core": false,
             "representative_rank": 3,
             "representative_score": 395.612,
@@ -29862,7 +29862,7 @@
           "weak_stage_story": false
         },
         "thresholds": {
-          "active_min_rank": 2,
+          "active_min_rank": 3,
           "require_issue_signal": false,
           "require_direct_item_focus": false
         },
@@ -29934,7 +29934,7 @@
         "top_article": {},
         "top_candidate": {},
         "thresholds": {
-          "active_min_rank": 2,
+          "active_min_rank": 3,
           "require_issue_signal": false,
           "require_direct_item_focus": false
         },
@@ -29961,7 +29961,7 @@
         "top_article": {},
         "top_candidate": {},
         "thresholds": {
-          "active_min_rank": 2,
+          "active_min_rank": 3,
           "require_issue_signal": false,
           "require_direct_item_focus": false
         },
@@ -30062,7 +30062,7 @@
           "weak_stage_story": false
         },
         "thresholds": {
-          "active_min_rank": 2,
+          "active_min_rank": 3,
           "require_issue_signal": false,
           "require_direct_item_focus": false
         },
@@ -30112,7 +30112,7 @@
         "top_article": {},
         "top_candidate": {},
         "thresholds": {
-          "active_min_rank": 2,
+          "active_min_rank": 3,
           "require_issue_signal": false,
           "require_direct_item_focus": false
         },
@@ -30139,7 +30139,7 @@
         "top_article": {},
         "top_candidate": {},
         "thresholds": {
-          "active_min_rank": 2,
+          "active_min_rank": 3,
           "require_issue_signal": false,
           "require_direct_item_focus": false
         },
@@ -30190,7 +30190,7 @@
           "weak_stage_story": false
         },
         "thresholds": {
-          "active_min_rank": 2,
+          "active_min_rank": 3,
           "require_issue_signal": false,
           "require_direct_item_focus": false
         },
@@ -30225,7 +30225,7 @@
             "press": "한국농정신문",
             "score": 16.965,
             "selection_fit_score": 2.16,
-            "selection_stage": "supply_underfill_recovery",
+            "selection_stage": "supply_editorial_market_replacement",
             "is_core": false,
             "representative_rank": 3,
             "representative_score": 328.231,
@@ -30458,7 +30458,7 @@
         "top_article": {},
         "top_candidate": {},
         "thresholds": {
-          "active_min_rank": 2,
+          "active_min_rank": 3,
           "require_issue_signal": false,
           "require_direct_item_focus": false
         },
@@ -30680,7 +30680,7 @@
           "weak_stage_story": false
         },
         "thresholds": {
-          "active_min_rank": 2,
+          "active_min_rank": 3,
           "require_issue_signal": false,
           "require_direct_item_focus": false
         },
@@ -30774,7 +30774,7 @@
         "top_article": {},
         "top_candidate": {},
         "thresholds": {
-          "active_min_rank": 2,
+          "active_min_rank": 3,
           "require_issue_signal": false,
           "require_direct_item_focus": false
         },
@@ -30828,7 +30828,7 @@
         "top_article": {},
         "top_candidate": {},
         "thresholds": {
-          "active_min_rank": 2,
+          "active_min_rank": 3,
           "require_issue_signal": false,
           "require_direct_item_focus": false
         },
@@ -30938,9 +30938,9 @@
           "selection_fit_score": 6.01,
           "selection_stage": "core_final",
           "is_core": true,
-          "representative_rank": 3,
-          "representative_score": 368.721,
-          "board_score": 304.721,
+          "representative_rank": 4,
+          "representative_score": 412.721,
+          "board_score": 322.721,
           "board_eligible": true,
           "direct_item_focus": true,
           "title_primary_hits": 0,
@@ -30948,10 +30948,10 @@
           "operational_issue_signal": true,
           "issue_bucket": "",
           "feature_kind": "field",
-          "weak_stage_story": true
+          "weak_stage_story": false
         },
         "thresholds": {
-          "active_min_rank": 2,
+          "active_min_rank": 3,
           "require_issue_signal": false,
           "require_direct_item_focus": false
         },
@@ -30966,9 +30966,9 @@
             "selection_fit_score": 6.01,
             "selection_stage": "core_final",
             "is_core": true,
-            "representative_rank": 3,
-            "representative_score": 368.721,
-            "board_score": 304.721,
+            "representative_rank": 4,
+            "representative_score": 412.721,
+            "board_score": 322.721,
             "board_eligible": true,
             "direct_item_focus": true,
             "title_primary_hits": 0,
@@ -30976,7 +30976,7 @@
             "operational_issue_signal": true,
             "issue_bucket": "",
             "feature_kind": "field",
-            "weak_stage_story": true
+            "weak_stage_story": false
           },
           {
             "id": "https://sjbnews.com/news/news.php?number=882512",
@@ -31070,7 +31070,7 @@
           "weak_stage_story": false
         },
         "thresholds": {
-          "active_min_rank": 2,
+          "active_min_rank": 3,
           "require_issue_signal": false,
           "require_direct_item_focus": false
         },
