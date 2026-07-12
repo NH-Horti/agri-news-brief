@@ -467,6 +467,41 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertTrue(bool(metrics["weak_admin_title_story"]))
         self.assertFalse(main._commodity_board_article_is_active_candidate(self._item("napa_cabbage"), article, metrics))
 
+    def test_apple_jujube_compound_is_not_matched_as_apple(self):
+        article = self._make_article(
+            "dist",
+            "합천유통, 사과 대추 공선출하회 조직 협약 체결",
+            "사과대추 재배농가가 공동출하 체계를 구축하고 9월부터 22톤을 출하할 계획이다.",
+            "https://example.com/apple-jujube-shipping",
+        )
+
+        metrics = main._commodity_board_item_article_representative_metrics(self._item("apple"), article)
+
+        self.assertNotIn("apple", main.managed_commodity_keys_for_article(article))
+        self.assertEqual(int(metrics["title_primary_hits"]), 0)
+        self.assertFalse(main._commodity_board_article_is_active_candidate(self._item("apple"), article, metrics))
+
+    def test_named_apple_disease_can_be_active_primary_representative(self):
+        article = self._make_article(
+            "pest",
+            "사과 갈색무늬병 16~28℃ 수분존재 시간 길수록 발생",
+            "갈색무늬병 발생 조건과 약제 살포 시기, 장마 뒤 사과 과원 방제 요령을 안내했다.",
+            "https://example.com/apple-marssonina-guidance",
+        )
+
+        metrics = main._commodity_board_item_article_representative_metrics(self._item("apple"), article)
+        metrics.update({
+            "board_eligible": True,
+            "representative_rank": 4,
+            "title_primary_hits": 1,
+            "selection_fit_score": 4.0,
+            "issue_bucket": "farm_action",
+            "direct_supply": False,
+            "market_response": False,
+        })
+
+        self.assertTrue(main._commodity_board_article_is_active_candidate(self._item("apple"), article, metrics))
+
     def test_committee_expo_admin_story_is_not_commodity_primary_representative(self):
         article = self._make_article(
             "supply",
