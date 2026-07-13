@@ -2,9 +2,10 @@ name: agri-news-brief (daily watchdog)
 
 on:
   # Cloudflare is the primary trigger at KST 06:05. This independent check runs
-  # after the normal daily job has started and recovers only a missing dispatch.
+  # at KST 06:10, then retries the check at 06:30 in case GitHub delayed or
+  # dropped the first schedule event. Each check recovers only a missing dispatch.
   schedule:
-    - cron: '30 21 * * 0-4'
+    - cron: '10,30 21 * * 0-4'
   workflow_dispatch:
     inputs:
       dry_run:

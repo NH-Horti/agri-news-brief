@@ -161,7 +161,7 @@ Use three branches:
 ### Production workflows (main only)
 
 - `.github/workflows/daily.yml`
-- `.github/workflows/daily-watchdog.yml` (06:30 KST missing-dispatch recovery)
+- `.github/workflows/daily-watchdog.yml` (06:10 KST missing-dispatch recovery, 06:30 recheck)
 - `.github/workflows/rebuild.yml`
 - `.github/workflows/maintenance.yml`
 - `.github/workflows/ux_patch.yml`

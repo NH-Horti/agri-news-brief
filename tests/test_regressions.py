@@ -195,7 +195,7 @@ class TestRegressions(unittest.TestCase):
 
     def test_daily_watchdog_recovers_only_a_missing_cloudflare_dispatch(self):
         self.assertIn("name: agri-news-brief (daily watchdog)", self.daily_watchdog_text)
-        self.assertIn("cron: '30 21 * * 0-4'", self.daily_watchdog_text)
+        self.assertIn("cron: '10,30 21 * * 0-4'", self.daily_watchdog_text)
         self.assertIn("actions: write", self.daily_watchdog_text)
         self.assertIn("WORKFLOW_FILE: daily.yml", self.daily_watchdog_text)
         self.assertIn("TZ=Asia/Seoul date +%F", self.daily_watchdog_text)

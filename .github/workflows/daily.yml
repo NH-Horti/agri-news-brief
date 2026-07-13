@@ -2,7 +2,7 @@ name: agri-news-brief (daily)
 
 on:
   # Primary daily trigger: Cloudflare Workers Cron at KST 06:05.
-  # daily-watchdog.yml checks at KST 06:30 and dispatches only when this run is missing.
+  # daily-watchdog.yml checks at KST 06:10/06:30 and dispatches only when this run is missing.
   # Keep a native schedule out of this workflow to avoid duplicate Kakao sends.
   workflow_dispatch:
     inputs:
