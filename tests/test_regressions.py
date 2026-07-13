@@ -4,6 +4,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 MAIN = ROOT / "main.py"
 DAILY_WORKFLOW = ROOT / ".github" / "workflows" / "daily.yml"
+DAILY_WATCHDOG_WORKFLOW = ROOT / ".github" / "workflows" / "daily-watchdog.yml"
 MAINTENANCE_WORKFLOW = ROOT / ".github" / "workflows" / "maintenance.yml"
 REBUILD_WORKFLOW = ROOT / ".github" / "workflows" / "rebuild.yml"
 CI_WORKFLOW = ROOT / ".github" / "workflows" / "ci.yml"
@@ -15,6 +16,7 @@ class TestRegressions(unittest.TestCase):
     def setUpClass(cls):
         cls.text = MAIN.read_text(encoding="utf-8")
         cls.daily_text = DAILY_WORKFLOW.read_text(encoding="utf-8")
+        cls.daily_watchdog_text = DAILY_WATCHDOG_WORKFLOW.read_text(encoding="utf-8")
         cls.maintenance_text = MAINTENANCE_WORKFLOW.read_text(encoding="utf-8")
         cls.rebuild_text = REBUILD_WORKFLOW.read_text(encoding="utf-8")
         cls.ci_text = CI_WORKFLOW.read_text(encoding="utf-8")
@@ -190,6 +192,17 @@ class TestRegressions(unittest.TestCase):
         self.assertIn("WINDOW_MIN_HOURS: '0'", self.daily_text)
         self.assertIn("WINDOW_MIN_HOURS: '0'", self.maintenance_text)
         self.assertIn("WINDOW_MIN_HOURS: '0'", self.rebuild_text)
+
+    def test_daily_watchdog_recovers_only_a_missing_cloudflare_dispatch(self):
+        self.assertIn("name: agri-news-brief (daily watchdog)", self.daily_watchdog_text)
+        self.assertIn("cron: '30 21 * * 0-4'", self.daily_watchdog_text)
+        self.assertIn("actions: write", self.daily_watchdog_text)
+        self.assertIn("WORKFLOW_FILE: daily.yml", self.daily_watchdog_text)
+        self.assertIn("TZ=Asia/Seoul date +%F", self.daily_watchdog_text)
+        self.assertIn(".workflow_runs[]", self.daily_watchdog_text)
+        self.assertIn("if [[ -n \"$matching_run\" ]]", self.daily_watchdog_text)
+        self.assertIn("inputs[trigger_source]=github-watchdog", self.daily_watchdog_text)
+        self.assertIn("DRY_RUN: ${{ inputs.dry_run || 'false' }}", self.daily_watchdog_text)
 
     def test_daily_workflow_runs_eval_harness_and_feedback_loop(self):
         self.assertIn("OPENAI_SUMMARY_FEEDBACK_PATH: docs/evals/latest-feedback.txt", self.daily_text)

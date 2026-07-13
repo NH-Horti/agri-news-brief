@@ -1,0 +1,98 @@
+name: agri-news-brief (daily watchdog)
+
+on:
+  # Cloudflare is the primary trigger at KST 06:05. This independent check runs
+  # after the normal daily job has started and recovers only a missing dispatch.
+  schedule:
+    - cron: '30 21 * * 0-4'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Check only; do not dispatch a missing daily run'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  actions: write
+  contents: read
+
+concurrency:
+  group: agri-news-brief-daily-watchdog
+  cancel-in-progress: false
+
+jobs:
+  ensure-daily-run:
+    if: github.ref_name == 'main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check for today's daily run and recover if missing
+        id: watchdog
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          WORKFLOW_FILE: daily.yml
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+        run: |
+          set -euo pipefail
+
+          report_date="$(TZ=Asia/Seoul date +%F)"
+          runs_json="$(
+            gh api --method GET \
+              "repos/${REPO}/actions/workflows/${WORKFLOW_FILE}/runs" \
+              -f per_page=20
+          )"
+
+          matching_run="$(
+            jq -c --arg report_date "$report_date" '
+              [
+                .workflow_runs[]
+                | select(
+                    ((((.created_at | fromdateiso8601) + 32400) | strftime("%Y-%m-%d")) == $report_date)
+                  )
+              ]
+              | sort_by(.created_at)
+              | last // empty
+            ' <<<"$runs_json"
+          )"
+
+          if [[ -n "$matching_run" ]]; then
+            run_url="$(jq -r '.html_url' <<<"$matching_run")"
+            run_status="$(jq -r '.status' <<<"$matching_run")"
+            run_conclusion="$(jq -r '.conclusion // "pending"' <<<"$matching_run")"
+            result='already-dispatched'
+            echo "Daily run already exists: ${run_url} (${run_status}/${run_conclusion})"
+          elif [[ "$DRY_RUN" == 'true' ]]; then
+            run_url=''
+            run_status='missing'
+            run_conclusion='dry-run'
+            result='missing-dry-run'
+            echo "Daily run is missing; dry-run requested, so recovery dispatch was skipped."
+          else
+            gh api --method POST \
+              "repos/${REPO}/actions/workflows/${WORKFLOW_FILE}/dispatches" \
+              -f ref=main \
+              -f 'inputs[trigger_source]=github-watchdog'
+            run_url="https://github.com/${REPO}/actions/workflows/${WORKFLOW_FILE}"
+            run_status='dispatched'
+            run_conclusion='pending'
+            result='recovery-dispatched'
+            echo "Cloudflare dispatch was missing; recovery dispatch submitted."
+          fi
+
+          {
+            echo "result=$result"
+            echo "report_date=$report_date"
+          } >> "$GITHUB_OUTPUT"
+
+          {
+            echo '## Daily Watchdog Summary'
+            echo "- Report date (KST): $report_date"
+            echo "- Result: $result"
+            echo "- Daily status: $run_status/$run_conclusion"
+            if [[ -n "$run_url" ]]; then
+              echo "- Daily run: $run_url"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
