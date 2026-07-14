@@ -914,6 +914,41 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertLessEqual(int(metrics["representative_rank"]), 0)
         self.assertTrue(bool(metrics["weak_blossom_tourism_story"]))
 
+    def test_pear_price_list_headline_is_linked_to_pear_board(self):
+        article = self._make_article(
+            "supply",
+            "배·상추 오르고 수박·참외 안정세… 품목별 가격 동향 엇갈려",
+            "무·상추·사과·배·돼지고기·계란은 평년과 전년 대비 가격 상승세를 보였다.",
+            "https://example.com/pear-price-roundup",
+        )
+
+        self.assertIn("pear", main.managed_commodity_board_keys_for_article(article))
+        metrics = main._commodity_board_item_article_representative_metrics(self._item("pear"), article)
+        self.assertTrue(bool(metrics["board_eligible"]))
+        self.assertTrue(main._commodity_board_article_is_active_candidate(self._item("pear"), article, metrics))
+
+    def test_spaced_apple_pear_cultivar_headline_is_linked_to_pear_board(self):
+        article = self._make_article(
+            "supply",
+            "아산시, 초록빛 사과 배 '아산맑은 그린시스' 재배 확대",
+            "아산시 배 농가가 신품종 과수의 재배 면적과 생산을 확대한다.",
+            "https://example.com/asangreen-pear",
+        )
+
+        self.assertIn("pear", main.managed_commodity_board_keys_for_article(article))
+        with (
+            mock.patch.object(main, "HF_COMMODITY_BOARD_RERANK_ENABLED", False),
+            mock.patch.object(main, "SELECTION_FEEDBACK_GUARDRAILS", {}),
+        ):
+            ctx = main.build_managed_commodity_board_context({key: [article] if key == "supply" else [] for key in self.conf})
+        pear = next(
+            item
+            for group in ctx["groups"]
+            for item in list(group["active_items"]) + list(group["inactive_items"])
+            if item["key"] == "pear"
+        )
+        self.assertTrue(bool(pear["active"]))
+
     def test_board_context_moves_weak_only_program_core_item_to_inactive(self):
         training_article = self._make_article(
             "supply",

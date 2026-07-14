@@ -4797,6 +4797,16 @@ _SINGLE_TERM_CONTEXT_PATTERNS: dict[str, list[re.Pattern[str]]] = {
         re.compile(r"(?:^|[\s\W])배(?:값|가격|시세|수급|출하|저장|작황|재배|농가)"),
         re.compile(r"(?:^|[\s\W])배(?:\s*(?:산업|생육|과원|개화|착과|꽃눈|휴면|생산|수확|저온|냉해|기후변화))"),
         re.compile(r"(?:^|[\s\W])배\s+과일"),
+        # 가격 동향 제목의 품목 나열(예: "배·상추")에서도 과일 배를 인식한다.
+        # 뒤 품목을 원예 작물로 제한해 배달/배당 등 1글자 오탐은 계속 차단한다.
+        re.compile(
+            r"(?:^|[·ㆍ,，/])\s*배\s*(?=[·ㆍ,，/]\s*"
+            r"(?:무|배추|감자|당근|양배추|양파|마늘|고추|대파|생강|토마토|오이|애호박|"
+            r"참외|상추|딸기|가지|파프리카|멜론|사과|단감|복숭아|포도|감귤|매실|유자|"
+            r"키위|참다래|밤|자두)(?:$|[\s·ㆍ,，/]))"
+        ),
+        # 신품종 배를 사과처럼 생긴 모양으로 소개한 "사과 배 '그린시스'" 표기.
+        re.compile(r"사과\s+배(?:\s*['\"“”‘’]|\s*(?:품종|과원|재배|생산|출하|수확))"),
         re.compile(r"신고배"),
         re.compile(r"나주배"),
     ],
@@ -4954,6 +4964,7 @@ _MANAGED_COMMODITY_BOARD_STRONG_ISSUE_TITLE_TERMS = (
     "가격", "값", "시세", "수급", "출하", "반입", "경락", "경매", "저장", "재고", "비축",
     "폭락", "급락", "강세", "약세", "불안", "위기", "비상", "부담", "생산비", "난방비",
     "감소", "증가", "과잉", "부족", "산업", "무너질라", "모니터링",
+    "재배 확대", "생산 확대", "재배면적 확대", "재배 면적 확대",
     "작황", "생산량", "수확", "물량", "도매가격", "수출", "검역", "통관",
     "병해충", "방제", "해충", "피해", "호조", "하락", "상승",
     "폭염", "고온", "장마", "가뭄", "냉해", "기계화", "노동력", "절감",
@@ -5204,6 +5215,15 @@ def _managed_commodity_focus_metrics(
     topic_hit = bool(topic and topic in registry_topics)
 
     title_primary_hits = _commodity_board_term_hits(title_l, base_terms)
+    title_pattern_hits = sum(
+        1
+        for pattern in _MANAGED_COMMODITY_CONTEXT_PATTERNS.get(key, [])
+        if pattern.search(title_l)
+    )
+    # 한 글자 품목(배 등)은 일반 term matcher에서 의도적으로 제외된다.
+    # 품목별 안전 맥락 패턴이 제목에서 직접 확인되면 대표기사의 title focus로 인정한다.
+    if title_primary_hits == 0 and title_pattern_hits > 0:
+        title_primary_hits = 1
     title_context_hits = _commodity_board_term_hits(title_l, context_terms)
     body_primary_hits = _commodity_board_term_hits(text_l, base_terms)
     body_context_hits = _commodity_board_term_hits(text_l, context_terms)
@@ -5316,6 +5336,7 @@ def _managed_commodity_focus_metrics(
     return {
         "focus_score": round(float(score), 4),
         "title_primary_hits": title_primary_hits,
+        "title_pattern_hits": title_pattern_hits,
         "title_context_hits": title_context_hits,
         "body_primary_hits": body_primary_hits,
         "body_context_hits": body_context_hits,
@@ -30887,6 +30908,13 @@ def _commodity_board_item_article_metrics(
     primary_focus = 1 if item_key and matched_keys and matched_keys[0] == item_key else 0
     strong_focus = 1 if focus_score >= _MANAGED_COMMODITY_FOCUS_STRONG_MIN else 0
     title_primary_hits = _commodity_board_term_hits(title_l, base_terms)
+    title_pattern_hits = sum(
+        1
+        for pattern in _MANAGED_COMMODITY_CONTEXT_PATTERNS.get(item_key, [])
+        if pattern.search(title_l)
+    )
+    if title_primary_hits == 0 and title_pattern_hits > 0:
+        title_primary_hits = 1
     title_context_hits = _commodity_board_term_hits(title_l, context_terms)
     body_primary_hits = _commodity_board_term_hits(body_l, base_terms)
     body_context_hits = _commodity_board_term_hits(body_l, context_terms)
@@ -30976,6 +31004,7 @@ def _commodity_board_item_article_metrics(
         "board_score": board_score,
         "focus_score": focus_score,
         "title_primary_hits": title_primary_hits,
+        "title_pattern_hits": title_pattern_hits,
         "title_context_hits": title_context_hits,
         "body_primary_hits": body_primary_hits,
         "body_context_hits": body_context_hits,
@@ -45934,7 +45963,9 @@ def build_managed_commodity_board_context(by_section: dict[str, list[Article]]) 
 
     for sec in SECTIONS:
         for article in by_section.get(sec["key"], []) or []:
-            for key in managed_commodity_board_keys_for_article(article, max_keys=2):
+            # 각 품목은 이미 별도의 focus/board 적합성 검사를 통과했다. 여기서 기사당
+            # 상위 2개로 다시 자르면 다품목 가격 기사에서 3번째 이후 품목이 사라진다.
+            for key in managed_commodity_board_keys_for_article(article):
                 item_payload = item_state.get(key)
                 if item_payload is None:
                     continue
