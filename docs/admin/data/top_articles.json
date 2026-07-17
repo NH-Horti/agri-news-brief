@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-17T00:48:31+09:00",
+  "generated_at": "2026-07-18T00:42:40+09:00",
   "rows": [
     {
       "date": "2026-05-20",
@@ -1053,6 +1053,19 @@
       "users": 3,
       "archive_url": "",
       "source_url": ""
+    },
+    {
+      "date": "2026-07-16",
+      "article_id": "b816a7a2199d",
+      "title": "2026~27년 월동채소 \" 무 ·양배추 감소, 양파 증가\" 예상",
+      "report_date": "2026-07-16",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.jejusori.net",
+      "clicks": 3,
+      "users": 2,
+      "archive_url": "/agri-news-brief/archive/2026-07-16.html#sec-supply",
+      "source_url": "https://www.jejusori.net/news/articleView.html?idxno=504791"
     },
     {
       "date": "2026-04-01",
@@ -3084,19 +3097,6 @@
     },
     {
       "date": "2026-07-16",
-      "article_id": "7d10caf9710c",
-      "title": "산지 값은 낮고 소비자가는 비싸고… 농협 , 농산물 유통 판 전면 개편",
-      "report_date": "2026-07-16",
-      "section": "dist",
-      "surface": "briefing_open",
-      "target_domain": "www.etoday.co.kr",
-      "clicks": 2,
-      "users": 1,
-      "archive_url": "/agri-news-brief/archive/2026-07-16.html#sec-dist",
-      "source_url": "https://www.etoday.co.kr/news/view/2603916"
-    },
-    {
-      "date": "2026-07-16",
       "article_id": "aec5ffb8519b",
       "title": "하반기 농정 대전환 시동… 농식품부, 6대 역점과제 발표",
       "report_date": "2026-07-16",
@@ -3107,19 +3107,6 @@
       "users": 2,
       "archive_url": "/agri-news-brief/archive/2026-07-16.html#sec-policy",
       "source_url": "https://www.farminsight.net/news/articleView.html?idxno=16661"
-    },
-    {
-      "date": "2026-07-16",
-      "article_id": "b816a7a2199d",
-      "title": "2026~27년 월동채소 \" 무 ·양배추 감소, 양파 증가\" 예상",
-      "report_date": "2026-07-16",
-      "section": "supply",
-      "surface": "briefing_open",
-      "target_domain": "www.jejusori.net",
-      "clicks": 2,
-      "users": 1,
-      "archive_url": "/agri-news-brief/archive/2026-07-16.html#sec-supply",
-      "source_url": "https://www.jejusori.net/news/articleView.html?idxno=504791"
     },
     {
       "date": "2026-03-30",
@@ -10881,6 +10868,19 @@
       "users": 1,
       "archive_url": "",
       "source_url": ""
+    },
+    {
+      "date": "2026-07-16",
+      "article_id": "7d10caf9710c",
+      "title": "산지 값은 낮고 소비자가는 비싸고… 농협 , 농산물 유통 판 전면 개편",
+      "report_date": "2026-07-16",
+      "section": "dist",
+      "surface": "briefing_open",
+      "target_domain": "www.etoday.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-07-16.html#sec-dist",
+      "source_url": "https://www.etoday.co.kr/news/view/2603916"
     },
     {
       "date": "2026-07-16",
