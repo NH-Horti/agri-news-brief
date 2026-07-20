@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-20T00:16:26+09:00",
+  "generated_at": "2026-07-21T01:02:16+09:00",
   "rows": [
     {
       "date": "2026-05-20",
@@ -1066,6 +1066,32 @@
       "users": 2,
       "archive_url": "/agri-news-brief/archive/2026-07-16.html#sec-supply",
       "source_url": "https://www.jejusori.net/news/articleView.html?idxno=504791"
+    },
+    {
+      "date": "2026-07-20",
+      "article_id": "d50e2856188e",
+      "title": "[산지 확대경] ‘여름 사과 ’ 쏟아져 나온다…생산량 늘어 초반 시세 낮...",
+      "report_date": "2026-07-20",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.nongmin.com",
+      "clicks": 3,
+      "users": 3,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-07-20",
+      "article_id": "fa8acfdf8bcb",
+      "title": "AI 농업 확대·가격안정제 도입… 농식품부 , 하반기 국민체감 정책 속도",
+      "report_date": "2026-07-20",
+      "section": "policy",
+      "surface": "briefing_card",
+      "target_domain": "biz.heraldcorp.com",
+      "clicks": 3,
+      "users": 2,
+      "archive_url": "",
+      "source_url": ""
     },
     {
       "date": "2026-04-01",
@@ -3107,6 +3133,58 @@
       "users": 2,
       "archive_url": "/agri-news-brief/archive/2026-07-16.html#sec-policy",
       "source_url": "https://www.farminsight.net/news/articleView.html?idxno=16661"
+    },
+    {
+      "date": "2026-07-20",
+      "article_id": "369eea8ff6b8",
+      "title": "\"농산물 유통개혁 성과 미흡…계약재배 확대 등 보완해야\"",
+      "report_date": "2026-07-20",
+      "section": "dist",
+      "surface": "briefing_card",
+      "target_domain": "www.newsis.com",
+      "clicks": 2,
+      "users": 2,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-07-20",
+      "article_id": "5f9f410cb3a9",
+      "title": "상주시, 대만 바이어 초청··· 포도 ·복숭아 이어 곶감까지 수출 확대 ...",
+      "report_date": "2026-07-20",
+      "section": "supply",
+      "surface": "commodity_pool",
+      "target_domain": "www.idaegu.co.kr",
+      "clicks": 2,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-07-20",
+      "article_id": "7864a5672e27",
+      "title": "음성군, 장애인 건강소득 지원사업 및 '햇사레 복숭아 ' 출하 성수기 맞...",
+      "report_date": "2026-07-20",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.enewstoday.co.kr",
+      "clicks": 2,
+      "users": 2,
+      "archive_url": "/agri-news-brief/archive/2026-07-20.html#sec-supply",
+      "source_url": "http://www.enewstoday.co.kr/news/articleView.html?idxno=2449842"
+    },
+    {
+      "date": "2026-07-20",
+      "article_id": "b52ab02dc888",
+      "title": "농식품부 “농협 개혁안 하반기 처리· 농산물 알뜰소비앱도 출시”",
+      "report_date": "2026-07-20",
+      "section": "policy",
+      "surface": "briefing_card",
+      "target_domain": "news.kbs.co.kr",
+      "clicks": 2,
+      "users": 2,
+      "archive_url": "",
+      "source_url": ""
     },
     {
       "date": "2026-03-30",
@@ -10907,6 +10985,149 @@
       "users": 1,
       "archive_url": "/agri-news-brief/archive/2026-07-16.html#sec-policy",
       "source_url": "https://www.farminsight.net/news/articleView.html?idxno=16661"
+    },
+    {
+      "date": "2026-07-20",
+      "article_id": "0509487039b6",
+      "title": "‘포도알’ 쪼그라들고 ‘사과’ 열매 터지고…늦장마·폭염에 과수 농가...",
+      "report_date": "2026-07-20",
+      "section": "supply",
+      "surface": "commodity_primary",
+      "target_domain": "www.nongmin.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-07-20",
+      "article_id": "1afaf3ed0619",
+      "title": "제주, 올해산 감귤 가격 안정관리제 시행...가격하락시 차액 지원",
+      "report_date": "2026-07-20",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.headlinejeju.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-07-20.html#sec-supply",
+      "source_url": "https://www.headlinejeju.co.kr/news/articleView.html?idxno=596102"
+    },
+    {
+      "date": "2026-07-20",
+      "article_id": "21738752a305",
+      "title": "장마에 채솟값 줄줄이 상승",
+      "report_date": "2026-07-20",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.fsnews.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-07-20.html#sec-supply",
+      "source_url": "http://www.fsnews.co.kr/news/articleView.html?idxno=61604"
+    },
+    {
+      "date": "2026-07-20",
+      "article_id": "2b1397066206",
+      "title": "[Why&Next]'양파 1㎏' 경매가 240원 vs 산지 직거래 500원",
+      "report_date": "2026-07-20",
+      "section": "dist",
+      "surface": "briefing_card",
+      "target_domain": "view.asiae.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-07-20",
+      "article_id": "369eea8ff6b8",
+      "title": "\"농산물 유통개혁 성과 미흡…계약재배 확대 등 보완해야\"",
+      "report_date": "2026-07-20",
+      "section": "dist",
+      "surface": "briefing_open",
+      "target_domain": "www.newsis.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-07-20",
+      "article_id": "391a7ded9932",
+      "title": "함양 양파 , 대만 수출 확대···누적 1,457톤 수출",
+      "report_date": "2026-07-20",
+      "section": "dist",
+      "surface": "briefing_open",
+      "target_domain": "www.enewstoday.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-07-20.html#sec-dist",
+      "source_url": "http://www.enewstoday.co.kr/news/articleView.html?idxno=2449760"
+    },
+    {
+      "date": "2026-07-20",
+      "article_id": "77f0915e358a",
+      "title": "가격안정·농가 안전망 강화…하반기 국민 체감 농정 본격화",
+      "report_date": "2026-07-20",
+      "section": "policy",
+      "surface": "briefing_card",
+      "target_domain": "www.korea.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-07-20.html#sec-policy",
+      "source_url": "https://www.korea.kr/news/policyNewsView.do?newsId=148968275&call_from=naver_news"
+    },
+    {
+      "date": "2026-07-20",
+      "article_id": "8870642fce63",
+      "title": "투르크메니스탄, 뜨거운 태양 아래 달콤한 수박과 멜론 수확",
+      "report_date": "2026-07-20",
+      "section": "supply",
+      "surface": "commodity_primary",
+      "target_domain": "news.kbs.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-07-20",
+      "article_id": "ba7f01fcde8d",
+      "title": "농산물 도매 50% 온라인 목표인데…현장은 ‘낡은 시장 손보기’",
+      "report_date": "2026-07-20",
+      "section": "dist",
+      "surface": "briefing_card",
+      "target_domain": "www.etoday.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-07-20.html#sec-dist",
+      "source_url": "https://www.etoday.co.kr/news/view/2604658"
+    },
+    {
+      "date": "2026-07-20",
+      "article_id": "c6dcd3695596",
+      "title": "“농업소득 3000만원 시대 열 것”… 농협 , 경제사업 혁신 전력",
+      "report_date": "2026-07-20",
+      "section": "dist",
+      "surface": "briefing_card",
+      "target_domain": "www.nongmin.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-07-20",
+      "article_id": "f32a0164a5ce",
+      "title": "채소값 내렸다는데 오이·상추는 '껑충'",
+      "report_date": "2026-07-20",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.hankyung.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
     }
   ]
 }
