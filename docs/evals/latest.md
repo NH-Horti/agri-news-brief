@@ -1,35 +1,32 @@
-## Daily Eval (2026-07-21)
-- Overall: **88.49** (pass)
-- Operational: **92.25**
-- Reader quality: **90.75** (capped; penalty=1.5, cap=95.0, reasons=preferred_slot_underfill)
-- Quality gate: **88.49** (needs_iteration, editorial_major_issue; editorial=84.0, operational=92.2)
-- Scores: completeness=92.8, diversity=94.1, source=71.1, summary=100.0, freshness=100.0, retrieval=87.5, section_fit=87.4, core=91.0, commodity=88.0
+## Daily Eval (2026-07-22)
+- Overall: **80.16** (warn)
+- Operational: **91.91**
+- Reader quality: **83.71** (capped; penalty=8.2, cap=90.0, reasons=pest_theme_duplicate, preferred_slot_underfill)
+- Quality gate: **80.16** (needs_major_iteration, editorial_major_issue; editorial=78.8, operational=91.9)
+- Scores: completeness=92.8, diversity=94.1, source=71.1, summary=96.7, freshness=100.0, retrieval=90.0, section_fit=100.0, core=88.9, commodity=88.0
 - Briefing cards: 18 / Commodity cards: 21
-- Sections: supply:5/5 raw=201, policy:5/5 raw=114, dist:5/5 raw=85, pest:3/5 raw=41
-- Metrics: title_unique=1.00, domain_diversity=0.94, low_tier=0.22, summary_presence=1.00, summary_numeric=0.67, fresh_72h=1.00, fit_avg=3.48, false_positive=0.00, hard_reader_issues=0, weak_core=0.12, editorial_penalty=0.0, commodity_weak=0.00, commodity_items=6, commodity_active_today=13, commodity_active_today_unlinked=7, commodity_coverage=0.18, commodity_strict_link=1.00, commodity_false_link=0.00, commodity_pool_false_link=0.00, commodity_dominant_section=0.83, semantic_penalty=0.0
+- Sections: supply:5/5 raw=172, policy:5/5 raw=92, dist:4/5 raw=55, pest:4/5 raw=47
+- Metrics: title_unique=1.00, domain_diversity=0.78, low_tier=0.22, summary_presence=1.00, summary_numeric=0.67, fresh_72h=1.00, fit_avg=4.98, false_positive=0.00, hard_reader_issues=0, weak_core=0.12, editorial_penalty=0.7, commodity_weak=0.00, commodity_items=8, commodity_active_today=12, commodity_active_today_unlinked=4, commodity_coverage=0.24, commodity_strict_link=0.88, commodity_false_link=0.00, commodity_pool_false_link=0.00, commodity_dominant_section=0.88, semantic_penalty=0.0
 
 
 ### Editorial Shadow Eval
-- Editorial: **83.95** (daily target 88, tier=needs_iteration, needs_iteration)
+- Editorial: **78.80** (daily target 88, tier=needs_major_iteration, needs_major_iteration)
 - Model: gpt-5.5-2026-04-23 (resolved gpt-5.5-2026-04-23)
-- Model-reported score: 84.00; authoritative method=weighted_components_v1
+- Model-reported score: 81.00; authoritative method=weighted_components_v1
 - Acceptance: needs_iteration (blocking=0, major=1, reasons=editorial_score_min, no_major_issues, critical_components_min, all_components_min, operational_score_min, no_section_underfill, commodity_board_score_min)
-- Section count gate: 97.5 (minimum_fallback)
-- Components: article_selection=85.0, section_fit=82.0, core=80.0, summary=94.0, missed=78.0, noise=86.0
-- Summary: 가격·수급, 온라인 도매시장, 벼 병해충 등 주요 축은 잡았지만 정책 코어에 기업 신품종 공급 PR성 기사가 들어가고, 공급·정책 일부 꼬리 카드가 더 강한 후보를 밀어낸 점이 큽니다. 특히 pest는 원자료가 충분한데 3장에 그쳐 일일 브리핑 완성도가 떨어집니다.
-- [major] promotional_filler: 다산바이오, 제주 성산농협에 월동무 신품종 '무궁무진' 공급 - 기업의 종자 공급·시장 확대 성격이 강해 정책 코어로 부적절하다.
-- [moderate] wrong_section: "벌 마늘 만 피해인가" 이경재 경남도의원, 저품위 마늘 지원 대상 확대 ... - 가격·생산 수급보다 지방의회 지원대상 확대 요구에 가까운 정책 기사다.
-- [moderate] missed_candidate: '가난한 풍년' 배추 갈아엎는 농민 - 산지 가격 폭락과 폐기라는 강한 공급·농가 피해 신호인데 약한 꼬리 기사에 밀렸다.
-- [moderate] noise: 식품업계 '릴레이 가격 인상'…먹거리 물가 더 오른다 - 가공식품 기업 가격 인상 중심으로 농업 정책 독자에게는 관련성이 간접적이다.
-- [moderate] missed_candidate: 농축산물 안정적 공급...선제적 수급관리체계 재정립 - 농식품부 하반기 업무계획의 수급·유통 정책 축을 다루는 더 강한 전국 정책 후보가 보였다.
+- Section count gate: 96.0 (soft_fallback)
+- Components: article_selection=80.0, section_fit=84.0, core=78.0, summary=82.0, missed=70.0, noise=78.0
+- Summary: 전체적으로 주요 가격·수급 이슈는 일부 잘 잡았지만, 정책·유통·병해충에서 눈에 띄는 상위 후보를 놓치고 약한 지역 행사성·점검성 기사로 채운 부분이 큽니다. 특히 유통과 병해충은 원천 후보가 충분한데도 4개로 그쳐 일일 브리핑 완성도가 떨어졌고, 정책 섹션은 할당관세 분석 같은 당일 핵심 후보를 누락했습니다. 공급 섹션은 대체로 적합하나 유사한 광주·전남 가격 기사 중복감과 일부 요약 품질 문제가 있습니다.
+- [major] missed_candidate: 할당관세에 수천억 쏟아붓지만… 물가 안정 ‘제한적’ 국내 생산기반 ‘위축’ - 정책 후보 중 가장 강한 당일 핵심 기사인데 누락됐고, 스쿨팜·친환경 직불금 기사보다 정책 중요도가 높다.
+- [moderate] promotional_filler: 농협, 제주형 스쿨팜 확대 추진 - 지역 교육 프로그램 확대 소식으로 농정·수급 정책 브리핑의 우선순위가 낮고 원문도 종합 뉴스 묶음 성격이다.
+- [moderate] underfill: 유통 섹션 4개 편성 - 유통 후보가 55개로 충분한데 목표 5개를 채우지 못했다.
+- [moderate] weak_core: 농협경남본부, 공판장 안전관리· 농산물 판매 확대 점검 - 공판장 캠페인·결의대회 성격이 강해 유통 섹션 핵심 카드로는 약하다.
+- [moderate] underfill: 병해충 섹션 4개 편성 - 병해충 후보가 47개로 충분한데 5개 목표를 채우지 못했다.
 
 ### Improvement Hints
-- 선정 결과가 약한 섹션이 있습니다: pest. 해당 섹션은 raw 후보가 충분하므로 임계치/재배치 규칙을 다시 보는 편이 좋습니다.
 - 품목 보드 대표기사가 품목 핵심 이슈를 충분히 대변하지 못합니다. 제목에서 품목명과 수급·가격·병해충 신호가 함께 보이는 기사, representative rank 상위 후보, 비수급 섹션의 직접 이슈 후보를 우선하세요.
-- raw 후보가 충분한데 선호 카드 수(섹션당 5개)에 못 미친 섹션이 있습니다: pest(-2). 빈 5번째 슬롯에는 고품질 수급·유통 cross-fill 후보를 재검토하세요.
-- 농업과 무관한 기사가 브리핑에 포함되어 있습니다 (비율 6%). 해외 경제지표, 관광 홍보, 비농업 기사가 선정되지 않도록 is_relevant 게이트를 점검하세요.
+- raw 후보가 충분한데 선호 카드 수(섹션당 5개)에 못 미친 섹션이 있습니다: dist(-1), pest(-1). 빈 5번째 슬롯에는 고품질 수급·유통 cross-fill 후보를 재검토하세요.
+- 편집 품질상 약한 기사 선택이 감지되었습니다 (promotional_filler=11%, pest_theme_duplicate=6%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요.
 
 ### Next Summary Feedback
-- 각 기사 요약은 2문장으로 유지하고 첫 문장에 품목·지역·핵심 이슈를 바로 적는다.
-- 기사에 수치가 있으면 1개 이상 남기고, 없으면 대응 주체나 시점을 분명히 적는다.
-- 비슷한 시작 표현을 반복하지 말고 원인과 대응을 분리해서 간결하게 쓴다.
+- 각 기사 요약은 2문장으로 유지하고, 85~140자 안에서 품목·지역·핵심 변수만 남긴다.
