@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-22T00:54:12+09:00",
+  "generated_at": "2026-07-23T00:52:41+09:00",
   "rows": [
     {
       "date": "2026-05-20",
@@ -481,6 +481,19 @@
       "users": 3,
       "archive_url": "/agri-news-brief/archive/2026-07-10.html#sec-supply",
       "source_url": "https://www.shinailbo.co.kr/news/articleView.html?idxno=5039300"
+    },
+    {
+      "date": "2026-07-22",
+      "article_id": "21c70c2b431d",
+      "title": "농산물 값 널뛰는데 정부 관리 물량은 10%뿐…새 제도는 다를까",
+      "report_date": "2026-07-22",
+      "section": "policy",
+      "surface": "briefing_card",
+      "target_domain": "www.kmib.co.kr",
+      "clicks": 4,
+      "users": 4,
+      "archive_url": "",
+      "source_url": ""
     },
     {
       "date": "2026-04-01",
@@ -3198,6 +3211,58 @@
       "users": 2,
       "archive_url": "",
       "source_url": ""
+    },
+    {
+      "date": "2026-07-21",
+      "article_id": "b4521e1cb3ba",
+      "title": "\"쌈 싸먹기도 부담\"…더위에 상추값 급등, 호우에 오이 값 4배 폭등",
+      "report_date": "2026-07-21",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.mbn.co.kr",
+      "clicks": 2,
+      "users": 2,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-07-22",
+      "article_id": "21c70c2b431d",
+      "title": "농산물 값 널뛰는데 정부 관리 물량은 10%뿐…새 제도는 다를까",
+      "report_date": "2026-07-22",
+      "section": "policy",
+      "surface": "briefing_open",
+      "target_domain": "www.kmib.co.kr",
+      "clicks": 2,
+      "users": 2,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-07-22",
+      "article_id": "5531a497f84c",
+      "title": "[산지 확대경] ‘홍고추·건고추’ 작황 대체로 양호…긴 장마에 ‘병해...",
+      "report_date": "2026-07-22",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.nongmin.com",
+      "clicks": 2,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-07-22",
+      "article_id": "c9a77f2b5d36",
+      "title": "폭우·폭염에 채솟값 '들썩'…제철 과일은 안정세",
+      "report_date": "2026-07-22",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.namdonews.com",
+      "clicks": 2,
+      "users": 2,
+      "archive_url": "/agri-news-brief/archive/2026-07-22.html#sec-supply",
+      "source_url": "https://www.namdonews.com/news/articleView.html?idxno=917602"
     },
     {
       "date": "2026-03-30",
@@ -11235,19 +11300,6 @@
     },
     {
       "date": "2026-07-21",
-      "article_id": "b4521e1cb3ba",
-      "title": "\"쌈 싸먹기도 부담\"…더위에 상추값 급등, 호우에 오이 값 4배 폭등",
-      "report_date": "2026-07-21",
-      "section": "supply",
-      "surface": "briefing_card",
-      "target_domain": "www.mbn.co.kr",
-      "clicks": 1,
-      "users": 1,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-07-21",
       "article_id": "b5308a01aadd",
       "title": "'가난한 풍년' 배추 갈아엎는 농민",
       "report_date": "2026-07-21",
@@ -11284,6 +11336,45 @@
       "users": 1,
       "archive_url": "/agri-news-brief/archive/2026-07-21.html#sec-supply",
       "source_url": "https://www.newsgn.com/news/articleView.html?idxno=563137"
+    },
+    {
+      "date": "2026-07-22",
+      "article_id": "33c888113e2c",
+      "title": "단양 마늘 '105톤 수매'…농가 판로 넓힌다",
+      "report_date": "2026-07-22",
+      "section": "dist",
+      "surface": "briefing_open",
+      "target_domain": "www.bzeronews.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-07-22.html#sec-dist",
+      "source_url": "https://www.bzeronews.com/news/articleView.html?idxno=820327"
+    },
+    {
+      "date": "2026-07-22",
+      "article_id": "92a96f0d0e3c",
+      "title": "집중호우·폭염에 출하량 ‘뚝’…수박·채소값 오름세",
+      "report_date": "2026-07-22",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.jndn.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-07-22.html#sec-supply",
+      "source_url": "http://www.jndn.com/article.php?aid=1784624058436396004"
+    },
+    {
+      "date": "2026-07-22",
+      "article_id": "b267942e233d",
+      "title": "\"쌈 싸먹기도 부담\"…더위에 상추값 급등, 호우에 오이 값 4배 폭등",
+      "report_date": "2026-07-22",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.mbn.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
     }
   ]
 }
