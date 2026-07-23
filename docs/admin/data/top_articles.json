@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-23T00:52:41+09:00",
+  "generated_at": "2026-07-24T01:02:59+09:00",
   "rows": [
     {
       "date": "2026-05-20",
@@ -3250,6 +3250,19 @@
       "users": 1,
       "archive_url": "",
       "source_url": ""
+    },
+    {
+      "date": "2026-07-22",
+      "article_id": "92a96f0d0e3c",
+      "title": "집중호우·폭염에 출하량 ‘뚝’…수박·채소값 오름세",
+      "report_date": "2026-07-22",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.jndn.com",
+      "clicks": 2,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-07-22.html#sec-supply",
+      "source_url": "http://www.jndn.com/article.php?aid=1784624058436396004"
     },
     {
       "date": "2026-07-22",
@@ -11352,19 +11365,6 @@
     },
     {
       "date": "2026-07-22",
-      "article_id": "92a96f0d0e3c",
-      "title": "집중호우·폭염에 출하량 ‘뚝’…수박·채소값 오름세",
-      "report_date": "2026-07-22",
-      "section": "supply",
-      "surface": "briefing_card",
-      "target_domain": "www.jndn.com",
-      "clicks": 1,
-      "users": 1,
-      "archive_url": "/agri-news-brief/archive/2026-07-22.html#sec-supply",
-      "source_url": "http://www.jndn.com/article.php?aid=1784624058436396004"
-    },
-    {
-      "date": "2026-07-22",
       "article_id": "b267942e233d",
       "title": "\"쌈 싸먹기도 부담\"…더위에 상추값 급등, 호우에 오이 값 4배 폭등",
       "report_date": "2026-07-22",
@@ -11375,6 +11375,84 @@
       "users": 1,
       "archive_url": "",
       "source_url": ""
+    },
+    {
+      "date": "2026-07-23",
+      "article_id": "01d4a4565025",
+      "title": "수입산 콩나물콩 공세...\"책임행정으로 정부에 대응해야\"",
+      "report_date": "2026-07-23",
+      "section": "policy",
+      "surface": "briefing_open",
+      "target_domain": "www.jejunews.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-07-23.html#sec-policy",
+      "source_url": "http://www.jejunews.com/news/articleView.html?idxno=2226822"
+    },
+    {
+      "date": "2026-07-23",
+      "article_id": "118fbfd6a10e",
+      "title": "제주 하우스 감귤 , 안정적 출하 흐름 보여",
+      "report_date": "2026-07-23",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.amnews.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-07-23.html#sec-supply",
+      "source_url": "http://www.amnews.co.kr/news/articleView.html?idxno=73613"
+    },
+    {
+      "date": "2026-07-23",
+      "article_id": "1768d9be22dc",
+      "title": "“샛별 보고 농사짓는데 3년째 빚만 는다”…배추값 폭락에 수확 대신 ...",
+      "report_date": "2026-07-23",
+      "section": "supply",
+      "surface": "commodity_primary",
+      "target_domain": "www.nongmin.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-07-23",
+      "article_id": "1a24758fb263",
+      "title": "양파 육묘판 소독 필수…시들음병 예방이 정식률 좌우",
+      "report_date": "2026-07-23",
+      "section": "pest",
+      "surface": "briefing_open",
+      "target_domain": "www.nongup.net",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-07-23.html#sec-pest",
+      "source_url": "http://www.nongup.net/news/articleView.html?idxno=33418"
+    },
+    {
+      "date": "2026-07-23",
+      "article_id": "8391ea70c5bb",
+      "title": "지역경제 선도하는 품목농협 - 대관령원예농협",
+      "report_date": "2026-07-23",
+      "section": "dist",
+      "surface": "briefing_card",
+      "target_domain": "www.wonyesanup.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-07-23.html#sec-dist",
+      "source_url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=65333"
+    },
+    {
+      "date": "2026-07-23",
+      "article_id": "8ff3f6a52ae7",
+      "title": "복숭아 포장자재 지원 수급 안정 도모",
+      "report_date": "2026-07-23",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.wonyesanup.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-07-23.html#sec-supply",
+      "source_url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=65327"
     }
   ]
 }
