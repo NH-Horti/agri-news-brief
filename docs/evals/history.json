@@ -1,6 +1,52 @@
 {
   "reports": [
     {
+      "report_date": "2026-07-24",
+      "generated_at_kst": "2026-07-24T06:20:27+09:00",
+      "overall_score": 80.18,
+      "operational_score": 90.43,
+      "reader_quality_score": 88.18,
+      "reader_quality_gate_status": "capped",
+      "reader_quality_gate_reasons": [
+        "preferred_slot_underfill"
+      ],
+      "editorial_score": 66.85,
+      "editorial_model_reported_score": 70.0,
+      "editorial_score_method": "weighted_components_v1",
+      "editorial_quality_tier": "needs_major_iteration",
+      "editorial_acceptance_passed": false,
+      "editorial_status": "needs_major_iteration",
+      "quality_gate_status": "needs_major_iteration",
+      "quality_gate_reason": "editorial_major_issue",
+      "status": "warn",
+      "section_alignment": 96.36,
+      "core_quality": 85.22,
+      "commodity_board_quality": 100.0,
+      "briefing_total": 17,
+      "commodity_total": 15,
+      "commodity_active_today_total": 11,
+      "commodity_active_today_unlinked_total": 5,
+      "commodity_managed_unlinked_total": 27,
+      "summary_presence_rate": 1.0,
+      "within_72h_rate": 1.0,
+      "briefing_title_unique_rate": 1.0,
+      "low_tier_source_rate": 0.2353,
+      "low_tier_source_excess_count": 0,
+      "content_false_positive_rate": 0.0,
+      "reader_hard_issue_count": 0,
+      "reader_quality_penalty": 2.25,
+      "editorial_quality_penalty": 0.0,
+      "commodity_primary_false_link_rate": 0.0,
+      "commodity_pool_false_link_rate": 0.0,
+      "policy_wrong_section_rate": 0.0,
+      "promotional_filler_rate": 0.0,
+      "promotional_core_rate": 0.0,
+      "pest_theme_duplicate_rate": 0.0,
+      "guardrail_driver_tags": [
+        "core_quality"
+      ]
+    },
+    {
       "report_date": "2026-07-23",
       "generated_at_kst": "2026-07-23T06:22:59+09:00",
       "overall_score": 76.0,
@@ -2082,5 +2128,5 @@
       "briefing_title_unique_rate": 1.0
     }
   ],
-  "updated_at_kst": "2026-07-23T06:22:59+09:00"
+  "updated_at_kst": "2026-07-24T06:20:27+09:00"
 }
