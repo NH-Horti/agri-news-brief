@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-24T01:02:59+09:00",
+  "generated_at": "2026-07-25T00:45:14+09:00",
   "rows": [
     {
       "date": "2026-05-20",
@@ -1114,6 +1114,19 @@
       "section": "supply",
       "surface": "briefing_card",
       "target_domain": "www.ytn.co.kr",
+      "clicks": 3,
+      "users": 2,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-07-24",
+      "article_id": "92b1e07b2c98",
+      "title": "강원농협, 도청과 함께 지역 농산물 가격안정 총력",
+      "report_date": "2026-07-24",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.yna.co.kr",
       "clicks": 3,
       "users": 2,
       "archive_url": "",
@@ -3276,6 +3289,45 @@
       "users": 2,
       "archive_url": "/agri-news-brief/archive/2026-07-22.html#sec-supply",
       "source_url": "https://www.namdonews.com/news/articleView.html?idxno=917602"
+    },
+    {
+      "date": "2026-07-24",
+      "article_id": "1aad428c3361",
+      "title": "강원도·강원농협 도내 농산물 가격· 수급 안정사업 추진",
+      "report_date": "2026-07-24",
+      "section": "policy",
+      "surface": "briefing_card",
+      "target_domain": "www.kado.net",
+      "clicks": 2,
+      "users": 2,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-07-24",
+      "article_id": "ac4d5420d4ff",
+      "title": "\"이제 좀 사먹겠네\"…작년보다 확 싸진 '국민 과일' [프라이스&]",
+      "report_date": "2026-07-24",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.hankyung.com",
+      "clicks": 2,
+      "users": 2,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-07-24",
+      "article_id": "b01ed5cc1bb2",
+      "title": "수박값 1년 새 36%↓···여름 과일 ·채소값도 안정세",
+      "report_date": "2026-07-24",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.seoulfn.com",
+      "clicks": 2,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-07-24.html#sec-supply",
+      "source_url": "https://www.seoulfn.com/news/articleView.html?idxno=633942"
     },
     {
       "date": "2026-03-30",
@@ -11453,6 +11505,123 @@
       "users": 1,
       "archive_url": "/agri-news-brief/archive/2026-07-23.html#sec-supply",
       "source_url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=65327"
+    },
+    {
+      "date": "2026-07-24",
+      "article_id": "1aad428c3361",
+      "title": "강원도·강원농협 도내 농산물 가격· 수급 안정사업 추진",
+      "report_date": "2026-07-24",
+      "section": "policy",
+      "surface": "briefing_open",
+      "target_domain": "www.kado.net",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-07-24",
+      "article_id": "500372427809",
+      "title": "롯데마트·슈퍼 “소용량 조각과일 리뉴얼 후 매출 184% 신장”",
+      "report_date": "2026-07-24",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.etnews.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-07-24",
+      "article_id": "6ffc33ed2edf",
+      "title": "폭염·가뭄 속 고랭지 여름 감자 철저히 관리해야",
+      "report_date": "2026-07-24",
+      "section": "pest",
+      "surface": "commodity_primary",
+      "target_domain": "www.amnews.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-07-24",
+      "article_id": "89426e6b83dd",
+      "title": "정부 콩나물콩 TRQ 1만 톤 증량 파문 '일파만파'",
+      "report_date": "2026-07-24",
+      "section": "policy",
+      "surface": "briefing_card",
+      "target_domain": "www.amnews.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-07-24.html#sec-policy",
+      "source_url": "http://www.amnews.co.kr/news/articleView.html?idxno=73644"
+    },
+    {
+      "date": "2026-07-24",
+      "article_id": "89426e6b83dd",
+      "title": "정부 콩나물콩 TRQ 1만 톤 증량 파문 '일파만파'",
+      "report_date": "2026-07-24",
+      "section": "policy",
+      "surface": "briefing_open",
+      "target_domain": "www.amnews.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-07-24.html#sec-policy",
+      "source_url": "http://www.amnews.co.kr/news/articleView.html?idxno=73644"
+    },
+    {
+      "date": "2026-07-24",
+      "article_id": "92b1e07b2c98",
+      "title": "강원농협, 도청과 함께 지역 농산물 가격안정 총력",
+      "report_date": "2026-07-24",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.yna.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-07-24",
+      "article_id": "99c2be128e44",
+      "title": "농산물 소매단계, 유통비용이 문제",
+      "report_date": "2026-07-24",
+      "section": "dist",
+      "surface": "briefing_card",
+      "target_domain": "www.naeil.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-07-24.html#sec-dist",
+      "source_url": "https://www.naeil.com/news/read/596234"
+    },
+    {
+      "date": "2026-07-24",
+      "article_id": "ac4d5420d4ff",
+      "title": "\"이제 좀 사먹겠네\"…작년보다 확 싸진 '국민 과일' [프라이스&]",
+      "report_date": "2026-07-24",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.hankyung.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-07-24",
+      "article_id": "f204b026c19d",
+      "title": "일본 도매시장 개혁 ‘공공성 강화’ 주목…“국내 개편 논의때 참고할...",
+      "report_date": "2026-07-24",
+      "section": "dist",
+      "surface": "briefing_open",
+      "target_domain": "www.nongmin.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
     }
   ]
 }
