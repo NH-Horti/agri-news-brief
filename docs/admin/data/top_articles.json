@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-25T00:45:14+09:00",
+  "generated_at": "2026-07-26T00:30:04+09:00",
   "rows": [
     {
       "date": "2026-05-20",
@@ -1127,6 +1127,19 @@
       "section": "supply",
       "surface": "briefing_card",
       "target_domain": "www.yna.co.kr",
+      "clicks": 3,
+      "users": 2,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-07-24",
+      "article_id": "ac4d5420d4ff",
+      "title": "\"이제 좀 사먹겠네\"…작년보다 확 싸진 '국민 과일' [프라이스&]",
+      "report_date": "2026-07-24",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.hankyung.com",
       "clicks": 3,
       "users": 2,
       "archive_url": "",
@@ -3298,19 +3311,6 @@
       "section": "policy",
       "surface": "briefing_card",
       "target_domain": "www.kado.net",
-      "clicks": 2,
-      "users": 2,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-07-24",
-      "article_id": "ac4d5420d4ff",
-      "title": "\"이제 좀 사먹겠네\"…작년보다 확 싸진 '국민 과일' [프라이스&]",
-      "report_date": "2026-07-24",
-      "section": "supply",
-      "surface": "briefing_card",
-      "target_domain": "www.hankyung.com",
       "clicks": 2,
       "users": 2,
       "archive_url": "",
