@@ -133,6 +133,23 @@ class PrepublishQualityGateTests(unittest.TestCase):
         self.assertEqual(validation_errors[0]["section"], "supply")
         self.assertEqual(validation_errors[0]["reason"], "low_tier_source_section_cap")
 
+    def test_source_cap_validation_does_not_permanently_exclude_valid_candidate(self):
+        self.assertFalse(
+            main._repair_validation_error_excludes_candidate(
+                {"reason": "low_tier_source_section_cap", "link": "https://example.com/keep"}
+            )
+        )
+        self.assertFalse(
+            main._repair_validation_error_excludes_candidate(
+                {"reason": "low_tier_source_total_cap", "link": "https://example.com/keep"}
+            )
+        )
+        self.assertTrue(
+            main._repair_validation_error_excludes_candidate(
+                {"reason": "pest_no_active_risk_core", "link": "https://example.com/drop"}
+            )
+        )
+
     def test_editorial_snapshot_is_enriched_with_source_tiers(self):
         raw = self._raw_sections()
         snapshot = {

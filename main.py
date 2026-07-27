@@ -1082,7 +1082,7 @@ SELECTION_FEEDBACK_PATH = os.getenv("SELECTION_FEEDBACK_PATH", "docs/evals/lates
 PREPUBLISH_QUALITY_GATE_ENABLED = os.getenv("PREPUBLISH_QUALITY_GATE_ENABLED", "false").strip().lower() in ("1", "true", "yes", "y")
 PREPUBLISH_QUALITY_FAIL_CLOSED = os.getenv("PREPUBLISH_QUALITY_FAIL_CLOSED", "true").strip().lower() in ("1", "true", "yes", "y")
 PREPUBLISH_QUALITY_ADAPTIVE = os.getenv("PREPUBLISH_QUALITY_ADAPTIVE", "true").strip().lower() in ("1", "true", "yes", "y")
-PREPUBLISH_QUALITY_MAX_REPAIRS = max(0, min(3, int((os.getenv("PREPUBLISH_QUALITY_MAX_REPAIRS", "3") or "3").strip() or 3)))
+PREPUBLISH_QUALITY_MAX_REPAIRS = max(0, min(5, int((os.getenv("PREPUBLISH_QUALITY_MAX_REPAIRS", "5") or "5").strip() or 5)))
 PREPUBLISH_QUALITY_STABLE_DAYS = max(5, min(60, int((os.getenv("PREPUBLISH_QUALITY_STABLE_DAYS", "20") or "20").strip() or 20)))
 PREPUBLISH_QUALITY_DEADLINE_KST = (os.getenv("PREPUBLISH_QUALITY_DEADLINE_KST", "06:50") or "06:50").strip()
 PREPUBLISH_QUALITY_RESULT_DIR = (os.getenv("PREPUBLISH_QUALITY_RESULT_DIR", "reports/evals") or "reports/evals").strip()
@@ -51765,6 +51765,20 @@ def _initial_editorial_repair_exclusions(
     return excluded
 
 
+def _repair_validation_error_excludes_candidate(error: JsonDict) -> bool:
+    """Return whether a locally rejected link is intrinsically invalid.
+
+    Source-tier caps reject a combination of otherwise valid cards. Keeping the
+    reported victim available lets the next proposal retain it while swapping a
+    different low-tier card out.
+    """
+    reason = str(error.get("reason") or "").strip()
+    return reason not in {
+        "low_tier_source_section_cap",
+        "low_tier_source_total_cap",
+    }
+
+
 def _enrich_editorial_snapshot_source_tiers(
     snapshot_payload: JsonDict,
     raw_by_section: dict[str, list[Article]],
@@ -51933,7 +51947,7 @@ def _run_prepublish_quality_gate(
     if excluded_counts:
         log.info("[QUALITY GATE] prefiltered locally invalid repair candidates: %s", excluded_counts)
 
-    repair_proposal_limit = PREPUBLISH_QUALITY_MAX_REPAIRS + 2
+    repair_proposal_limit = PREPUBLISH_QUALITY_MAX_REPAIRS + 3
     repair_proposal_count = 0
     applied_repair_count = 0
     while (
@@ -51992,7 +52006,11 @@ def _run_prepublish_quality_gate(
             for error in attempt_validation_errors:
                 section = str(error.get("section") or "")
                 link = str(error.get("link") or "").strip()
-                if section in repair_excluded_links and link:
+                if (
+                    section in repair_excluded_links
+                    and link
+                    and _repair_validation_error_excludes_candidate(error)
+                ):
                     repair_excluded_links[section].add(link)
             if attempt < repair_proposal_limit and any(repair_excluded_links.values()):
                 continue
