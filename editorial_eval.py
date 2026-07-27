@@ -603,6 +603,7 @@ def _raw_candidates(
                 "title": _truncate(row.get("title"), 180),
                 "description": _truncate(row.get("description") or row.get("summary"), 520),
                 "domain": _truncate(row.get("domain") or row.get("press"), 80),
+                "source_tier": int(_as_float(row.get("press_tier"), 0.0)),
                 "link": _truncate(row.get("canon_url") or row.get("link") or row.get("originallink"), 260),
                 "pub_dt_kst": _truncate(row.get("pub_dt_kst"), 40),
                 "topic": _truncate(row.get("topic"), 80),
@@ -635,6 +636,7 @@ def build_editorial_payload(
             "title": _truncate(article.title, 180),
             "summary": _truncate(article.summary, 420),
             "domain": _truncate(article.domain, 80),
+            "source_tier": int(article.press_tier),
             "href": _truncate(article.href, 260),
             "is_core": bool(article.is_core),
             "selection_fit_score": round(_as_float(article.selection_fit_score), 3),
@@ -686,12 +688,24 @@ def _repair_editorial_constraints(
     if not isinstance(raw_by_section, dict):
         raw_by_section = {}
     constraints: dict[str, dict[str, list[dict[str, Any]]]] = {
-        section: {"required": [], "excluded": [], "non_core": []}
+        section: {"required": [], "required_core": [], "excluded": [], "non_core": []}
         for section in SECTION_KEYS
     }
 
     def title_key(value: Any) -> str:
         return re.sub(r"[^0-9a-z가-힣]+", "", str(value or "").lower().replace("...", "").replace("…", ""))
+
+    selected_rows = payload.get("selected_briefing_cards", [])
+    if not isinstance(selected_rows, list):
+        selected_rows = []
+    selected_core_by_section: dict[str, dict[str, bool]] = {section: {} for section in SECTION_KEYS}
+    for selected in selected_rows:
+        if not isinstance(selected, dict):
+            continue
+        selected_section = str(selected.get("section") or "").strip()
+        selected_title = title_key(selected.get("title"))
+        if selected_section in selected_core_by_section and selected_title:
+            selected_core_by_section[selected_section][selected_title] = bool(selected.get("is_core"))
 
     issue_rows = editorial_result.get("issues", []) if isinstance(editorial_result, dict) else []
     if not isinstance(issue_rows, list):
@@ -718,15 +732,32 @@ def _repair_editorial_constraints(
                 matches.append(candidate)
         if not matches:
             continue
-        bucket = (
-            "required"
-            if issue_type == "missed_candidate"
-            else "excluded"
-            if issue_type in {"wrong_section", "promotional_filler", "duplicate_story", "duplicate_theme"}
-            else "non_core"
-            if issue_type == "weak_core"
-            else ""
-        )
+        bucket = ""
+        if issue_type == "missed_candidate":
+            action_text = f"{issue.get('reason') or ''} {issue.get('suggested_action') or ''}".lower()
+            bucket = "required_core" if any(term in action_text for term in ("핵심", "코어", "core")) else "required"
+        elif issue_type in {"wrong_section", "promotional_filler", "duplicate_story", "duplicate_theme"}:
+            bucket = "excluded"
+        elif issue_type == "weak_core":
+            matching_selected_core = next(
+                (
+                    is_core
+                    for selected_title, is_core in selected_core_by_section.get(section, {}).items()
+                    if issue_title in selected_title or selected_title in issue_title
+                ),
+                None,
+            )
+            if matching_selected_core is True:
+                bucket = "non_core"
+            elif matching_selected_core is False:
+                bucket = "required_core"
+            else:
+                action_text = f"{issue.get('reason') or ''} {issue.get('suggested_action') or ''}".lower()
+                bucket = (
+                    "required_core"
+                    if any(term in action_text for term in ("승격", "핵심으로", "코어로", "promote"))
+                    else "non_core"
+                )
         if not bucket:
             continue
         candidate = matches[0]
@@ -735,12 +766,20 @@ def _repair_editorial_constraints(
             "link": candidate.get("link"),
             "severity": str(issue.get("severity") or "").strip().lower(),
         }
+        candidate_link = str(row.get("link") or "")
+        for existing_bucket in constraints[section].values():
+            existing_bucket[:] = [
+                existing for existing in existing_bucket
+                if str(existing.get("link") or "") != candidate_link
+            ]
         if row not in constraints[section][bucket]:
             constraints[section][bucket].append(row)
 
     for section in SECTION_KEYS:
         required_links = {
             str(row.get("link") or "") for row in constraints[section]["required"]
+        } | {
+            str(row.get("link") or "") for row in constraints[section]["required_core"]
         }
         excluded_links = {
             str(row.get("link") or "") for row in constraints[section]["excluded"]
@@ -954,6 +993,7 @@ def evaluate_editorial_quality(
         "but they should not displace stronger national or operational candidates. "
         "For dist, prefer concrete distribution, logistics, export-disruption, market-operation, and sales-channel stories over local promotions. "
         "For pest, prefer fire-blight escalation/response and named crop pest risks over generic local notices. "
+        "For a weak_core issue, title the selected card whose core flag should change and state explicitly whether it should be promoted to core or demoted from core. "
         "Use only these issue types: "
         + ", ".join(EDITORIAL_ISSUE_TYPES)
         + ". Use only these severity levels: "
@@ -1031,6 +1071,7 @@ def propose_editorial_repair(
     max_raw_per_section: int = DEFAULT_MAX_RAW_PER_SECTION,
     excluded_links_by_section: dict[str, set[str]] | None = None,
     prior_validation_errors: list[dict[str, Any]] | None = None,
+    prior_editorial_issues: list[dict[str, Any]] | None = None,
     timeout_sec: int = DEFAULT_TIMEOUT_SEC,
     session_factory: Any = requests.Session,
 ) -> dict[str, Any]:
@@ -1066,7 +1107,16 @@ def propose_editorial_repair(
         "improvement_suggestions": editorial_result.get("improvement_suggestions", []),
         "acceptance_gate": editorial_result.get("acceptance_gate", {}),
     }
-    payload["repair_constraints_by_section"] = _repair_editorial_constraints(payload, editorial_result)
+    current_issues = editorial_result.get("issues", []) if isinstance(editorial_result, dict) else []
+    combined_issues = [
+        issue
+        for issue in [*(prior_editorial_issues or []), *(current_issues if isinstance(current_issues, list) else [])]
+        if isinstance(issue, dict)
+    ]
+    payload["repair_constraints_by_section"] = _repair_editorial_constraints(
+        payload,
+        {"issues": combined_issues[-32:]},
+    )
     if prior_validation_errors:
         payload["prior_repair_validation_errors"] = prior_validation_errors[-8:]
     system_prompt = (
@@ -1075,7 +1125,8 @@ def propose_editorial_repair(
         "Return exactly five cards for each of supply, policy, dist, and pest. "
         "Every returned link must be copied exactly from that section's raw_candidates_by_section list; never invent, rewrite, or move a link from another section. "
         "Candidates rejected by local validation are omitted from the raw lists; if prior_repair_validation_errors is present, correct every listed failure. "
-        "Obey repair_constraints_by_section: select every available required link, never select an excluded link, and never mark a non_core link as core. "
+        "Obey repair_constraints_by_section: select every available required and required_core link, mark every required_core link as core, never select an excluded link, and never mark a non_core link as core. "
+        "The operational acceptance target is 95. Prefer source_tier 4 over 3 over 2 over 1 for equivalent coverage; select no more than one source_tier 1 card per section and four across the full 20-card briefing. "
         "Do not select duplicate events across sections. Exclude promotional product stories, local-event filler, weak profiles, stale reprints, and articles identified as defective by the failed evaluation. "
         "Prefer current national or materially important field stories with concrete prices, volumes, policy decisions, logistics, market operations, exports, crop damage, or pest response. "
         "For supply, prioritize horticultural production, shipment, price, weather, and supply-demand developments, including quantified short-term price spikes or shortages. "

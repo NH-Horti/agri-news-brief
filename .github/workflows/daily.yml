@@ -98,7 +98,7 @@ jobs:
           PREPUBLISH_QUALITY_GATE_ENABLED: 'true'
           PREPUBLISH_QUALITY_FAIL_CLOSED: 'true'
           PREPUBLISH_QUALITY_ADAPTIVE: 'true'
-          PREPUBLISH_QUALITY_MAX_REPAIRS: '2'
+          PREPUBLISH_QUALITY_MAX_REPAIRS: '3'
           PREPUBLISH_QUALITY_STABLE_DAYS: '20'
           PREPUBLISH_QUALITY_DEADLINE_KST: ${{ inputs.quality_recovery && '23:59' || '06:50' }}
           PREPUBLISH_QUALITY_RESULT_DIR: reports/evals
