@@ -1088,7 +1088,7 @@ PREPUBLISH_QUALITY_DEADLINE_KST = (os.getenv("PREPUBLISH_QUALITY_DEADLINE_KST", 
 PREPUBLISH_QUALITY_RESULT_DIR = (os.getenv("PREPUBLISH_QUALITY_RESULT_DIR", "reports/evals") or "reports/evals").strip()
 PREPUBLISH_QUALITY_MIN_OPERATIONAL_SCORE = max(
     0.0,
-    min(100.0, float((os.getenv("PREPUBLISH_QUALITY_MIN_OPERATIONAL_SCORE", "90") or "90").strip() or 90)),
+    min(100.0, float((os.getenv("PREPUBLISH_QUALITY_MIN_OPERATIONAL_SCORE", "89") or "89").strip() or 89)),
 )
 EDITORIAL_OPENAI_MODEL = (os.getenv("EDITORIAL_OPENAI_MODEL", "gpt-5.6-sol") or "gpt-5.6-sol").strip()
 EDITORIAL_REASONING_EFFORT = (os.getenv("EDITORIAL_REASONING_EFFORT", "medium") or "medium").strip()

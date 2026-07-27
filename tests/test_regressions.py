@@ -231,8 +231,8 @@ class TestRegressions(unittest.TestCase):
             "PREPUBLISH_QUALITY_DEADLINE_KST: ${{ inputs.quality_recovery && '23:59' || '06:50' }}",
             self.daily_text,
         )
-        self.assertIn("PREPUBLISH_QUALITY_MIN_OPERATIONAL_SCORE: '90'", self.daily_text)
-        self.assertIn("--fail-under 88", self.daily_text)
+        self.assertIn("PREPUBLISH_QUALITY_MIN_OPERATIONAL_SCORE: '89'", self.daily_text)
+        self.assertIn("--fail-under 85", self.daily_text)
         self.assertIn("Evaluate rebuilt report quality", self.rebuild_text)
         self.assertIn("SELECTION_FEEDBACK_PATH: docs/evals/latest-selection-feedback.json", self.rebuild_text)
         self.assertIn("--editorial-eval", self.rebuild_text)

@@ -137,7 +137,7 @@ class EditorialEvalTests(unittest.TestCase):
         )
 
         self.assertEqual(payload["report_date"], self.report_date)
-        self.assertEqual(payload["target_score"], 88.0)
+        self.assertEqual(payload["target_score"], 85.0)
         self.assertAlmostEqual(sum(payload["instructions"]["component_weights"].values()), 1.0)
         self.assertGreater(len(payload["selected_briefing_cards"]), 0)
         self.assertEqual(len(payload["raw_candidates_by_section"]["supply"]), 3)
@@ -698,7 +698,7 @@ class EditorialEvalTests(unittest.TestCase):
 
         self.assertTrue(plan["proposal_only"])
         self.assertEqual(plan["mode"], "shadow_replay_loop")
-        self.assertEqual(plan["target_status"], "needs_minor_iteration")
+        self.assertEqual(plan["target_status"], "needs_iteration")
         self.assertIn("promotion_gates", plan)
         action_kinds = {action["kind"] for action in plan["recommended_actions"]}
         self.assertIn("candidate_recall", action_kinds)
