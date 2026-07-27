@@ -88,6 +88,36 @@ class PrepublishQualityGateTests(unittest.TestCase):
         with patch.object(main, "_postbuild_article_reject_reason", return_value=""):
             self.assertIsNone(main._apply_model_editorial_repair(repair, raw))
 
+    def test_bad_summary_issue_invalidates_only_matching_selected_cache_entry(self):
+        selected = self._raw_sections()
+        target = selected["supply"][0]
+        untouched = selected["supply"][1]
+        target.summary = "기존의 품질이 낮은 요약입니다. 다시 생성해야 하는 문장입니다."
+        summary_cache: dict[str, main.SummaryCacheEntry | str] = {
+            target.norm_key: {"s": target.summary, "t": "2026-07-27T06:00:00+09:00"},
+            untouched.norm_key: {"s": "정상 요약입니다. 그대로 유지할 두 번째 문장입니다.", "t": "2026-07-27T06:00:00+09:00"},
+        }
+        editorial = {
+            "issues": [
+                {
+                    "type": "bad_summary",
+                    "section": "supply",
+                    "title": target.title + "...",
+                }
+            ]
+        }
+
+        invalidated = main._invalidate_editorial_bad_summary_cache(
+            editorial,
+            selected,
+            summary_cache,
+        )
+
+        self.assertEqual(invalidated, [target.norm_key])
+        self.assertNotIn(target.norm_key, summary_cache)
+        self.assertEqual(target.summary, "")
+        self.assertIn(untouched.norm_key, summary_cache)
+
 
 if __name__ == "__main__":
     unittest.main()
