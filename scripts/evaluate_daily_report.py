@@ -7,7 +7,7 @@ from pathlib import Path
 import sys
 from typing import Any
 
-import requests
+import requests  # type: ignore[import-untyped]
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
@@ -265,6 +265,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Evaluate a generated daily report and optionally publish eval artifacts.")
     parser.add_argument("--report-date", default="")
     parser.add_argument("--snapshot-path", required=True)
+    parser.add_argument(
+        "--existing-result-json",
+        default="",
+        help="Reuse a prepublish result instead of repeating deterministic and OpenAI evaluation.",
+    )
     parser.add_argument("--html-path", default="")
     parser.add_argument("--repo", default="")
     parser.add_argument("--token", default="")
@@ -292,37 +297,49 @@ def main() -> int:
     if not report_date:
         raise RuntimeError("Could not resolve report_date from --report-date or snapshot payload.")
 
-    html_text = ""
-    if args.html_path:
-        html_text = Path(args.html_path).read_text(encoding="utf-8")
+    if args.existing_result_json:
+        result_payload = json.loads(Path(args.existing_result_json).read_text(encoding="utf-8"))
+        if not isinstance(result_payload, dict):
+            raise RuntimeError("--existing-result-json must contain a JSON object.")
+        existing_date = str(result_payload.get("report_date") or "").strip()
+        if existing_date and existing_date != report_date:
+            raise RuntimeError(
+                f"Existing result report_date mismatch: expected {report_date}, found {existing_date}."
+            )
+        result = result_payload
+        LOG.info("Reusing prepublish evaluation: %s", args.existing_result_json)
     else:
-        if not (args.repo and args.token):
-            raise RuntimeError("--html-path is required when --repo/--token is not provided.")
-        remote_html_path = args.remote_html_path or f"docs/archive/{report_date}.html"
-        html_text = fetch_remote_text(args.repo, args.token, args.ref, remote_html_path)
+        html_text = ""
+        if args.html_path:
+            html_text = Path(args.html_path).read_text(encoding="utf-8")
+        else:
+            if not (args.repo and args.token):
+                raise RuntimeError("--html-path is required when --repo/--token is not provided.")
+            remote_html_path = args.remote_html_path or f"docs/archive/{report_date}.html"
+            html_text = fetch_remote_text(args.repo, args.token, args.ref, remote_html_path)
 
-    result = evaluate_report(report_date, html_text, snapshot_payload)
-    result["operational_score"] = result.get("operational_score", result.get("overall_score"))
-    result["score_notes"] = {
-        "overall_score": "Headline reader-quality score. It preserves operational coverage but is capped by hard reader-facing quality issues.",
-        "operational_score": "Deterministic operational harness score for format, coverage, freshness, and metadata.",
-        "reader_quality_score": "Deterministic reader-facing score with hard caps for off-topic articles, duplicate topics, and weak commodity linkage.",
-        "editorial_score": "LLM shadow score for article choice, missed opportunities, noise, and summary usefulness.",
-    }
-    if args.editorial_eval:
-        editorial_result = evaluate_editorial_quality(
-            report_date,
-            html_text,
-            snapshot_payload,
-            result,
-            model=args.editorial_model or None,
-            max_raw_per_section=max(1, int(args.editorial_max_raw_per_section or 24)),
-        )
-        result["editorial"] = editorial_result
-        if editorial_result.get("status") == "success":
-            result["editorial_score"] = editorial_result.get("score")
-            result["editorial_improvement_plan"] = build_editorial_improvement_plan(editorial_result, result)
-            apply_editorial_quality_gate(result, editorial_result)
+        result = evaluate_report(report_date, html_text, snapshot_payload)
+        result["operational_score"] = result.get("operational_score", result.get("overall_score"))
+        result["score_notes"] = {
+            "overall_score": "Headline reader-quality score. It preserves operational coverage but is capped by hard reader-facing quality issues.",
+            "operational_score": "Deterministic operational harness score for format, coverage, freshness, and metadata.",
+            "reader_quality_score": "Deterministic reader-facing score with hard caps for off-topic articles, duplicate topics, and weak commodity linkage.",
+            "editorial_score": "LLM shadow score for article choice, missed opportunities, noise, and summary usefulness.",
+        }
+        if args.editorial_eval:
+            editorial_result = evaluate_editorial_quality(
+                report_date,
+                html_text,
+                snapshot_payload,
+                result,
+                model=args.editorial_model or None,
+                max_raw_per_section=max(1, int(args.editorial_max_raw_per_section or 24)),
+            )
+            result["editorial"] = editorial_result
+            if editorial_result.get("status") == "success":
+                result["editorial_score"] = editorial_result.get("score")
+                result["editorial_improvement_plan"] = build_editorial_improvement_plan(editorial_result, result)
+                apply_editorial_quality_gate(result, editorial_result)
 
     markdown = render_evaluation_markdown(result)
     feedback_text = render_summary_feedback_text(result)
