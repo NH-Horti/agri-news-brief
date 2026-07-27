@@ -7091,6 +7091,10 @@ class LocalRuntimeTests(TestCase):
             "companion_animal_product_promo",
         )
         self.assertTrue(main._is_hard_final_postbuild_reject_reason("companion_animal_product_promo"))
+        self.assertEqual(
+            main._public_debug_candidate_reject_reason(promo, "supply"),
+            "companion_animal_product_promo",
+        )
 
         farm_contract = self._make_article(
             section="supply",
@@ -7101,6 +7105,7 @@ class LocalRuntimeTests(TestCase):
         self.assertFalse(
             main.is_companion_animal_product_promo_context(farm_contract.title, farm_contract.description)
         )
+        self.assertEqual(main._public_debug_candidate_reject_reason(farm_contract, "supply"), "")
 
     def test_editorial_role_guards_restore_daily_priority_candidates(self) -> None:
         potato = self._make_article(
