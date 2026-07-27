@@ -1,9 +1,9 @@
 {
   "report_date": "2026-07-28",
-  "generated_at_kst": "2026-07-28T08:11:50+09:00",
+  "generated_at_kst": "2026-07-28T08:37:41+09:00",
   "scores": {
     "section_alignment": 100.0,
-    "core_quality": 68.58,
+    "core_quality": 84.85,
     "commodity_board_quality": 98.14
   },
   "metrics": {
@@ -12,16 +12,16 @@
     "content_false_positive_rate": 0.0,
     "reader_hard_issue_count": 0,
     "reader_hard_issue_rate": 0.0,
-    "reader_quality_penalty": 8.46,
+    "reader_quality_penalty": 8.28,
     "reader_quality_cap": 100.0,
-    "weak_core_rate": 0.2222,
+    "weak_core_rate": 0.0,
     "policy_wrong_section_rate": 0.0,
-    "promotional_filler_rate": 0.15,
-    "promotional_core_rate": 0.2222,
-    "weak_core_editorial_rate": 0.2222,
+    "promotional_filler_rate": 0.3,
+    "promotional_core_rate": 0.2,
+    "weak_core_editorial_rate": 0.2,
     "pest_theme_duplicate_rate": 0.0,
     "dist_weak_ops_rate": 0.05,
-    "editorial_quality_penalty": 4.7,
+    "editorial_quality_penalty": 4.6,
     "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0,
@@ -44,9 +44,7 @@
     "commodity_primary_dominant_section_rate": 0.5
   },
   "selection_guardrails": {
-    "driver_tags": [
-      "core_quality"
-    ],
+    "driver_tags": [],
     "section_card_min_fit": {
       "default": 0.8,
       "supply": 0.82,
@@ -58,18 +56,18 @@
     "high_score_low_fit_rescue_margin": 3.0,
     "tail_score_floor_delta": 0.0,
     "core_fit_min": {
-      "default": 1.28,
-      "supply": 1.48,
-      "policy": 1.48,
-      "dist": 1.68,
-      "pest": 1.28
+      "default": 1.2,
+      "supply": 1.4,
+      "policy": 1.4,
+      "dist": 1.6,
+      "pest": 1.2
     },
     "core_relaxed_min_fit": {
-      "default": 1.12,
-      "supply": 1.3,
-      "policy": 1.27,
-      "dist": 1.47,
-      "pest": 1.12
+      "default": 1.0,
+      "supply": 1.18,
+      "policy": 1.15,
+      "dist": 1.35,
+      "pest": 1.0
     },
     "disable_relaxed_core_fill": false,
     "final_low_tier_max_per_section": 1,
@@ -86,6 +84,24 @@
       "title": "복날에 지갑 열자 '정부 30% 할인'으로 삼계탕 물가 방어하는 법",
       "href": "https://www.korea.kr/news/reporterView.do?newsId=148968804&call_from=naver_news",
       "section": "policy",
+      "is_core": false,
+      "reasons": [
+        "promotional_or_event_filler"
+      ]
+    },
+    {
+      "title": "농협 개혁 2라운드…與 “중앙회장 상임화 추진”",
+      "href": "https://www.sedaily.com/article/20072481",
+      "section": "policy",
+      "is_core": false,
+      "reasons": [
+        "promotional_or_event_filler"
+      ]
+    },
+    {
+      "title": "충북농협, 영동농협 APC 찾아 포도 출하 준비·안전관리 점검",
+      "href": "https://www.nongmin.com/article/20260727500152",
+      "section": "dist",
       "is_core": true,
       "reasons": [
         "promotional_or_event_filler"
@@ -109,12 +125,21 @@
         "promotional_or_event_filler",
         "dist_event_or_development_without_ops"
       ]
+    },
+    {
+      "title": "겉만 봐선 모르는 ‘물찬 참외 ’…3차원 영상으로 가려낸다",
+      "href": "https://www.dailian.co.kr/news/view/1671118/?sc=Naver",
+      "section": "dist",
+      "is_core": false,
+      "reasons": [
+        "promotional_or_event_filler"
+      ]
     }
   ],
   "reader_hard_issue_samples": [],
   "editorial": {
-    "score": 82.65,
-    "model_reported_score": 82.7,
+    "score": 82.45,
+    "model_reported_score": 82.5,
     "score_method": "weighted_components_v1",
     "quality_tier": "needs_iteration",
     "target_score": 88.0,
@@ -126,13 +151,13 @@
       "excellent_score": 92.0,
       "stretch_score": 95.0,
       "blocking_issue_count": 0,
-      "major_issue_count": 1,
+      "major_issue_count": 0,
       "critical_component_min": 85.0,
       "all_component_min": 80.0,
       "checks": {
         "editorial_score_min": false,
         "no_blocking_issues": true,
-        "no_major_issues": false,
+        "no_major_issues": true,
         "critical_components_min": false,
         "all_components_min": false,
         "operational_score_min": false,
@@ -142,7 +167,6 @@
       },
       "failure_reasons": [
         "editorial_score_min",
-        "no_major_issues",
         "critical_components_min",
         "all_components_min",
         "operational_score_min"
@@ -152,107 +176,100 @@
     "section_count_status": "target_met",
     "scores": {
       "article_selection": 84.0,
-      "section_fit": 91.0,
-      "core_pick_quality": 74.0,
-      "summary_usefulness": 87.0,
-      "missed_opportunity": 79.0,
-      "noise_control": 83.0
+      "section_fit": 85.0,
+      "core_pick_quality": 77.0,
+      "summary_usefulness": 92.0,
+      "missed_opportunity": 76.0,
+      "noise_control": 81.0
     },
     "issues": [
       {
-        "type": "weak_core",
-        "severity": "major",
-        "section": "policy",
-        "title": "[아주초대석] 홍문표 aT사장 \"농산물 수급 불안, 韓 농업의 취약한 구조...",
-        "reason": "정책 섹션 최고 적합도이며 수급 구조와 기후 대응을 다루지만 비핵심으로 밀렸다.",
-        "suggested_action": "핵심 카드로 승격하고 정책 섹션 상단에 배치한다."
-      },
-      {
-        "type": "weak_core",
+        "type": "wrong_section",
         "severity": "moderate",
         "section": "policy",
-        "title": "강원농업기술원, 폭염 대응 농업인 안전 현장지원 강화",
-        "reason": "지역 농가 방문·점검 중심이라 전국 수급정책 기사보다 핵심성이 낮다.",
-        "suggested_action": "핵심에서 비핵심으로 강등하고 꼬리 카드로 유지한다."
+        "title": "완도 고금도 최첨단 유자 가공공장 구축…10월 착공",
+        "reason": "민간 가공·수매·수출 인프라 투자로 정책보다 유통·가공 섹션에 가깝다.",
+        "suggested_action": "정책에서 빼고 제주 농산물 유통 전담기구 논의로 교체한다."
+      },
+      {
+        "type": "promotional_filler",
+        "severity": "moderate",
+        "section": "policy",
+        "title": "복날에 지갑 열자 '정부 30% 할인'으로 삼계탕 물가 방어하는 법",
+        "reason": "정부 기자단식 소비 안내 성격이 강하고 정책의 규모·대상·효과 설명이 약하다.",
+        "suggested_action": "농식품부 ‘모두의 상생’ 출범 기사처럼 전국 단위 제도 기사로 교체한다."
       },
       {
         "type": "weak_core",
         "severity": "moderate",
         "section": "dist",
-        "title": "[AI로 읽는 경제] 농산물 유통개혁 6000억 투입했지만…\"성과 검증·농협...",
-        "reason": "6000억원 유통개혁 사업의 성과 검증과 농협 역할을 다룬 대표 유통 현안이다.",
-        "suggested_action": "핵심 카드로 승격하고 온라인도매시장 기사와 함께 상단에 둔다."
+        "title": "충북농협, 영동농협 APC 찾아 포도 출하 준비·안전관리 점검",
+        "reason": "단순 현장 점검 기사여서 유통개혁·온라인도매시장 기사와 같은 코어 등급은 과하다.",
+        "suggested_action": "코어에서 비코어로 강등한다."
+      },
+      {
+        "type": "missed_candidate",
+        "severity": "moderate",
+        "section": "dist",
+        "title": "옥천 명품 복숭아, 홍콩 수출길 올라…올해 10t 수출 목표",
+        "reason": "실제 선적량과 연간 목표가 있는 구체적 수출·판로 기사인데 현장 점검·기술 기사보다 우선도가 높다.",
+        "suggested_action": "참외 선별기술 기사 대신 넣고 유통 코어 후보로 검토한다."
       },
       {
         "type": "weak_core",
         "severity": "moderate",
         "section": "pest",
         "title": "과수화상병 '미리바 스프레이'로 진단 가능",
-        "reason": "전국 122농가·51.9㏊ 발생과 사과 농가 급증을 담아 일반 방제 당부보다 핵심성이 높다.",
-        "suggested_action": "핵심 카드로 승격하고 포도 병해 기사보다 앞에 배치한다."
+        "reason": "발생면적 10.9% 증가와 현장 진단 수단을 함께 다뤄 일반 방제 당부보다 중요하다.",
+        "suggested_action": "비코어에서 코어로 승격한다."
       },
       {
-        "type": "missed_candidate",
-        "severity": "moderate",
-        "section": "dist",
-        "title": "농식품부, '모두의 상생' 출범…농업·기업 함께 키운다",
-        "reason": "생산부터 판로·수출까지 연결하는 전국 단위 사업으로 지역 APC 점검보다 파급력이 크다.",
-        "suggested_action": "영동농협 APC 점검 카드 대신 선별한다."
-      },
-      {
-        "type": "missed_candidate",
-        "severity": "moderate",
-        "section": "policy",
-        "title": "제주 농정 '유통 혁신'에 방점… 위성곤 도지사 \"건의 수용 여부 반드시...",
-        "reason": "생산·물류·수급 전담기구 검토라는 구체적 정책 변화가 AI 가격비교의 장기 구상보다 선명하다.",
-        "suggested_action": "AI 판매처 비교 카드와 교체한다."
-      },
-      {
-        "type": "noise",
-        "severity": "minor",
-        "section": "policy",
-        "title": "마트마다 다른 농축산물값…AI가 ‘싼 곳’ 찾아준다 [D:로그인]",
-        "reason": "서비스 추진 단계와 시행 범위가 불명확해 당일 정책 정보로서 실행성이 약하다.",
-        "suggested_action": "구축 일정·주관기관이 확인되지 않으면 제외한다."
-      },
-      {
-        "type": "bad_summary",
+        "type": "weak_core",
         "severity": "moderate",
         "section": "pest",
-        "title": "과수화상병 '미리바 스프레이'로 진단 가능",
-        "reason": "전국 발생 면적 증가와 122농가 중 111곳이 사과 농가라는 핵심 위험 신호가 빠졌다.",
-        "suggested_action": "제품 설명보다 발생 규모와 사과 농가 집중도를 앞세워 요약한다."
+        "title": "담양군, '벼 병해충 방제·신규농 현장교육'... 농가 현장 대응 높인다",
+        "reason": "지역 교육 내용이 섞인 일반 방제 공지로 실제 발생·확산 신호보다 코어 가치가 낮다.",
+        "suggested_action": "코어에서 비코어로 강등한다."
+      },
+      {
+        "type": "missed_candidate",
+        "severity": "moderate",
+        "section": "pest",
+        "title": "울진군, 혹명나방 피해 확산 대응…농업기술센터 전직원 예찰·공동방제",
+        "reason": "중국 유입 해충이 실제 필지에서 확인돼 일반 예방 당부보다 긴급성과 작목 위험이 크다.",
+        "suggested_action": "해남 미생물 공급 기사 대신 넣고 코어 후보로 검토한다."
       }
     ]
   },
   "editorial_suggested_guardrails": {
     "driver_tags": [
-      "core_quality",
+      "editorial_section_fit",
+      "editorial_noise_filter",
       "editorial_core_pick"
     ],
     "section_card_min_fit": {
-      "default": 0.8,
-      "supply": 0.82,
-      "policy": 0.82,
-      "dist": 0.95,
-      "pest": 0.78
+      "default": 0.9,
+      "supply": 0.95,
+      "policy": 0.95,
+      "dist": 1.1,
+      "pest": 0.89
     },
-    "section_low_fit_rescue_min": 0.15,
-    "high_score_low_fit_rescue_margin": 3.0,
-    "tail_score_floor_delta": 0.0,
+    "section_low_fit_rescue_min": 0.35,
+    "high_score_low_fit_rescue_margin": 4.2,
+    "tail_score_floor_delta": 0.4,
     "core_fit_min": {
-      "default": 1.38,
-      "supply": 1.58,
-      "policy": 1.58,
-      "dist": 1.75,
-      "pest": 1.38
+      "default": 1.3,
+      "supply": 1.5,
+      "policy": 1.5,
+      "dist": 1.7,
+      "pest": 1.3
     },
     "core_relaxed_min_fit": {
-      "default": 1.12,
-      "supply": 1.3,
-      "policy": 1.27,
-      "dist": 1.47,
-      "pest": 1.12
+      "default": 1.0,
+      "supply": 1.18,
+      "policy": 1.15,
+      "dist": 1.35,
+      "pest": 1.0
     },
     "disable_relaxed_core_fill": true,
     "final_low_tier_max_per_section": 1,
@@ -269,8 +286,8 @@
     "mode": "shadow_replay_loop",
     "proposal_only": true,
     "target_score": 88.0,
-    "current_editorial_score": 82.65,
-    "model_reported_score": 82.7,
+    "current_editorial_score": 82.45,
+    "model_reported_score": 82.5,
     "quality_tier": "needs_iteration",
     "target_status": "needs_iteration",
     "iteration_budget": 3,
@@ -292,24 +309,24 @@
         "supply": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 179,
+          "raw_candidates": 177,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
           "count_floor": 3,
-          "core_count": 2,
+          "core_count": 3,
           "fill_ratio": 1.0,
           "score": 100.0
         },
         "policy": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 111,
+          "raw_candidates": 112,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
           "count_floor": 3,
-          "core_count": 3,
+          "core_count": 2,
           "fill_ratio": 1.0,
           "score": 100.0
         },
@@ -321,14 +338,14 @@
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
           "count_floor": 3,
-          "core_count": 2,
+          "core_count": 3,
           "fill_ratio": 1.0,
           "score": 100.0
         },
         "pest": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 53,
+          "raw_candidates": 52,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -352,7 +369,7 @@
       "core_quality",
       "missed_opportunity",
       "noise_control",
-      "summary_usefulness"
+      "section_fit"
     ],
     "recommended_actions": [
       {
@@ -374,16 +391,14 @@
         "reason": "Selected cards included low editorial-value noise."
       },
       {
-        "kind": "summary_prompt",
-        "target": "latest-feedback.txt",
-        "direction": "add_editorial_feedback",
-        "reason": "Summaries should explain impact and decision value, not just restate titles."
+        "kind": "section_fit",
+        "target": "section_card_min_fit",
+        "direction": "tighten",
+        "reason": "A selected card appears to fit another section better."
       }
     ],
     "current_selection_guardrails": {
-      "driver_tags": [
-        "core_quality"
-      ],
+      "driver_tags": [],
       "section_card_min_fit": {
         "default": 0.8,
         "supply": 0.82,
@@ -395,18 +410,18 @@
       "high_score_low_fit_rescue_margin": 3.0,
       "tail_score_floor_delta": 0.0,
       "core_fit_min": {
-        "default": 1.28,
-        "supply": 1.48,
-        "policy": 1.48,
-        "dist": 1.68,
-        "pest": 1.28
+        "default": 1.2,
+        "supply": 1.4,
+        "policy": 1.4,
+        "dist": 1.6,
+        "pest": 1.2
       },
       "core_relaxed_min_fit": {
-        "default": 1.12,
-        "supply": 1.3,
-        "policy": 1.27,
-        "dist": 1.47,
-        "pest": 1.12
+        "default": 1.0,
+        "supply": 1.18,
+        "policy": 1.15,
+        "dist": 1.35,
+        "pest": 1.0
       },
       "disable_relaxed_core_fill": false,
       "final_low_tier_max_per_section": 1,
