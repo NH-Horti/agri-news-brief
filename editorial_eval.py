@@ -736,7 +736,15 @@ def _repair_editorial_constraints(
         if issue_type == "missed_candidate":
             action_text = f"{issue.get('reason') or ''} {issue.get('suggested_action') or ''}".lower()
             bucket = "required_core" if any(term in action_text for term in ("핵심", "코어", "core")) else "required"
-        elif issue_type in {"wrong_section", "promotional_filler", "duplicate_story", "duplicate_theme"}:
+        elif issue_type in {
+            "wrong_section",
+            "promotional_filler",
+            "duplicate_story",
+            "duplicate_theme",
+            "noise",
+            "false_positive",
+            "off_topic",
+        }:
             bucket = "excluded"
         elif issue_type == "weak_core":
             matching_selected_core = next(

@@ -4056,10 +4056,23 @@ _PEST_ACTIVE_RISK_TITLE_TERMS = (
 )
 
 
+def _is_quantified_fire_blight_status(article: "Article") -> bool:
+    """Keep a measured national fire-blight escalation eligible for a core badge."""
+    text = _editorial_safe_text(article)
+    return bool(
+        "화상병" in text
+        and re.search(r"\d[\d,]*\s*농가", text)
+        and re.search(r"\d+(?:\.\d+)?\s*(?:ha|㏊|헥타르)", text, flags=re.IGNORECASE)
+        and any(term in text for term in ("전국", "발생", "피해"))
+    )
+
+
 def _editorial_safe_core_demote_reason(article: "Article", section_key: str) -> str:
     if section_key not in {"supply", "policy", "dist", "pest"}:
         return ""
     if section_key == "pest":
+        if _is_quantified_fire_blight_status(article):
+            return ""
         soft = _soft_news_core_demote_reason(article)
         if soft:
             return soft
@@ -24031,14 +24044,7 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str, *, apply_se
         return "non_agri_education_opinion_noise"
     if section_key == "dist" and _is_dist_reader_filler(a):
         return "dist_reader_role_misfit"
-    quantified_fire_blight_status = bool(
-        section_key == "pest"
-        and "화상병" in text
-        and re.search(r"\d[\d,]*\s*농가", text)
-        and re.search(r"\d+(?:\.\d+)?\s*(?:ha|㏊|헥타르)", text, flags=re.IGNORECASE)
-        and any(term in text for term in ("전국", "발생", "피해"))
-    )
-    if section_key == "pest" and _is_pest_vendor_product_promo(a) and not quantified_fire_blight_status:
+    if section_key == "pest" and _is_pest_vendor_product_promo(a) and not _is_quantified_fire_blight_status(a):
         return "pest_vendor_product_promo"
     if section_key in ("supply", "policy", "dist") and is_commodity_origin_history_tail_context(a.title or "", a.description or ""):
         return "commodity_origin_history_tail"
@@ -51927,7 +51933,13 @@ def _run_prepublish_quality_gate(
     if excluded_counts:
         log.info("[QUALITY GATE] prefiltered locally invalid repair candidates: %s", excluded_counts)
 
-    for attempt in range(1, PREPUBLISH_QUALITY_MAX_REPAIRS + 1):
+    repair_proposal_limit = PREPUBLISH_QUALITY_MAX_REPAIRS + 2
+    repair_proposal_count = 0
+    applied_repair_count = 0
+    while (
+        repair_proposal_count < repair_proposal_limit
+        and applied_repair_count < PREPUBLISH_QUALITY_MAX_REPAIRS
+    ):
         if _prepublish_evaluation_passed(result):
             break
         if not run_editorial or _prepublish_deadline_reached(report_date):
@@ -51935,6 +51947,8 @@ def _run_prepublish_quality_gate(
         editorial_result = result.get("editorial", {})
         if not isinstance(editorial_result, dict) or editorial_result.get("status") != "success":
             break
+        repair_proposal_count += 1
+        attempt = repair_proposal_count
         repair = propose_editorial_repair(
             report_date,
             current_html,
@@ -51980,9 +51994,11 @@ def _run_prepublish_quality_gate(
                 link = str(error.get("link") or "").strip()
                 if section in repair_excluded_links and link:
                     repair_excluded_links[section].add(link)
-            if attempt < PREPUBLISH_QUALITY_MAX_REPAIRS and any(repair_excluded_links.values()):
+            if attempt < repair_proposal_limit and any(repair_excluded_links.values()):
                 continue
             break
+        applied_repair_count += 1
+        repair_attempts[-1]["applied_repair"] = applied_repair_count
         invalidated_summaries = _invalidate_editorial_bad_summary_cache(
             editorial_result,
             repaired_sections,
@@ -52014,6 +52030,8 @@ def _run_prepublish_quality_gate(
     result["prepublish_quality_gate"] = {
         "status": "passed" if passed else "blocked",
         "repair_count": len(repair_attempts),
+        "applied_repair_count": applied_repair_count,
+        "repair_proposal_limit": repair_proposal_limit,
         "repair_attempts": repair_attempts,
         "deadline_kst": PREPUBLISH_QUALITY_DEADLINE_KST,
         "minimum_operational_score": PREPUBLISH_QUALITY_MIN_OPERATIONAL_SCORE,
