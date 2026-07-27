@@ -85,8 +85,26 @@ class PrepublishQualityGateTests(unittest.TestCase):
         self.assertTrue(all(sum(1 for article in rows if article.is_core) == 2 for rows in repaired.values()))
 
         repair["sections"]["supply"][0]["link"] = "https://invented.invalid/not-in-pool"
+        validation_errors: list[dict] = []
         with patch.object(main, "_postbuild_article_reject_reason", return_value=""):
-            self.assertIsNone(main._apply_model_editorial_repair(repair, raw))
+            self.assertIsNone(
+                main._apply_model_editorial_repair(
+                    repair,
+                    raw,
+                    validation_errors=validation_errors,
+                )
+            )
+        self.assertEqual(
+            validation_errors,
+            [
+                {
+                    "section": "supply",
+                    "reason": "link_not_in_raw_pool",
+                    "link": "https://invented.invalid/not-in-pool",
+                    "title": "",
+                }
+            ],
+        )
 
     def test_bad_summary_issue_invalidates_only_matching_selected_cache_entry(self):
         selected = self._raw_sections()
@@ -117,6 +135,48 @@ class PrepublishQualityGateTests(unittest.TestCase):
         self.assertNotIn(target.norm_key, summary_cache)
         self.assertEqual(target.summary, "")
         self.assertIn(untouched.norm_key, summary_cache)
+
+    def test_factual_error_issue_invalidates_matching_summary_cache_entry(self):
+        selected = self._raw_sections()
+        target = selected["policy"][0]
+        target.summary = "The wrong organization is attributed in this cached summary."
+        summary_cache: dict[str, main.SummaryCacheEntry | str] = {
+            target.norm_key: {"s": target.summary, "t": "2026-07-27T06:00:00+09:00"},
+        }
+        editorial = {
+            "issues": [
+                {
+                    "type": "factual_error",
+                    "section": "policy",
+                    "title": target.title,
+                }
+            ]
+        }
+
+        invalidated = main._invalidate_editorial_bad_summary_cache(
+            editorial,
+            selected,
+            summary_cache,
+        )
+
+        self.assertEqual(invalidated, [target.norm_key])
+        self.assertNotIn(target.norm_key, summary_cache)
+        self.assertEqual(target.summary, "")
+
+    def test_initial_repair_exclusions_hide_locally_invalid_candidates(self):
+        raw = self._raw_sections()
+        invalid = raw["supply"][0]
+
+        def reject_reason(article, section):
+            if article is invalid and section == "supply":
+                return "supply_reader_role_misfit"
+            return ""
+
+        with patch.object(main, "_postbuild_article_reject_reason", side_effect=reject_reason):
+            excluded = main._initial_editorial_repair_exclusions(raw)
+
+        self.assertIn(invalid.link, excluded["supply"])
+        self.assertNotIn(raw["supply"][1].link, excluded["supply"])
 
 
 if __name__ == "__main__":

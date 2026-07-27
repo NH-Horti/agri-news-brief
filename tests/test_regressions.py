@@ -224,7 +224,12 @@ class TestRegressions(unittest.TestCase):
         self.assertIn('echo "- Article generation model: gpt-5.6-sol"', self.rebuild_text)
         self.assertIn('echo "- Editorial evaluation model: gpt-5.6-sol"', self.rebuild_text)
         self.assertIn("PREPUBLISH_QUALITY_GATE_ENABLED: 'true'", self.daily_text)
-        self.assertIn("PREPUBLISH_QUALITY_DEADLINE_KST: '06:50'", self.daily_text)
+        self.assertIn("quality_recovery:", self.daily_text)
+        self.assertIn("default: false", self.daily_text)
+        self.assertIn(
+            "PREPUBLISH_QUALITY_DEADLINE_KST: ${{ inputs.quality_recovery && '23:59' || '06:50' }}",
+            self.daily_text,
+        )
         self.assertIn("PREPUBLISH_QUALITY_MIN_OPERATIONAL_SCORE: '90'", self.daily_text)
         self.assertIn("--fail-under 88", self.daily_text)
         self.assertIn("Evaluate rebuilt report quality", self.rebuild_text)

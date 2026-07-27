@@ -10,6 +10,11 @@ on:
         description: 'External trigger source, e.g. cloudflare-cron'
         required: false
         type: string
+      quality_recovery:
+        description: 'Allow an operator-requested same-day quality recovery after the normal 06:50 KST deadline'
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: write
@@ -95,7 +100,7 @@ jobs:
           PREPUBLISH_QUALITY_ADAPTIVE: 'true'
           PREPUBLISH_QUALITY_MAX_REPAIRS: '2'
           PREPUBLISH_QUALITY_STABLE_DAYS: '20'
-          PREPUBLISH_QUALITY_DEADLINE_KST: '06:50'
+          PREPUBLISH_QUALITY_DEADLINE_KST: ${{ inputs.quality_recovery && '23:59' || '06:50' }}
           PREPUBLISH_QUALITY_RESULT_DIR: reports/evals
           PREPUBLISH_QUALITY_MIN_OPERATIONAL_SCORE: '90'
           UX_PATCH_DAYS: '7'
@@ -218,7 +223,8 @@ jobs:
             echo "- Report date: ${{ steps.vars.outputs.report_date }}"
             echo "- Article generation model: gpt-5.6-sol (low reasoning)"
             echo "- Editorial evaluation/repair model: gpt-5.6-sol (medium reasoning)"
-            echo "- Prepublish deadline: 06:50 KST"
+            echo "- Quality recovery: ${{ inputs.quality_recovery || 'false' }}"
+            echo "- Prepublish deadline: ${{ inputs.quality_recovery && '23:59' || '06:50' }} KST"
             echo "- Kakao actual: ${{ steps.kakao_status.outputs.actual }}"
             echo "- Kakao refresh token renewed: ${{ steps.kakao_refresh_token.outputs.renewed }}"
             echo "- Main page: https://nh-horti.github.io/agri-news-brief/"

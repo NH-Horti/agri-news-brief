@@ -239,6 +239,90 @@ class EditorialEvalTests(unittest.TestCase):
         schema = request["text"]["format"]["schema"]["properties"]["sections"]["properties"]
         self.assertTrue(all(schema[section]["minItems"] == 5 for section in report_eval.SECTION_KEYS))
 
+    def test_propose_editorial_repair_excludes_locally_rejected_link(self):
+        class RepairSession(_FakeSession):
+            def post(self, url, headers=None, json=None, timeout=None):
+                self.requests.append({"url": url, "headers": headers or {}, "json": json or {}, "timeout": timeout})
+                prompt_payload = json_module.loads(json["input"][1]["content"])
+                sections = {
+                    section: [
+                        {"link": row["link"], "is_core": index < 2}
+                        for index, row in enumerate(prompt_payload["raw_candidates_by_section"][section][:5])
+                    ]
+                    for section in report_eval.SECTION_KEYS
+                }
+                return _FakeResponse(
+                    {
+                        "output_text": json_module_dumps(
+                            {"sections": sections, "rationale": "Retried without the rejected candidate."}
+                        )
+                    }
+                )
+
+        first_payload = editorial_eval.build_editorial_payload(
+            self.report_date,
+            self.html_text,
+            self.snapshot_payload,
+            self._operational_with_uniform_counts(),
+            max_raw_per_section=6,
+        )
+        rejected_link = first_payload["raw_candidates_by_section"]["supply"][0]["link"]
+        session = RepairSession()
+        result = editorial_eval.propose_editorial_repair(
+            self.report_date,
+            self.html_text,
+            self.snapshot_payload,
+            self._operational_with_uniform_counts(),
+            {"status": "success", "score": 70, "issues": []},
+            api_key="test-key",
+            max_raw_per_section=6,
+            excluded_links_by_section={"supply": {rejected_link}},
+            prior_validation_errors=[
+                {"section": "supply", "link": rejected_link, "reason": "supply_reader_role_misfit"}
+            ],
+            session_factory=lambda: session,
+        )
+
+        self.assertEqual(result["status"], "success")
+        prompt_payload = json_module.loads(session.requests[0]["json"]["input"][1]["content"])
+        self.assertNotIn(
+            rejected_link,
+            [row["link"] for row in prompt_payload["raw_candidates_by_section"]["supply"]],
+        )
+        self.assertEqual(
+            prompt_payload["prior_repair_validation_errors"][0]["reason"],
+            "supply_reader_role_misfit",
+        )
+
+    def test_repair_constraints_require_missed_and_remove_defective_candidates(self):
+        payload = {
+            "raw_candidates_by_section": {
+                section: [] for section in report_eval.SECTION_KEYS
+            }
+        }
+        payload["raw_candidates_by_section"]["policy"] = [
+            {"title": "전국 농업 재해복구비 384억원 확정", "link": "https://example.com/required"},
+            {"title": "정부 할인으로 장보기", "link": "https://example.com/excluded"},
+            {"title": "전국 농업 정책 구조 진단", "link": "https://example.com/non-core"},
+        ]
+        constraints = editorial_eval._repair_editorial_constraints(
+            payload,
+            {
+                "issues": [
+                    {"type": "missed_candidate", "severity": "major", "section": "policy", "title": "전국 농업 재해복구비 384억원 확정"},
+                    {"type": "promotional_filler", "severity": "moderate", "section": "policy", "title": "정부 할인으로 장보기"},
+                    {"type": "weak_core", "severity": "moderate", "section": "policy", "title": "전국 농업 정책 구조 진단"},
+                ]
+            },
+        )
+
+        self.assertEqual(constraints["policy"]["required"][0]["link"], "https://example.com/required")
+        self.assertEqual(constraints["policy"]["non_core"][0]["link"], "https://example.com/non-core")
+        self.assertNotIn(
+            "https://example.com/excluded",
+            [row["link"] for row in payload["raw_candidates_by_section"]["policy"]],
+        )
+
     def test_editorial_model_environment_override_has_precedence(self):
         session = _FakeSession()
         with patch.dict(

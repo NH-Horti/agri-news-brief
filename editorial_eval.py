@@ -566,7 +566,12 @@ def _apply_editorial_acceptance_gate(
     return result
 
 
-def _raw_candidates(snapshot_payload: dict[str, Any], max_raw_per_section: int) -> dict[str, list[dict[str, Any]]]:
+def _raw_candidates(
+    snapshot_payload: dict[str, Any],
+    max_raw_per_section: int,
+    *,
+    excluded_links_by_section: dict[str, set[str]] | None = None,
+) -> dict[str, list[dict[str, Any]]]:
     raw_by_section = snapshot_payload.get("raw_by_section", {})
     if not isinstance(raw_by_section, dict):
         return {section: [] for section in SECTION_KEYS}
@@ -577,8 +582,19 @@ def _raw_candidates(snapshot_payload: dict[str, Any], max_raw_per_section: int) 
         if not isinstance(rows, list):
             candidates[section] = []
             continue
+        excluded_links = {
+            str(link or "").strip()
+            for link in (excluded_links_by_section or {}).get(section, set())
+            if str(link or "").strip()
+        }
         sorted_rows = sorted(
-            (row for row in rows if isinstance(row, dict)),
+            (
+                row
+                for row in rows
+                if isinstance(row, dict)
+                and str(row.get("canon_url") or row.get("link") or row.get("originallink") or "").strip()
+                not in excluded_links
+            ),
             key=lambda row: _as_float(row.get("score"), 0.0),
             reverse=True,
         )
@@ -609,6 +625,7 @@ def build_editorial_payload(
     operational_result: dict[str, Any],
     *,
     max_raw_per_section: int = DEFAULT_MAX_RAW_PER_SECTION,
+    excluded_links_by_section: dict[str, set[str]] | None = None,
 ) -> dict[str, Any]:
     articles = [article for article in parse_report_html(html_text) if article.surface == BRIEFING_SURFACE]
     selected = [
@@ -632,7 +649,11 @@ def build_editorial_payload(
         "target_score": EDITORIAL_DAILY_TARGET_SCORE,
         "window": snapshot_payload.get("window", {}),
         "selected_briefing_cards": selected,
-        "raw_candidates_by_section": _raw_candidates(snapshot_payload, max_raw_per_section),
+        "raw_candidates_by_section": _raw_candidates(
+            snapshot_payload,
+            max_raw_per_section,
+            excluded_links_by_section=excluded_links_by_section,
+        ),
         "section_count_targets": _section_count_context(operational_result),
         "operational_eval": {
             "overall_score": operational_result.get("overall_score"),
@@ -654,6 +675,83 @@ def build_editorial_payload(
             "component_weights": EDITORIAL_COMPONENT_WEIGHTS,
         },
     }
+
+
+def _repair_editorial_constraints(
+    payload: dict[str, Any],
+    editorial_result: dict[str, Any],
+) -> dict[str, dict[str, list[dict[str, Any]]]]:
+    """Turn explicit review issues into link-level repair requirements."""
+    raw_by_section = payload.get("raw_candidates_by_section", {})
+    if not isinstance(raw_by_section, dict):
+        raw_by_section = {}
+    constraints: dict[str, dict[str, list[dict[str, Any]]]] = {
+        section: {"required": [], "excluded": [], "non_core": []}
+        for section in SECTION_KEYS
+    }
+
+    def title_key(value: Any) -> str:
+        return re.sub(r"[^0-9a-z가-힣]+", "", str(value or "").lower().replace("...", "").replace("…", ""))
+
+    issue_rows = editorial_result.get("issues", []) if isinstance(editorial_result, dict) else []
+    if not isinstance(issue_rows, list):
+        return constraints
+    for issue in issue_rows:
+        if not isinstance(issue, dict):
+            continue
+        section = str(issue.get("section") or "").strip()
+        issue_type = str(issue.get("type") or "").strip().lower()
+        issue_title = title_key(issue.get("title"))
+        if section not in constraints or len(issue_title) < 8:
+            continue
+        candidates = raw_by_section.get(section, [])
+        if not isinstance(candidates, list):
+            continue
+        matches = []
+        for candidate in candidates:
+            if not isinstance(candidate, dict):
+                continue
+            candidate_title = title_key(candidate.get("title"))
+            if not candidate_title:
+                continue
+            if issue_title in candidate_title or candidate_title in issue_title:
+                matches.append(candidate)
+        if not matches:
+            continue
+        bucket = (
+            "required"
+            if issue_type == "missed_candidate"
+            else "excluded"
+            if issue_type in {"wrong_section", "promotional_filler", "duplicate_story", "duplicate_theme"}
+            else "non_core"
+            if issue_type == "weak_core"
+            else ""
+        )
+        if not bucket:
+            continue
+        candidate = matches[0]
+        row = {
+            "title": candidate.get("title"),
+            "link": candidate.get("link"),
+            "severity": str(issue.get("severity") or "").strip().lower(),
+        }
+        if row not in constraints[section][bucket]:
+            constraints[section][bucket].append(row)
+
+    for section in SECTION_KEYS:
+        required_links = {
+            str(row.get("link") or "") for row in constraints[section]["required"]
+        }
+        excluded_links = {
+            str(row.get("link") or "") for row in constraints[section]["excluded"]
+        } - required_links
+        if excluded_links:
+            raw_by_section[section] = [
+                row
+                for row in (raw_by_section.get(section, []) or [])
+                if isinstance(row, dict) and str(row.get("link") or "") not in excluded_links
+            ]
+    return constraints
 
 
 def _extract_response_text(payload: dict[str, Any]) -> str:
@@ -931,6 +1029,8 @@ def propose_editorial_repair(
     model: str | None = None,
     reasoning_effort: str | None = None,
     max_raw_per_section: int = DEFAULT_MAX_RAW_PER_SECTION,
+    excluded_links_by_section: dict[str, set[str]] | None = None,
+    prior_validation_errors: list[dict[str, Any]] | None = None,
     timeout_sec: int = DEFAULT_TIMEOUT_SEC,
     session_factory: Any = requests.Session,
 ) -> dict[str, Any]:
@@ -956,6 +1056,7 @@ def propose_editorial_repair(
         snapshot_payload,
         operational_result,
         max_raw_per_section=max_raw_per_section,
+        excluded_links_by_section=excluded_links_by_section,
     )
     payload["failed_editorial_eval"] = {
         "score": editorial_result.get("score"),
@@ -965,17 +1066,22 @@ def propose_editorial_repair(
         "improvement_suggestions": editorial_result.get("improvement_suggestions", []),
         "acceptance_gate": editorial_result.get("acceptance_gate", {}),
     }
+    payload["repair_constraints_by_section"] = _repair_editorial_constraints(payload, editorial_result)
+    if prior_validation_errors:
+        payload["prior_repair_validation_errors"] = prior_validation_errors[-8:]
     system_prompt = (
         "You are the repair editor for a Korean agricultural daily news brief. "
         "The first edition failed its editorial acceptance gate. Select a replacement edition that directly fixes every blocking and major issue. "
         "Return exactly five cards for each of supply, policy, dist, and pest. "
         "Every returned link must be copied exactly from that section's raw_candidates_by_section list; never invent, rewrite, or move a link from another section. "
+        "Candidates rejected by local validation are omitted from the raw lists; if prior_repair_validation_errors is present, correct every listed failure. "
+        "Obey repair_constraints_by_section: select every available required link, never select an excluded link, and never mark a non_core link as core. "
         "Do not select duplicate events across sections. Exclude promotional product stories, local-event filler, weak profiles, stale reprints, and articles identified as defective by the failed evaluation. "
         "Prefer current national or materially important field stories with concrete prices, volumes, policy decisions, logistics, market operations, exports, crop damage, or pest response. "
-        "For supply, prioritize horticultural production, shipment, price, weather, and supply-demand developments. "
-        "For policy, prioritize enacted or consequential agricultural policy, legislation, budgets, trade, and price-stabilization measures. "
-        "For dist, prioritize wholesale markets, logistics, exports, APC operations, online wholesale markets, and sales-channel operations. "
-        "For pest, prioritize named crop pests or diseases, outbreaks, damage, risk escalation, and actionable prevention or control. "
+        "For supply, prioritize horticultural production, shipment, price, weather, and supply-demand developments, including quantified short-term price spikes or shortages. "
+        "For policy, prioritize enacted or consequential agricultural policy, legislation, budgets, trade, and price-stabilization measures; reject consumer shopping tips, local council speeches, and routine field visits when concrete national or provincial policy exists. "
+        "For dist, prioritize wholesale markets, logistics, exports, APC operations, online wholesale markets, and sales-channel operations; prefer nationwide programs and measured operations over ceremonies, visits, and unsigned future plans. "
+        "For pest, prioritize named crop pests or diseases, outbreaks, damage, risk escalation, and actionable prevention or control; keep a quantified national outbreak report even when its headline mentions a diagnostic product, but do not make it core when stronger public-risk reports exist. "
         "Mark the strongest two or three cards in each section as core. Return JSON only."
     )
     request_body = {
