@@ -23906,7 +23906,23 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str, *, apply_se
         return "commodity_corporate_stock_context"
     if section_key in ("supply", "policy", "dist") and is_foreign_unmanaged_commodity_context(a.title or "", a.description or ""):
         return "foreign_unmanaged_commodity"
-    if section_key in ("supply", "policy", "dist") and is_ai_economic_explainer_tail(a.title or "", a.description or ""):
+    quantified_dist_reform_analysis = bool(
+        section_key == "dist"
+        and "유통개혁" in text
+        and re.search(r"\d[\d,]*(?:\.\d+)?\s*(?:억|조)", text)
+        and count_any(
+            text,
+            [w.lower() for w in (
+                "온라인도매시장", "스마트apc", "스마트 apc", "유통비용", "농협 역할",
+                "산지유통", "도매시장", "성과 검증", "사업 평가",
+            )],
+        ) >= 2
+    )
+    if (
+        section_key in ("supply", "policy", "dist")
+        and is_ai_economic_explainer_tail(a.title or "", a.description or "")
+        and not quantified_dist_reform_analysis
+    ):
         return "dist_ai_explainer_tail" if section_key == "dist" else "ai_economic_explainer_tail"
     if section_key == "dist" and is_dist_political_visit_context(a.title or "", a.description or ""):
         return "dist_political_visit"
@@ -24011,7 +24027,14 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str, *, apply_se
         return "non_agri_education_opinion_noise"
     if section_key == "dist" and _is_dist_reader_filler(a):
         return "dist_reader_role_misfit"
-    if section_key == "pest" and _is_pest_vendor_product_promo(a):
+    quantified_fire_blight_status = bool(
+        section_key == "pest"
+        and "화상병" in text
+        and re.search(r"\d[\d,]*\s*농가", text)
+        and re.search(r"\d+(?:\.\d+)?\s*(?:ha|㏊|헥타르)", text, flags=re.IGNORECASE)
+        and any(term in text for term in ("전국", "발생", "피해"))
+    )
+    if section_key == "pest" and _is_pest_vendor_product_promo(a) and not quantified_fire_blight_status:
         return "pest_vendor_product_promo"
     if section_key in ("supply", "policy", "dist") and is_commodity_origin_history_tail_context(a.title or "", a.description or ""):
         return "commodity_origin_history_tail"
@@ -24160,7 +24183,7 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str, *, apply_se
                 _supply_title_l,
                 [w.lower() for w in (
                     "가격", "값", "폭락", "하락", "급등", "수급", "작황", "생산량",
-                    "재배면적", "수확농가", "농업관측", "관측", "전망",
+                    "재배면적", "수확농가", "농업관측", "관측", "전망", "껑충", "품절",
                 )],
             ) <= 0
         )
@@ -51592,9 +51615,23 @@ def _repair_article_link_keys(article: Article) -> set[str]:
 def _apply_model_editorial_repair(
     repair_result: JsonDict,
     raw_by_section: dict[str, list[Article]],
+    *,
+    validation_errors: list[JsonDict] | None = None,
 ) -> dict[str, list[Article]] | None:
+    def reject(section: str, reason: str, *, link: str = "", title: str = "") -> None:
+        if validation_errors is not None:
+            validation_errors.append(
+                {
+                    "section": section,
+                    "reason": reason,
+                    "link": link,
+                    "title": title[:180],
+                }
+            )
+
     sections = repair_result.get("sections", {}) if isinstance(repair_result, dict) else {}
     if not isinstance(sections, dict):
+        reject("", "sections_payload_invalid")
         return None
     repaired: dict[str, list[Article]] = {}
     used: set[str] = set()
@@ -51607,18 +51644,22 @@ def _apply_model_editorial_repair(
                 candidate_index.setdefault(key, article)
         rows = sections.get(section, [])
         if not isinstance(rows, list) or len(rows) != MAX_PER_SECTION:
+            reject(section, "section_card_count_invalid")
             return None
         selected: list[Article] = []
         for row in rows:
             if not isinstance(row, dict):
+                reject(section, "section_row_invalid")
                 return None
             raw_link = str(row.get("link") or "").strip()
             candidate = candidate_index.get(raw_link) or candidate_index.get(canonicalize_url(raw_link))
             if candidate is None:
                 log.warning("[QUALITY GATE] repair link not found in %s raw pool: %s", section, raw_link)
+                reject(section, "link_not_in_raw_pool", link=raw_link)
                 return None
             identity = candidate.norm_key or candidate.canon_url or candidate.title_key
             if not identity or identity in used:
+                reject(section, "missing_or_duplicate_identity", link=raw_link, title=candidate.title)
                 return None
             clone = _clone_article(candidate)
             clone.section = section
@@ -51634,6 +51675,7 @@ def _apply_model_editorial_repair(
                     reject_reason,
                     clone.title[:100],
                 )
+                reject(section, reject_reason, link=raw_link, title=clone.title)
                 return None
             used.add(identity)
             selected.append(clone)
@@ -51656,18 +51698,37 @@ def _apply_model_editorial_repair(
     return repaired
 
 
+def _initial_editorial_repair_exclusions(
+    raw_by_section: dict[str, list[Article]],
+) -> dict[str, set[str]]:
+    """Hide candidates that the same postbuild validator would reject later."""
+    allowed_reasons = {"", "selection_feedback_low_fit", "selection_feedback_core_fit"}
+    excluded: dict[str, set[str]] = {section: set() for section in _section_keys()}
+    for section in _section_keys():
+        for article in raw_by_section.get(section, []) or []:
+            if not isinstance(article, Article):
+                continue
+            if _postbuild_article_reject_reason(article, section) in allowed_reasons:
+                continue
+            excluded[section].update(_repair_article_link_keys(article))
+    return excluded
+
+
 def _invalidate_editorial_bad_summary_cache(
     editorial_result: JsonDict,
     selected_by_section: dict[str, list[Article]],
     summary_cache: dict[str, SummaryCacheEntry | str],
 ) -> list[str]:
-    """Force regeneration for selected cards explicitly flagged as bad summaries."""
+    """Regenerate summaries the editorial check flags as unsafe or inaccurate."""
     issues = editorial_result.get("issues", []) if isinstance(editorial_result, dict) else []
     if not isinstance(issues, list):
         return []
     bad_titles_by_section: dict[str, list[str]] = {}
     for issue in issues:
-        if not isinstance(issue, dict) or str(issue.get("type") or "").strip().lower() != "bad_summary":
+        if not isinstance(issue, dict):
+            continue
+        issue_type = str(issue.get("type") or "").strip().lower()
+        if issue_type not in {"bad_summary", "factual_error", "unsafe_summary"}:
             continue
         section = str(issue.get("section") or "").strip()
         title_key = norm_title_key(str(issue.get("title") or "").replace("...", "").replace("…", ""))
@@ -51781,6 +51842,11 @@ def _run_prepublish_quality_gate(
         adaptive_reason=adaptive_reason,
     )
     repair_attempts: list[JsonDict] = []
+    repair_validation_errors: list[JsonDict] = []
+    repair_excluded_links = _initial_editorial_repair_exclusions(raw_by_section)
+    excluded_counts = {section: len(links) for section, links in repair_excluded_links.items() if links}
+    if excluded_counts:
+        log.info("[QUALITY GATE] prefiltered locally invalid repair candidates: %s", excluded_counts)
 
     for attempt in range(1, PREPUBLISH_QUALITY_MAX_REPAIRS + 1):
         if _prepublish_evaluation_passed(result):
@@ -51799,6 +51865,8 @@ def _run_prepublish_quality_gate(
             api_key=OPENAI_API_KEY,
             model=EDITORIAL_OPENAI_MODEL,
             reasoning_effort=EDITORIAL_REASONING_EFFORT,
+            excluded_links_by_section=repair_excluded_links,
+            prior_validation_errors=repair_validation_errors,
         )
         usage = repair.get("usage") if isinstance(repair, dict) else None
         if isinstance(usage, dict) and usage:
@@ -51811,8 +51879,23 @@ def _run_prepublish_quality_gate(
                 "usage": usage or {},
             }
         )
-        repaired_sections = _apply_model_editorial_repair(repair, raw_by_section)
+        attempt_validation_errors: list[JsonDict] = []
+        repaired_sections = _apply_model_editorial_repair(
+            repair,
+            raw_by_section,
+            validation_errors=attempt_validation_errors,
+        )
         if repaired_sections is None:
+            repair_attempts[-1]["status"] = "rejected_after_local_validation"
+            repair_attempts[-1]["validation_errors"] = attempt_validation_errors
+            repair_validation_errors.extend(attempt_validation_errors)
+            for error in attempt_validation_errors:
+                section = str(error.get("section") or "")
+                link = str(error.get("link") or "").strip()
+                if section in repair_excluded_links and link:
+                    repair_excluded_links[section].add(link)
+            if attempt < PREPUBLISH_QUALITY_MAX_REPAIRS and any(repair_excluded_links.values()):
+                continue
             break
         invalidated_summaries = _invalidate_editorial_bad_summary_cache(
             editorial_result,

@@ -2823,6 +2823,21 @@ class LocalRuntimeTests(TestCase):
         self.assertTrue(main.is_ai_economic_explainer_tail(explainer.title, explainer.description))
         self.assertEqual(main._postbuild_article_reject_reason(explainer, "dist"), "dist_ai_explainer_tail")
 
+    def test_postbuild_allows_quantified_distribution_reform_analysis(self) -> None:
+        article = self._make_article(
+            section="dist",
+            title="[AI로 읽는 경제] 농산물 유통개혁 6000억 투입했지만…성과 검증 필요",
+            description=(
+                "정부가 온라인도매시장과 스마트 APC에 6000억원을 투입했다. "
+                "유통비용 절감 성과와 농협 역할, 사업 평가 필요성을 분석했다."
+            ),
+            link="https://example.com/quantified-distribution-reform",
+            press="전국경제신문",
+            topic="농산물 유통",
+        )
+
+        self.assertEqual(main._postbuild_article_reject_reason(article, "dist"), "")
+
     def test_postbuild_rejects_housing_market_policy_noise(self) -> None:
         housing = self._make_article(
             section="policy",
@@ -4311,6 +4326,34 @@ class LocalRuntimeTests(TestCase):
             "dist_policy_price_response_not_dist",
         )
         self.assertTrue(main._is_dist_editorial_promo_tail(live_sale))
+
+    def test_supply_quantified_price_spike_is_not_misfiled_as_market_ops(self) -> None:
+        article = self._make_article(
+            section="supply",
+            title='"수박주스 품절입니다"…사흘 만에 50% 껑충',
+            description="가락시장 반입량 감소로 수박 가격이 사흘 새 52% 뛰었고 품절 매장이 늘었다.",
+            link="https://example.com/watermelon-price-spike",
+            topic="수박",
+        )
+
+        self.assertNotEqual(
+            main._postbuild_article_reject_reason(article, "supply", apply_selection_fit=False),
+            "supply_market_ops_not_supply",
+        )
+
+    def test_quantified_fire_blight_status_can_survive_vendor_headline(self) -> None:
+        article = self._make_article(
+            section="pest",
+            title="과수화상병 '미리바 스프레이'로 진단 가능",
+            description="올해 전국 122농가 51.9ha에서 과수화상병이 발생해 사과 농가 피해와 현장 진단 수요가 커졌다.",
+            link="https://example.com/fire-blight-status",
+            topic="과수화상병",
+        )
+
+        self.assertNotEqual(
+            main._postbuild_article_reject_reason(article, "pest", apply_selection_fit=False),
+            "pest_vendor_product_promo",
+        )
 
     def test_pest_refill_allows_third_fire_blight_when_section_is_underfilled(self) -> None:
         fire_a = self._make_article(
