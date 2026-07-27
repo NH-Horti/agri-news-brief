@@ -1060,7 +1060,7 @@ def _naver_throttle() -> None:
         time.sleep(wait)
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "").strip()
-OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-5.5").strip()
+OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-5.6-sol").strip()
 OPENAI_MAX_OUTPUT_TOKENS = int((os.getenv("OPENAI_MAX_OUTPUT_TOKENS", "0") or "0").strip() or 0)
 OPENAI_REASONING_EFFORT = os.getenv("OPENAI_REASONING_EFFORT", "").strip()
 OPENAI_TEXT_VERBOSITY = os.getenv("OPENAI_TEXT_VERBOSITY", "").strip()
@@ -1079,6 +1079,20 @@ SUMMARY_TARGET_MAX_CHARS = int((os.getenv("SUMMARY_TARGET_MAX_CHARS", "140") or 
 SUMMARY_TARGET_MIN_CHARS = max(40, min(SUMMARY_TARGET_MIN_CHARS, 180))
 SUMMARY_TARGET_MAX_CHARS = max(SUMMARY_TARGET_MIN_CHARS, min(SUMMARY_TARGET_MAX_CHARS, 240))
 SELECTION_FEEDBACK_PATH = os.getenv("SELECTION_FEEDBACK_PATH", "docs/evals/latest-selection-feedback.json").strip()
+PREPUBLISH_QUALITY_GATE_ENABLED = os.getenv("PREPUBLISH_QUALITY_GATE_ENABLED", "false").strip().lower() in ("1", "true", "yes", "y")
+PREPUBLISH_QUALITY_FAIL_CLOSED = os.getenv("PREPUBLISH_QUALITY_FAIL_CLOSED", "true").strip().lower() in ("1", "true", "yes", "y")
+PREPUBLISH_QUALITY_ADAPTIVE = os.getenv("PREPUBLISH_QUALITY_ADAPTIVE", "true").strip().lower() in ("1", "true", "yes", "y")
+PREPUBLISH_QUALITY_MAX_REPAIRS = max(0, min(2, int((os.getenv("PREPUBLISH_QUALITY_MAX_REPAIRS", "2") or "2").strip() or 2)))
+PREPUBLISH_QUALITY_STABLE_DAYS = max(5, min(60, int((os.getenv("PREPUBLISH_QUALITY_STABLE_DAYS", "20") or "20").strip() or 20)))
+PREPUBLISH_QUALITY_DEADLINE_KST = (os.getenv("PREPUBLISH_QUALITY_DEADLINE_KST", "06:50") or "06:50").strip()
+PREPUBLISH_QUALITY_RESULT_DIR = (os.getenv("PREPUBLISH_QUALITY_RESULT_DIR", "reports/evals") or "reports/evals").strip()
+PREPUBLISH_QUALITY_MIN_OPERATIONAL_SCORE = max(
+    0.0,
+    min(100.0, float((os.getenv("PREPUBLISH_QUALITY_MIN_OPERATIONAL_SCORE", "90") or "90").strip() or 90)),
+)
+EDITORIAL_OPENAI_MODEL = (os.getenv("EDITORIAL_OPENAI_MODEL", "gpt-5.6-sol") or "gpt-5.6-sol").strip()
+EDITORIAL_REASONING_EFFORT = (os.getenv("EDITORIAL_REASONING_EFFORT", "medium") or "medium").strip()
+OPENAI_USAGE_EVENTS: list[JsonDict] = []
 
 HF_API_TOKEN = (
     os.getenv("HF_TOKEN", "").strip()
@@ -29325,7 +29339,16 @@ def _openai_summarize_rows(rows: list[JsonDict]) -> dict[str, str]:
 
         last_resp = r
         if r.ok:
-            text = openai_extract_text(r.json()).strip()
+            response_payload = r.json()
+            try:
+                from editorial_eval import normalize_openai_usage
+
+                usage = normalize_openai_usage(response_payload, str(response_payload.get("model") or OPENAI_MODEL))
+                if usage:
+                    OPENAI_USAGE_EVENTS.append({"stage": "summary", "model": OPENAI_MODEL, **usage})
+            except Exception as exc:
+                log.debug("[OpenAI] usage accounting skipped: %s", exc)
+            text = openai_extract_text(response_payload).strip()
             out: dict[str, str] = {}
             try:
                 parsed = json.loads(text)
@@ -51349,8 +51372,457 @@ def maintenance_backfill_rebuild(repo: str, token: str, base_date_iso: str, site
 
 
 
+def _prepublish_deadline(report_date: str) -> datetime | None:
+    try:
+        hour_text, minute_text = PREPUBLISH_QUALITY_DEADLINE_KST.split(":", 1)
+        report_day = date.fromisoformat(report_date)
+        return datetime(
+            report_day.year,
+            report_day.month,
+            report_day.day,
+            int(hour_text),
+            int(minute_text),
+            tzinfo=KST,
+        )
+    except (TypeError, ValueError):
+        log.warning(
+            "[QUALITY GATE] invalid PREPUBLISH_QUALITY_DEADLINE_KST=%s; using 06:50",
+            PREPUBLISH_QUALITY_DEADLINE_KST,
+        )
+        try:
+            report_day = date.fromisoformat(report_date)
+            return datetime(report_day.year, report_day.month, report_day.day, 6, 50, tzinfo=KST)
+        except ValueError:
+            return None
+
+
+def _prepublish_deadline_reached(report_date: str) -> bool:
+    deadline = _prepublish_deadline(report_date)
+    return bool(deadline and datetime.now(KST) >= deadline)
+
+
+def _load_quality_history(repo: str, token: str) -> JsonDict:
+    try:
+        raw, _sha = github_get_file(repo, "docs/evals/history.json", token, ref="main")
+        payload = json.loads(raw or "{}")
+        return payload if isinstance(payload, dict) else {}
+    except Exception as exc:
+        log.warning("[QUALITY GATE] history unavailable; keeping daily full evaluation: %s", exc)
+        return {}
+
+
+def _quality_history_is_stable(history: JsonDict) -> bool:
+    rows = history.get("reports", []) if isinstance(history, dict) else []
+    if not isinstance(rows, list):
+        return False
+    evaluated_rows = [
+        row
+        for row in rows
+        if isinstance(row, dict)
+        and row.get("editorial_score") is not None
+        and row.get("editorial_acceptance_passed") is not None
+    ]
+    recent = evaluated_rows[:PREPUBLISH_QUALITY_STABLE_DAYS]
+    if len(recent) < PREPUBLISH_QUALITY_STABLE_DAYS:
+        return False
+    editorial_scores: list[float] = []
+    for row in recent:
+        try:
+            editorial_score = float(row.get("editorial_score") or 0.0)
+            operational_score = float(row.get("operational_score") or 0.0)
+        except (TypeError, ValueError):
+            return False
+        if not bool(row.get("editorial_acceptance_passed")) or operational_score < 95.0:
+            return False
+        if editorial_score < 85.0:
+            return False
+        editorial_scores.append(editorial_score)
+    return bool(editorial_scores and (sum(editorial_scores) / len(editorial_scores)) >= 90.0)
+
+
+def _operational_quality_anomaly(result: JsonDict) -> bool:
+    counts = result.get("counts", {}) if isinstance(result, dict) else {}
+    metrics = result.get("metrics", {}) if isinstance(result, dict) else {}
+    scores = result.get("scores", {}) if isinstance(result, dict) else {}
+    if not isinstance(counts, dict):
+        counts = {}
+    if not isinstance(metrics, dict):
+        metrics = {}
+    if not isinstance(scores, dict):
+        scores = {}
+    try:
+        operational_score = float(result.get("operational_score", result.get("overall_score", 0.0)) or 0.0)
+    except (TypeError, ValueError):
+        operational_score = 0.0
+    section_counts = counts.get("briefing_by_section", {})
+    if not isinstance(section_counts, dict):
+        section_counts = {}
+    return bool(
+        operational_score < 95.0
+        or int(metrics.get("reader_hard_issue_count", 0) or 0) > 0
+        or float(metrics.get("summary_presence_rate", 0.0) or 0.0) < 1.0
+        or float(scores.get("commodity_board_quality", 0.0) or 0.0) < 95.0
+        or any(int(section_counts.get(section, 0) or 0) < MAX_PER_SECTION for section in _section_keys())
+    )
+
+
+def _operational_quality_publishable(result: JsonDict) -> bool:
+    counts = result.get("counts", {}) if isinstance(result, dict) else {}
+    metrics = result.get("metrics", {}) if isinstance(result, dict) else {}
+    scores = result.get("scores", {}) if isinstance(result, dict) else {}
+    if not isinstance(counts, dict):
+        counts = {}
+    if not isinstance(metrics, dict):
+        metrics = {}
+    if not isinstance(scores, dict):
+        scores = {}
+    try:
+        operational_score = float(result.get("operational_score", result.get("overall_score", 0.0)) or 0.0)
+        reader_score = float(result.get("reader_quality_score", operational_score) or operational_score)
+    except (TypeError, ValueError):
+        return False
+    section_counts = counts.get("briefing_by_section", {})
+    if not isinstance(section_counts, dict):
+        section_counts = {}
+    return bool(
+        operational_score >= PREPUBLISH_QUALITY_MIN_OPERATIONAL_SCORE
+        and reader_score >= PREPUBLISH_QUALITY_MIN_OPERATIONAL_SCORE
+        and int(metrics.get("reader_hard_issue_count", 0) or 0) == 0
+        and float(metrics.get("summary_presence_rate", 0.0) or 0.0) >= 1.0
+        and float(scores.get("commodity_board_quality", 0.0) or 0.0) >= 90.0
+        and all(int(section_counts.get(section, 0) or 0) >= MAX_PER_SECTION for section in _section_keys())
+    )
+
+
+def _should_run_full_editorial_eval(
+    repo: str,
+    token: str,
+    report_date: str,
+    operational_result: JsonDict,
+) -> tuple[bool, str]:
+    if not PREPUBLISH_QUALITY_ADAPTIVE:
+        return True, "adaptive_disabled"
+    history = _load_quality_history(repo, token)
+    if not _quality_history_is_stable(history):
+        return True, "stabilization_period"
+    if _operational_quality_anomaly(operational_result):
+        return True, "deterministic_anomaly"
+    try:
+        if date.fromisoformat(report_date).weekday() == 0:
+            return True, "weekly_monday_audit"
+    except ValueError:
+        return True, "invalid_report_date"
+    return False, "stable_non_audit_day"
+
+
+def _compose_prepublish_evaluation(
+    report_date: str,
+    html_text: str,
+    snapshot_payload: JsonDict,
+    *,
+    run_editorial: bool,
+    adaptive_reason: str,
+) -> JsonDict:
+    from editorial_eval import build_editorial_improvement_plan, evaluate_editorial_quality
+    from report_eval import evaluate_report
+    from scripts.evaluate_daily_report import apply_editorial_quality_gate
+
+    result = evaluate_report(report_date, html_text, snapshot_payload)
+    result["operational_score"] = result.get("operational_score", result.get("overall_score"))
+    result["adaptive_evaluation"] = {
+        "full_editorial_eval": bool(run_editorial),
+        "reason": adaptive_reason,
+        "stable_days_required": PREPUBLISH_QUALITY_STABLE_DAYS,
+    }
+    if not run_editorial:
+        result["editorial"] = {
+            "status": "skipped",
+            "reason": adaptive_reason,
+            "model": EDITORIAL_OPENAI_MODEL,
+        }
+        return result
+
+    editorial_result = evaluate_editorial_quality(
+        report_date,
+        html_text,
+        snapshot_payload,
+        result,
+        api_key=OPENAI_API_KEY,
+        model=EDITORIAL_OPENAI_MODEL,
+        reasoning_effort=EDITORIAL_REASONING_EFFORT,
+    )
+    result["editorial"] = editorial_result
+    usage = editorial_result.get("usage") if isinstance(editorial_result, dict) else None
+    if isinstance(usage, dict) and usage:
+        OPENAI_USAGE_EVENTS.append({"stage": "editorial_eval", "model": EDITORIAL_OPENAI_MODEL, **usage})
+    if editorial_result.get("status") == "success":
+        result["editorial_score"] = editorial_result.get("score")
+        result["editorial_improvement_plan"] = build_editorial_improvement_plan(editorial_result, result)
+        apply_editorial_quality_gate(result, editorial_result)
+    return result
+
+
+def _prepublish_evaluation_passed(result: JsonDict) -> bool:
+    editorial = result.get("editorial", {}) if isinstance(result, dict) else {}
+    if isinstance(editorial, dict) and editorial.get("status") == "success":
+        acceptance = editorial.get("acceptance_gate", {})
+        return bool(
+            isinstance(acceptance, dict)
+            and acceptance.get("passed")
+            and _operational_quality_publishable(result)
+        )
+    if isinstance(editorial, dict) and editorial.get("status") == "skipped":
+        return _operational_quality_publishable(result)
+    return False
+
+
+def _repair_article_link_keys(article: Article) -> set[str]:
+    keys: set[str] = set()
+    for value in (article.canon_url, article.originallink, article.link, article.url):
+        raw = str(value or "").strip()
+        if not raw:
+            continue
+        keys.add(raw)
+        canon = canonicalize_url(raw)
+        if canon:
+            keys.add(canon)
+    return keys
+
+
+def _apply_model_editorial_repair(
+    repair_result: JsonDict,
+    raw_by_section: dict[str, list[Article]],
+) -> dict[str, list[Article]] | None:
+    sections = repair_result.get("sections", {}) if isinstance(repair_result, dict) else {}
+    if not isinstance(sections, dict):
+        return None
+    repaired: dict[str, list[Article]] = {}
+    used: set[str] = set()
+    for section in _section_keys():
+        candidate_index: dict[str, Article] = {}
+        for article in raw_by_section.get(section, []) or []:
+            if not isinstance(article, Article):
+                continue
+            for key in _repair_article_link_keys(article):
+                candidate_index.setdefault(key, article)
+        rows = sections.get(section, [])
+        if not isinstance(rows, list) or len(rows) != MAX_PER_SECTION:
+            return None
+        selected: list[Article] = []
+        for row in rows:
+            if not isinstance(row, dict):
+                return None
+            raw_link = str(row.get("link") or "").strip()
+            candidate = candidate_index.get(raw_link) or candidate_index.get(canonicalize_url(raw_link))
+            if candidate is None:
+                log.warning("[QUALITY GATE] repair link not found in %s raw pool: %s", section, raw_link)
+                return None
+            identity = candidate.norm_key or candidate.canon_url or candidate.title_key
+            if not identity or identity in used:
+                return None
+            clone = _clone_article(candidate)
+            clone.section = section
+            clone.forced_section = section
+            clone.selection_stage = "gpt56_editorial_repair"
+            clone.selection_note = "prepublish_quality_gate"
+            clone.is_core = bool(row.get("is_core"))
+            reject_reason = _postbuild_article_reject_reason(clone, section)
+            if reject_reason not in ("", "selection_feedback_low_fit", "selection_feedback_core_fit"):
+                log.warning(
+                    "[QUALITY GATE] model repair rejected section=%s reason=%s title=%s",
+                    section,
+                    reject_reason,
+                    clone.title[:100],
+                )
+                return None
+            used.add(identity)
+            selected.append(clone)
+        core_count = sum(1 for article in selected if article.is_core)
+        if core_count < 2:
+            for article in selected:
+                if not article.is_core:
+                    article.is_core = True
+                    core_count += 1
+                    if core_count >= 2:
+                        break
+        elif core_count > 3:
+            seen_core = 0
+            for article in selected:
+                if article.is_core:
+                    seen_core += 1
+                    if seen_core > 3:
+                        article.is_core = False
+        repaired[section] = selected
+    return repaired
+
+
+def _write_prepublish_evaluation_artifacts(result: JsonDict, report_date: str) -> None:
+    from report_eval import (
+        build_selection_feedback_payload,
+        render_evaluation_markdown,
+        render_summary_feedback_text,
+        write_json,
+        write_text,
+    )
+
+    output_dir = Path(PREPUBLISH_QUALITY_RESULT_DIR)
+    write_json(output_dir / f"{report_date}.json", result)
+    write_text(output_dir / f"{report_date}.md", render_evaluation_markdown(result))
+    write_text(output_dir / "latest-feedback.txt", render_summary_feedback_text(result))
+    write_json(output_dir / "latest-selection-feedback.json", build_selection_feedback_payload(result))
+
+
+def _notify_quality_hold(report_date: str, result: JsonDict, daily_url: str) -> None:
+    editorial = result.get("editorial", {}) if isinstance(result, dict) else {}
+    score = editorial.get("score") if isinstance(editorial, dict) else result.get("overall_score")
+    message = (
+        f"[배포 보류] {report_date} 뉴스브리핑\n"
+        f"최종 품질점수: {score if score is not None else '측정 실패'}\n"
+        f"{PREPUBLISH_QUALITY_DEADLINE_KST} 이전 품질 기준을 통과하지 못해 페이지 게시와 브리핑 전송을 중단했습니다."
+    )
+    parsed_url = urlparse(ensure_absolute_http_url(daily_url))
+    hold_path = parsed_url.path.split("/archive/", 1)[0].rstrip("/") + "/"
+    hold_url = urlunparse((parsed_url.scheme, parsed_url.netloc, hold_path, "", "", ""))
+    try:
+        kakao_send_to_me(message, hold_url)
+        _write_kakao_send_status("quality_blocked_notified")
+    except Exception as exc:
+        _write_kakao_send_status("quality_blocked_notification_failed")
+        log.warning("[QUALITY GATE] hold notification failed: %s", exc)
+
+
+def _run_prepublish_quality_gate(
+    repo: str,
+    token: str,
+    report_date: str,
+    start_kst: datetime,
+    end_kst: datetime,
+    daily_url: str,
+    archive_dates_desc: list[str],
+    site_path: str,
+    raw_by_section: dict[str, list[Article]],
+    by_section: dict[str, list[Article]],
+    summary_cache: dict[str, SummaryCacheEntry | str],
+    snapshot_path: Path,
+) -> tuple[dict[str, list[Article]], str, JsonDict]:
+    from editorial_eval import propose_editorial_repair
+    from report_eval import load_snapshot_payload
+
+    snapshot_payload = load_snapshot_payload(snapshot_path)
+    current_sections = by_section
+    current_html = render_daily_page(
+        report_date,
+        start_kst,
+        end_kst,
+        current_sections,
+        archive_dates_desc,
+        site_path,
+    )
+    operational_preview = _compose_prepublish_evaluation(
+        report_date,
+        current_html,
+        snapshot_payload,
+        run_editorial=False,
+        adaptive_reason="policy_probe",
+    )
+    if _prepublish_deadline_reached(report_date):
+        run_editorial, adaptive_reason = False, "deadline_reached"
+    else:
+        run_editorial, adaptive_reason = _should_run_full_editorial_eval(
+            repo,
+            token,
+            report_date,
+            operational_preview,
+        )
+    result = _compose_prepublish_evaluation(
+        report_date,
+        current_html,
+        snapshot_payload,
+        run_editorial=run_editorial,
+        adaptive_reason=adaptive_reason,
+    )
+    repair_attempts: list[JsonDict] = []
+
+    for attempt in range(1, PREPUBLISH_QUALITY_MAX_REPAIRS + 1):
+        if _prepublish_evaluation_passed(result):
+            break
+        if not run_editorial or _prepublish_deadline_reached(report_date):
+            break
+        editorial_result = result.get("editorial", {})
+        if not isinstance(editorial_result, dict) or editorial_result.get("status") != "success":
+            break
+        repair = propose_editorial_repair(
+            report_date,
+            current_html,
+            snapshot_payload,
+            result,
+            editorial_result,
+            api_key=OPENAI_API_KEY,
+            model=EDITORIAL_OPENAI_MODEL,
+            reasoning_effort=EDITORIAL_REASONING_EFFORT,
+        )
+        usage = repair.get("usage") if isinstance(repair, dict) else None
+        if isinstance(usage, dict) and usage:
+            OPENAI_USAGE_EVENTS.append({"stage": "editorial_repair", "model": EDITORIAL_OPENAI_MODEL, **usage})
+        repair_attempts.append(
+            {
+                "attempt": attempt,
+                "status": repair.get("status"),
+                "reason": repair.get("reason", repair.get("rationale", "")),
+                "usage": usage or {},
+            }
+        )
+        repaired_sections = _apply_model_editorial_repair(repair, raw_by_section)
+        if repaired_sections is None:
+            break
+        current_sections = fill_summaries(repaired_sections, cache=summary_cache)
+        _finalize_sections_for_render(current_sections)
+        if any(len(current_sections.get(section, []) or []) < MAX_PER_SECTION for section in _section_keys()):
+            repair_attempts[-1]["status"] = "rejected_after_local_validation"
+            break
+        current_html = render_daily_page(
+            report_date,
+            start_kst,
+            end_kst,
+            current_sections,
+            archive_dates_desc,
+            site_path,
+        )
+        result = _compose_prepublish_evaluation(
+            report_date,
+            current_html,
+            snapshot_payload,
+            run_editorial=True,
+            adaptive_reason=f"repair_attempt_{attempt}",
+        )
+
+    passed = _prepublish_evaluation_passed(result) and not _prepublish_deadline_reached(report_date)
+    result["prepublish_quality_gate"] = {
+        "status": "passed" if passed else "blocked",
+        "repair_count": len(repair_attempts),
+        "repair_attempts": repair_attempts,
+        "deadline_kst": PREPUBLISH_QUALITY_DEADLINE_KST,
+        "minimum_operational_score": PREPUBLISH_QUALITY_MIN_OPERATIONAL_SCORE,
+        "model": EDITORIAL_OPENAI_MODEL,
+        "usage_events": list(OPENAI_USAGE_EVENTS),
+        "estimated_cost_usd": round(
+            sum(float(row.get("estimated_cost_usd", 0.0) or 0.0) for row in OPENAI_USAGE_EVENTS),
+            6,
+        ),
+    }
+    _write_prepublish_evaluation_artifacts(result, report_date)
+    if not passed:
+        _notify_quality_hold(report_date, result, daily_url)
+        if PREPUBLISH_QUALITY_FAIL_CLOSED:
+            raise RuntimeError(
+                f"Prepublish quality gate blocked {report_date}; no page or Kakao briefing was published."
+            )
+    return current_sections, current_html, result
+
+
 def main() -> None:
     log.info("[BUILD] %s", BUILD_TAG)
+    OPENAI_USAGE_EVENTS.clear()
     _write_kakao_send_status("not_attempted")
     if not DEFAULT_REPO:
         raise RuntimeError("GITHUB_REPO or GITHUB_REPOSITORY is not set (e.g., ORGNAME/agri-news-brief)")
@@ -51582,12 +52054,15 @@ def main() -> None:
     raw_by_section = collect_raw_sections(start_kst, end_kst)
     by_section = build_sections_from_raw(raw_by_section, start_kst, end_kst)
     # replay snapshot 저장: selection 실행 후 clone하여 selection_fit_score 등 메타데이터가 보존되도록 한다.
-    if _replay_snapshot_write_enabled():
+    saved_snap: Path | None = None
+    if _replay_snapshot_write_enabled() or PREPUBLISH_QUALITY_GATE_ENABLED:
         try:
             raw_clone = _clone_articles_by_section(raw_by_section)
             saved_snap = save_replay_snapshot(report_date, start_kst, end_kst, raw_clone, debug_payload=_snapshot_debug_payload())
             log.info("[REPLAY] snapshot saved: %s", saved_snap)
         except Exception as exc:
+            if PREPUBLISH_QUALITY_GATE_ENABLED:
+                raise RuntimeError("Prepublish quality gate requires a replay snapshot.") from exc
             log.warning("[WARN] replay snapshot save failed: %s", exc)
     summary_cache = load_summary_cache(repo, GH_TOKEN)
     by_section = fill_summaries(by_section, cache=summary_cache)
@@ -51599,6 +52074,30 @@ def main() -> None:
     # render (✅ 2번: 전체 노출 / 중요도 정렬)
     _finalize_sections_for_render(by_section)
     daily_html = render_daily_page(report_date, start_kst, end_kst, by_section, archive_dates_desc, site_path)
+
+    # 품질 채점·자동수정은 페이지/인덱스/state/Kakao 게시보다 반드시 먼저 실행한다.
+    # 실패 시 fail-closed로 아래의 모든 구독자 대상 부작용을 차단한다.
+    if PREPUBLISH_QUALITY_GATE_ENABLED:
+        if saved_snap is None:
+            raise RuntimeError("Prepublish quality gate snapshot is unavailable.")
+        by_section, daily_html, _prepublish_result = _run_prepublish_quality_gate(
+            repo,
+            GH_TOKEN,
+            report_date,
+            start_kst,
+            end_kst,
+            daily_url,
+            archive_dates_desc,
+            site_path,
+            raw_by_section,
+            by_section,
+            summary_cache,
+            saved_snap,
+        )
+        try:
+            save_summary_cache(repo, GH_TOKEN, summary_cache)
+        except Exception as exc:
+            log.warning("[WARN] save_summary_cache after quality repair failed: %s", exc)
 
     # Optional: debug report JSON (for diagnosis)
     if DEBUG_REPORT and DEBUG_REPORT_WRITE_JSON:

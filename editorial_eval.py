@@ -20,7 +20,7 @@ from report_eval import (
 
 
 EDITORIAL_RUBRIC_VERSION = 3
-DEFAULT_EDITORIAL_MODEL = "gpt-5.5-2026-04-23"
+DEFAULT_EDITORIAL_MODEL = "gpt-5.6-sol"
 DEFAULT_MAX_RAW_PER_SECTION = 24
 DEFAULT_TIMEOUT_SEC = 90
 EDITORIAL_DAILY_TARGET_SCORE = 88.0
@@ -163,6 +163,47 @@ def _editorial_response_format() -> dict[str, Any]:
                         "type": "array",
                         "items": {"type": "string"},
                     },
+                },
+            },
+        }
+    }
+
+
+def _editorial_repair_response_format() -> dict[str, Any]:
+    card_schema = {
+        "type": "object",
+        "additionalProperties": False,
+        "required": ["link", "is_core"],
+        "properties": {
+            "link": {"type": "string"},
+            "is_core": {"type": "boolean"},
+        },
+    }
+    return {
+        "format": {
+            "type": "json_schema",
+            "name": "editorial_repair_selection",
+            "strict": True,
+            "schema": {
+                "type": "object",
+                "additionalProperties": False,
+                "required": ["sections", "rationale"],
+                "properties": {
+                    "sections": {
+                        "type": "object",
+                        "additionalProperties": False,
+                        "required": list(SECTION_KEYS),
+                        "properties": {
+                            section: {
+                                "type": "array",
+                                "minItems": PREFERRED_BRIEFING_COUNT_PER_SECTION,
+                                "maxItems": PREFERRED_BRIEFING_COUNT_PER_SECTION,
+                                "items": card_schema,
+                            }
+                            for section in SECTION_KEYS
+                        },
+                    },
+                    "rationale": {"type": "string"},
                 },
             },
         }
@@ -633,6 +674,51 @@ def _extract_response_text(payload: dict[str, Any]) -> str:
     return "\n".join(pieces).strip()
 
 
+def normalize_openai_usage(payload: dict[str, Any], model: str = "") -> dict[str, Any]:
+    """Return stable token fields plus a bounded GPT-5.6 Sol cost estimate."""
+    usage = payload.get("usage", {}) if isinstance(payload, dict) else {}
+    if not isinstance(usage, dict):
+        return {}
+    input_details = usage.get("input_tokens_details", {})
+    if not isinstance(input_details, dict):
+        input_details = {}
+
+    def _tokens(value: Any) -> int:
+        try:
+            return max(0, int(value or 0))
+        except (TypeError, ValueError):
+            return 0
+
+    input_tokens = _tokens(usage.get("input_tokens"))
+    output_tokens = _tokens(usage.get("output_tokens"))
+    cached_tokens = _tokens(input_details.get("cached_tokens"))
+    cache_write_tokens = _tokens(
+        input_details.get("cache_write_tokens", usage.get("cache_write_tokens"))
+    )
+    result: dict[str, Any] = {
+        "input_tokens": input_tokens,
+        "cached_input_tokens": cached_tokens,
+        "cache_write_input_tokens": cache_write_tokens,
+        "output_tokens": output_tokens,
+        "total_tokens": _tokens(usage.get("total_tokens")) or input_tokens + output_tokens,
+    }
+
+    resolved_model = str(model or payload.get("model") or "").strip().lower()
+    if resolved_model.startswith("gpt-5.6-sol") and input_tokens < 272_000:
+        uncached_tokens = max(0, input_tokens - cached_tokens - cache_write_tokens)
+        estimated = (
+            (uncached_tokens * 5.0)
+            + (cached_tokens * 0.5)
+            + (cache_write_tokens * 6.25)
+            + (output_tokens * 30.0)
+        ) / 1_000_000
+        result["estimated_cost_usd"] = round(estimated, 6)
+        result["pricing_basis"] = "gpt-5.6-sol-standard-under-272k-2026-07"
+    elif resolved_model.startswith("gpt-5.6-sol"):
+        result["pricing_basis"] = "long_context_cost_not_estimated"
+    return result
+
+
 def extract_json_object(text: str) -> dict[str, Any]:
     cleaned = text.strip()
     fence_match = re.search(r"```(?:json)?\s*(.*?)```", cleaned, flags=re.IGNORECASE | re.DOTALL)
@@ -720,6 +806,7 @@ def evaluate_editorial_quality(
     *,
     api_key: str | None = None,
     model: str | None = None,
+    reasoning_effort: str | None = None,
     enabled: bool = True,
     max_raw_per_section: int = DEFAULT_MAX_RAW_PER_SECTION,
     timeout_sec: int = DEFAULT_TIMEOUT_SEC,
@@ -731,6 +818,11 @@ def evaluate_editorial_quality(
         or DEFAULT_EDITORIAL_MODEL
     )
     resolved_key = api_key if api_key is not None else os.getenv("OPENAI_API_KEY")
+    resolved_effort = (
+        reasoning_effort
+        or os.getenv("EDITORIAL_REASONING_EFFORT")
+        or "medium"
+    ).strip()
     if not enabled:
         return {
             "status": "skipped",
@@ -784,6 +876,7 @@ def evaluate_editorial_quality(
             {"role": "user", "content": json.dumps(payload, ensure_ascii=False)},
         ],
         "max_output_tokens": 5000,
+        "reasoning": {"effort": resolved_effort},
         "text": _editorial_response_format(),
     }
 
@@ -812,6 +905,9 @@ def evaluate_editorial_quality(
         model_snapshot = str(response_payload.get("model") or "").strip()
         if model_snapshot:
             result["model_snapshot"] = model_snapshot
+        usage = normalize_openai_usage(response_payload, model_snapshot or resolved_model)
+        if usage:
+            result["usage"] = usage
         return result
     except Exception as exc:
         return {
@@ -820,6 +916,131 @@ def evaluate_editorial_quality(
             "rubric_version": EDITORIAL_RUBRIC_VERSION,
             "model": resolved_model,
             "generated_at_kst": datetime.now(KST).isoformat(timespec="seconds"),
+            "raw_response_excerpt": _truncate(raw_text, 1200),
+        }
+
+
+def propose_editorial_repair(
+    report_date: str,
+    html_text: str,
+    snapshot_payload: dict[str, Any],
+    operational_result: dict[str, Any],
+    editorial_result: dict[str, Any],
+    *,
+    api_key: str | None = None,
+    model: str | None = None,
+    reasoning_effort: str | None = None,
+    max_raw_per_section: int = DEFAULT_MAX_RAW_PER_SECTION,
+    timeout_sec: int = DEFAULT_TIMEOUT_SEC,
+    session_factory: Any = requests.Session,
+) -> dict[str, Any]:
+    """Select a bounded replacement edition using only links in the raw pool."""
+    resolved_model = model or os.getenv("EDITORIAL_OPENAI_MODEL") or DEFAULT_EDITORIAL_MODEL
+    resolved_key = api_key if api_key is not None else os.getenv("OPENAI_API_KEY")
+    resolved_effort = (
+        reasoning_effort
+        or os.getenv("EDITORIAL_REPAIR_REASONING_EFFORT")
+        or os.getenv("EDITORIAL_REASONING_EFFORT")
+        or "medium"
+    ).strip()
+    if not resolved_key:
+        return {
+            "status": "skipped",
+            "reason": "missing_openai_api_key",
+            "model": resolved_model,
+        }
+
+    payload = build_editorial_payload(
+        report_date,
+        html_text,
+        snapshot_payload,
+        operational_result,
+        max_raw_per_section=max_raw_per_section,
+    )
+    payload["failed_editorial_eval"] = {
+        "score": editorial_result.get("score"),
+        "scores": editorial_result.get("scores", {}),
+        "issues": editorial_result.get("issues", []),
+        "section_notes": editorial_result.get("section_notes", {}),
+        "improvement_suggestions": editorial_result.get("improvement_suggestions", []),
+        "acceptance_gate": editorial_result.get("acceptance_gate", {}),
+    }
+    system_prompt = (
+        "You are the repair editor for a Korean agricultural daily news brief. "
+        "The first edition failed its editorial acceptance gate. Select a replacement edition that directly fixes every blocking and major issue. "
+        "Return exactly five cards for each of supply, policy, dist, and pest. "
+        "Every returned link must be copied exactly from that section's raw_candidates_by_section list; never invent, rewrite, or move a link from another section. "
+        "Do not select duplicate events across sections. Exclude promotional product stories, local-event filler, weak profiles, stale reprints, and articles identified as defective by the failed evaluation. "
+        "Prefer current national or materially important field stories with concrete prices, volumes, policy decisions, logistics, market operations, exports, crop damage, or pest response. "
+        "For supply, prioritize horticultural production, shipment, price, weather, and supply-demand developments. "
+        "For policy, prioritize enacted or consequential agricultural policy, legislation, budgets, trade, and price-stabilization measures. "
+        "For dist, prioritize wholesale markets, logistics, exports, APC operations, online wholesale markets, and sales-channel operations. "
+        "For pest, prioritize named crop pests or diseases, outbreaks, damage, risk escalation, and actionable prevention or control. "
+        "Mark the strongest two or three cards in each section as core. Return JSON only."
+    )
+    request_body = {
+        "model": resolved_model,
+        "input": [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": json.dumps(payload, ensure_ascii=False)},
+        ],
+        "max_output_tokens": 4000,
+        "reasoning": {"effort": resolved_effort},
+        "text": _editorial_repair_response_format(),
+    }
+
+    session = session_factory()
+    raw_text = ""
+    try:
+        response = session.post(
+            "https://api.openai.com/v1/responses",
+            headers={
+                "Authorization": f"Bearer {resolved_key}",
+                "Content-Type": "application/json",
+            },
+            json=request_body,
+            timeout=timeout_sec,
+        )
+        response.raise_for_status()
+        response_payload = response.json()
+        raw_text = _extract_response_text(response_payload)
+        parsed = extract_json_object(raw_text)
+        sections = parsed.get("sections", {})
+        if not isinstance(sections, dict):
+            raise ValueError("Editorial repair response did not contain sections.")
+        normalized: dict[str, list[dict[str, Any]]] = {}
+        for section in SECTION_KEYS:
+            rows = sections.get(section, [])
+            if not isinstance(rows, list) or len(rows) != PREFERRED_BRIEFING_COUNT_PER_SECTION:
+                raise ValueError(f"Editorial repair section {section} did not contain exactly five cards.")
+            normalized[section] = [
+                {
+                    "link": str(row.get("link") or "").strip(),
+                    "is_core": bool(row.get("is_core")),
+                }
+                for row in rows
+                if isinstance(row, dict) and str(row.get("link") or "").strip()
+            ]
+            if len(normalized[section]) != PREFERRED_BRIEFING_COUNT_PER_SECTION:
+                raise ValueError(f"Editorial repair section {section} contained an empty link.")
+        model_snapshot = str(response_payload.get("model") or "").strip()
+        result: dict[str, Any] = {
+            "status": "success",
+            "model": resolved_model,
+            "sections": normalized,
+            "rationale": _truncate(parsed.get("rationale"), 800),
+        }
+        if model_snapshot:
+            result["model_snapshot"] = model_snapshot
+        usage = normalize_openai_usage(response_payload, model_snapshot or resolved_model)
+        if usage:
+            result["usage"] = usage
+        return result
+    except Exception as exc:
+        return {
+            "status": "error",
+            "reason": str(exc),
+            "model": resolved_model,
             "raw_response_excerpt": _truncate(raw_text, 1200),
         }
 

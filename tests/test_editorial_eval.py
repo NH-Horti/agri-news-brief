@@ -40,6 +40,12 @@ class _FakeSession:
         return _FakeResponse(
             {
                 "model": "test-model-snapshot",
+                "usage": {
+                    "input_tokens": 1000,
+                    "input_tokens_details": {"cached_tokens": 200},
+                    "output_tokens": 100,
+                    "total_tokens": 1100,
+                },
                 "output_text": json_module_dumps(
                     {
                         "score": 91,
@@ -72,6 +78,9 @@ class _FakeSession:
 
 def json_module_dumps(payload):
     return json.dumps(payload)
+
+
+json_module = json
 
 
 class EditorialEvalTests(unittest.TestCase):
@@ -142,14 +151,17 @@ class EditorialEvalTests(unittest.TestCase):
         self.assertEqual(result["model"], "test-model")
         self.assertEqual(result["model_snapshot"], "test-model-snapshot")
         self.assertEqual(session.requests[0]["json"]["model"], "test-model")
+        self.assertEqual(session.requests[0]["json"]["reasoning"], {"effort": "medium"})
         self.assertEqual(session.requests[0]["json"]["text"]["format"]["type"], "json_schema")
         self.assertIn("raw_candidates_by_section", session.requests[0]["json"]["input"][1]["content"])
         self.assertIn("section_count_targets", session.requests[0]["json"]["input"][1]["content"])
         issue_schema = session.requests[0]["json"]["text"]["format"]["schema"]["properties"]["issues"]["items"]["properties"]
         self.assertEqual(issue_schema["severity"]["enum"], ["blocking", "major", "moderate", "minor"])
         self.assertIn("bad_summary", issue_schema["type"]["enum"])
+        self.assertEqual(result["usage"]["input_tokens"], 1000)
+        self.assertEqual(result["usage"]["cached_input_tokens"], 200)
 
-    def test_default_model_is_gpt_5_5_and_does_not_follow_generation_model(self):
+    def test_default_model_is_gpt_5_6_sol_and_does_not_follow_generation_model(self):
         session = _FakeSession()
         with patch.dict(os.environ, {"OPENAI_MODEL": "gpt-5.4"}, clear=True):
             result = editorial_eval.evaluate_editorial_quality(
@@ -162,9 +174,70 @@ class EditorialEvalTests(unittest.TestCase):
                 session_factory=lambda: session,
             )
 
-        self.assertEqual(editorial_eval.DEFAULT_EDITORIAL_MODEL, "gpt-5.5-2026-04-23")
-        self.assertEqual(session.requests[0]["json"]["model"], "gpt-5.5-2026-04-23")
-        self.assertEqual(result["model"], "gpt-5.5-2026-04-23")
+        self.assertEqual(editorial_eval.DEFAULT_EDITORIAL_MODEL, "gpt-5.6-sol")
+        self.assertEqual(session.requests[0]["json"]["model"], "gpt-5.6-sol")
+        self.assertEqual(result["model"], "gpt-5.6-sol")
+
+    def test_gpt_5_6_sol_usage_estimates_standard_context_cost(self):
+        usage = editorial_eval.normalize_openai_usage(
+            {
+                "usage": {
+                    "input_tokens": 1000,
+                    "input_tokens_details": {
+                        "cached_tokens": 200,
+                        "cache_write_tokens": 100,
+                    },
+                    "output_tokens": 100,
+                    "total_tokens": 1100,
+                }
+            },
+            "gpt-5.6-sol",
+        )
+
+        self.assertEqual(usage["input_tokens"], 1000)
+        self.assertEqual(usage["cache_write_input_tokens"], 100)
+        self.assertEqual(usage["estimated_cost_usd"], 0.007225)
+
+    def test_propose_editorial_repair_returns_only_five_raw_links_per_section(self):
+        class RepairSession(_FakeSession):
+            def post(self, url, headers=None, json=None, timeout=None):
+                self.requests.append({"url": url, "headers": headers or {}, "json": json or {}, "timeout": timeout})
+                prompt_payload = json_module.loads(json["input"][1]["content"])
+                sections = {
+                    section: [
+                        {"link": row["link"], "is_core": index < 2}
+                        for index, row in enumerate(prompt_payload["raw_candidates_by_section"][section][:5])
+                    ]
+                    for section in report_eval.SECTION_KEYS
+                }
+                return _FakeResponse(
+                    {
+                        "model": "gpt-5.6-sol-snapshot",
+                        "output_text": json_module_dumps(
+                            {"sections": sections, "rationale": "Replaced weak cards."}
+                        ),
+                    }
+                )
+
+        session = RepairSession()
+        result = editorial_eval.propose_editorial_repair(
+            self.report_date,
+            self.html_text,
+            self.snapshot_payload,
+            self._operational_with_uniform_counts(),
+            {"status": "success", "score": 70, "issues": []},
+            api_key="test-key",
+            model="gpt-5.6-sol",
+            max_raw_per_section=5,
+            session_factory=lambda: session,
+        )
+
+        self.assertEqual(result["status"], "success")
+        self.assertTrue(all(len(result["sections"][section]) == 5 for section in report_eval.SECTION_KEYS))
+        request = session.requests[0]["json"]
+        self.assertEqual(request["reasoning"], {"effort": "medium"})
+        schema = request["text"]["format"]["schema"]["properties"]["sections"]["properties"]
+        self.assertTrue(all(schema[section]["minItems"] == 5 for section in report_eval.SECTION_KEYS))
 
     def test_editorial_model_environment_override_has_precedence(self):
         session = _FakeSession()

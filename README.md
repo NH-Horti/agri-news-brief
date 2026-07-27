@@ -161,12 +161,43 @@ Use three branches:
 ### Production workflows (main only)
 
 - `.github/workflows/daily.yml`
-- `.github/workflows/daily-watchdog.yml` (06:10 KST missing-dispatch recovery, 06:30 recheck)
+- `.github/workflows/daily-watchdog.yml` (06:10 KST missing-dispatch recovery, 06:20 recheck)
 - `.github/workflows/rebuild.yml`
 - `.github/workflows/maintenance.yml`
 - `.github/workflows/ux_patch.yml`
 
 `main` is the only branch that publishes production Pages content under `docs/`.
+
+### Daily prepublish quality gate
+
+The production daily workflow starts at 06:05 KST and treats 06:50 KST as the
+publication deadline. Before it writes the daily page, updates the index/state,
+or sends the normal Kakao briefing, it now:
+
+1. generates the candidate briefing with `gpt-5.6-sol` at low reasoning effort;
+2. runs the deterministic report evaluator and a `gpt-5.6-sol` editorial review;
+3. if the acceptance gate fails, asks the same model at medium reasoning effort
+   to select exactly five validated raw-pool links per section and regenerates
+   only the changed summaries;
+4. re-evaluates the repaired edition, with at most two repair attempts; and
+5. publishes and sends Kakao only after the gate passes. A missed deadline or
+   unresolved failure sends a short `[배포 보류]` notice and leaves the previous
+   published page in place.
+
+Publication requires an editorial acceptance pass, an operational and reader
+score of at least 90, no hard reader issue, complete summaries, commodity-board
+quality of at least 90, and five cards in every section. Full model review runs
+daily until 20 consecutive evaluated reports pass with
+an operational score of at least 95, every editorial score at least 85, and an
+average editorial score of at least 90. After that stabilization period, the
+free deterministic checks still run every day; full model review runs on Monday
+audits or whenever a deterministic anomaly appears. The workflow records token
+usage, estimated API cost, repair count, and gate status in the evaluation JSON
+and GitHub Actions summary. The post-run publishing step reuses this result and
+does not call the model a second time.
+
+Required repository secret: `OPENAI_API_KEY`. The existing Naver, Kakao, and
+GitHub configuration remains unchanged.
 
 ### Development verification workflow (`dev`)
 

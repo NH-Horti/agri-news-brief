@@ -2,7 +2,7 @@ name: agri-news-brief (daily)
 
 on:
   # Primary daily trigger: Cloudflare Workers Cron at KST 06:05.
-  # daily-watchdog.yml checks at KST 06:10/06:30 and dispatches only when this run is missing.
+  # daily-watchdog.yml checks at KST 06:10/06:20 and dispatches only when this run is missing.
   # Keep a native schedule out of this workflow to avoid duplicate Kakao sends.
   workflow_dispatch:
     inputs:
@@ -61,8 +61,11 @@ jobs:
           NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
           NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          OPENAI_MODEL: gpt-5.5
+          OPENAI_MODEL: gpt-5.6-sol
           OPENAI_REASONING_EFFORT: low
+          EDITORIAL_OPENAI_MODEL: gpt-5.6-sol
+          EDITORIAL_REASONING_EFFORT: medium
+          EDITORIAL_REPAIR_REASONING_EFFORT: medium
           OPENAI_SUMMARY_FEEDBACK_PATH: docs/evals/latest-feedback.txt
           SELECTION_FEEDBACK_PATH: docs/evals/latest-selection-feedback.json
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
@@ -87,6 +90,14 @@ jobs:
           FORCE_RUN_ANYDAY: 'false'
           REPLAY_WRITE_SNAPSHOT: 'true'
           REPLAY_SNAPSHOT_DIR: .agri_replay
+          PREPUBLISH_QUALITY_GATE_ENABLED: 'true'
+          PREPUBLISH_QUALITY_FAIL_CLOSED: 'true'
+          PREPUBLISH_QUALITY_ADAPTIVE: 'true'
+          PREPUBLISH_QUALITY_MAX_REPAIRS: '2'
+          PREPUBLISH_QUALITY_STABLE_DAYS: '20'
+          PREPUBLISH_QUALITY_DEADLINE_KST: '06:50'
+          PREPUBLISH_QUALITY_RESULT_DIR: reports/evals
+          PREPUBLISH_QUALITY_MIN_OPERATIONAL_SCORE: '90'
           UX_PATCH_DAYS: '7'
           WINDOW_MIN_HOURS: '0'
           CROSSDAY_DEDUPE_ENABLED: 'true'
@@ -109,7 +120,7 @@ jobs:
           python main.py
 
       - name: Publish replay snapshot
-        if: success()
+        if: always()
         shell: bash
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -132,25 +143,29 @@ jobs:
             --message "Update replay snapshot (${{ steps.vars.outputs.report_date }})"
 
       - name: Evaluate daily report quality
-        if: success()
+        if: always()
         shell: bash
         env:
           GITHUB_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          EDITORIAL_OPENAI_MODEL: gpt-5.5-2026-04-23
         run: |
           set -euo pipefail
 
           snapshot_path=".agri_replay/${{ steps.vars.outputs.report_date }}.snapshot.json"
+          result_path="reports/evals/${{ steps.vars.outputs.report_date }}.json"
           if [ ! -f "$snapshot_path" ]; then
             echo "::warning::Daily run did not generate replay snapshot; skipping quality evaluation"
+            exit 0
+          fi
+          if [ ! -f "$result_path" ]; then
+            echo "::warning::Daily run did not generate a prepublish evaluation; skipping publication"
             exit 0
           fi
 
           python scripts/evaluate_daily_report.py \
             --report-date "${{ steps.vars.outputs.report_date }}" \
             --snapshot-path "$snapshot_path" \
+            --existing-result-json "$result_path" \
             --repo "$REPO" \
             --token "$GITHUB_TOKEN" \
             --ref main \
@@ -159,9 +174,7 @@ jobs:
             --output-md "reports/evals/${{ steps.vars.outputs.report_date }}.md" \
             --feedback-out "reports/evals/latest-feedback.txt" \
             --selection-feedback-out "reports/evals/latest-selection-feedback.json" \
-            --editorial-eval \
-            --editorial-model "$EDITORIAL_OPENAI_MODEL" \
-            --fail-under 55
+            --fail-under 88
 
       - name: Resolve Kakao status
         if: always()
@@ -203,14 +216,27 @@ jobs:
             echo "- Event: ${{ github.event_name }}"
             echo "- Trigger source: ${{ github.event.inputs.trigger_source || 'github' }}"
             echo "- Report date: ${{ steps.vars.outputs.report_date }}"
-            echo "- Article generation model: gpt-5.5"
-            echo "- Editorial evaluation model: gpt-5.5-2026-04-23"
+            echo "- Article generation model: gpt-5.6-sol (low reasoning)"
+            echo "- Editorial evaluation/repair model: gpt-5.6-sol (medium reasoning)"
+            echo "- Prepublish deadline: 06:50 KST"
             echo "- Kakao actual: ${{ steps.kakao_status.outputs.actual }}"
             echo "- Kakao refresh token renewed: ${{ steps.kakao_refresh_token.outputs.renewed }}"
             echo "- Main page: https://nh-horti.github.io/agri-news-brief/"
             echo "- Archive: https://nh-horti.github.io/agri-news-brief/archive/${{ steps.vars.outputs.report_date }}.html"
             echo "- Eval JSON: https://raw.githubusercontent.com/${{ github.repository }}/main/docs/evals/${{ steps.vars.outputs.report_date }}.json"
           } >> "$GITHUB_STEP_SUMMARY"
+
+          result_path="reports/evals/${{ steps.vars.outputs.report_date }}.json"
+          if [ -f "$result_path" ]; then
+            gate_status="$(jq -r '.prepublish_quality_gate.status // "unknown"' "$result_path")"
+            repair_count="$(jq -r '.prepublish_quality_gate.repair_count // 0' "$result_path")"
+            estimated_cost="$(jq -r '.prepublish_quality_gate.estimated_cost_usd // 0' "$result_path")"
+            {
+              echo "- Quality gate: $gate_status"
+              echo "- Automatic repairs: $repair_count"
+              echo "- Estimated OpenAI cost: \$$estimated_cost"
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
 
           if [ -f "reports/evals/${{ steps.vars.outputs.report_date }}.md" ]; then
             cat "reports/evals/${{ steps.vars.outputs.report_date }}.md" >> "$GITHUB_STEP_SUMMARY"
