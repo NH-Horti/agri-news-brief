@@ -1,32 +1,32 @@
 ## Daily Eval (2026-07-28)
-- Overall: **69.30** (fail)
-- Operational: **89.87**
-- Reader quality: **76.10** (clear; penalty=13.8, cap=100.0, reasons=clear)
-- Quality gate: **69.30** (needs_major_iteration, editorial_major_issue; editorial=70.8, operational=89.9)
-- Scores: completeness=100.0, diversity=96.0, source=80.0, summary=100.0, freshness=100.0, retrieval=88.8, section_fit=100.0, core=89.1, commodity=98.1
-- Briefing cards: 20 / Commodity cards: 40
-- Sections: supply:5/5 raw=179, policy:5/5 raw=113, dist:5/5 raw=64, pest:5/5 raw=53
-- Metrics: title_unique=1.00, domain_diversity=0.75, low_tier=0.20, summary_presence=1.00, summary_numeric=0.75, fresh_72h=1.00, fit_avg=3.15, false_positive=0.00, hard_reader_issues=0, weak_core=0.12, editorial_penalty=7.7, commodity_weak=0.00, commodity_items=12, commodity_active_today=15, commodity_active_today_unlinked=3, commodity_coverage=0.36, commodity_strict_link=0.83, commodity_false_link=0.00, commodity_pool_false_link=0.00, commodity_dominant_section=0.50, semantic_penalty=0.0
+- Overall: **90.26** (pass)
+- Operational: **93.55**
+- Reader quality: **90.97** (clear; penalty=2.6, cap=100.0, reasons=clear)
+- Quality gate: **90.26** (needs_minor_iteration, editorial_acceptance_gate_failed; editorial=85.2, operational=93.5)
+- Scores: completeness=100.0, diversity=92.0, source=60.0, summary=100.0, freshness=100.0, retrieval=88.8, section_fit=100.0, core=72.6, commodity=98.1
+- Briefing cards: 20 / Commodity cards: 41
+- Sections: supply:5/5 raw=177, policy:5/5 raw=112, dist:5/5 raw=66, pest:5/5 raw=53
+- Metrics: title_unique=1.00, domain_diversity=0.85, low_tier=0.25, summary_presence=1.00, summary_numeric=0.75, fresh_72h=1.00, fit_avg=3.54, false_positive=0.00, hard_reader_issues=0, weak_core=0.22, editorial_penalty=0.6, commodity_weak=0.00, commodity_items=12, commodity_active_today=16, commodity_active_today_unlinked=4, commodity_coverage=0.36, commodity_strict_link=0.83, commodity_false_link=0.00, commodity_pool_false_link=0.00, commodity_dominant_section=0.50, semantic_penalty=0.0
 
 
 ### Editorial Shadow Eval
-- Editorial: **70.80** (daily target 88, tier=needs_major_iteration, needs_major_iteration)
+- Editorial: **85.15** (daily target 88, tier=needs_iteration, needs_minor_iteration)
 - Model: gpt-5.6-sol (resolved gpt-5.6-sol)
-- Model-reported score: 70.80; authoritative method=weighted_components_v1
-- Acceptance: needs_iteration (blocking=0, major=2, reasons=editorial_score_min, no_major_issues, critical_components_min, all_components_min, operational_score_min)
+- Model-reported score: 85.20; authoritative method=weighted_components_v1
+- Acceptance: needs_iteration (blocking=0, major=0, reasons=editorial_score_min, critical_components_min, all_components_min, operational_score_min)
 - Section count gate: 100.0 (target_met)
-- Components: article_selection=72.0, section_fit=78.0, core=65.0, summary=89.0, missed=55.0, noise=65.0
-- Summary: 20개 슬롯과 최신성, 요약 품질은 충족했지만 정책 핵심기사 선택과 중복 통제가 약하다. 정책 풀의 전국 단위 수급·재해지원·유통정책 후보를 놓치고 홍보성 할인 안내와 지역 점검을 핵심으로 올렸으며, 유통에는 가격 동향 기사가 섞였다. 병해충에서는 울진 혹명나방 동일 사건을 두 번 싣고 더 구체적인 탄저병 후보를 누락했다.
-- [major] duplicate_story: 울진군, 혹명나방 피해 확산 대응…농업기술센터 전직원 예찰·공동방제 - 17번 카드와 같은 예찰·공동방제 사건을 출처만 바꿔 중복 게재했다.
-- [major] missed_candidate: [아주초대석] 홍문표 aT사장 "농산물 수급 불안, 韓 농업의 취약한 구조" - 정책 풀 최고 점수의 전국 단위 수급구조 진단을 누락하고 약한 지역·할인 기사를 선택했다.
-- [moderate] promotional_filler: 복날에 지갑 열자 '정부 30% 할인'으로 삼계탕 물가 방어하는 법 - 정부 기자단식 소비 안내 성격이 강하고 농정 핵심 의제나 집행 분석이 부족하다.
-- [moderate] weak_core: 강원농업기술원, 폭염 대응 농업인 안전 현장지원 강화 - 지역 현장점검 중심 기사로 전국 수급·지원 정책 후보보다 핵심성이 낮다.
-- [moderate] missed_candidate: 농산물 유통개혁 6000억 투입했지만…성과 검증·농협 역할 재정립 필요 - 스마트APC·온라인도매시장 성과를 다룬 전국 단위 유통정책 후보가 지역 점검과 가격 기사보다 강하다.
+- Components: article_selection=87.0, section_fit=86.0, core=81.0, summary=92.0, missed=78.0, noise=88.0
+- Summary: 20개 슬롯을 모두 채웠고 수급·유통·병해충의 현장성 및 요약 품질은 전반적으로 좋다. 다만 정책 섹션의 핵심 기사 선정과 섹션 정합성이 약하고, 유통에서는 전국 단위 판로 사업을 두고 지역 점검성 기사를 택했다. 병해충도 과수화상병보다 유사한 탄저병 경보를 핵심으로 앞세운 점이 아쉽다.
+- [moderate] wrong_section: 마트마다 다른 농축산물값…AI가 ‘싼 곳’ 찾아준다 [D:로그인] - 구체적인 농정 조치보다 소비자 가격비교 기술을 소개한 기획물로, 정책 핵심 카드로는 약하다.
+- [moderate] wrong_section: 점점 악화하는 가뭄에 농작물 관리 초비상 - 제주 가뭄과 생육 위험이 중심이며 정책 대응 내용은 부차적이어서 수급 섹션에 더 가깝다.
+- [moderate] missed_candidate: 제주 농정 '유통 혁신'에 방점…위성곤 도지사 "건의 수용 여부 반드시... - 생산·물류·수급을 총괄하는 전담기구 검토와 정책협의체 구성이 선별된 지역 시범사업보다 구체적이다.
+- [moderate] missed_candidate: 현대그린푸드·CJ제일제당·오리온이 농가와 한 팀…제품·수출까지 ‘... - 계약재배부터 제품화·판로·수출까지 연결하는 전국 단위 사업으로 지역 APC 점검보다 파급력이 크다.
+- [moderate] weak_core: [리포트] 가격 폭락에 폭염까지.. 고랭지 배추 갈아엎는 농민들 - 출하 포기와 산지 폐기가 확인된 강한 수급 신호인데 비핵심으로 배치됐다.
 
 ### Improvement Hints
-- 편집 품질상 약한 기사 선택이 감지되었습니다 (promotional_filler=25%, dist_weak_ops=5%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요.
+- 최하위 매체 비중이 높습니다. 섹션당 tier-1 1건, 전체 20% 이하를 목표로 하고 같은 이슈의 tier-2+ 원문으로 교체하세요.
+- 핵심기사 품질 편차가 큽니다. core 기사에는 low-fit·tail 후보를 쓰지 말고, fit 상위권이면서 실제 이슈성이 강한 기사만 남기세요.
+- 편집 품질상 약한 기사 선택이 감지되었습니다 (promotional_filler=10%, dist_weak_ops=5%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요.
 
 ### Next Summary Feedback
-- 각 기사 요약은 2문장으로 유지하고 첫 문장에 품목·지역·핵심 이슈를 바로 적는다.
-- 기사에 수치가 있으면 1개 이상 남기고, 없으면 대응 주체나 시점을 분명히 적는다.
-- 비슷한 시작 표현을 반복하지 말고 원인과 대응을 분리해서 간결하게 쓴다.
+- 핵심기사 요약은 행사성 문구를 걷어내고 가격·물량·방제 같은 실제 이슈 변수를 첫 문장에 바로 둔다.
