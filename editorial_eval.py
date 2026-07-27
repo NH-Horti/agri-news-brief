@@ -6,7 +6,7 @@ import os
 import re
 from typing import Any
 
-import requests  # type: ignore[import-untyped]
+import requests
 
 from report_eval import (
     BRIEFING_SURFACE,
