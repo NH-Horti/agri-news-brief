@@ -661,6 +661,7 @@ EDITORIAL_QUALITY_RECALL_QUERIES: dict[str, tuple[str, ...]] = {
         "농업기술원 원예 병해충 발생 예찰",
         "과수 고추 채소 병해충 긴급 방제",
         "고추 세균성점무늬병 방제",
+        "풀무치 돌발해충 방제",
         "원예작물 병해충 발생 경보 농업기술원",
         "과수 탄저병 응애 노린재 방제",
     ),
@@ -11365,11 +11366,423 @@ def _is_agri_supplier_payment_gap_text(title: str, desc: str) -> bool:
     )
 
 
+def is_companion_animal_product_promo_context(title: str, desc: str) -> bool:
+    """Reject pet-food/product launches that only mention horticultural ingredients.
+
+    Ingredient lists can contain many crop names and previously inflated supply
+    fit.  Preserve the rare story that reports a direct farm-market effect.
+    """
+    title_l = _nfkc_lower(title or "")
+    text = _nfkc_lower(f"{title or ''} {desc or ''}")
+    if not text.strip():
+        return False
+    pet_hits = count_any(
+        text,
+        [w.lower() for w in (
+            "반려동물", "반려견", "반려묘", "애완동물", "펫푸드", "펫 간식",
+            "강아지 간식", "고양이 간식", "사료 토핑",
+        )],
+    )
+    title_pet_hits = count_any(
+        title_l,
+        [w.lower() for w in ("반려동물", "반려견", "반려묘", "펫푸드", "펫과함께")],
+    )
+    product_hits = count_any(
+        text,
+        [w.lower() for w in (
+            "간식", "사료", "트릿", "요거트큐브", "라이스팝", "신제품",
+            "출시", "선보인다", "판매", "다이소", "기호성", "급여",
+        )],
+    )
+    direct_farm_market = bool(
+        count_any(
+            title_l,
+            [w.lower() for w in (
+                "농가 수취가격", "산지 가격", "계약재배", "원물 조달", "농가 공급",
+                "농산물 공급계약", "재배 농가",
+            )],
+        ) >= 1
+        and (
+            re.search(r"\d[\d,]*(?:\.\d+)?\s*(?:톤|t|kg|㎏|억원|만원|원|%)", text, re.IGNORECASE)
+            or count_any(text, [w.lower() for w in ("출하량", "조달량", "계약 물량", "수매량")]) >= 1
+        )
+    )
+    return bool((title_pet_hits >= 1 or pet_hits >= 2) and product_hits >= 2 and not direct_farm_market)
+
+
+def is_generic_policy_schedule_context(title: str, desc: str) -> bool:
+    """Identify calendar/digest pages that contain no single policy decision."""
+    title_l = _nfkc_lower(title or "")
+    text = _nfkc_lower(f"{title or ''} {desc or ''}")
+    schedule_title = bool(
+        any(term in title_l for term in ("정부 주요 일정", "정부 주요일정", "부처 주간 일정", "주요 부처 일정"))
+        or ("주간 일정" in title_l and any(term in title_l for term in ("정부", "부처", "경제", "사회")))
+    )
+    if not schedule_title:
+        return False
+    list_signals = len(re.findall(r"(?:월|화|수|목|금)\)", text)) + len(re.findall(r"\d{1,2}:\d{2}", text))
+    decisive_title = count_any(
+        title_l,
+        [w.lower() for w in ("시행", "확정", "개정", "지원", "발표", "의결", "대책")],
+    )
+    return list_signals >= 2 or decisive_title == 0
+
+
+def is_local_council_multi_issue_digest_context(title: str, desc: str) -> bool:
+    """Reject local-council speech roundups where agriculture is one minor item."""
+    title_l = _nfkc_lower(title or "")
+    text = _nfkc_lower(f"{title or ''} {desc or ''}")
+    council_format = bool(
+        any(term in title_l for term in ("5분발언", "5분 발언", "자유발언"))
+        and any(term in title_l for term in ("이어져", "현안", "등", "잇따라"))
+    )
+    if not council_format:
+        return False
+    unrelated_hits = count_any(
+        text,
+        [w.lower() for w in (
+            "공군사관학교", "공사 이전", "관광재단", "성범죄", "도서관", "체육",
+            "교통", "산업단지", "도시개발", "문화재단", "교육청",
+        )],
+    )
+    agri_hits = count_any(
+        title_l,
+        [w.lower() for w in ("농업", "농산물", "농가", "원예", "과수", "채소")],
+    )
+    return unrelated_hits >= 2 and agri_hits <= 1
+
+
+def is_agri_disaster_recovery_support_context(title: str, desc: str) -> bool:
+    """Identify the same central-government crop disaster recovery package."""
+    title_l = _nfkc_lower(title or "")
+    text = _nfkc_lower(f"{title or ''} {desc or ''}")
+    central_actor = count_any(
+        text,
+        [w.lower() for w in ("농식품부", "농림축산식품부", "정부")],
+    )
+    disaster_hits = count_any(
+        text,
+        [w.lower() for w in ("냉해", "저온", "고온", "폭염", "우박", "농작물 피해", "재해")],
+    )
+    recovery_hits = count_any(
+        text,
+        [w.lower() for w in ("재해복구비", "복구비", "긴급 복구", "복구 지원", "피해 농가")],
+    )
+    title_action = count_any(
+        title_l,
+        [w.lower() for w in ("복구", "지원", "재해복구비", "복구비")],
+    )
+    quantified = bool(re.search(r"\d[\d,]*(?:\.\d+)?\s*(?:억\s*원|억원|농가|곳)", text))
+    return central_actor >= 1 and disaster_hits >= 2 and recovery_hits >= 2 and title_action >= 1 and quantified
+
+
+def is_agri_trade_opening_policy_context(title: str, desc: str) -> bool:
+    """National trade-opening stories with a direct agricultural impact."""
+    title_l = _nfkc_lower(title or "")
+    text = _nfkc_lower(f"{title or ''} {desc or ''}")
+    trade_hits = count_any(
+        text,
+        [w.lower() for w in ("cptpp", "fta", "rcep", "시장 개방", "시장개방", "통상 협정", "통상협정")],
+    )
+    agri_hits = count_any(
+        text,
+        [w.lower() for w in ("농업", "농가", "농민", "농산물", "과수", "채소", "과일", "민감 품목", "민감품목")],
+    )
+    impact_hits = count_any(
+        text,
+        [w.lower() for w in (
+            "가입", "검토", "관세", "검역", "개방", "피해", "우려", "반발",
+            "수입", "협상", "상생협력기금", "생산 기반", "소득",
+        )],
+    )
+    title_signal = count_any(
+        title_l,
+        [w.lower() for w in ("cptpp", "fta", "rcep", "시장 개방", "시장개방", "통상")],
+    )
+    return title_signal >= 1 and trade_hits >= 1 and agri_hits >= 2 and impact_hits >= 2
+
+
+def is_supply_production_crisis_context(title: str, desc: str) -> bool:
+    """Direct crop failure/loss stories that belong to the supply section."""
+    title_l = _nfkc_lower(title or "")
+    text = _nfkc_lower(f"{title or ''} {desc or ''}")
+    crop_hits = count_any(
+        text,
+        [w.lower() for w in (
+            "농산물", "농작물", "원예", "과수", "채소", "고랭지 채소", "감자",
+            "배추", "무", "양파", "마늘", "사과", "배", "복숭아", "포도",
+            "참외", "수박", "토마토", "고추", "화훼",
+        )],
+    )
+    title_crisis = count_any(
+        title_l,
+        [w.lower() for w in (
+            "흉작", "결주", "작황 악화", "생육 부진", "수확량 감소", "생산량 감소",
+            "공급 부족", "생산 차질", "폐기 속출", "산지폐기", "수확 포기", "갈아엎",
+            "가격 폭락", "가격 급락", "값 폭락", "값 급락", "생산비 급등",
+            "농가 비명", "농가의 눈물", "농민 2중고", "농가 2중고",
+        )],
+    )
+    field_hits = count_any(
+        text,
+        [w.lower() for w in (
+            "농가", "농민", "산지", "재배", "생산", "수확", "작황", "공급량",
+            "씨감자", "종자", "폐기", "피해", "출하",
+        )],
+    )
+    policy_led_title = bool(
+        count_any(title_l, [w.lower() for w in ("정부", "농식품부", "농림축산식품부", "국회")]) >= 1
+        and count_any(title_l, [w.lower() for w in ("대책", "지원", "시행", "개정", "추진", "확정")]) >= 1
+    )
+    return crop_hits >= 1 and title_crisis >= 1 and field_hits >= 2 and not policy_led_title
+
+
+def is_agri_land_pension_policy_context(title: str, desc: str) -> bool:
+    """Identify structural farm-land pension access and budget reporting."""
+    title_l = _nfkc_lower(title or "")
+    text = _nfkc_lower(f"{title or ''} {desc or ''}")
+    if "농지연금" not in text:
+        return False
+    policy_problem_hits = count_any(
+        text,
+        [w.lower() for w in (
+            "고령농", "예산", "대기", "가입", "수급권", "제도", "재정",
+            "감정평가", "투기", "도시민", "재테크", "제구실", "개선",
+        )],
+    )
+    title_problem = count_any(
+        title_l,
+        [w.lower() for w in ("제구실", "대기", "예산", "고령농", "도시민", "재테크", "문제")],
+    )
+    return title_problem >= 1 and policy_problem_hits >= 3
+
+
+def is_agri_digital_sales_channel_context(title: str, desc: str) -> bool:
+    """Identify direct agricultural online-sales and live-commerce operations."""
+    title_l = _nfkc_lower(title or "")
+    text = _nfkc_lower(f"{title or ''} {desc or ''}")
+    channel_hits = count_any(
+        text,
+        [w.lower() for w in (
+            "라이브커머스", "라이브 커머스", "온라인 판매", "온라인판매",
+            "온라인 판로", "디지털 판매", "온라인몰", "온라인 몰",
+        )],
+    )
+    agri_sales_hits = count_any(
+        text,
+        [w.lower() for w in (
+            "농산물", "농식품", "농협", "산지", "농가", "판매", "유통", "판로",
+        )],
+    )
+    title_action = count_any(
+        title_l,
+        [w.lower() for w in ("강화", "확대", "개설", "도입", "판매", "판로")],
+    )
+    return channel_hits >= 1 and agri_sales_hits >= 3 and title_action >= 1
+
+
+def is_dist_wholesale_market_schedule_context(title: str, desc: str) -> bool:
+    """Recognize dated wholesale-market closure/opening notices as useful operations."""
+    title_l = _nfkc_lower(title or "")
+    text = _nfkc_lower(f"{title or ''} {desc or ''}")
+    market = any(term in title_l for term in ("도매시장", "공영도매시장", "농산물도매시장", "공판장"))
+    schedule = any(term in title_l for term in ("휴업", "휴장", "휴무", "개장", "경매 일정"))
+    dated = bool(
+        re.search(r"\d{1,2}\s*(?:월|일|~|∼|-)\s*\d{0,2}", title_l)
+        or re.search(r"\d{1,2}\s*일", text)
+    )
+    return bool(market and schedule and dated)
+
+
+def is_local_apc_performance_meeting_context(title: str, desc: str) -> bool:
+    """Reject local APC result meetings that do not report a new operation."""
+    title_l = _nfkc_lower(title or "")
+    text = _nfkc_lower(f"{title or ''} {desc or ''}")
+    apc = "apc" in title_l or "산지유통센터" in text
+    meeting = count_any(
+        title_l,
+        [w.lower() for w in ("사업평가회", "사업 평가회", "성과보고회", "평가 회의", "사업보고회")],
+    )
+    launch = count_any(
+        title_l,
+        [w.lower() for w in ("준공", "개장", "가동", "신설", "착공", "처리능력 확대")],
+    )
+    return apc and meeting >= 1 and launch == 0
+
+
+def is_broad_multi_crop_pest_risk_context(title: str, desc: str) -> bool:
+    """Recognize broad, multi-risk crop alerts suitable for the pest core slot."""
+    title_l = _nfkc_lower(title or "")
+    text = _nfkc_lower(f"{title or ''} {desc or ''}")
+    risk_hits = count_any(
+        title_l,
+        [w.lower() for w in (
+            "도열병", "탄저병", "노균병", "열매터짐", "열과", "돌발해충",
+            "벼멸구", "풀무치", "갈색여치", "꽃매미", "미국선녀벌레",
+        )],
+    )
+    scope_hits = count_any(
+        text,
+        [w.lower() for w in ("전국", "농작물", "벼", "과수", "포도", "복숭아", "자두", "채소")],
+    )
+    action_hits = count_any(
+        text,
+        [w.lower() for w in ("예찰", "방제", "제거", "살포", "대응", "주의", "관리")],
+    )
+    return risk_hits >= 3 and scope_hits >= 2 and action_hits >= 1
+
+
+def is_supply_opinion_commentary_context(title: str, desc: str) -> bool:
+    """Identify signed opinion/commentary that should not displace daily market facts."""
+    title_l = _nfkc_lower(title or "")
+    opinion_label = any(
+        term in title_l
+        for term in ("[독자기고]", "[기고]", "[칼럼]", "[사설]", "[시론]", "[논단]")
+    )
+    return bool(opinion_label and not re.search(r"\d+(?:\.\d+)?\s*(?:원|%|톤|t|ha|헥타르)", title_l))
+
+
+def is_weather_only_crop_cultivation_guidance_context(title: str, desc: str) -> bool:
+    """Separate heat/drought cultivation tips from pest and disease reporting."""
+    title_l = _nfkc_lower(title or "")
+    text = _nfkc_lower(f"{title or ''} {desc or ''}")
+    crop = count_any(
+        title_l,
+        [w.lower() for w in ("감자", "고랭지", "채소", "과수", "농작물", "작물")],
+    )
+    cultivation = count_any(
+        title_l,
+        [w.lower() for w in ("재배관리", "재배 관리", "생육관리", "생육 관리", "관리 요령")],
+    )
+    weather = count_any(text, [w.lower() for w in ("고온기", "폭염", "가뭄", "고온", "토양 수분")])
+    water_management = count_any(
+        text,
+        [w.lower() for w in ("물주기", "관수", "물길", "배수", "토양 수분", "수분 유지")],
+    )
+    pest_title = count_any(
+        title_l,
+        [w.lower() for w in (
+            "병해충", "방제", "예찰", "병 발생", "해충", "탄저병", "도열병",
+            "노균병", "화상병", "바이러스", "나방", "진딧물", "총채벌레",
+        )],
+    )
+    return crop >= 1 and cultivation >= 1 and weather >= 1 and water_management >= 1 and pest_title == 0
+
+
+def is_local_lawmaker_agri_demand_context(title: str, desc: str) -> bool:
+    """Identify local-lawmakers' demands that lack an enacted policy response."""
+    title_l = _nfkc_lower(title or "")
+    lawmaker = count_any(title_l, [w.lower() for w in ("도의원", "시의원", "군의원", "지방의원")])
+    demand = count_any(title_l, [w.lower() for w in ("촉구", "대책 마련", "요구", "5분 발언", "자유발언")])
+    agri = count_any(title_l, [w.lower() for w in ("농산물", "농업", "농가", "농민", "채소", "과수")])
+    enacted = count_any(
+        title_l,
+        [w.lower() for w in ("조례 통과", "조례 의결", "예산 확정", "시행", "도입 확정", "지원금 지급")],
+    )
+    return lawmaker >= 1 and demand >= 1 and agri >= 1 and enacted == 0
+
+
+def is_root_crop_disease_warning_context(title: str, desc: str) -> bool:
+    """Recognize root-crop disease warnings that generic crop dictionaries miss."""
+    title_l = _nfkc_lower(title or "")
+    text = _nfkc_lower(f"{title or ''} {desc or ''}")
+    root_crop = bool(re.search(r"(?:^|[\s·'\"(])(?:마|참마|산약)(?:[\s·'\")]|$)", title_l))
+    disease = count_any(title_l, [w.lower() for w in ("병해", "병 발생", "병 확산", "썩음병", "역병")])
+    warning = count_any(title_l, [w.lower() for w in ("확산", "우려", "주의", "방제", "발생", "피해")])
+    authority_action = count_any(
+        text,
+        [w.lower() for w in ("농업기술원", "농기원", "농촌진흥청", "예찰", "적기 방제", "등록 약제")],
+    )
+    return root_crop and disease >= 1 and warning >= 1 and authority_action >= 2
+
+
+def is_seed_distribution_application_notice_context(title: str, desc: str) -> bool:
+    """Identify administrative seed application notices rather than supply news."""
+    title_l = _nfkc_lower(title or "")
+    seed = count_any(title_l, [w.lower() for w in ("보급종", "씨감자", "씨 감자", "종자 공급")])
+    application = count_any(title_l, [w.lower() for w in ("신청", "접수", "공급분", "신청하세요")])
+    market_fact = count_any(
+        title_l,
+        [w.lower() for w in ("가격", "수급", "부족", "품질 논란", "공급 차질", "생산량", "흉작")],
+    )
+    return seed >= 1 and application >= 1 and market_fact == 0
+
+
+def is_historical_agri_org_series_context(title: str, desc: str) -> bool:
+    """Identify retrospective organization-history installments in daily desks."""
+    title_l = _nfkc_lower(title or "")
+    text = _nfkc_lower(f"{title or ''} {desc or ''}")
+    series = bool(re.search(r"\[(?:[^\]]*\s)?\d{2,3}년사\]", title_l) or "농협 60년사" in title_l)
+    retrospective = count_any(
+        text,
+        [w.lower() for w in ("창립 전", "역사가 깊", "연혁", "태동", "년사", "발자취")],
+    )
+    return series and retrospective >= 1
+
+
+def is_crop_aerial_control_operation_context(title: str, desc: str) -> bool:
+    """Recognize concrete crop aerial-control operations as pest response."""
+    title_l = _nfkc_lower(title or "")
+    text = _nfkc_lower(f"{title or ''} {desc or ''}")
+    crop = count_any(title_l, [w.lower() for w in ("벼", "논콩", "콩", "과수", "밤나무", "농작물")])
+    operation = count_any(title_l, [w.lower() for w in ("항공방제", "항공 방제", "공동방제", "드론방제", "드론 방제")])
+    execution = count_any(text, [w.lower() for w in ("실시", "투입", "운영", "방제", "피해 예방")])
+    promo = count_any(title_l, [w.lower() for w in ("제품 출시", "신제품", "판매", "추천 제품")])
+    return crop >= 1 and operation >= 1 and execution >= 2 and promo == 0
+
+
+def is_rural_entertainment_feature_context(title: str, desc: str) -> bool:
+    """Reject rural TV/celebrity features that merely mention farms or crops."""
+    title_l = _nfkc_lower(title or "")
+    text = _nfkc_lower(f"{title or ''} {desc or ''}")
+    entertainment = count_any(
+        text,
+        [w.lower() for w in (
+            "6시 내고향", "6시내고향", "가수", "배우", "미스김", "방송된", "방송에서",
+            "촬영", "프로그램", "주민들과 호흡", "따뜻한 위로", "마음을 전",
+        )],
+    )
+    market = count_any(
+        text,
+        [w.lower() for w in (
+            "도매가격", "산지가격", "경락가", "출하량", "생산량", "수급", "작황",
+            "계약재배", "수매", "판로 계약", "판매액",
+        )],
+    )
+    return entertainment >= 2 and market == 0
+
+
+def is_dist_structural_market_analysis_context(title: str, desc: str) -> bool:
+    """Keep evidence-led wholesale-market performance and structure analysis."""
+    title_l = _nfkc_lower(title or "")
+    text = _nfkc_lower(f"{title or ''} {desc or ''}")
+    market_title = count_any(
+        title_l,
+        [w.lower() for w in ("온라인도매시장", "온라인 도매시장", "농산물 도매시장", "도매시장")],
+    )
+    agri_hits = count_any(text, [w.lower() for w in ("농산물", "산지", "농가", "출하", "도매시장")])
+    structure_hits = count_any(
+        text,
+        [w.lower() for w in (
+            "유통 단계", "유통단계", "유통 구조", "유통구조", "거래액", "거래량",
+            "정산", "물류", "효율", "성과", "단축 효과", "단축효과", "직배송",
+            "수수료", "시장 참여", "활성화",
+        )],
+    )
+    analysis_hits = count_any(
+        text,
+        [w.lower() for w in ("분석", "평가", "효과", "미지수", "한계", "검증", "문제", "지적", "실적")],
+    )
+    return market_title >= 1 and agri_hits >= 1 and structure_hits >= 2 and analysis_hits >= 1
+
+
 def is_low_value_local_political_context(title: str, desc: str) -> bool:
     """선거·공약·지역 정치 발언 중심의 농업 부분언급 기사를 낮은 가치로 본다."""
     if is_policy_legislative_reform_context(title, desc):
         return False
     if _is_agri_supplier_payment_gap_text(title, desc):
+        return False
+    if is_dist_structural_market_analysis_context(title, desc):
         return False
     title_l = _nfkc_lower(title or "")
     text = _nfkc_lower(f"{title or ''} {desc or ''}")
@@ -23416,6 +23829,29 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str, *, apply_se
     text = ((a.title or "") + " " + (a.description or "")).lower()
     if is_garbled_article_text(a.title or "", a.description or ""):
         return "garbled_article_text"
+    if is_companion_animal_product_promo_context(a.title or "", a.description or ""):
+        return "companion_animal_product_promo"
+    if section_key == "policy" and is_generic_policy_schedule_context(a.title or "", a.description or ""):
+        return "policy_schedule_digest_noise"
+    if section_key == "policy" and is_local_council_multi_issue_digest_context(a.title or "", a.description or ""):
+        return "policy_local_council_multi_issue_digest"
+    if (
+        section_key == "policy"
+        and is_supply_production_crisis_context(a.title or "", a.description or "")
+        and not _is_high_value_policy_market_opinion_tail(a)
+        and not _is_policy_stakeholder_market_demand_story(a)
+    ):
+        return "policy_field_production_crisis_without_policy_lead"
+    if section_key == "policy" and is_agri_land_pension_policy_context(a.title or "", a.description or ""):
+        return ""
+    if section_key == "dist" and is_local_apc_performance_meeting_context(a.title or "", a.description or ""):
+        return "dist_local_apc_performance_meeting"
+    if section_key == "dist" and is_dist_wholesale_market_schedule_context(a.title or "", a.description or ""):
+        return ""
+    if section_key == "dist" and is_agri_digital_sales_channel_context(a.title or "", a.description or ""):
+        return ""
+    if section_key == "dist" and is_dist_structural_market_analysis_context(a.title or "", a.description or ""):
+        return ""
     if section_key == "policy" and is_generic_personnel_digest_context(a.title or "", a.description or ""):
         return "policy_personnel_digest_noise"
     if section_key == "policy" and is_non_agri_foodservice_cost_context(a.title or "", a.description or ""):
@@ -23430,6 +23866,10 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str, *, apply_se
         a.title or "", a.description or ""
     ):
         return ""
+    if section_key == "pest" and is_weather_only_crop_cultivation_guidance_context(
+        a.title or "", a.description or ""
+    ):
+        return "pest_weather_only_cultivation_guidance"
     if section_key in ("supply", "policy") and is_foodservice_product_launch_context(a.title or "", a.description or ""):
         return "foodservice_product_launch_noise"
     if is_non_agri_foodservice_equipment_promo_context(a.title or "", a.description or ""):
@@ -29023,27 +29463,57 @@ def openai_summarize_batch(articles: list[Article], cache: dict[str, SummaryCach
 
     mapping = {}
     article_by_key = {a.norm_key: a for a in to_sum if getattr(a, "norm_key", "")}
+
+    def accept_summary(key: str, raw_value: str) -> bool:
+        """Validate, repair, and cache one model summary."""
+        if not key or not raw_value:
+            return False
+        value = _sanitize_summary_text(raw_value)
+        if not value:
+            return False
+        article = article_by_key.get(key)
+        if article is not None:
+            reason = _summary_quality_block_reason(article, value)
+            if reason:
+                repaired = _normalize_article_summary(article, value)
+                repaired_reason = _summary_quality_block_reason(article, repaired)
+                if repaired and not repaired_reason:
+                    value = repaired
+                    reason = ""
+            if reason:
+                log.info(
+                    "[OpenAI] dropped low-quality summary reason=%s title=%s",
+                    reason,
+                    (article.title or "")[:80],
+                )
+                return False
+        mapping[key] = value
+        cache[key] = {"s": value, "t": now_iso}
+        return True
+
     bs = max(5, int(OPENAI_BATCH_SIZE or 25))
     for i in range(0, len(rows_all), bs):
         rows = rows_all[i:i+bs]
         part = _openai_summarize_rows(rows)
         if part:
-            clean_part: dict[str, str] = {}
             for k, v in part.items():
-                if not k or not v:
-                    continue
-                v = _sanitize_summary_text(v)
-                if not v:
-                    continue
-                article = article_by_key.get(k)
-                if article is not None:
-                    reason = _summary_quality_block_reason(article, v)
-                    if reason:
-                        log.info("[OpenAI] dropped low-quality summary reason=%s title=%s", reason, (article.title or "")[:80])
-                        continue
-                clean_part[k] = v
-                cache[k] = {"s": v, "t": now_iso}
-            mapping.update(clean_part)
+                accept_summary(k, v)
+
+    # A large structured-output batch can occasionally omit a few rows. Retry
+    # at most ten missing rows in small batches: this repairs partial responses
+    # without multiplying outage latency across every article in the briefing.
+    missing_rows = [
+        row
+        for row in rows_all
+        if str(row.get("id") or "").strip() not in mapping
+    ][:10]
+    retry_batch_size = 5
+    for i in range(0, len(missing_rows), retry_batch_size):
+        retry_rows = missing_rows[i:i + retry_batch_size]
+        retry_part = _openai_summarize_rows(retry_rows)
+        for row in retry_rows:
+            key = str(row.get("id") or "").strip()
+            accept_summary(key, str((retry_part or {}).get(key) or ""))
 
     return mapping
 
@@ -29177,7 +29647,7 @@ def _strip_summary_boilerplate(text: str) -> str:
 
 
 def _dedupe_summary_sentences(text: str) -> str:
-    """반복 문장 제거(공백·문장부호 차이 무시)."""
+    """반복 문장 제거(공백·문장부호 차이 및 포함 중복 무시)."""
     value = str(text or "").strip()
     if not value:
         return value
@@ -29190,9 +29660,29 @@ def _dedupe_summary_sentences(text: str) -> str:
         norm = re.sub(r"[\s\W]+", "", part).lower()
         if not norm or norm in seen:
             continue
+        # Crawler/cache joins often append an already complete sentence to a
+        # clipped prefix.  Keep the first complete occurrence and discard the
+        # later containing/contained copy rather than exposing both fragments.
+        if any(
+            min(len(norm), len(previous)) >= 18
+            and (norm in previous or previous in norm)
+            for previous in seen
+        ):
+            continue
         seen.add(norm)
         kept.append(part)
     return " ".join(kept).strip()
+
+
+def _limit_summary_to_two_sentences(text: str) -> str:
+    """Keep the reader contract deterministic when a model adds a third aside."""
+    value = str(text or "").strip()
+    if not value:
+        return value
+    parts = [part.strip() for part in _SUMMARY_SENTENCE_SPLIT_RX.split(value) if part and part.strip()]
+    if len(parts) <= 2:
+        return value
+    return " ".join(parts[:2]).strip()
 
 
 def _repair_summary_truncation(text: str) -> str:
@@ -29221,6 +29711,8 @@ def _sanitize_summary_text(text: str) -> str:
     value = _strip_summary_boilerplate(value)
     value = _drop_noise_sentences(value)
     value = _dedupe_summary_sentences(value)
+    value = re.sub(r"\s+(?:\d+\.){2,}\s*$", "", value)
+    value = _limit_summary_to_two_sentences(value)
     return value.strip()
 
 
@@ -29326,7 +29818,7 @@ def _extract_clean_replay_summary(article: Article) -> str:
         summary_sentences = [item[2] for item in chosen]
     else:
         summary_sentences = candidates[:2]
-    value = _trim_summary_text(" ".join(summary_sentences))
+    value = _sanitize_summary_text(_trim_summary_text(" ".join(summary_sentences)))
     return _repair_summary_truncation(value)
 
 
@@ -29375,6 +29867,20 @@ def _normalize_article_summary(article: Article, summary: str) -> str:
         extracted = _extract_clean_replay_summary(article)
         if extracted:
             return extracted
+    description_fallback = _clean_summary_text(
+        getattr(article, "description", "") or ""
+    )
+    # Sanitation intentionally limits output to two sentences. For a long raw
+    # article description, select the two headline-relevant sentences first;
+    # otherwise the limiter would always preserve the opening crop guidance.
+    if (
+        len(raw_summary) > SUMMARY_TARGET_MAX_CHARS
+        and raw_summary == description_fallback
+    ):
+        extracted = _extract_clean_replay_summary(article)
+        if extracted:
+            raw_summary = extracted
+            summary = extracted
     value = _sanitize_summary_text(summary)
     if not value:
         value = _sanitize_summary_text(getattr(article, "description", "") or getattr(article, "title", "") or "")
@@ -29382,9 +29888,6 @@ def _normalize_article_summary(article: Article, summary: str) -> str:
         extracted = _extract_clean_replay_summary(article)
         if extracted and _SUMMARY_COMPLETE_END_RX.search(extracted):
             value = extracted
-    description_fallback = _clean_summary_text(
-        getattr(article, "description", "") or ""
-    )
     if (
         len(value) > SUMMARY_TARGET_MAX_CHARS
         and raw_summary == description_fallback
@@ -29402,8 +29905,6 @@ def _normalize_article_summary(article: Article, summary: str) -> str:
     if not title_echo:
         if len(value) >= 40 and complete_sentences >= 2:
             return value
-        if len(value) >= SUMMARY_TARGET_MIN_CHARS:
-            return value
 
     for segment in _summary_context_segments(article):
         if segment in value:
@@ -29414,13 +29915,15 @@ def _normalize_article_summary(article: Article, summary: str) -> str:
             title_echo = False
         candidate = _clean_summary_text((value + " " + segment).strip())
         value = _trim_summary_text(candidate)
-        if len(value) >= SUMMARY_TARGET_MIN_CHARS:
+        complete_sentences = len(re.findall(r"(?:다|요|함|임)\.", value))
+        if len(value) >= SUMMARY_TARGET_MIN_CHARS and complete_sentences >= 2:
             break
 
     if len(value) < 40:
         title = title_clean
         if title and title not in value:
             value = _trim_summary_text(f"{title} {value}".strip())
+    value = _sanitize_summary_text(value)
     return _repair_summary_truncation(value) or value
 
 
@@ -29500,7 +30003,7 @@ def fill_summaries(
 
         if not s:
             s = a.description.strip() or a.title.strip()
-        if from_cache and not normalize_cached:
+        if from_cache and not normalize_cached and not allow_openai:
             # Replay summaries are deterministic, but archived caches can
             # contain clipped crawler text or page JavaScript. Preserve clean
             # cache entries and rebuild only entries that fail the same quality
@@ -32781,6 +33284,12 @@ def _is_policy_preferred_gap_story(article: Article) -> bool:
     title_l = _nfkc_lower(title)
     if not text.strip():
         return False
+    if is_agri_land_pension_policy_context(title, desc):
+        reject_reason = _postbuild_article_reject_reason(article, "policy", apply_selection_fit=False)
+        return not reject_reason
+    if is_agri_trade_opening_policy_context(title, desc):
+        reject_reason = _postbuild_article_reject_reason(article, "policy", apply_selection_fit=False)
+        return not reject_reason
     structural_hits = count_any(
         text,
         [
@@ -32838,8 +33347,12 @@ def _policy_preferred_gap_rank(article: Article, section_conf: JsonDict) -> tupl
             )
         ],
     )
+    trade_opening = is_agri_trade_opening_policy_context(title, desc)
+    land_pension = is_agri_land_pension_policy_context(title, desc)
     pub_sort = getattr(article, "pub_dt_kst", None) or datetime.min.replace(tzinfo=KST)
     return (
+        1 if trade_opening else 0,
+        1 if land_pension else 0,
         min(6, structural_hits),
         1 if "단독" in _nfkc_lower(title) else 0,
         1 if _is_policy_official(article) else 0,
@@ -32999,6 +33512,8 @@ def _is_supply_field_support_gap_story(article: Article) -> bool:
         return False
     if is_flower_consumer_trend_context(text) or is_processed_food_lifestyle_context(title, desc):
         return False
+    if is_supply_production_crisis_context(title, desc):
+        return True
 
     managed_count = int(_managed_commodity_match_summary(title, desc).get("count") or 0)
     crop_hits = count_any(
@@ -33359,6 +33874,8 @@ def _is_dist_preferred_gap_story(article: Article) -> bool:
     text = _nfkc_lower(f"{title} {desc}")
     if not text.strip() or any(term.lower() in title_l for term in OPINION_BAN_TERMS):
         return False
+    if is_agri_digital_sales_channel_context(title, desc):
+        return not _postbuild_article_reject_reason(article, "dist", apply_selection_fit=False)
     if is_ai_economic_explainer_tail(title, desc):
         return False
     if is_dist_primary_supply_price_story(title, desc):
@@ -33479,6 +33996,7 @@ def _dist_preferred_gap_rank(article: Article, dist_conf: JsonDict) -> tuple[Any
         fit_sc = 0.0
     managed_count = int(_managed_commodity_match_summary(title, desc).get("count") or 0)
     explicit_online = "온라인 도매시장" in text or "온라인도매시장" in text
+    digital_sales = is_agri_digital_sales_channel_context(title, desc)
     title_export_hits = count_any(
         _nfkc_lower(title),
         [w.lower() for w in ("수출", "선적", "대만", "싱가포르", "공동선별", "공선출하")],
@@ -33503,6 +34021,7 @@ def _dist_preferred_gap_rank(article: Article, dist_conf: JsonDict) -> tuple[Any
     )
     pub_sort = getattr(article, "pub_dt_kst", None) or datetime.min.replace(tzinfo=KST)
     return (
+        1 if digital_sales else 0,
         1 if title_export_hits >= 1 else 0,
         1 if explicit_online else 0,
         min(6, structural_ops_hits),
@@ -33518,6 +34037,8 @@ def _dist_preferred_gap_rank(article: Article, dist_conf: JsonDict) -> tuple[Any
 def _is_dist_structural_ops_gap_story(article: Article) -> bool:
     if not isinstance(article, Article):
         return False
+    if is_dist_structural_market_analysis_context(article.title or "", article.description or ""):
+        return True
     if not _is_dist_preferred_gap_story(article):
         return False
     title = article.title or ""
@@ -33801,6 +34322,7 @@ def _drop_preferred_tail_blocked_items(
 
 _HARD_FINAL_POSTBUILD_REJECT_REASONS = frozenset(
     {
+        "companion_animal_product_promo",
         "non_agri_foodservice_equipment_promo",
         "policy_community_noise",
         "commodity_consumer_storage_tip",
@@ -33808,6 +34330,10 @@ _HARD_FINAL_POSTBUILD_REJECT_REASONS = frozenset(
         "commodity_corporate_stock_context",
         "garbled_article_text",
         "policy_personnel_digest_noise",
+        "policy_schedule_digest_noise",
+        "policy_local_council_multi_issue_digest",
+        "policy_field_production_crisis_without_policy_lead",
+        "dist_local_apc_performance_meeting",
         "policy_non_agri_foodservice_cost_noise",
         "foodservice_product_launch_noise",
         "agri_crime_incident_tail",
@@ -33845,6 +34371,7 @@ _HARD_FINAL_POSTBUILD_REJECT_REASONS = frozenset(
         "pest_diplomacy_not_pest",
         "pest_labor_help_not_pest",
         "pest_no_pest_signal",
+        "pest_weather_only_cultivation_guidance",
         "policy_org_event_not_policy",
         "supply_foodservice_menu_price",
         "supply_reader_role_misfit",
@@ -34428,6 +34955,21 @@ def _demote_soft_news_final_cores(
                 # 후보 풀 내 상대 순위가 낮은 core: 상위 순위 후보가 있을 때만 교체
                 if any(_is_better_core_candidate(b) for b in items):
                     reason = "low_rank_core_swap"
+            if (
+                not reason
+                and sec == "pest"
+                and is_crop_aerial_control_operation_context(article.title or "", article.description or "")
+                and any(
+                    not bool(getattr(candidate, "is_core", False))
+                    and (
+                        is_broad_multi_crop_pest_risk_context(candidate.title or "", candidate.description or "")
+                        or _is_pest_named_crop_disease_warning(candidate)
+                        or _is_pest_multi_disease_field_advisory(candidate)
+                    )
+                    for candidate in items
+                )
+            ):
+                reason = "local_aerial_control_core_swap"
             if not reason:
                 continue
             article.is_core = False
@@ -34458,6 +35000,13 @@ def _demote_soft_news_final_cores(
                         pool,
                         key=lambda a: (
                             1 if sec == "dist" and _is_dist_publish_core_anchor(a) else 0,
+                            4 if sec == "pest" and is_broad_multi_crop_pest_risk_context(a.title or "", a.description or "")
+                            else 3 if sec == "pest" and (
+                                _is_pest_named_crop_disease_warning(a)
+                                or _is_pest_multi_disease_field_advisory(a)
+                            )
+                            else 0 if sec == "pest" and is_crop_aerial_control_operation_context(a.title or "", a.description or "")
+                            else 1,
                             # 교체 트리거 기준(적합도·상대순위 충족 후보)을 우선 — 트리거와 교체 선택의 불일치 방지
                             1 if _is_better_core_candidate(a) else 0,
                             # A source-quality repair must not turn a weak local
@@ -37256,6 +37805,9 @@ def _publish_editorial_event_signature(article: Article) -> tuple[str, ...]:
     title = _publish_editorial_title(article)
     text = _publish_editorial_text(article)
 
+    if is_agri_disaster_recovery_support_context(article.title or "", article.description or ""):
+        return ("national_crop_disaster_recovery_support",)
+
     agri_price_relief = bool(
         any(term in text for term in ("농축산물", "농축수산물", "농산물", "먹거리"))
         and "할인" in text
@@ -37790,6 +38342,7 @@ def _is_publish_supply_editorial_weak(article: Article) -> bool:
             article.title or "", article.description or "", article.domain or "", article.press or "",
         )
         or _is_supply_authoritative_multi_price_context(article.title or "", article.description or "")
+        or is_supply_production_crisis_context(article.title or "", article.description or "")
     ):
         return False
     # A freshly published shipment report with volumes and a concrete market
@@ -38128,7 +38681,7 @@ def _is_pest_named_crop_disease_warning(article: Article) -> bool:
     disease = any(term in title for term in (
         "탄저병", "세균성점무늬병", "과수화상병", "역병", "노균병", "흰가루병",
     ))
-    authority = any(term in text for term in ("농업기술원", "농기원", "검역본부", "연구소"))
+    authority = any(term in text for term in ("농업기술원", "농업기술센터", "농기원", "검역본부", "연구소"))
     action = any(term in text for term in ("주의", "당부", "예방", "방제", "확산", "발생"))
     return bool(crop and disease and authority and action)
 
@@ -38572,6 +39125,12 @@ def _is_publish_dist_editorial_weak(article: Article) -> bool:
         return True
     if _is_dist_reader_filler(article):
         return True
+    if (
+        is_agri_digital_sales_channel_context(article.title or "", article.description or "")
+        and "라이브커머스" in title
+        and not re.search(r"\d+(?:\.\d+)?\s*(?:원|%|건|회|명|톤|t|억원|만원)", text)
+    ):
+        return True
     if _is_dist_joint_selection_export_story(article):
         return False
     if _is_dist_smart_joint_logistics_center_story(article):
@@ -38828,6 +39387,8 @@ def _publish_pest_family_key(article: Article) -> str:
     # actual story focus, so resolve it before falling back to the body.
     if "복합해충" in title or "복합 해충" in title:
         return "complex_pest"
+    if is_root_crop_disease_warning_context(article.title or "", article.description or ""):
+        return "root_crop_disease"
     if "과수화상병" in title or "화상병" in title:
         return "fire_blight"
     if "토마토뿔나방" in title:
@@ -39439,6 +40000,7 @@ def _publish_pest_core_rank(article: Article) -> tuple[Any, ...]:
     locust_outbreak = _is_pest_locust_outbreak_story(article)
     operational_early_warning = _is_pest_operational_early_warning_story(article)
     return (
+        3 if is_broad_multi_crop_pest_risk_context(article.title or "", article.description or "") else 0,
         1 if direct_damage >= 1 or locust_outbreak else 0,
         1 if locust_outbreak else 0,
         1 if operational_early_warning else 0,
@@ -41278,6 +41840,8 @@ def _is_publish_high_confidence_core_candidate(section_key: str, article: Articl
         ) >= 2
         return bool(official_action and score >= 25.0 and fit >= 3.6)
     if section_key == "pest":
+        if is_broad_multi_crop_pest_risk_context(article.title or "", article.description or ""):
+            return True
         if (
             _is_pest_locust_outbreak_story(article)
             or _is_pest_named_crop_disease_warning(article)
@@ -42073,7 +42637,17 @@ def is_foodservice_product_launch_context(title: str, desc: str) -> bool:
 def _is_supply_reader_role_misfit(article: Article) -> bool:
     title = _publish_editorial_title(article)
     text = _publish_editorial_text(article)
+    if is_rural_entertainment_feature_context(article.title or "", article.description or ""):
+        return True
+    if is_supply_opinion_commentary_context(article.title or "", article.description or ""):
+        return True
+    if is_local_lawmaker_agri_demand_context(article.title or "", article.description or ""):
+        return True
+    if is_seed_distribution_application_notice_context(article.title or "", article.description or ""):
+        return True
     if is_foodservice_product_launch_context(article.title or "", article.description or ""):
+        return True
+    if is_companion_animal_product_promo_context(article.title or "", article.description or ""):
         return True
     if is_non_agri_foodservice_cost_context(article.title or "", article.description or ""):
         return True
@@ -42123,8 +42697,8 @@ def _is_supply_reader_role_misfit(article: Article) -> bool:
         return True
     if (
         "경실련" in text
-        and any(term in text for term in ("성명", "촉구", "대책 마련"))
-        and any(term in text for term in ("농산물 가격 폭락", "농산물값 폭락"))
+        and any(term in text for term in ("성명", "촉구", "대책 마련", "정책 전환", "제도 개혁"))
+        and any(term in text for term in ("농산물 가격", "농산물값", "가격 안정", "가격정책"))
     ):
         return True
     if (
@@ -42226,7 +42800,8 @@ def _is_cross_day_supply_candidate(article: Article) -> bool:
     authoritative_multi_price = _is_supply_authoritative_multi_price_context(
         article.title or "", article.description or "",
     )
-    if _is_supply_reader_role_misfit(article) and not (direct_field_collapse or authoritative_multi_price):
+    production_crisis = is_supply_production_crisis_context(article.title or "", article.description or "")
+    if _is_supply_reader_role_misfit(article) and not (direct_field_collapse or authoritative_multi_price or production_crisis):
         return False
     if _postbuild_article_reject_reason(article, "supply", apply_selection_fit=False):
         return False
@@ -42255,6 +42830,7 @@ def _is_cross_day_supply_candidate(article: Article) -> bool:
     return bool(
         direct_field_collapse
         or authoritative_multi_price
+        or production_crisis
         or quantified_crop_shipment
         or ((managed >= 1 or broad_horti) and market >= 1 and (quantified or market >= 2))
     )
@@ -42263,6 +42839,7 @@ def _is_cross_day_supply_candidate(article: Article) -> bool:
 def _cross_day_supply_rank(article: Article) -> tuple[Any, ...]:
     title = _publish_editorial_title(article)
     return (
+        5 if is_supply_production_crisis_context(article.title or "", article.description or "") else 0,
         4 if any(term in title for term in ("농업관측", "가격 전망", "하락 전망", "재배면적")) else 0,
         3 if any(term in title for term in ("폭락", "산지폐기", "갈아엎", "벼랑 끝")) else 0,
         1 if any(term in title for term in ("본격 출하", "첫 출하", "초출하")) and re.search(r"\d", _publish_editorial_text(article)) else 0,
@@ -42276,6 +42853,12 @@ def _cross_day_supply_rank(article: Article) -> tuple[Any, ...]:
 def _is_policy_reader_filler(article: Article) -> bool:
     title = _publish_editorial_title(article)
     text = _publish_editorial_text(article)
+    if is_generic_policy_schedule_context(article.title or "", article.description or ""):
+        return True
+    if is_local_council_multi_issue_digest_context(article.title or "", article.description or ""):
+        return True
+    if is_supply_production_crisis_context(article.title or "", article.description or ""):
+        return True
     if is_generic_personnel_digest_context(article.title or "", article.description or ""):
         return True
     if is_non_agri_foodservice_cost_context(article.title or "", article.description or ""):
@@ -42389,6 +42972,8 @@ def _is_policy_reader_filler(article: Article) -> bool:
 def _policy_issue_family(article: Article) -> str:
     title = _publish_editorial_title(article)
     text = _publish_editorial_text(article)
+    if is_agri_land_pension_policy_context(article.title or "", article.description or ""):
+        return "agri_land_pension_access"
     if is_krei_vulnerable_food_price_analysis(article.title or "", article.description or ""):
         return "krei_vulnerable_food_price"
     if is_national_agri_price_relief_package(article.title or "", article.description or ""):
@@ -42423,6 +43008,8 @@ def _policy_issue_family(article: Article) -> str:
         ):
             return "producer_cost_government_response"
         return "producer_cost_crisis"
+    if is_agri_trade_opening_policy_context(article.title or "", article.description or ""):
+        return "agri_trade_opening"
     if (
         "경실련" in text
         and any(term in text for term in ("농산물 가격 폭락", "농산물값 폭락", "가격 폭락 대책"))
@@ -42446,6 +43033,8 @@ def _is_cross_day_policy_candidate(article: Article) -> bool:
         return False
     title = _publish_editorial_title(article)
     text = _publish_editorial_text(article)
+    if is_agri_land_pension_policy_context(article.title or "", article.description or ""):
+        return True
     agri = count_any(
         text,
         [w.lower() for w in (
@@ -42482,6 +43071,8 @@ def _cross_day_policy_rank(article: Article) -> tuple[Any, ...]:
     title = _publish_editorial_title(article)
     text = _publish_editorial_text(article)
     return (
+        10 if is_agri_trade_opening_policy_context(article.title or "", article.description or "") else 0,
+        9 if is_agri_land_pension_policy_context(article.title or "", article.description or "") else 0,
         9 if is_national_agri_price_relief_package(article.title or "", article.description or "") else 0,
         8 if is_national_food_price_policy_story(article.title or "", article.description or "") else 0,
         7 if is_krei_vulnerable_food_price_analysis(article.title or "", article.description or "") else 0,
@@ -42597,6 +43188,10 @@ def _is_dist_direct_joint_selection_ops(article: Article) -> bool:
 def _is_dist_reader_filler(article: Article) -> bool:
     title = _publish_editorial_title(article)
     text = _publish_editorial_text(article)
+    if is_historical_agri_org_series_context(article.title or "", article.description or ""):
+        return True
+    if is_local_apc_performance_meeting_context(article.title or "", article.description or ""):
+        return True
     if _is_dist_food_safety_check_without_market_ops(article):
         return True
     if _is_dist_logistics_disruption_story(article):
@@ -42717,6 +43312,10 @@ def _is_dist_reader_filler(article: Article) -> bool:
 def _dist_issue_family(article: Article) -> str:
     title = _publish_editorial_title(article)
     text = _publish_editorial_text(article)
+    if is_dist_structural_market_analysis_context(article.title or "", article.description or ""):
+        return "wholesale_market_structure_analysis"
+    if is_agri_digital_sales_channel_context(article.title or "", article.description or ""):
+        return "agri_digital_sales_channel"
     if (
         any(term in text for term in ("가락시장", "도매시장"))
         and any(term in text for term in ("현장컨설팅", "현장 컨설팅", "유통역량 강화", "출하전략"))
@@ -42747,7 +43346,13 @@ def _dist_issue_family(article: Article) -> str:
 
 
 def _is_cross_day_dist_candidate(article: Article) -> bool:
-    if not isinstance(article, Article) or _is_dist_reader_filler(article):
+    if not isinstance(article, Article):
+        return False
+    market_schedule = is_dist_wholesale_market_schedule_context(
+        article.title or "",
+        article.description or "",
+    )
+    if _is_dist_reader_filler(article) and not market_schedule:
         return False
     if (
         _postbuild_article_reject_reason(article, "dist", apply_selection_fit=False)
@@ -42756,6 +43361,10 @@ def _is_cross_day_dist_candidate(article: Article) -> bool:
         return False
     title = _publish_editorial_title(article)
     text = _publish_editorial_text(article)
+    if is_agri_digital_sales_channel_context(article.title or "", article.description or ""):
+        return True
+    if market_schedule:
+        return True
     export_access = bool(
         any(term in title for term in ("수출길", "시장 진출", "전 품종 수출", "검역 장벽", "수출 확대"))
         and count_any(text, [w.lower() for w in ("배", "포도", "참외", "토마토", "농산물", "과일")]) >= 1
@@ -42777,7 +43386,8 @@ def _is_cross_day_dist_candidate(article: Article) -> bool:
         [w.lower() for w in ("출하", "선별", "경매", "물류", "수출", "운송", "반입", "운영", "거래")],
     )
     return (
-        export_access
+        is_dist_structural_market_analysis_context(article.title or "", article.description or "")
+        or export_access
         or digital_quarantine_ops
         or _is_dist_direct_joint_selection_ops(article)
         or (operations >= 1 and concrete >= 2)
@@ -42788,6 +43398,9 @@ def _cross_day_dist_rank(article: Article) -> tuple[Any, ...]:
     title = _publish_editorial_title(article)
     text = _publish_editorial_text(article)
     return (
+        7 if is_dist_structural_market_analysis_context(article.title or "", article.description or "") else 0,
+        6 if is_dist_wholesale_market_schedule_context(article.title or "", article.description or "") else 0,
+        2 if is_agri_digital_sales_channel_context(article.title or "", article.description or "") else 0,
         6 if any(term in title for term in ("수출길", "시장 진출", "전 품종 수출", "검역 장벽")) else 0,
         5 if _is_dist_direct_joint_selection_ops(article) or any(
             term in title for term in ("apc", "공동선별", "분산출하", "거점물류센터", "물류허브")
@@ -42902,6 +43515,8 @@ def _same_local_pest_event(left: Article, right: Article) -> bool:
 def _is_cross_day_pest_candidate(article: Article) -> bool:
     if not isinstance(article, Article) or _is_pest_vendor_product_promo(article):
         return False
+    if is_crop_aerial_control_operation_context(article.title or "", article.description or ""):
+        return True
     if _postbuild_article_reject_reason(article, "pest", apply_selection_fit=False):
         return False
     public_guidance = is_quantified_public_crop_disease_guidance(
@@ -42911,6 +43526,8 @@ def _is_cross_day_pest_candidate(article: Article) -> bool:
         return False
     title = _publish_editorial_title(article)
     text = _publish_editorial_text(article)
+    if is_root_crop_disease_warning_context(article.title or "", article.description or ""):
+        return True
     named = _has_named_pest_signal(title) or count_any(title, [w.lower() for w in _PEST_NAMED_DISEASE_TERMS]) >= 1
     crop = best_horti_score(article.title or "", article.description or "") >= 1.2 or count_any(
         text,
@@ -43109,6 +43726,7 @@ def _repair_final_reader_quality_floor(
             explicit_market_issue = bool(
                 _is_high_value_policy_market_opinion_tail(candidate)
                 or _is_policy_stakeholder_market_demand_story(candidate)
+                or is_agri_trade_opening_policy_context(candidate.title or "", candidate.description or "")
             )
             normal_candidate = _is_publish_editorial_candidate("policy", candidate)
             if not explicit_market_issue and not normal_candidate:
@@ -43127,7 +43745,8 @@ def _repair_final_reader_quality_floor(
             policy_candidates.append(candidate)
     policy_candidates.sort(
         key=lambda article: (
-            4 if _is_high_value_policy_market_opinion_tail(article)
+            5 if is_agri_trade_opening_policy_context(article.title or "", article.description or "")
+            else 4 if _is_high_value_policy_market_opinion_tail(article)
             else 3 if _is_policy_stakeholder_market_demand_story(article)
             else 2 if _is_policy_domestic_production_import_response_story(article)
             else 1,
@@ -43158,6 +43777,7 @@ def _repair_final_reader_quality_floor(
         if not (
             _is_high_value_policy_market_opinion_tail(candidate)
             or _is_policy_stakeholder_market_demand_story(candidate)
+            or is_agri_trade_opening_policy_context(candidate.title or "", candidate.description or "")
         ):
             continue
         victim_indexes = [
@@ -43301,6 +43921,12 @@ def _repair_final_reader_quality_floor(
         if _postbuild_article_reject_reason(article, section_key, apply_selection_fit=False):
             return True
         if section_key == "policy":
+            if (
+                _is_high_value_policy_market_opinion_tail(article)
+                or _is_policy_stakeholder_market_demand_story(article)
+                or is_agri_trade_opening_policy_context(article.title or "", article.description or "")
+            ):
+                return False
             return _is_policy_reader_filler(article)
         if section_key == "dist":
             return _is_dist_reader_filler(article)

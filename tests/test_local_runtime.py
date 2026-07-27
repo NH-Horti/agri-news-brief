@@ -6031,6 +6031,52 @@ class LocalRuntimeTests(TestCase):
         self.assertEqual(cache[article.norm_key]["s"], refreshed)
         self.assertEqual(main._summary_quality_block_reason(article, refreshed), "")
 
+    def test_summary_generation_retries_an_omitted_batch_row(self) -> None:
+        article = self._make_article(
+            section="supply",
+            title="강원 감자 흉작에 공급 부족 우려",
+            description=(
+                "강원 감자 재배지에서 결주와 생육 부진이 겹쳐 생산량 감소가 예상된다. "
+                "산지에서는 보급종 품질 점검과 다음 작기 씨감자 확보를 요구하고 있다."
+            ),
+            link="https://example.com/potato-summary-retry",
+            topic="감자",
+        )
+        refreshed = (
+            "강원 감자 재배지에서 결주와 생육 부진이 겹치며 생산량 감소 우려가 커졌다. "
+            "농가는 보급종 품질 점검과 다음 작기 씨감자 물량의 조기 확보를 요구하고 있다."
+        )
+        with (
+            patch.object(main, "OPENAI_API_KEY", "test-key"),
+            patch.object(
+                main,
+                "_openai_summarize_rows",
+                side_effect=[{}, {article.norm_key: refreshed}],
+            ) as summarize,
+        ):
+            mapping = main.openai_summarize_batch([article], cache={})
+
+        self.assertEqual(summarize.call_count, 2)
+        self.assertEqual(mapping[article.norm_key], refreshed)
+
+    def test_one_sentence_summary_is_expanded_from_body_context(self) -> None:
+        article = self._make_article(
+            section="supply",
+            title="고랭지 무 가격 폭락에 산지 폐기 확산",
+            description=(
+                "강원 고랭지 무 산지가격이 생산비 아래로 떨어져 밭 폐기가 늘고 있다. "
+                "농가는 저장시설 확충과 출하 조절 대책이 필요하다고 호소했다."
+            ),
+            link="https://example.com/radish-summary-expand",
+            topic="무",
+        )
+        one_sentence = "강원 고랭지 무 산지가격이 생산비 아래로 떨어지면서 농가의 밭 폐기와 경영 부담이 빠르게 늘고 있다."
+
+        normalized = main._normalize_article_summary(article, one_sentence)
+
+        self.assertGreaterEqual(normalized.count("다."), 2)
+        self.assertEqual(main._summary_quality_block_reason(article, normalized), "")
+
     def test_dist_miryang_logistics_center_variants_are_duplicate_story(self) -> None:
         first = self._make_article(
             section="dist",
@@ -7028,3 +7074,378 @@ class LocalRuntimeTests(TestCase):
         self.assertTrue(any("저장기간 8주" in article.title for article in final_by_section["supply"]))
         self.assertFalse(any("CA 저장 마늘쫑" in article.title for article in final_by_section["supply"]))
         self.assertFalse(any("본격 출하" in article.title for article in final_by_section["supply"]))
+
+    def test_companion_animal_product_promo_is_hard_rejected(self) -> None:
+        promo = self._make_article(
+            section="supply",
+            title="동원F&B, 반려견용 밥꾸 간식 16종 출시",
+            description=(
+                "반려동물 전문 브랜드가 다이소에서 과일칩과 원물트릿을 판매한다. "
+                "사료 위에 급여하는 신제품으로 기호성을 높였다고 소개했다."
+            ),
+            link="https://example.com/pet-snack-launch",
+        )
+        self.assertTrue(main.is_companion_animal_product_promo_context(promo.title, promo.description))
+        self.assertEqual(
+            main._postbuild_article_reject_reason(promo, "supply", apply_selection_fit=False),
+            "companion_animal_product_promo",
+        )
+        self.assertTrue(main._is_hard_final_postbuild_reject_reason("companion_animal_product_promo"))
+
+        farm_contract = self._make_article(
+            section="supply",
+            title="반려동물 사료 원물, 지역 농가와 계약재배 1000톤 조달",
+            description="재배 농가의 농산물 공급계약으로 원물 조달량 1000톤과 농가 수취가격을 보장한다.",
+            link="https://example.com/pet-food-farm-contract",
+        )
+        self.assertFalse(
+            main.is_companion_animal_product_promo_context(farm_contract.title, farm_contract.description)
+        )
+
+    def test_editorial_role_guards_restore_daily_priority_candidates(self) -> None:
+        potato = self._make_article(
+            section="supply",
+            title="결주에 흉작까지…강원 감자 농가의 눈물",
+            description="씨감자 품질 저하와 공급량 부족으로 결주가 늘고 재배 농가의 수확량이 감소했다.",
+            link="https://example.com/potato-crop-failure",
+        )
+        self.assertTrue(main.is_supply_production_crisis_context(potato.title, potato.description))
+        self.assertTrue(main._is_cross_day_supply_candidate(potato))
+        self.assertTrue(main._is_supply_field_support_gap_story(potato))
+
+        schedule = self._make_article(
+            section="policy",
+            title="[정부 주요 일정] 경제·사회부처 주간 일정 (7월 27일~31일)",
+            description="27일(월) 08:00 회의, 28일(화) 10:00 브리핑, 29일(수) 14:00 간담회가 열린다.",
+            link="https://example.com/government-weekly-schedule",
+        )
+        self.assertTrue(main.is_generic_policy_schedule_context(schedule.title, schedule.description))
+        self.assertTrue(main._is_policy_reader_filler(schedule))
+
+        trade = self._make_article(
+            section="policy",
+            title='CPTPP 가입론 다시 수면 위로…농업계 "시장개방 우려"',
+            description=(
+                "정부가 CPTPP 가입 영향을 검토하자 농업계는 사과·복숭아 등 민감 품목의 관세와 "
+                "검역 협상, 수입 확대에 따른 농가 피해를 우려했다."
+            ),
+            link="https://example.com/cptpp-agri-opening",
+        )
+        self.assertTrue(main.is_agri_trade_opening_policy_context(trade.title, trade.description))
+        self.assertTrue(main._is_cross_day_policy_candidate(trade))
+        self.assertTrue(main._is_policy_preferred_gap_story(trade))
+
+    def test_online_wholesale_structure_analysis_is_distribution_candidate(self) -> None:
+        analysis = self._make_article(
+            section="dist",
+            title="몸집만 불어난 온라인도매시장…유통단계 단축효과 미지수",
+            description=(
+                "농산물 온라인도매시장의 거래액은 늘었지만 산지 직배송과 유통 단계 단축 성과는 "
+                "확인되지 않아 물류 효율과 거래 구조의 한계를 검증했다."
+            ),
+            link="https://example.com/online-wholesale-analysis",
+        )
+        self.assertTrue(main.is_dist_structural_market_analysis_context(analysis.title, analysis.description))
+        self.assertFalse(main.is_low_value_local_political_context(analysis.title, analysis.description))
+        self.assertEqual(main._postbuild_article_reject_reason(analysis, "dist", apply_selection_fit=False), "")
+        self.assertTrue(main._is_dist_preferred_gap_story(analysis))
+        self.assertTrue(main._is_cross_day_dist_candidate(analysis))
+
+    def test_summary_deduper_removes_contained_replay_fragments(self) -> None:
+        first = "올해 상반기 경남 농식품 수출액이 역대 최대 실적을 기록했다."
+        duplicated = f"{first} 8억5200만달러로 집계됐으며 {first}"
+        cleaned = main._sanitize_summary_text(duplicated)
+        self.assertEqual(cleaned.count("역대 최대 실적을 기록했다"), 1)
+        self.assertEqual(cleaned, first)
+
+        guidance = (
+            "농촌진흥청이 고랭지 감자 재배관리 요령을 제시하며 농가의 철저한 관리를 당부했다. "
+            "배관리 요령을 제시하며 농가의 철저한 관리를 당부했다."
+        )
+        cleaned_guidance = main._sanitize_summary_text(guidance)
+        self.assertEqual(cleaned_guidance.count("철저한 관리를 당부했다"), 1)
+
+    def test_policy_digest_and_disaster_duplicate_guards(self) -> None:
+        council_digest = self._make_article(
+            section="policy",
+            title="충북도의회 5분발언 이어져…공사 이전·관광재단·농가대책 등 현안 제기",
+            description=(
+                "공군사관학교 이전 논란과 관광재단 설립, 아동 성범죄 대응, "
+                "도립 대표 도서관 입지, 농산물 가격 폭락 대책이 함께 다뤄졌다."
+            ),
+            link="https://example.com/local-council-digest",
+        )
+        self.assertTrue(
+            main.is_local_council_multi_issue_digest_context(
+                council_digest.title,
+                council_digest.description,
+            )
+        )
+        self.assertEqual(
+            main._postbuild_article_reject_reason(
+                council_digest,
+                "policy",
+                apply_selection_fit=False,
+            ),
+            "policy_local_council_multi_issue_digest",
+        )
+
+        first = self._make_article(
+            section="policy",
+            title="냉해·폭염·우박 덮친 농촌…농식품부, 384억 긴급 복구 지원",
+            description=(
+                "농식품부가 저온과 우박 등 농작물 피해 농가에 재해복구비 "
+                "384억원을 긴급 지원한다."
+            ),
+            link="https://example.com/disaster-recovery-one",
+        )
+        second = self._make_article(
+            section="policy",
+            title="농식품부, 저온·우박 피해 농가 2만여곳에 복구비 384억원 지원",
+            description=(
+                "냉해와 우박으로 피해를 본 농가 2만여 곳에 정부가 복구비 "
+                "384억원을 지원한다."
+            ),
+            link="https://example.com/disaster-recovery-two",
+        )
+        expected_signature = ("national_crop_disaster_recovery_support",)
+        self.assertEqual(main._publish_editorial_event_signature(first), expected_signature)
+        self.assertEqual(main._publish_editorial_event_signature(second), expected_signature)
+        self.assertTrue(main._publish_editorial_duplicate_story("policy", first, second))
+
+    def test_editorial_acceptance_gap_guards(self) -> None:
+        field_prices = self._make_article(
+            section="policy",
+            title="생산비 ‘급등’ 가격 ‘급락’…농민 2중고",
+            description=(
+                "강원 오이와 토마토 농가는 생산비 상승에도 출하가격이 급락해 "
+                "생산을 이어가기 어렵다고 호소했다."
+            ),
+            link="https://example.com/field-price-crisis",
+        )
+        self.assertTrue(main.is_supply_production_crisis_context(field_prices.title, field_prices.description))
+        self.assertEqual(
+            main._postbuild_article_reject_reason(field_prices, "policy", apply_selection_fit=False),
+            "policy_field_production_crisis_without_policy_lead",
+        )
+
+        land_pension = self._make_article(
+            section="supply",
+            title="제구실 못하는 ‘농지연금’…도시민은 재테크, 고령농은 줄줄이 대기",
+            description=(
+                "농지연금 예산 부족으로 고령농 가입 대기가 늘어난 반면 도시민의 "
+                "농지 재테크 수단으로 악용돼 제도 개선이 필요하다는 지적이다."
+            ),
+            link="https://example.com/farmland-pension",
+        )
+        self.assertTrue(main.is_agri_land_pension_policy_context(land_pension.title, land_pension.description))
+        self.assertTrue(main._is_policy_preferred_gap_story(land_pension))
+        self.assertTrue(main._is_cross_day_policy_candidate(land_pension))
+
+        live_sales = self._make_article(
+            section="dist",
+            title="농협 유통, 라이브커머스 온라인 판매 강화",
+            description=(
+                "농협이 농산물 온라인 판로 확대를 위해 라이브커머스 판매를 강화하고 "
+                "산지 농가의 디지털 유통 채널을 넓힌다."
+            ),
+            link="https://example.com/agri-live-commerce",
+        )
+        self.assertTrue(main.is_agri_digital_sales_channel_context(live_sales.title, live_sales.description))
+        self.assertTrue(main._is_dist_preferred_gap_story(live_sales))
+        self.assertTrue(main._is_cross_day_dist_candidate(live_sales))
+
+        market_holiday = self._make_article(
+            section="dist",
+            title="인천 남촌농산물 도매시장, 26~27일 하계 휴업",
+            description="남촌농산물도매시장이 7월 26일부터 27일까지 경매를 쉬고 28일 운영을 재개한다.",
+            link="https://example.com/wholesale-market-holiday",
+        )
+        self.assertTrue(
+            main.is_dist_wholesale_market_schedule_context(
+                market_holiday.title,
+                market_holiday.description,
+            )
+        )
+        self.assertEqual(
+            main._postbuild_article_reject_reason(market_holiday, "dist", apply_selection_fit=False),
+            "",
+        )
+        self.assertTrue(main._is_cross_day_dist_candidate(market_holiday))
+        self.assertGreater(main._cross_day_dist_rank(market_holiday), main._cross_day_dist_rank(live_sales))
+
+        local_review = self._make_article(
+            section="dist",
+            title="경북 고령군, 2026년 APC 딸기 공선출하회 사업평가회 개최",
+            description="고령군 산지유통센터에서 딸기 공선출하회 사업 실적을 공유하는 평가회를 열었다.",
+            link="https://example.com/local-apc-review",
+        )
+        self.assertTrue(main.is_local_apc_performance_meeting_context(local_review.title, local_review.description))
+        self.assertEqual(
+            main._postbuild_article_reject_reason(local_review, "dist", apply_selection_fit=False),
+            "dist_local_apc_performance_meeting",
+        )
+
+        broad_pest = self._make_article(
+            section="pest",
+            title="잎도열병·열매터짐·돌발해충…폭염에 농작물 생육관리 비상",
+            description=(
+                "전국 벼 잎도열병과 과수 열매터짐, 포도 탄저병과 돌발해충 위험이 커져 "
+                "농진청이 예찰과 적기 방제를 당부했다."
+            ),
+            link="https://example.com/broad-pest-risk",
+        )
+        self.assertTrue(main.is_broad_multi_crop_pest_risk_context(broad_pest.title, broad_pest.description))
+        self.assertTrue(main._is_publish_high_confidence_core_candidate("pest", broad_pest))
+
+        aerial_control = self._make_article(
+            section="pest",
+            title="평택농협, 벼 항공방제 위해 무인헬기 띄운다",
+            description="평택농협이 300여 농가의 벼 공동방제를 위해 무인헬기를 투입해 항공방제를 실시한다.",
+            link="https://example.com/local-aerial-control",
+        )
+        disease_warning = self._make_article(
+            section="pest",
+            title='고온다습한 날씨에 고추 탄저병 확산 우려…보은군 "예방이 최선"',
+            description="보은군 농업기술센터가 장마 뒤 고추 탄저병 확산 위험을 경고하고 적기 방제를 당부했다.",
+            link="https://example.com/pepper-disease-warning",
+        )
+        broad_pest.is_core = True
+        aerial_control.is_core = True
+        disease_warning.is_core = False
+        core_sections = {
+            "supply": [],
+            "policy": [],
+            "dist": [],
+            "pest": [broad_pest, aerial_control, disease_warning],
+        }
+        main._demote_soft_news_final_cores(core_sections, {"pest": list(core_sections["pest"])})
+        self.assertFalse(aerial_control.is_core)
+        self.assertTrue(disease_warning.is_core)
+
+        opinion = self._make_article(
+            section="supply",
+            title="[독자기고] 제주 월동채소의 새로운 도전",
+            description="월동채소 수급 예측과 종자 유통량 조사의 중요성을 제안하는 독자 기고문이다.",
+            link="https://example.com/supply-opinion",
+        )
+        self.assertTrue(main.is_supply_opinion_commentary_context(opinion.title, opinion.description))
+        self.assertTrue(main._is_supply_reader_role_misfit(opinion))
+
+        civic_statement = self._make_article(
+            section="supply",
+            title='경실련 "농산물값 오르면 수입·내리면 방치"…정부 가격 정책 전환 촉구',
+            description="경실련이 농산물 가격 안정은 수입 의존이 아닌 제도 개혁으로 풀어야 한다고 성명을 냈다.",
+            link="https://example.com/civic-price-statement",
+        )
+        self.assertTrue(main._is_supply_reader_role_misfit(civic_statement))
+
+        cultivation = self._make_article(
+            section="pest",
+            title="농진청, 고온기 감자 재배관리 요령 제시",
+            description=(
+                "폭염과 가뭄에 따른 고랭지 감자 품질 저하를 막기 위해 적기 물주기와 "
+                "물길 정비, 토양 수분 유지 요령을 안내했다."
+            ),
+            link="https://example.com/hot-weather-potato-guidance",
+        )
+        self.assertTrue(
+            main.is_weather_only_crop_cultivation_guidance_context(
+                cultivation.title,
+                cultivation.description,
+            )
+        )
+        self.assertEqual(
+            main._postbuild_article_reject_reason(cultivation, "pest", apply_selection_fit=False),
+            "pest_weather_only_cultivation_guidance",
+        )
+
+        local_demand = self._make_article(
+            section="supply",
+            title="송미애 충북도의원, 농산물 가격 폭락 충북도 차원 대책 마련 촉구",
+            description="도의회 5분 자유발언에서 가격 폭락 대책을 요구했으나 확정된 지원책은 없었다.",
+            link="https://example.com/local-lawmaker-demand",
+        )
+        self.assertTrue(main.is_local_lawmaker_agri_demand_context(local_demand.title, local_demand.description))
+        self.assertTrue(main._is_supply_reader_role_misfit(local_demand))
+
+        root_crop_disease = self._make_article(
+            section="pest",
+            title="폭염·집중호우로 마 병해 확산 우려…경북농업기술원 적기 방제 당부",
+            description=(
+                "경북농업기술원은 참마 재배지의 병 발생을 예찰하고 등록 약제로 "
+                "적기 방제해 피해 확산을 막아야 한다고 안내했다."
+            ),
+            link="https://example.com/yam-disease-warning",
+        )
+        self.assertTrue(
+            main.is_root_crop_disease_warning_context(
+                root_crop_disease.title,
+                root_crop_disease.description,
+            )
+        )
+        self.assertTrue(main._is_cross_day_pest_candidate(root_crop_disease))
+        self.assertEqual(main._publish_pest_family_key(root_crop_disease), "root_crop_disease")
+
+        self.assertEqual(
+            main._sanitize_summary_text("농협이 온라인 판매를 강화한다. 산지 판로를 확대한다. 0.0.0."),
+            "농협이 온라인 판매를 강화한다. 산지 판로를 확대한다.",
+        )
+
+        seed_notice = self._make_article(
+            section="supply",
+            title="사천시, 2026년산 보급종 씨감자 추기 공급분 신청·접수",
+            description="수미·조풍·두백 보급종을 읍면 행정복지센터에서 신청받는다.",
+            link="https://example.com/seed-application-notice",
+        )
+        self.assertTrue(
+            main.is_seed_distribution_application_notice_context(
+                seed_notice.title,
+                seed_notice.description,
+            )
+        )
+        self.assertTrue(main._is_supply_reader_role_misfit(seed_notice))
+
+        history = self._make_article(
+            section="dist",
+            title="[농협 60년사] (115) 농산물 공판사업",
+            description="종합농협 창립 전부터 이어진 공판사업의 역사와 발자취를 소개한다.",
+            link="https://example.com/agri-org-history",
+        )
+        self.assertTrue(main.is_historical_agri_org_series_context(history.title, history.description))
+        self.assertTrue(main._is_dist_reader_filler(history))
+
+        aerial_control = self._make_article(
+            section="pest",
+            title="평택농협, 벼 항공방제 위해 무인헬기 띄운다",
+            description="벼 병해충 피해 예방을 위해 무인헬기를 투입해 항공방제를 실시한다.",
+            link="https://example.com/rice-aerial-control",
+        )
+        self.assertTrue(
+            main.is_crop_aerial_control_operation_context(
+                aerial_control.title,
+                aerial_control.description,
+            )
+        )
+        self.assertTrue(main._is_cross_day_pest_candidate(aerial_control))
+
+        self.assertEqual(
+            main._sanitize_summary_text(
+                "과일 시세가 엇갈렸다. 자두는 강세, 거봉은 약세다. 관심이 집중된다."
+            ),
+            "과일 시세가 엇갈렸다. 자두는 강세, 거봉은 약세다.",
+        )
+
+        entertainment = self._make_article(
+            section="supply",
+            title="샤인머스캣 농가부터 복숭아밭까지…미스김, 옥천 석화마을서 마음을 전해",
+            description="KBS 6시 내고향에 가수 미스김이 출연해 주민들과 호흡하며 따뜻한 위로를 전했다.",
+            link="https://example.com/rural-entertainment",
+        )
+        self.assertTrue(
+            main.is_rural_entertainment_feature_context(
+                entertainment.title,
+                entertainment.description,
+            )
+        )
+        self.assertTrue(main._is_supply_reader_role_misfit(entertainment))
