@@ -1,27 +1,27 @@
 {
-  "report_date": "2026-07-27",
-  "generated_at_kst": "2026-07-27T14:46:08+09:00",
+  "report_date": "2026-07-28",
+  "generated_at_kst": "2026-07-28T06:19:41+09:00",
   "scores": {
-    "section_alignment": 97.19,
-    "core_quality": 92.2,
+    "section_alignment": 100.0,
+    "core_quality": 89.08,
     "commodity_board_quality": 98.14
   },
   "metrics": {
     "section_alignment_low_fit_rate": 0.0,
-    "section_alignment_cross_gap_rate": 0.05,
+    "section_alignment_cross_gap_rate": 0.0,
     "content_false_positive_rate": 0.0,
     "reader_hard_issue_count": 0,
     "reader_hard_issue_rate": 0.0,
-    "reader_quality_penalty": 0.0,
+    "reader_quality_penalty": 13.77,
     "reader_quality_cap": 100.0,
     "weak_core_rate": 0.125,
     "policy_wrong_section_rate": 0.0,
-    "promotional_filler_rate": 0.0,
-    "promotional_core_rate": 0.0,
-    "weak_core_editorial_rate": 0.0,
+    "promotional_filler_rate": 0.25,
+    "promotional_core_rate": 0.375,
+    "weak_core_editorial_rate": 0.375,
     "pest_theme_duplicate_rate": 0.0,
-    "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 0.0,
+    "dist_weak_ops_rate": 0.05,
+    "editorial_quality_penalty": 7.65,
     "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0,
@@ -29,17 +29,17 @@
     "commodity_primary_title_issue_signal_rate": 0.8333,
     "commodity_primary_strict_link_rate": 0.8333,
     "commodity_primary_low_rank_rate": 0.0,
-    "commodity_primary_count": 6,
-    "commodity_active_today_total": 10,
-    "commodity_active_today_unlinked_total": 4,
-    "commodity_managed_unlinked_total": 27,
+    "commodity_primary_count": 12,
+    "commodity_active_today_total": 15,
+    "commodity_active_today_unlinked_total": 3,
+    "commodity_managed_unlinked_total": 21,
     "commodity_board_daily_min_primary_count": 6,
     "commodity_board_low_coverage": false,
-    "commodity_board_coverage_rate": 0.1818,
+    "commodity_board_coverage_rate": 0.3636,
     "commodity_primary_title_item_missing_rate": 0.0,
     "commodity_primary_body_only_rate": 0.0,
     "commodity_primary_false_link_rate": 0.0,
-    "commodity_pool_count": 13,
+    "commodity_pool_count": 5,
     "commodity_pool_false_link_rate": 0.0,
     "commodity_primary_dominant_section_rate": 0.5
   },
@@ -79,29 +79,76 @@
     "commodity_strict_primary_only": true,
     "commodity_disable_primary_fallback": true
   },
-  "editorial_quality_samples": [],
+  "editorial_quality_samples": [
+    {
+      "title": "복날에 지갑 열자 '정부 30% 할인'으로 삼계탕 물가 방어하는 법",
+      "href": "https://www.korea.kr/news/reporterView.do?newsId=148968804&call_from=naver_news",
+      "section": "policy",
+      "is_core": true,
+      "reasons": [
+        "promotional_or_event_filler"
+      ]
+    },
+    {
+      "title": "농협 개혁 2라운드…與 “중앙회장 상임화 추진”",
+      "href": "https://www.sedaily.com/article/20072481",
+      "section": "policy",
+      "is_core": false,
+      "reasons": [
+        "promotional_or_event_filler"
+      ]
+    },
+    {
+      "title": "충북농협, 영동농협 APC 찾아 포도 출하 준비·안전관리 점검",
+      "href": "https://www.nongmin.com/article/20260727500152",
+      "section": "dist",
+      "is_core": true,
+      "reasons": [
+        "promotional_or_event_filler"
+      ]
+    },
+    {
+      "title": "온라인도매시장 전수조사…위법거래 없지만 촘촘한 모니터링 위해 제도...",
+      "href": "https://www.aflnews.co.kr/news/articleView.html?idxno=325224",
+      "section": "dist",
+      "is_core": true,
+      "reasons": [
+        "promotional_or_event_filler"
+      ]
+    },
+    {
+      "title": "수원지구원예 농협 ·평택원예 농협 ·평택시로컬푸드재단, 공공급식 농산물...",
+      "href": "https://www.nongmin.com/article/20260727500352",
+      "section": "dist",
+      "is_core": false,
+      "reasons": [
+        "promotional_or_event_filler",
+        "dist_event_or_development_without_ops"
+      ]
+    }
+  ],
   "reader_hard_issue_samples": [],
   "editorial": {
-    "score": 84.8,
-    "model_reported_score": 85.2,
+    "score": 70.8,
+    "model_reported_score": 70.8,
     "score_method": "weighted_components_v1",
-    "quality_tier": "needs_iteration",
+    "quality_tier": "needs_major_iteration",
     "target_score": 88.0,
-    "target_status": "needs_iteration",
+    "target_status": "needs_major_iteration",
     "acceptance_gate": {
-      "status": "needs_iteration",
+      "status": "needs_major_iteration",
       "passed": false,
       "target_score": 88.0,
       "excellent_score": 92.0,
       "stretch_score": 95.0,
       "blocking_issue_count": 0,
-      "major_issue_count": 0,
+      "major_issue_count": 2,
       "critical_component_min": 85.0,
       "all_component_min": 80.0,
       "checks": {
         "editorial_score_min": false,
         "no_blocking_issues": true,
-        "no_major_issues": true,
+        "no_major_issues": false,
         "critical_components_min": false,
         "all_components_min": false,
         "operational_score_min": false,
@@ -111,6 +158,7 @@
       },
       "failure_reasons": [
         "editorial_score_min",
+        "no_major_issues",
         "critical_components_min",
         "all_components_min",
         "operational_score_min"
@@ -119,88 +167,130 @@
     "section_count_score": 100.0,
     "section_count_status": "target_met",
     "scores": {
-      "article_selection": 86.0,
-      "section_fit": 90.0,
-      "core_pick_quality": 91.0,
-      "summary_usefulness": 74.0,
-      "missed_opportunity": 80.0,
-      "noise_control": 85.0
+      "article_selection": 72.0,
+      "section_fit": 78.0,
+      "core_pick_quality": 65.0,
+      "summary_usefulness": 89.0,
+      "missed_opportunity": 55.0,
+      "noise_control": 65.0
     },
     "issues": [
       {
+        "type": "duplicate_story",
+        "severity": "major",
+        "section": "pest",
+        "title": "울진군, 혹명나방 피해 확산 대응…농업기술센터 전직원 예찰·공동방제",
+        "reason": "17번 카드와 같은 예찰·공동방제 사건을 출처만 바꿔 중복 게재했다.",
+        "suggested_action": "한 건만 남기고 과수 탄저병 또는 고추 병해충 기사로 교체한다."
+      },
+      {
         "type": "missed_candidate",
+        "severity": "major",
+        "section": "policy",
+        "title": "[아주초대석] 홍문표 aT사장 \"농산물 수급 불안, 韓 농업의 취약한 구조\"",
+        "reason": "정책 풀 최고 점수의 전국 단위 수급구조 진단을 누락하고 약한 지역·할인 기사를 선택했다.",
+        "suggested_action": "정책 1순위 핵심 카드로 채택한다."
+      },
+      {
+        "type": "promotional_filler",
         "severity": "moderate",
         "section": "policy",
-        "title": "정부, 압수물품 선제 매각 허용…물가안정법 개정 추진",
-        "reason": "범용 물가·매점매석 법제 기사로 농업 직접성이 낮다. 농산물 수급관리 제도 개편 후보가 더 적합하다.",
-        "suggested_action": "농산물 안정생산공급지원과 가격안정제 확대를 다룬 정부 설명 기사로 교체한다."
+        "title": "복날에 지갑 열자 '정부 30% 할인'으로 삼계탕 물가 방어하는 법",
+        "reason": "정부 기자단식 소비 안내 성격이 강하고 농정 핵심 의제나 집행 분석이 부족하다.",
+        "suggested_action": "비핵심 꼬리로 내리거나 재해복구비 확정 기사로 교체한다."
+      },
+      {
+        "type": "weak_core",
+        "severity": "moderate",
+        "section": "policy",
+        "title": "강원농업기술원, 폭염 대응 농업인 안전 현장지원 강화",
+        "reason": "지역 현장점검 중심 기사로 전국 수급·지원 정책 후보보다 핵심성이 낮다.",
+        "suggested_action": "비핵심으로 내리고 aT 수급 진단이나 재해복구비 기사를 핵심으로 올린다."
       },
       {
         "type": "missed_candidate",
-        "severity": "moderate",
-        "section": "pest",
-        "title": "사천시, 콩 개화기 물관리·병해충 적기 대응 당부",
-        "reason": "병해충명이 불분명한 일반 재배관리 공지다. 복숭아명나방 700㏊ 방제처럼 구체적인 후보가 보인다.",
-        "suggested_action": "공주 밤나무 복숭아명나방 드론방제 기사로 교체한다."
-      },
-      {
-        "type": "duplicate_theme",
-        "severity": "minor",
-        "section": "supply",
-        "title": "\"무 한 박스 4000원\" 농산물 값 폭락에 고랭지 농가 비명",
-        "reason": "첫 카드의 생산비 급등·출하가 폭락 문제와 주제가 겹쳐 공급 섹션의 정보 폭이 좁아진다.",
-        "suggested_action": "고랭지 채소 폐기와 저장고 부족처럼 원인·대책이 더 구체적인 후보를 우선한다."
-      },
-      {
-        "type": "bad_summary",
-        "severity": "moderate",
-        "section": "supply",
-        "title": "결주에 흉작까지…강원 감자 농가의 눈물",
-        "reason": "요약이 과거 현장 사진 설명에 머물러 보급종 ‘두백’ 품질 논란과 공급량 76%라는 핵심을 누락했다.",
-        "suggested_action": "발아 불량, 흉작, 공공 씨감자 공급 부족을 수치와 함께 요약한다."
-      },
-      {
-        "type": "bad_summary",
-        "severity": "moderate",
-        "section": "supply",
-        "title": "\"무 한 박스 4000원\" 농산물 값 폭락에 고랭지 농가 비명",
-        "reason": "농민 발언 조각만 있어 가격 하락 폭, 폐기 규모, 원인과 대응을 파악할 수 없다.",
-        "suggested_action": "박스 가격, 출하 포기 상황, 수입·소비·유통 요인을 한두 문장으로 정리한다."
-      },
-      {
-        "type": "bad_summary",
         "severity": "moderate",
         "section": "dist",
-        "title": "태안군농협조공법인, 깐 마늘 생산시설 첫 출하…농가 계약 재배 확대 기...",
-        "reason": "제목과 본문 조각을 이어 붙여 문장이 끊기고 핵심 효과가 선명하지 않다.",
-        "suggested_action": "28억원 투입, 연 1000t 처리, 계약재배·판로 확대 효과를 완결된 문장으로 쓴다."
+        "title": "농산물 유통개혁 6000억 투입했지만…성과 검증·농협 역할 재정립 필요",
+        "reason": "스마트APC·온라인도매시장 성과를 다룬 전국 단위 유통정책 후보가 지역 점검과 가격 기사보다 강하다.",
+        "suggested_action": "유통 핵심 카드로 채택하고 지역성 꼬리 기사 하나를 뺀다."
       },
       {
-        "type": "bad_summary",
-        "severity": "minor",
-        "section": "policy",
-        "title": "경실련 \"농산물 가격 안정, 수입 의존 아닌 제도 개혁으로 해결해야\"",
-        "reason": "문장이 중간에서 끊기며 시민단체 주장과 정부 정책의 관계가 구분되지 않는다.",
-        "suggested_action": "성명 주체를 명시하고 농안법 개정·가격안정제 요구를 간결히 정리한다."
+        "type": "wrong_section",
+        "severity": "moderate",
+        "section": "dist",
+        "title": "\"수박주스 품절입니다\"…사흘 만에 50% 껑충 '대반전'",
+        "reason": "주된 내용은 수박 가격과 소비자·외식업체 부담으로, 유통 운영이나 물류 변화가 중심이 아니다.",
+        "suggested_action": "수급으로 이동하거나 참외 3차원 선별 기술 기사로 교체한다."
       },
       {
-        "type": "bad_summary",
-        "severity": "minor",
+        "type": "wrong_section",
+        "severity": "moderate",
+        "section": "supply",
+        "title": "고성 거진농협, 최신 선별기 도입으로 감자 수매 역량 3배 늘어",
+        "reason": "선별·수매 처리능력 확대는 생산·가격보다 APC 운영과 산지유통에 가깝다.",
+        "suggested_action": "유통으로 이동하고 수급에는 폭염 피해 또는 과일 생산·가격 동향을 넣는다."
+      },
+      {
+        "type": "missed_candidate",
+        "severity": "moderate",
         "section": "pest",
-        "title": "평택농협, 벼 항공방제 위해 무인헬기 띄운다",
-        "reason": "지원 규모는 제시하지만 방제 대상 병해충과 일정이 없어 현장 활용성이 제한된다.",
-        "suggested_action": "925.6㏊, 300농가, 2·3차 방제 일정과 대상 위험을 포함한다."
+        "title": "음성군농업기술센터, 장마 뒤 과수 탄저병 방제 당부",
+        "reason": "25~30도 고온다습 조건과 비 전후 약제 운용이 구체적이며 딸기 육묘장 관리 기사보다 직접적인 병해충 정보다.",
+        "suggested_action": "중복 혹명나방 또는 논산 육묘장 카드 대신 채택한다."
       }
     ]
   },
+  "editorial_suggested_guardrails": {
+    "driver_tags": [
+      "editorial_section_fit",
+      "editorial_noise_filter",
+      "editorial_duplicate_topic",
+      "editorial_core_pick"
+    ],
+    "section_card_min_fit": {
+      "default": 0.9,
+      "supply": 0.95,
+      "policy": 0.95,
+      "dist": 1.1,
+      "pest": 0.89
+    },
+    "section_low_fit_rescue_min": 0.35,
+    "high_score_low_fit_rescue_margin": 4.2,
+    "tail_score_floor_delta": 0.8,
+    "core_fit_min": {
+      "default": 1.3,
+      "supply": 1.5,
+      "policy": 1.5,
+      "dist": 1.7,
+      "pest": 1.3
+    },
+    "core_relaxed_min_fit": {
+      "default": 1.0,
+      "supply": 1.18,
+      "policy": 1.15,
+      "dist": 1.35,
+      "pest": 1.0
+    },
+    "disable_relaxed_core_fill": true,
+    "final_low_tier_max_per_section": 1,
+    "final_low_tier_max_total": 4,
+    "commodity_active_min_rank": 1,
+    "commodity_program_core_min_rank": 1,
+    "commodity_require_issue_signal": false,
+    "commodity_require_direct_item_focus": false,
+    "commodity_strict_primary_only": true,
+    "commodity_disable_primary_fallback": true
+  },
+  "editorial_guardrail_mode": "advisory_only",
   "editorial_improvement_plan": {
     "mode": "shadow_replay_loop",
     "proposal_only": true,
     "target_score": 88.0,
-    "current_editorial_score": 84.8,
-    "model_reported_score": 85.2,
-    "quality_tier": "needs_iteration",
-    "target_status": "needs_iteration",
+    "current_editorial_score": 70.8,
+    "model_reported_score": 70.8,
+    "quality_tier": "needs_major_iteration",
+    "target_status": "needs_major_iteration",
     "iteration_budget": 3,
     "promotion_gates": {
       "editorial_score_min": 88.0,
@@ -220,7 +310,7 @@
         "supply": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 247,
+          "raw_candidates": 179,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -232,7 +322,7 @@
         "policy": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 151,
+          "raw_candidates": 113,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -244,7 +334,7 @@
         "dist": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 49,
+          "raw_candidates": 64,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -256,7 +346,7 @@
         "pest": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 43,
+          "raw_candidates": 53,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -277,11 +367,19 @@
       "scoring_rule": "Each section should try to carry 5 briefing cards when raw candidates exist. 4 cards is a soft fallback below target, 3 cards is a minimum fallback, and broad fallback use caps editorial shadow below 95."
     },
     "guardrail_focus": [
+      "core_quality",
       "missed_opportunity",
       "article_selection",
-      "summary_usefulness"
+      "noise_control",
+      "section_fit"
     ],
     "recommended_actions": [
+      {
+        "kind": "selection_guardrail",
+        "target": "core_fit_min",
+        "direction": "tighten",
+        "reason": "Core cards should not be filled by merely available articles."
+      },
       {
         "kind": "candidate_recall",
         "target": "raw_candidate_pool",
@@ -295,10 +393,16 @@
         "reason": "Multiple cards covered the same issue and reduced briefing breadth."
       },
       {
-        "kind": "summary_prompt",
-        "target": "latest-feedback.txt",
-        "direction": "add_editorial_feedback",
-        "reason": "Summaries should explain impact and decision value, not just restate titles."
+        "kind": "noise_filter",
+        "target": "semantic_false_positive_gate",
+        "direction": "tighten",
+        "reason": "Selected cards included low editorial-value noise."
+      },
+      {
+        "kind": "section_fit",
+        "target": "section_card_min_fit",
+        "direction": "tighten",
+        "reason": "A selected card appears to fit another section better."
       }
     ],
     "current_selection_guardrails": {
