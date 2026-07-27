@@ -319,6 +319,7 @@ class EditorialEvalTests(unittest.TestCase):
         payload["raw_candidates_by_section"]["policy"] = [
             {"title": "전국 농업 재해복구비 384억원 확정", "link": "https://example.com/required"},
             {"title": "정부 할인으로 장보기", "link": "https://example.com/excluded"},
+            {"title": "시행 주체 없는 AI 가격비교 구상", "link": "https://example.com/noise"},
             {"title": "전국 농업 정책 구조 진단", "link": "https://example.com/non-core"},
             {"title": "지역 기관장 행사 참석", "link": "https://example.com/demote-core"},
         ]
@@ -340,6 +341,7 @@ class EditorialEvalTests(unittest.TestCase):
                 "issues": [
                     {"type": "missed_candidate", "severity": "major", "section": "policy", "title": "전국 농업 재해복구비 384억원 확정"},
                     {"type": "promotional_filler", "severity": "moderate", "section": "policy", "title": "정부 할인으로 장보기"},
+                    {"type": "noise", "severity": "minor", "section": "policy", "title": "시행 주체 없는 AI 가격비교 구상"},
                     {"type": "weak_core", "severity": "moderate", "section": "policy", "title": "전국 농업 정책 구조 진단"},
                     {"type": "weak_core", "severity": "moderate", "section": "policy", "title": "지역 기관장 행사 참석"},
                 ]
@@ -351,6 +353,10 @@ class EditorialEvalTests(unittest.TestCase):
         self.assertEqual(constraints["policy"]["non_core"][0]["link"], "https://example.com/demote-core")
         self.assertNotIn(
             "https://example.com/excluded",
+            [row["link"] for row in payload["raw_candidates_by_section"]["policy"]],
+        )
+        self.assertNotIn(
+            "https://example.com/noise",
             [row["link"] for row in payload["raw_candidates_by_section"]["policy"]],
         )
 

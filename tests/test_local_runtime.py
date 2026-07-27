@@ -4354,6 +4354,7 @@ class LocalRuntimeTests(TestCase):
             main._postbuild_article_reject_reason(article, "pest", apply_selection_fit=False),
             "pest_vendor_product_promo",
         )
+        self.assertEqual(main._editorial_safe_core_demote_reason(article, "pest"), "")
 
     def test_pest_refill_allows_third_fire_blight_when_section_is_underfilled(self) -> None:
         fire_a = self._make_article(
