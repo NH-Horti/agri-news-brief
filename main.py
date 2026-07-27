@@ -1082,7 +1082,7 @@ SELECTION_FEEDBACK_PATH = os.getenv("SELECTION_FEEDBACK_PATH", "docs/evals/lates
 PREPUBLISH_QUALITY_GATE_ENABLED = os.getenv("PREPUBLISH_QUALITY_GATE_ENABLED", "false").strip().lower() in ("1", "true", "yes", "y")
 PREPUBLISH_QUALITY_FAIL_CLOSED = os.getenv("PREPUBLISH_QUALITY_FAIL_CLOSED", "true").strip().lower() in ("1", "true", "yes", "y")
 PREPUBLISH_QUALITY_ADAPTIVE = os.getenv("PREPUBLISH_QUALITY_ADAPTIVE", "true").strip().lower() in ("1", "true", "yes", "y")
-PREPUBLISH_QUALITY_MAX_REPAIRS = max(0, min(2, int((os.getenv("PREPUBLISH_QUALITY_MAX_REPAIRS", "2") or "2").strip() or 2)))
+PREPUBLISH_QUALITY_MAX_REPAIRS = max(0, min(3, int((os.getenv("PREPUBLISH_QUALITY_MAX_REPAIRS", "3") or "3").strip() or 3)))
 PREPUBLISH_QUALITY_STABLE_DAYS = max(5, min(60, int((os.getenv("PREPUBLISH_QUALITY_STABLE_DAYS", "20") or "20").strip() or 20)))
 PREPUBLISH_QUALITY_DEADLINE_KST = (os.getenv("PREPUBLISH_QUALITY_DEADLINE_KST", "06:50") or "06:50").strip()
 PREPUBLISH_QUALITY_RESULT_DIR = (os.getenv("PREPUBLISH_QUALITY_RESULT_DIR", "reports/evals") or "reports/evals").strip()
@@ -1092,6 +1092,10 @@ PREPUBLISH_QUALITY_MIN_OPERATIONAL_SCORE = max(
 )
 EDITORIAL_OPENAI_MODEL = (os.getenv("EDITORIAL_OPENAI_MODEL", "gpt-5.6-sol") or "gpt-5.6-sol").strip()
 EDITORIAL_REASONING_EFFORT = (os.getenv("EDITORIAL_REASONING_EFFORT", "medium") or "medium").strip()
+EDITORIAL_REPAIR_REASONING_EFFORT = (
+    os.getenv("EDITORIAL_REPAIR_REASONING_EFFORT", EDITORIAL_REASONING_EFFORT)
+    or EDITORIAL_REASONING_EFFORT
+).strip()
 OPENAI_USAGE_EVENTS: list[JsonDict] = []
 
 HF_API_TOKEN = (
@@ -51695,6 +51699,47 @@ def _apply_model_editorial_repair(
                     if seen_core > 3:
                         article.is_core = False
         repaired[section] = selected
+
+    low_tier_selected: list[tuple[str, Article]] = []
+    for section, selected in repaired.items():
+        section_low_tier = [
+            article
+            for article in selected
+            if press_tier(article.press or "", article.domain or "") <= 1
+        ]
+        low_tier_selected.extend((section, article) for article in section_low_tier)
+        if len(section_low_tier) > FINAL_LOW_TIER_MAX_PER_SECTION:
+            victim = min(
+                section_low_tier,
+                key=lambda article: (
+                    bool(article.is_core),
+                    float(article.selection_fit_score or 0.0),
+                    float(article.score or 0.0),
+                ),
+            )
+            reject(
+                section,
+                "low_tier_source_section_cap",
+                link=victim.canon_url or victim.link,
+                title=victim.title,
+            )
+            return None
+    if len(low_tier_selected) > FINAL_LOW_TIER_MAX_TOTAL:
+        section, victim = min(
+            low_tier_selected,
+            key=lambda item: (
+                bool(item[1].is_core),
+                float(item[1].selection_fit_score or 0.0),
+                float(item[1].score or 0.0),
+            ),
+        )
+        reject(
+            section,
+            "low_tier_source_total_cap",
+            link=victim.canon_url or victim.link,
+            title=victim.title,
+        )
+        return None
     return repaired
 
 
@@ -51712,6 +51757,37 @@ def _initial_editorial_repair_exclusions(
                 continue
             excluded[section].update(_repair_article_link_keys(article))
     return excluded
+
+
+def _enrich_editorial_snapshot_source_tiers(
+    snapshot_payload: JsonDict,
+    raw_by_section: dict[str, list[Article]],
+) -> int:
+    """Expose the deterministic source tier to the model repair payload."""
+    snapshot_raw = snapshot_payload.get("raw_by_section", {}) if isinstance(snapshot_payload, dict) else {}
+    if not isinstance(snapshot_raw, dict):
+        return 0
+    enriched = 0
+    for section in _section_keys():
+        article_index: dict[str, Article] = {}
+        for article in raw_by_section.get(section, []) or []:
+            if not isinstance(article, Article):
+                continue
+            for key in _repair_article_link_keys(article):
+                article_index.setdefault(key, article)
+        rows = snapshot_raw.get(section, [])
+        if not isinstance(rows, list):
+            continue
+        for row in rows:
+            if not isinstance(row, dict):
+                continue
+            raw_link = str(row.get("canon_url") or row.get("link") or row.get("originallink") or "").strip()
+            matched_article = article_index.get(raw_link) or article_index.get(canonicalize_url(raw_link))
+            if matched_article is None:
+                continue
+            row["press_tier"] = press_tier(matched_article.press or "", matched_article.domain or "")
+            enriched += 1
+    return enriched
 
 
 def _invalidate_editorial_bad_summary_cache(
@@ -51809,6 +51885,8 @@ def _run_prepublish_quality_gate(
     from report_eval import load_snapshot_payload
 
     snapshot_payload = load_snapshot_payload(snapshot_path)
+    enriched_source_tiers = _enrich_editorial_snapshot_source_tiers(snapshot_payload, raw_by_section)
+    log.info("[QUALITY GATE] enriched source tiers for %d repair candidates", enriched_source_tiers)
     current_sections = by_section
     current_html = render_daily_page(
         report_date,
@@ -51843,6 +51921,7 @@ def _run_prepublish_quality_gate(
     )
     repair_attempts: list[JsonDict] = []
     repair_validation_errors: list[JsonDict] = []
+    repair_editorial_issues: list[JsonDict] = []
     repair_excluded_links = _initial_editorial_repair_exclusions(raw_by_section)
     excluded_counts = {section: len(links) for section, links in repair_excluded_links.items() if links}
     if excluded_counts:
@@ -51864,10 +51943,17 @@ def _run_prepublish_quality_gate(
             editorial_result,
             api_key=OPENAI_API_KEY,
             model=EDITORIAL_OPENAI_MODEL,
-            reasoning_effort=EDITORIAL_REASONING_EFFORT,
+            reasoning_effort=EDITORIAL_REPAIR_REASONING_EFFORT,
             excluded_links_by_section=repair_excluded_links,
             prior_validation_errors=repair_validation_errors,
+            prior_editorial_issues=repair_editorial_issues,
         )
+        current_editorial_issues = editorial_result.get("issues", [])
+        if isinstance(current_editorial_issues, list):
+            repair_editorial_issues.extend(
+                issue for issue in current_editorial_issues if isinstance(issue, dict)
+            )
+            repair_editorial_issues = repair_editorial_issues[-32:]
         usage = repair.get("usage") if isinstance(repair, dict) else None
         if isinstance(usage, dict) and usage:
             OPENAI_USAGE_EVENTS.append({"stage": "editorial_repair", "model": EDITORIAL_OPENAI_MODEL, **usage})

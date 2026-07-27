@@ -76,7 +76,10 @@ class PrepublishQualityGateTests(unittest.TestCase):
             }
         }
 
-        with patch.object(main, "_postbuild_article_reject_reason", return_value=""):
+        with (
+            patch.object(main, "_postbuild_article_reject_reason", return_value=""),
+            patch.object(main, "press_tier", return_value=3),
+        ):
             repaired = main._apply_model_editorial_repair(repair, raw)
 
         self.assertIsNotNone(repaired)
@@ -104,6 +107,54 @@ class PrepublishQualityGateTests(unittest.TestCase):
                     "title": "",
                 }
             ],
+        )
+
+    def test_repair_rejects_excess_low_tier_sources_before_render(self):
+        raw = self._raw_sections()
+        repair = {
+            "sections": {
+                section: [{"link": article.link, "is_core": index < 2} for index, article in enumerate(rows)]
+                for section, rows in raw.items()
+            }
+        }
+        validation_errors: list[dict] = []
+
+        with (
+            patch.object(main, "_postbuild_article_reject_reason", return_value=""),
+            patch.object(main, "press_tier", return_value=1),
+        ):
+            repaired = main._apply_model_editorial_repair(
+                repair,
+                raw,
+                validation_errors=validation_errors,
+            )
+
+        self.assertIsNone(repaired)
+        self.assertEqual(validation_errors[0]["section"], "supply")
+        self.assertEqual(validation_errors[0]["reason"], "low_tier_source_section_cap")
+
+    def test_editorial_snapshot_is_enriched_with_source_tiers(self):
+        raw = self._raw_sections()
+        snapshot = {
+            "raw_by_section": {
+                section: [
+                    {"title": article.title, "canon_url": article.canon_url}
+                    for article in rows
+                ]
+                for section, rows in raw.items()
+            }
+        }
+
+        with patch.object(main, "press_tier", return_value=3):
+            enriched = main._enrich_editorial_snapshot_source_tiers(snapshot, raw)
+
+        self.assertEqual(enriched, 20)
+        self.assertTrue(
+            all(
+                row["press_tier"] == 3
+                for rows in snapshot["raw_by_section"].values()
+                for row in rows
+            )
         )
 
     def test_bad_summary_issue_invalidates_only_matching_selected_cache_entry(self):

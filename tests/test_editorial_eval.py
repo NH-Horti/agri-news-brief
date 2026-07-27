@@ -123,6 +123,8 @@ class EditorialEvalTests(unittest.TestCase):
         self.assertAlmostEqual(sum(payload["instructions"]["component_weights"].values()), 1.0)
         self.assertGreater(len(payload["selected_briefing_cards"]), 0)
         self.assertEqual(len(payload["raw_candidates_by_section"]["supply"]), 3)
+        self.assertIn("source_tier", payload["raw_candidates_by_section"]["supply"][0])
+        self.assertIn("source_tier", payload["selected_briefing_cards"][0])
         self.assertIn("operational_eval", payload)
         self.assertIn("section_count_targets", payload)
         self.assertGreater(payload["section_count_targets"]["score"], 0.0)
@@ -267,6 +269,7 @@ class EditorialEvalTests(unittest.TestCase):
             max_raw_per_section=6,
         )
         rejected_link = first_payload["raw_candidates_by_section"]["supply"][0]["link"]
+        prior_editorial_candidate = first_payload["raw_candidates_by_section"]["policy"][0]
         session = RepairSession()
         result = editorial_eval.propose_editorial_repair(
             self.report_date,
@@ -279,6 +282,14 @@ class EditorialEvalTests(unittest.TestCase):
             excluded_links_by_section={"supply": {rejected_link}},
             prior_validation_errors=[
                 {"section": "supply", "link": rejected_link, "reason": "supply_reader_role_misfit"}
+            ],
+            prior_editorial_issues=[
+                {
+                    "type": "wrong_section",
+                    "severity": "moderate",
+                    "section": "policy",
+                    "title": prior_editorial_candidate["title"],
+                }
             ],
             session_factory=lambda: session,
         )
@@ -293,17 +304,35 @@ class EditorialEvalTests(unittest.TestCase):
             prompt_payload["prior_repair_validation_errors"][0]["reason"],
             "supply_reader_role_misfit",
         )
+        self.assertNotIn(
+            prior_editorial_candidate["link"],
+            [row["link"] for row in prompt_payload["raw_candidates_by_section"]["policy"]],
+        )
 
     def test_repair_constraints_require_missed_and_remove_defective_candidates(self):
         payload = {
             "raw_candidates_by_section": {
                 section: [] for section in report_eval.SECTION_KEYS
-            }
+            },
+            "selected_briefing_cards": [],
         }
         payload["raw_candidates_by_section"]["policy"] = [
             {"title": "전국 농업 재해복구비 384억원 확정", "link": "https://example.com/required"},
             {"title": "정부 할인으로 장보기", "link": "https://example.com/excluded"},
             {"title": "전국 농업 정책 구조 진단", "link": "https://example.com/non-core"},
+            {"title": "지역 기관장 행사 참석", "link": "https://example.com/demote-core"},
+        ]
+        payload["selected_briefing_cards"] = [
+            {
+                "section": "policy",
+                "title": "전국 농업 정책 구조 진단",
+                "is_core": False,
+            },
+            {
+                "section": "policy",
+                "title": "지역 기관장 행사 참석",
+                "is_core": True,
+            },
         ]
         constraints = editorial_eval._repair_editorial_constraints(
             payload,
@@ -312,12 +341,14 @@ class EditorialEvalTests(unittest.TestCase):
                     {"type": "missed_candidate", "severity": "major", "section": "policy", "title": "전국 농업 재해복구비 384억원 확정"},
                     {"type": "promotional_filler", "severity": "moderate", "section": "policy", "title": "정부 할인으로 장보기"},
                     {"type": "weak_core", "severity": "moderate", "section": "policy", "title": "전국 농업 정책 구조 진단"},
+                    {"type": "weak_core", "severity": "moderate", "section": "policy", "title": "지역 기관장 행사 참석"},
                 ]
             },
         )
 
         self.assertEqual(constraints["policy"]["required"][0]["link"], "https://example.com/required")
-        self.assertEqual(constraints["policy"]["non_core"][0]["link"], "https://example.com/non-core")
+        self.assertEqual(constraints["policy"]["required_core"][0]["link"], "https://example.com/non-core")
+        self.assertEqual(constraints["policy"]["non_core"][0]["link"], "https://example.com/demote-core")
         self.assertNotIn(
             "https://example.com/excluded",
             [row["link"] for row in payload["raw_candidates_by_section"]["policy"]],

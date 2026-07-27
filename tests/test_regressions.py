@@ -224,6 +224,7 @@ class TestRegressions(unittest.TestCase):
         self.assertIn('echo "- Article generation model: gpt-5.6-sol"', self.rebuild_text)
         self.assertIn('echo "- Editorial evaluation model: gpt-5.6-sol"', self.rebuild_text)
         self.assertIn("PREPUBLISH_QUALITY_GATE_ENABLED: 'true'", self.daily_text)
+        self.assertIn("PREPUBLISH_QUALITY_MAX_REPAIRS: '3'", self.daily_text)
         self.assertIn("quality_recovery:", self.daily_text)
         self.assertIn("default: false", self.daily_text)
         self.assertIn(
