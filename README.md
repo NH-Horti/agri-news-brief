@@ -178,7 +178,7 @@ or sends the normal Kakao briefing, it now:
 2. runs the deterministic report evaluator and a `gpt-5.6-sol` editorial review;
 3. if the acceptance gate fails, asks the same model at medium reasoning effort
    to select exactly five validated raw-pool links per section and regenerates
-   only the changed summaries;
+   changed summaries plus any selected summary explicitly rejected by the review;
 4. re-evaluates the repaired edition, with at most two repair attempts; and
 5. publishes and sends Kakao only after the gate passes. A missed deadline or
    unresolved failure sends a short `[배포 보류]` notice and leaves the previous

@@ -51656,6 +51656,45 @@ def _apply_model_editorial_repair(
     return repaired
 
 
+def _invalidate_editorial_bad_summary_cache(
+    editorial_result: JsonDict,
+    selected_by_section: dict[str, list[Article]],
+    summary_cache: dict[str, SummaryCacheEntry | str],
+) -> list[str]:
+    """Force regeneration for selected cards explicitly flagged as bad summaries."""
+    issues = editorial_result.get("issues", []) if isinstance(editorial_result, dict) else []
+    if not isinstance(issues, list):
+        return []
+    bad_titles_by_section: dict[str, list[str]] = {}
+    for issue in issues:
+        if not isinstance(issue, dict) or str(issue.get("type") or "").strip().lower() != "bad_summary":
+            continue
+        section = str(issue.get("section") or "").strip()
+        title_key = norm_title_key(str(issue.get("title") or "").replace("...", "").replace("…", ""))
+        if section in _section_keys() and title_key:
+            bad_titles_by_section.setdefault(section, []).append(title_key)
+
+    invalidated: list[str] = []
+    for section, issue_title_keys in bad_titles_by_section.items():
+        for article in selected_by_section.get(section, []) or []:
+            article_title_key = norm_title_key(article.title or "") or article.title_key
+            matches_issue = any(
+                issue_key == article_title_key
+                or (len(issue_key) >= 12 and issue_key in article_title_key)
+                or (len(article_title_key) >= 12 and article_title_key in issue_key)
+                for issue_key in issue_title_keys
+            )
+            if not matches_issue or not article.norm_key:
+                continue
+            if article.norm_key in summary_cache:
+                summary_cache.pop(article.norm_key, None)
+                invalidated.append(article.norm_key)
+            article.summary = ""
+    if invalidated:
+        log.info("[QUALITY GATE] invalidated %d editorially rejected summary cache entries", len(invalidated))
+    return invalidated
+
+
 def _write_prepublish_evaluation_artifacts(result: JsonDict, report_date: str) -> None:
     from report_eval import (
         build_selection_feedback_payload,
@@ -51775,6 +51814,12 @@ def _run_prepublish_quality_gate(
         repaired_sections = _apply_model_editorial_repair(repair, raw_by_section)
         if repaired_sections is None:
             break
+        invalidated_summaries = _invalidate_editorial_bad_summary_cache(
+            editorial_result,
+            repaired_sections,
+            summary_cache,
+        )
+        repair_attempts[-1]["invalidated_summary_cache_entries"] = len(invalidated_summaries)
         current_sections = fill_summaries(repaired_sections, cache=summary_cache)
         _finalize_sections_for_render(current_sections)
         if any(len(current_sections.get(section, []) or []) < MAX_PER_SECTION for section in _section_keys()):
