@@ -20498,6 +20498,9 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
 
             top_rows = []
             for a in top_candidates:
+                public_debug_reject_reason = _public_debug_candidate_reject_reason(a, section_key)
+                if public_debug_reject_reason:
+                    continue
                 k = a.canon_url or a.norm_key or a.title_key
                 sel = k in selected_keys
                 fit_score = float(getattr(a, "selection_fit_score", 0.0) or 0.0)
@@ -34383,6 +34386,18 @@ _HARD_FINAL_POSTBUILD_REJECT_REASONS = frozenset(
 
 def _is_hard_final_postbuild_reject_reason(reason: str) -> bool:
     return str(reason or "") in _HARD_FINAL_POSTBUILD_REJECT_REASONS
+
+
+def _public_debug_candidate_reject_reason(article: "Article", section_key: str) -> str:
+    """Hide hard-rejected noise from reader-facing debug candidate tables."""
+    if not isinstance(article, Article):
+        return ""
+    reason = _postbuild_article_reject_reason(
+        article,
+        str(section_key or getattr(article, "section", "") or ""),
+        apply_selection_fit=False,
+    )
+    return reason if _is_hard_final_postbuild_reject_reason(reason) else ""
 
 
 def _drop_hard_postbuild_rejected_final_items(
