@@ -1,6 +1,6 @@
 {
   "report_date": "2026-07-29",
-  "generated_at_kst": "2026-07-29T06:19:24+09:00",
+  "generated_at_kst": "2026-07-29T07:02:55+09:00",
   "status": "pass",
   "overall_score": 92.97,
   "operational_score": 94.66,
@@ -56,7 +56,7 @@
     "raw_by_section": {
       "supply": 209,
       "policy": 134,
-      "dist": 54,
+      "dist": 55,
       "pest": 71
     },
     "expected_briefing_by_section": {
@@ -136,7 +136,7 @@
     "preferred_slot_gap_total": 1,
     "preferred_slot_penalty": 1.1,
     "core_fit_avg": 4.7814,
-    "core_rank_percentile_avg": 0.9073,
+    "core_rank_percentile_avg": 0.9077,
     "core_stage_core_rate": 1.0,
     "weak_core_rate": 0.0,
     "commodity_primary_item_focus_rate": 1.0,
@@ -309,17 +309,14 @@
     "각 기사 요약은 2문장으로 유지하고, 85~140자 안에서 품목·지역·핵심 변수만 남긴다."
   ],
   "adaptive_evaluation": {
-    "full_editorial_eval": true,
-    "reason": "stabilization_period",
+    "full_editorial_eval": false,
+    "reason": "forced_sla_recovery",
     "stable_days_required": 20
   },
   "editorial": {
-    "status": "error",
-    "reason": "429 Client Error: Too Many Requests for url: https://api.openai.com/v1/responses",
-    "rubric_version": 3,
-    "model": "gpt-5.6-sol",
-    "generated_at_kst": "2026-07-29T06:21:12+09:00",
-    "raw_response_excerpt": ""
+    "status": "skipped",
+    "reason": "forced_sla_recovery",
+    "model": "gpt-5.6-sol"
   },
   "prepublish_quality_gate": {
     "status": "blocked",
@@ -329,11 +326,11 @@
     "applied_repair_count": 0,
     "repair_proposal_limit": 10,
     "repair_attempts": [],
-    "deadline_kst": "06:50",
+    "deadline_kst": "23:59",
     "deadline_reached": false,
     "minimum_operational_score": 85.0,
     "sla_fallback_enabled": true,
-    "sla_fallback_forced": false,
+    "sla_fallback_forced": true,
     "sla_fallback_minimum_score": 78.0,
     "hard_editorial_issue_count": 0,
     "model": "gpt-5.6-sol",
