@@ -4,7 +4,7 @@ import tempfile
 from datetime import datetime
 from pathlib import Path
 from unittest import TestCase
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 import main
 import replay
@@ -6102,6 +6102,29 @@ class LocalRuntimeTests(TestCase):
 
         self.assertEqual(summarize.call_count, 2)
         self.assertEqual(mapping[article.norm_key], refreshed)
+
+    def test_openai_insufficient_quota_opens_run_circuit_without_retry(self) -> None:
+        response = Mock()
+        response.ok = False
+        response.status_code = 429
+        response.headers = {}
+        response.text = '{"error":{"type":"insufficient_quota","code":"insufficient_quota"}}'
+        response.json.return_value = {
+            "error": {"type": "insufficient_quota", "code": "insufficient_quota"}
+        }
+        session = Mock()
+        session.post.return_value = response
+
+        with (
+            patch.object(main, "OPENAI_API_KEY", "test-key"),
+            patch.object(main, "_OPENAI_QUOTA_EXHAUSTED", False),
+            patch.object(main, "http_session", return_value=session),
+        ):
+            self.assertEqual(main._openai_summarize_rows([{"id": "one"}]), {})
+            self.assertTrue(main._OPENAI_QUOTA_EXHAUSTED)
+            self.assertEqual(main._openai_summarize_rows([{"id": "two"}]), {})
+
+        session.post.assert_called_once()
 
     def test_one_sentence_summary_is_expanded_from_body_context(self) -> None:
         article = self._make_article(

@@ -179,7 +179,7 @@ class TestRegressions(unittest.TestCase):
     def test_secrets_check_workflow_exists(self):
         self.assertIn("name: agri-news-brief (validate API secrets)", self.secrets_check_text)
         self.assertIn("cron: '30 20 * * 0-4'", self.secrets_check_text)
-        self.assertIn("Validate Naver and Kakao secrets", self.secrets_check_text)
+        self.assertIn("Validate Naver, OpenAI, and Kakao secrets", self.secrets_check_text)
         self.assertIn("https://openapi.naver.com/v1/search/news.json", self.secrets_check_text)
         self.assertIn("https://kauth.kakao.com/oauth/token", self.secrets_check_text)
         self.assertIn('append_summary("- Kakao: success (token refresh)")', self.secrets_check_text)
@@ -197,6 +197,7 @@ class TestRegressions(unittest.TestCase):
     def test_daily_watchdog_recovers_a_missing_delivery_receipt(self):
         self.assertIn("name: agri-news-brief (daily watchdog)", self.daily_watchdog_text)
         self.assertIn("cron: '10,20,35,50 21 * * 0-4'", self.daily_watchdog_text)
+        self.assertIn("cron: '15 0 * * 1-5'", self.daily_watchdog_text)
         self.assertIn("actions: write", self.daily_watchdog_text)
         self.assertIn("WORKFLOW_FILE: daily.yml", self.daily_watchdog_text)
         self.assertIn("TZ=Asia/Seoul date +%F", self.daily_watchdog_text)
@@ -242,9 +243,16 @@ class TestRegressions(unittest.TestCase):
         self.assertIn("PREPUBLISH_SLA_FALLBACK_MIN_SCORE: '78'", self.daily_text)
         self.assertIn("DELIVERY_RECEIPT_DIR: docs/delivery", self.daily_text)
         self.assertIn("--fail-under 82", self.daily_text)
+        self.assertIn('if [ "$eval_status" -eq 2 ]', self.daily_text)
+        self.assertIn('elif [ "$eval_status" -ne 0 ]', self.daily_text)
         self.assertIn("Evaluate rebuilt report quality", self.rebuild_text)
         self.assertIn("SELECTION_FEEDBACK_PATH: docs/evals/latest-selection-feedback.json", self.rebuild_text)
         self.assertIn("--editorial-eval", self.rebuild_text)
+        self.assertIn("DELIVERY_RECEIPT_DIR: docs/delivery", self.rebuild_text)
+        self.assertIn("Enforce Kakao delivery", self.rebuild_text)
+        self.assertIn("application/vnd.github.raw+json", self.rebuild_text)
+        self.assertIn("Validate Naver, OpenAI, and Kakao secrets", self.secrets_check_text)
+        self.assertIn("https://api.openai.com/v1/responses", self.secrets_check_text)
 
     def test_briefing_cards_expose_eval_metadata(self):
         self.assertIn('data-selection-fit="', self.text)

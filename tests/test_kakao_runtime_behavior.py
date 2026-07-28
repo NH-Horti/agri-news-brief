@@ -2,6 +2,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
@@ -160,6 +161,73 @@ class TestKakaoRuntimeBehavior(unittest.TestCase):
 
         self.assertEqual(logger.warning_count, 0)
         self.assertEqual(logger.error_count, 1)
+
+    def test_daily_summary_send_records_receipt_before_success_status(self):
+        statuses = []
+        with (
+            patch.object(main, "_load_delivery_receipt", return_value={}),
+            patch.object(main, "build_kakao_message", return_value="normal daily summary"),
+            patch.object(main, "kakao_send_to_me") as send,
+            patch.object(main, "_write_delivery_receipt") as write_receipt,
+            patch.object(main, "_write_kakao_send_status", side_effect=statuses.append),
+        ):
+            status = main._send_kakao_daily_summary(
+                "owner/repo",
+                "token",
+                "2026-07-29",
+                "https://example.com/archive/2026-07-29.html",
+                {},
+                publication_mode="maintenance_replay_date",
+            )
+
+        self.assertEqual(status, "success")
+        send.assert_called_once_with(
+            "normal daily summary",
+            "https://example.com/archive/2026-07-29.html",
+        )
+        write_receipt.assert_called_once()
+        self.assertEqual(statuses, ["success"])
+
+    def test_daily_summary_send_suppresses_duplicate_from_receipt(self):
+        receipt = {"report_date": "2026-07-29", "status": "success", "channel": "kakao"}
+        with (
+            patch.object(main, "_load_delivery_receipt", return_value=receipt),
+            patch.object(main, "kakao_send_to_me") as send,
+            patch.object(main, "_write_kakao_send_status") as write_status,
+        ):
+            status = main._send_kakao_daily_summary(
+                "owner/repo",
+                "token",
+                "2026-07-29",
+                "https://example.com/archive/2026-07-29.html",
+                {},
+                publication_mode="normal",
+            )
+
+        self.assertEqual(status, "already_delivered")
+        send.assert_not_called()
+        write_status.assert_called_once_with("already_delivered")
+
+    def test_daily_summary_send_does_not_report_success_when_receipt_write_fails(self):
+        with (
+            patch.object(main, "KAKAO_FAIL_OPEN", True),
+            patch.object(main, "_load_delivery_receipt", return_value={}),
+            patch.object(main, "build_kakao_message", return_value="normal daily summary"),
+            patch.object(main, "kakao_send_to_me"),
+            patch.object(main, "_write_delivery_receipt", side_effect=RuntimeError("write failed")),
+            patch.object(main, "_write_kakao_send_status") as write_status,
+        ):
+            status = main._send_kakao_daily_summary(
+                "owner/repo",
+                "token",
+                "2026-07-29",
+                "https://example.com/archive/2026-07-29.html",
+                {},
+                publication_mode="maintenance_replay_date",
+            )
+
+        self.assertEqual(status, "sent_receipt_failed")
+        write_status.assert_called_once_with("sent_receipt_failed")
 
 
 if __name__ == "__main__":

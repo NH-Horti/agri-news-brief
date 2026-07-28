@@ -72,7 +72,7 @@ class PrepublishQualityGateTests(unittest.TestCase):
         self.assertFalse(main._prepublish_evaluation_passed(result))
         self.assertTrue(main._prepublish_sla_fallback_publishable(result))
 
-    def test_sla_fallback_rejects_hard_editorial_or_structural_issues(self):
+    def test_sla_fallback_rejects_hard_editorial_or_below_soft_floor(self):
         result = self._sla_fallback_result()
         result["editorial"]["issues"] = [
             {"type": "factual_error", "severity": "blocking", "section": "supply"}
@@ -80,14 +80,33 @@ class PrepublishQualityGateTests(unittest.TestCase):
         self.assertFalse(main._prepublish_sla_fallback_publishable(result))
 
         result = self._sla_fallback_result()
-        result["counts"]["briefing_by_section"]["pest"] = main.MAX_PER_SECTION - 1
+        result["counts"]["briefing_by_section"]["pest"] = main.SOFT_MIN_PER_SECTION - 1
         self.assertFalse(main._prepublish_sla_fallback_publishable(result))
+
+    def test_sla_fallback_accepts_one_underfilled_section_at_soft_floor(self):
+        result = self._sla_fallback_result()
+        result["counts"]["briefing_by_section"]["policy"] = main.SOFT_MIN_PER_SECTION
+
+        self.assertTrue(main._prepublish_sla_fallback_publishable(result))
 
     def test_sla_fallback_rejects_score_below_floor(self):
         result = self._sla_fallback_result()
         result["operational_score"] = main.PREPUBLISH_SLA_FALLBACK_MIN_SCORE - 0.01
 
         self.assertFalse(main._prepublish_sla_fallback_publishable(result))
+
+    def test_forced_sla_recovery_ignores_scores_but_keeps_safety_checks(self):
+        result = self._sla_fallback_result()
+        result["operational_score"] = 0.0
+        result["reader_quality_score"] = 0.0
+        result["scores"]["commodity_board_quality"] = 0.0
+        result["counts"]["briefing_by_section"]["policy"] = main.SOFT_MIN_PER_SECTION
+
+        with patch.object(main, "PREPUBLISH_FORCE_SLA_FALLBACK", True):
+            self.assertTrue(main._prepublish_sla_fallback_publishable(result))
+
+            result["metrics"]["summary_presence_rate"] = 0.99
+            self.assertFalse(main._prepublish_sla_fallback_publishable(result))
 
     def test_delivery_receipt_records_formal_page_and_normal_kakao_format(self):
         sections = self._raw_sections()

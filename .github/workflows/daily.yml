@@ -16,7 +16,7 @@ on:
         default: false
         type: boolean
       force_sla_fallback:
-        description: 'Skip model scoring and publish the full formal briefing through the deterministic SLA fallback'
+        description: 'Skip score floors and publish a safe standard four-section briefing through the deterministic SLA fallback'
         required: false
         default: false
         type: boolean
@@ -176,7 +176,8 @@ jobs:
             exit 0
           fi
 
-          if ! python scripts/evaluate_daily_report.py \
+          set +e
+          python scripts/evaluate_daily_report.py \
             --report-date "${{ steps.vars.outputs.report_date }}" \
             --snapshot-path "$snapshot_path" \
             --existing-result-json "$result_path" \
@@ -188,8 +189,14 @@ jobs:
             --output-md "reports/evals/${{ steps.vars.outputs.report_date }}.md" \
             --feedback-out "reports/evals/latest-feedback.txt" \
             --selection-feedback-out "reports/evals/latest-selection-feedback.json" \
-            --fail-under 82; then
+            --fail-under 82
+          eval_status=$?
+          set -e
+          if [ "$eval_status" -eq 2 ]; then
             echo "::warning::Post-publication editorial target was missed; the formal briefing remains published when the SLA safety gate passed."
+          elif [ "$eval_status" -ne 0 ]; then
+            echo "::error::Post-publication evaluation failed with exit code $eval_status"
+            exit "$eval_status"
           fi
 
       - name: Resolve Kakao status

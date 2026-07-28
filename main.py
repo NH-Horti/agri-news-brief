@@ -1071,6 +1071,7 @@ OPENAI_SUMMARY_CACHE_MAX = int((os.getenv("OPENAI_SUMMARY_CACHE_MAX", "2000") or
 OPENAI_SUMMARY_CACHE_MAX = max(200, min(OPENAI_SUMMARY_CACHE_MAX, 20000))
 OPENAI_RETRY_MAX = int((os.getenv("OPENAI_RETRY_MAX", "3") or "3").strip() or 3)
 OPENAI_RETRY_MAX = max(1, min(OPENAI_RETRY_MAX, 8))
+_OPENAI_QUOTA_EXHAUSTED = False
 OPENAI_SUMMARY_FEEDBACK_PATH = os.getenv("OPENAI_SUMMARY_FEEDBACK_PATH", "docs/evals/latest-feedback.txt").strip()
 OPENAI_SUMMARY_FEEDBACK_MAX_CHARS = int((os.getenv("OPENAI_SUMMARY_FEEDBACK_MAX_CHARS", "600") or "600").strip() or 600)
 OPENAI_SUMMARY_FEEDBACK_MAX_CHARS = max(0, min(OPENAI_SUMMARY_FEEDBACK_MAX_CHARS, 4000))
@@ -29303,7 +29304,8 @@ def _openai_summarize_rows(rows: list[JsonDict]) -> dict[str, str]:
     """OpenAI Responses API를 호출해 rows를 요약.
     출력 형식: 각 줄 'id\t요약'
     """
-    if not OPENAI_API_KEY or not rows:
+    global _OPENAI_QUOTA_EXHAUSTED
+    if not OPENAI_API_KEY or not rows or _OPENAI_QUOTA_EXHAUSTED:
         return {}
 
     system = (
@@ -29420,6 +29422,27 @@ def _openai_summarize_rows(rows: list[JsonDict]) -> dict[str, str]:
                 if k and v:
                     out[k] = v
             return out
+
+        if r.status_code == 429:
+            try:
+                error_payload = r.json()
+            except Exception:
+                error_payload = {}
+            error = error_payload.get("error", {}) if isinstance(error_payload, dict) else {}
+            quota_exhausted = bool(
+                isinstance(error, dict)
+                and (
+                    str(error.get("code") or "").strip().lower() == "insufficient_quota"
+                    or str(error.get("type") or "").strip().lower() == "insufficient_quota"
+                )
+            )
+            if quota_exhausted:
+                _OPENAI_QUOTA_EXHAUSTED = True
+                log.error(
+                    "[OpenAI] quota exhausted; disabling model summaries for this run "
+                    "and using deterministic article summaries"
+                )
+                return {}
 
         if r.status_code == 429 or r.status_code in (500, 502, 503, 504):
             backoff = retry_after_or_backoff(r.headers, attempt, base=0.8, cap=20.0, jitter=0.4)
@@ -29565,6 +29588,8 @@ def openai_summarize_batch(articles: list[Article], cache: dict[str, SummaryCach
 
     bs = max(5, int(OPENAI_BATCH_SIZE or 25))
     for i in range(0, len(rows_all), bs):
+        if _OPENAI_QUOTA_EXHAUSTED:
+            break
         rows = rows_all[i:i+bs]
         part = _openai_summarize_rows(rows)
         if part:
@@ -29578,7 +29603,7 @@ def openai_summarize_batch(articles: list[Article], cache: dict[str, SummaryCach
         row
         for row in rows_all
         if str(row.get("id") or "").strip() not in mapping
-    ][:10]
+    ][:10] if not _OPENAI_QUOTA_EXHAUSTED else []
     retry_batch_size = 5
     for i in range(0, len(missing_rows), retry_batch_size):
         retry_rows = missing_rows[i:i + retry_batch_size]
@@ -50215,6 +50240,71 @@ def _write_delivery_receipt(
     raise RuntimeError(f"failed to persist Kakao delivery receipt for {report_date}") from last_exc
 
 
+def _send_kakao_daily_summary(
+    repo: str,
+    token: str,
+    report_date: str,
+    daily_url: str,
+    by_section: dict[str, list[Article]],
+    *,
+    publication_mode: str,
+) -> str:
+    """Send the normal daily Kakao summary and persist its delivery receipt.
+
+    A send is considered operationally successful only after the receipt is
+    durable on ``main``. All production entry points use this helper so the
+    watchdog sees the same state regardless of whether delivery came from the
+    daily workflow or a maintenance replay.
+    """
+    daily_url = ensure_absolute_http_url(daily_url)
+    if STRICT_KAKAO_LINK_CHECK:
+        parsed = urlparse(daily_url)
+        if not parsed.scheme.startswith("http") or not parsed.netloc:
+            raise RuntimeError(f"[FATAL] daily_url invalid: {daily_url}")
+
+    existing_receipt = _load_delivery_receipt(repo, token, report_date)
+    if _delivery_receipt_succeeded(existing_receipt, report_date):
+        _write_kakao_send_status("already_delivered")
+        log.info("[DELIVERY] Kakao duplicate suppressed by successful receipt for %s", report_date)
+        return "already_delivered"
+
+    kakao_text = build_kakao_message(report_date, by_section)
+    if KAKAO_INCLUDE_LINK_IN_TEXT:
+        kakao_text = kakao_text + "\n" + daily_url
+    log_kakao_link(daily_url)
+
+    try:
+        kakao_send_to_me(kakao_text, daily_url)
+    except Exception as exc:
+        status = _kakao_send_status_for_exception(exc)
+        _write_kakao_send_status(status)
+        if KAKAO_FAIL_OPEN:
+            _log_kakao_fail_open(exc)
+            return status
+        raise
+
+    try:
+        _write_delivery_receipt(
+            repo,
+            token,
+            report_date,
+            daily_url,
+            kakao_text,
+            by_section,
+            publication_mode=publication_mode,
+        )
+    except Exception as exc:
+        _write_kakao_send_status("sent_receipt_failed")
+        if KAKAO_FAIL_OPEN:
+            log.error("[DELIVERY] Kakao sent but receipt persistence failed: %s", exc)
+            return "sent_receipt_failed"
+        raise
+
+    _write_kakao_send_status("success")
+    log.info("[OK] Kakao message sent and delivery receipt recorded. URL=%s", daily_url)
+    return "success"
+
+
 def _kakao_send_status_for_exception(exc: Exception) -> str:
     if isinstance(exc, KakaoNonRetryableError):
         return "failed_non_retryable"
@@ -51293,14 +51383,14 @@ def _publish_maintenance_report(
             dbg_mark_stage("maintenance_publish_kakao", "start")
             base_url = get_pages_base_url(repo).rstrip("/")
             daily_url = build_daily_url(base_url, report_date, cache_bust=True)
-            daily_url = ensure_absolute_http_url(daily_url)
-            kakao_text = build_kakao_message(report_date, by_section)
-            if KAKAO_INCLUDE_LINK_IN_TEXT:
-                kakao_text = kakao_text + "\n" + daily_url
-            log_kakao_link(daily_url)
-            kakao_send_to_me(kakao_text, daily_url)
-            _write_kakao_send_status("success")
-            log.info("[OK] Kakao message sent (%s). URL=%s", action_label, daily_url)
+            _send_kakao_daily_summary(
+                repo,
+                token,
+                report_date,
+                daily_url,
+                by_section,
+                publication_mode=action_label.replace(" ", "_"),
+            )
             dbg_mark_stage("maintenance_publish_kakao", "done")
         except Exception as e:
             _write_kakao_send_status(_kakao_send_status_for_exception(e))
@@ -51644,11 +51734,13 @@ def _prepublish_hard_editorial_issues(result: JsonDict) -> list[JsonDict]:
 
 
 def _prepublish_sla_fallback_publishable(result: JsonDict) -> bool:
-    """Allow a full formal briefing through when only soft editorial targets missed.
+    """Allow a safe standard briefing through when only soft targets missed.
 
     This is deliberately stricter about structural and reader-safety defects than
-    about model-scored editorial taste. It guarantees that the fallback is still
-    the normal four-section, five-card briefing rather than an alert-only page.
+    about model-scored editorial taste. The standard target remains five cards,
+    but the existing four-card soft floor is publishable so one rejected filler
+    cannot suppress the entire edition. An operator-forced recovery ignores
+    scores while retaining summary, hard-issue, and section safety checks.
     """
     counts = result.get("counts", {}) if isinstance(result, dict) else {}
     metrics = result.get("metrics", {}) if isinstance(result, dict) else {}
@@ -51671,15 +51763,21 @@ def _prepublish_sla_fallback_publishable(result: JsonDict) -> bool:
     section_counts = counts.get("briefing_by_section", {})
     if not isinstance(section_counts, dict):
         section_counts = {}
+    score_floor_passed = bool(
+        PREPUBLISH_FORCE_SLA_FALLBACK
+        or (
+            operational_score >= PREPUBLISH_SLA_FALLBACK_MIN_SCORE
+            and reader_score >= PREPUBLISH_SLA_FALLBACK_MIN_SCORE
+            and commodity_score >= PREPUBLISH_SLA_FALLBACK_MIN_SCORE
+        )
+    )
     return bool(
-        operational_score >= PREPUBLISH_SLA_FALLBACK_MIN_SCORE
-        and reader_score >= PREPUBLISH_SLA_FALLBACK_MIN_SCORE
+        score_floor_passed
         and int(metrics.get("reader_hard_issue_count", 0) or 0) == 0
         and summary_presence >= 1.0
-        and commodity_score >= PREPUBLISH_SLA_FALLBACK_MIN_SCORE
         and not _prepublish_hard_editorial_issues(result)
         and all(
-            int(section_counts.get(section, 0) or 0) >= MAX_PER_SECTION
+            int(section_counts.get(section, 0) or 0) >= SOFT_MIN_PER_SECTION
             for section in _section_keys()
         )
     )
@@ -52083,6 +52181,8 @@ def _run_prepublish_quality_gate(
     )
     if PREPUBLISH_FORCE_SLA_FALLBACK:
         run_editorial, adaptive_reason = False, "forced_sla_recovery"
+    elif _OPENAI_QUOTA_EXHAUSTED:
+        run_editorial, adaptive_reason = False, "openai_quota_unavailable"
     elif _prepublish_deadline_reached(report_date):
         run_editorial, adaptive_reason = False, "deadline_reached"
     else:
@@ -52269,9 +52369,26 @@ def _run_prepublish_quality_gate(
         and _prepublish_sla_fallback_publishable(result)
     )
     publishable = normal_passed or fallback_passed
-    publication_mode = "normal" if normal_passed else "sla_fallback" if fallback_passed else "blocked"
+    publication_mode = (
+        "normal"
+        if normal_passed
+        else "forced_sla_recovery"
+        if fallback_passed and PREPUBLISH_FORCE_SLA_FALLBACK
+        else "sla_fallback"
+        if fallback_passed
+        else "blocked"
+    )
+    gate_status = (
+        "passed"
+        if normal_passed
+        else "forced_sla_fallback_passed"
+        if fallback_passed and PREPUBLISH_FORCE_SLA_FALLBACK
+        else "sla_fallback_passed"
+        if fallback_passed
+        else "blocked"
+    )
     result["prepublish_quality_gate"] = {
-        "status": "passed" if normal_passed else "sla_fallback_passed" if fallback_passed else "blocked",
+        "status": gate_status,
         "publishable": publishable,
         "publication_mode": publication_mode,
         "repair_count": len(repair_attempts),
@@ -52284,6 +52401,8 @@ def _run_prepublish_quality_gate(
         "sla_fallback_enabled": PREPUBLISH_SLA_FALLBACK_ENABLED,
         "sla_fallback_forced": PREPUBLISH_FORCE_SLA_FALLBACK,
         "sla_fallback_minimum_score": PREPUBLISH_SLA_FALLBACK_MIN_SCORE,
+        "sla_fallback_score_enforced": not PREPUBLISH_FORCE_SLA_FALLBACK,
+        "sla_fallback_minimum_per_section": SOFT_MIN_PER_SECTION,
         "hard_editorial_issue_count": len(_prepublish_hard_editorial_issues(result)),
         "model": EDITORIAL_OPENAI_MODEL,
         "usage_events": list(OPENAI_USAGE_EVENTS),
@@ -52301,16 +52420,20 @@ def _run_prepublish_quality_gate(
             )
     elif fallback_passed:
         log.warning(
-            "[QUALITY GATE] publishing the full formal briefing via SLA fallback "
-            "(minimum_score=%.1f, hard_issues=0)",
+            "[QUALITY GATE] publishing the standard four-section briefing via SLA fallback "
+            "(forced=%s, minimum_score=%.1f, minimum_per_section=%d, hard_issues=0)",
+            PREPUBLISH_FORCE_SLA_FALLBACK,
             PREPUBLISH_SLA_FALLBACK_MIN_SCORE,
+            SOFT_MIN_PER_SECTION,
         )
     return current_sections, current_html, result
 
 
 def main() -> None:
+    global _OPENAI_QUOTA_EXHAUSTED
     log.info("[BUILD] %s", BUILD_TAG)
     OPENAI_USAGE_EVENTS.clear()
+    _OPENAI_QUOTA_EXHAUSTED = False
     _write_kakao_send_status("not_attempted")
     if not DEFAULT_REPO:
         raise RuntimeError("GITHUB_REPO or GITHUB_REPOSITORY is not set (e.g., ORGNAME/agri-news-brief)")
@@ -52735,54 +52858,18 @@ def main() -> None:
     except Exception as e:
         log.warning("[WARN] save_state failed: %s", e)
 
-    # Kakao message (핵심2)
-    kakao_text = build_kakao_message(report_date, by_section)
-    if KAKAO_INCLUDE_LINK_IN_TEXT:
-        kakao_text = kakao_text + "\n" + daily_url
-
-    if STRICT_KAKAO_LINK_CHECK:
-        parsed = urlparse(daily_url)
-        if not parsed.scheme.startswith("http") or not parsed.netloc:
-            raise RuntimeError(f"[FATAL] daily_url invalid: {daily_url}")
-
-    daily_url = ensure_absolute_http_url(daily_url)
-    log_kakao_link(daily_url)
-    existing_receipt = _load_delivery_receipt(repo, GH_TOKEN, report_date)
-    if _delivery_receipt_succeeded(existing_receipt, report_date):
-        _write_kakao_send_status("already_delivered")
-        log.info("[DELIVERY] Kakao duplicate suppressed by successful receipt for %s", report_date)
-    else:
-        try:
-            kakao_send_to_me(kakao_text, daily_url)
-        except Exception as e:
-            _write_kakao_send_status(_kakao_send_status_for_exception(e))
-            if KAKAO_FAIL_OPEN:
-                _log_kakao_fail_open(e)
-            else:
-                raise
-        else:
-            publication_mode = "normal"
-            gate = _prepublish_result.get("prepublish_quality_gate", {})
-            if isinstance(gate, dict):
-                publication_mode = str(gate.get("publication_mode") or "normal")
-            try:
-                _write_delivery_receipt(
-                    repo,
-                    GH_TOKEN,
-                    report_date,
-                    daily_url,
-                    kakao_text,
-                    by_section,
-                    publication_mode=publication_mode,
-                )
-                _write_kakao_send_status("success")
-                log.info("[OK] Kakao message sent and delivery receipt recorded. URL=%s", daily_url)
-            except Exception as e:
-                _write_kakao_send_status("sent_receipt_failed")
-                if KAKAO_FAIL_OPEN:
-                    log.error("[DELIVERY] Kakao sent but receipt persistence failed: %s", e)
-                else:
-                    raise
+    publication_mode = "normal"
+    gate = _prepublish_result.get("prepublish_quality_gate", {})
+    if isinstance(gate, dict):
+        publication_mode = str(gate.get("publication_mode") or "normal")
+    _send_kakao_daily_summary(
+        repo,
+        GH_TOKEN,
+        report_date,
+        daily_url,
+        by_section,
+        publication_mode=publication_mode,
+    )
 
 
 
