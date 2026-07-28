@@ -4,12 +4,12 @@
 - Reader quality: **92.97** (capped; penalty=1.7, cap=95.0, reasons=preferred_slot_underfill)
 - Scores: completeness=96.4, diversity=95.2, source=75.8, summary=93.7, freshness=100.0, retrieval=88.1, section_fit=100.0, core=100.0, commodity=88.4
 - Briefing cards: 19 / Commodity cards: 35
-- Sections: supply:5/5 raw=209, policy:4/5 raw=134, dist:5/5 raw=54, pest:5/5 raw=71
+- Sections: supply:5/5 raw=209, policy:4/5 raw=134, dist:5/5 raw=55, pest:5/5 raw=71
 - Metrics: title_unique=1.00, domain_diversity=0.74, low_tier=0.21, summary_presence=1.00, summary_numeric=0.68, fresh_72h=1.00, fit_avg=3.75, false_positive=0.00, hard_reader_issues=0, weak_core=0.00, editorial_penalty=0.1, commodity_weak=0.00, commodity_items=4, commodity_active_today=18, commodity_active_today_unlinked=14, commodity_coverage=0.12, commodity_strict_link=1.00, commodity_false_link=0.00, commodity_pool_false_link=0.00, commodity_dominant_section=0.75, semantic_penalty=0.0
 
 
 ### Editorial Shadow Eval
-- Editorial: error (429 Client Error: Too Many Requests for url: https://api.openai.com/v1/responses)
+- Editorial: skipped (forced_sla_recovery)
 - Model: gpt-5.6-sol
 
 ### Improvement Hints
