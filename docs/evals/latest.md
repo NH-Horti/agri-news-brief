@@ -1,10 +1,10 @@
 ## Daily Eval (2026-07-28)
-- Overall: **79.53** (warn)
-- Operational: **90.57**
-- Reader quality: **79.53** (clear; penalty=11.0, cap=100.0, reasons=clear)
-- Scores: completeness=100.0, diversity=92.0, source=60.0, summary=100.0, freshness=100.0, retrieval=88.8, section_fit=100.0, core=97.2, commodity=98.1
-- Briefing cards: 20 / Commodity cards: 41
-- Sections: supply:5/5 raw=176, policy:5/5 raw=113, dist:5/5 raw=64, pest:5/5 raw=53
+- Overall: **79.48** (warn)
+- Operational: **90.52**
+- Reader quality: **79.48** (clear; penalty=11.0, cap=100.0, reasons=clear)
+- Scores: completeness=100.0, diversity=92.0, source=60.0, summary=100.0, freshness=100.0, retrieval=88.1, section_fit=100.0, core=97.1, commodity=98.1
+- Briefing cards: 20 / Commodity cards: 42
+- Sections: supply:5/5 raw=181, policy:5/5 raw=107, dist:5/5 raw=61, pest:5/5 raw=53
 - Metrics: title_unique=1.00, domain_diversity=0.85, low_tier=0.25, summary_presence=1.00, summary_numeric=0.80, fresh_72h=1.00, fit_avg=3.73, false_positive=0.00, hard_reader_issues=0, weak_core=0.00, editorial_penalty=5.3, commodity_weak=0.00, commodity_items=12, commodity_active_today=16, commodity_active_today_unlinked=4, commodity_coverage=0.36, commodity_strict_link=0.83, commodity_false_link=0.00, commodity_pool_false_link=0.00, commodity_dominant_section=0.50, semantic_penalty=0.0
 
 
