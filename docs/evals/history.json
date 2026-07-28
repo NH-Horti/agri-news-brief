@@ -2,23 +2,23 @@
   "reports": [
     {
       "report_date": "2026-07-28",
-      "generated_at_kst": "2026-07-28T08:37:41+09:00",
-      "overall_score": 83.68,
-      "operational_score": 93.35,
-      "reader_quality_score": 85.07,
+      "generated_at_kst": "2026-07-28T09:15:04+09:00",
+      "overall_score": 89.45,
+      "operational_score": 94.63,
+      "reader_quality_score": 89.95,
       "reader_quality_gate_status": "clear",
       "reader_quality_gate_reasons": [],
-      "editorial_score": 82.45,
-      "editorial_model_reported_score": 82.5,
+      "editorial_score": 86.15,
+      "editorial_model_reported_score": 86.2,
       "editorial_score_method": "weighted_components_v1",
       "editorial_quality_tier": "needs_iteration",
       "editorial_acceptance_passed": false,
-      "editorial_status": "needs_iteration",
-      "quality_gate_status": "needs_iteration",
+      "editorial_status": "needs_minor_iteration",
+      "quality_gate_status": "needs_minor_iteration",
       "quality_gate_reason": "editorial_acceptance_gate_failed",
-      "status": "warn",
+      "status": "pass",
       "section_alignment": 100.0,
-      "core_quality": 84.85,
+      "core_quality": 74.6,
       "commodity_board_quality": 98.14,
       "briefing_total": 20,
       "commodity_total": 41,
@@ -32,15 +32,17 @@
       "low_tier_source_excess_count": 0,
       "content_false_positive_rate": 0.0,
       "reader_hard_issue_count": 0,
-      "reader_quality_penalty": 8.28,
-      "editorial_quality_penalty": 4.6,
+      "reader_quality_penalty": 4.68,
+      "editorial_quality_penalty": 2.6,
       "commodity_primary_false_link_rate": 0.0,
       "commodity_pool_false_link_rate": 0.0,
       "policy_wrong_section_rate": 0.0,
-      "promotional_filler_rate": 0.3,
-      "promotional_core_rate": 0.2,
+      "promotional_filler_rate": 0.2,
+      "promotional_core_rate": 0.1,
       "pest_theme_duplicate_rate": 0.0,
-      "guardrail_driver_tags": []
+      "guardrail_driver_tags": [
+        "core_quality"
+      ]
     },
     {
       "report_date": "2026-07-27",
@@ -2212,5 +2214,5 @@
       "briefing_title_unique_rate": 1.0
     }
   ],
-  "updated_at_kst": "2026-07-28T08:37:41+09:00"
+  "updated_at_kst": "2026-07-28T09:15:04+09:00"
 }
