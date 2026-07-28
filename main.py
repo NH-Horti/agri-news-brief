@@ -1098,7 +1098,7 @@ PREPUBLISH_FORCE_SLA_FALLBACK = os.getenv(
 ).strip().lower() in ("1", "true", "yes", "y")
 PREPUBLISH_SLA_FALLBACK_MIN_SCORE = max(
     0.0,
-    min(100.0, float((os.getenv("PREPUBLISH_SLA_FALLBACK_MIN_SCORE", "82") or "82").strip() or 82)),
+    min(100.0, float((os.getenv("PREPUBLISH_SLA_FALLBACK_MIN_SCORE", "78") or "78").strip() or 78)),
 )
 DELIVERY_RECEIPT_DIR = (
     os.getenv("DELIVERY_RECEIPT_DIR", "docs/delivery") or "docs/delivery"

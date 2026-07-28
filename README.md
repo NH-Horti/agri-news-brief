@@ -184,7 +184,7 @@ or sends the normal Kakao briefing, it now:
    85; and
 6. if only soft editorial targets still miss, publishes the same formal
    four-section, five-card-per-section page through the SLA fallback when the
-   deterministic operational and reader scores are at least 82, all summaries
+   deterministic operational and reader scores are at least 78, all summaries
    are present, and no hard reader or editorial issue exists.
 
 The fallback never creates an alert-only or reduced page. It continues through

@@ -239,7 +239,7 @@ class TestRegressions(unittest.TestCase):
         )
         self.assertIn("PREPUBLISH_QUALITY_MIN_OPERATIONAL_SCORE: '85'", self.daily_text)
         self.assertIn("PREPUBLISH_SLA_FALLBACK_ENABLED: 'true'", self.daily_text)
-        self.assertIn("PREPUBLISH_SLA_FALLBACK_MIN_SCORE: '82'", self.daily_text)
+        self.assertIn("PREPUBLISH_SLA_FALLBACK_MIN_SCORE: '78'", self.daily_text)
         self.assertIn("DELIVERY_RECEIPT_DIR: docs/delivery", self.daily_text)
         self.assertIn("--fail-under 82", self.daily_text)
         self.assertIn("Evaluate rebuilt report quality", self.rebuild_text)

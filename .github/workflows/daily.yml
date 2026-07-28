@@ -110,7 +110,7 @@ jobs:
           PREPUBLISH_QUALITY_MIN_OPERATIONAL_SCORE: '85'
           PREPUBLISH_SLA_FALLBACK_ENABLED: 'true'
           PREPUBLISH_FORCE_SLA_FALLBACK: ${{ inputs.force_sla_fallback && 'true' || 'false' }}
-          PREPUBLISH_SLA_FALLBACK_MIN_SCORE: '82'
+          PREPUBLISH_SLA_FALLBACK_MIN_SCORE: '78'
           DELIVERY_RECEIPT_DIR: docs/delivery
           UX_PATCH_DAYS: '7'
           WINDOW_MIN_HOURS: '0'
