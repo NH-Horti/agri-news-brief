@@ -161,7 +161,7 @@ Use three branches:
 ### Production workflows (main only)
 
 - `.github/workflows/daily.yml`
-- `.github/workflows/daily-watchdog.yml` (06:10 KST missing-dispatch recovery, 06:20 recheck)
+- `.github/workflows/daily-watchdog.yml` (06:10/06:20/06:35/06:50 KST delivery-receipt recovery)
 - `.github/workflows/rebuild.yml`
 - `.github/workflows/maintenance.yml`
 - `.github/workflows/ux_patch.yml`
@@ -179,14 +179,23 @@ or sends the normal Kakao briefing, it now:
 3. if the acceptance gate fails, asks the same model at medium reasoning effort
    to select exactly five validated raw-pool links per section and regenerates
    changed summaries plus any selected summary explicitly rejected by the review;
-4. re-evaluates the repaired edition, with at most two repair attempts; and
-5. publishes and sends Kakao only after the gate passes. A missed deadline or
-   unresolved failure sends a short `[배포 보류]` notice and leaves the previous
-   published page in place.
+4. re-evaluates the repaired edition, with at most five applied repair attempts;
+5. normally accepts an editorial score of 82 and operational/reader scores of
+   85; and
+6. if only soft editorial targets still miss, publishes the same formal
+   four-section, five-card-per-section page through the SLA fallback when the
+   deterministic operational and reader scores are at least 78, all summaries
+   are present, and no hard reader or editorial issue exists.
 
-Publication requires an editorial acceptance pass, an operational and reader
-score of at least 90, no hard reader issue, complete summaries, commodity-board
-quality of at least 90, and five cards in every section. Full model review runs
+The fallback never creates an alert-only or reduced page. It continues through
+the normal page renderer and normal Kakao summary builder. After a successful
+Kakao send, `docs/delivery/YYYY-MM-DD.json` is written as the authoritative
+delivery receipt. A same-day rerun suppresses duplicate sends when that receipt
+already exists. The watchdog checks the receipt rather than the mere existence
+of an Actions run and dispatches a forced deterministic recovery when delivery
+is still missing and no daily run is active.
+
+Full model review runs
 daily until 20 consecutive evaluated reports pass with
 an operational score of at least 95, every editorial score at least 85, and an
 average editorial score of at least 90. After that stabilization period, the

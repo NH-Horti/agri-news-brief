@@ -1088,8 +1088,21 @@ PREPUBLISH_QUALITY_DEADLINE_KST = (os.getenv("PREPUBLISH_QUALITY_DEADLINE_KST", 
 PREPUBLISH_QUALITY_RESULT_DIR = (os.getenv("PREPUBLISH_QUALITY_RESULT_DIR", "reports/evals") or "reports/evals").strip()
 PREPUBLISH_QUALITY_MIN_OPERATIONAL_SCORE = max(
     0.0,
-    min(100.0, float((os.getenv("PREPUBLISH_QUALITY_MIN_OPERATIONAL_SCORE", "89") or "89").strip() or 89)),
+    min(100.0, float((os.getenv("PREPUBLISH_QUALITY_MIN_OPERATIONAL_SCORE", "85") or "85").strip() or 85)),
 )
+PREPUBLISH_SLA_FALLBACK_ENABLED = os.getenv(
+    "PREPUBLISH_SLA_FALLBACK_ENABLED", "true"
+).strip().lower() in ("1", "true", "yes", "y")
+PREPUBLISH_FORCE_SLA_FALLBACK = os.getenv(
+    "PREPUBLISH_FORCE_SLA_FALLBACK", "false"
+).strip().lower() in ("1", "true", "yes", "y")
+PREPUBLISH_SLA_FALLBACK_MIN_SCORE = max(
+    0.0,
+    min(100.0, float((os.getenv("PREPUBLISH_SLA_FALLBACK_MIN_SCORE", "78") or "78").strip() or 78)),
+)
+DELIVERY_RECEIPT_DIR = (
+    os.getenv("DELIVERY_RECEIPT_DIR", "docs/delivery") or "docs/delivery"
+).strip().strip("/")
 EDITORIAL_OPENAI_MODEL = (os.getenv("EDITORIAL_OPENAI_MODEL", "gpt-5.6-sol") or "gpt-5.6-sol").strip()
 EDITORIAL_REASONING_EFFORT = (os.getenv("EDITORIAL_REASONING_EFFORT", "medium") or "medium").strip()
 EDITORIAL_REPAIR_REASONING_EFFORT = (
@@ -50121,6 +50134,87 @@ def _write_kakao_send_status(status: str) -> None:
         log.warning("[WARN] failed to write Kakao status file: %s", exc)
 
 
+def _delivery_receipt_path(report_date: str) -> str:
+    if not is_iso_date_str(report_date):
+        raise ValueError(f"invalid delivery receipt date: {report_date}")
+    return f"{DELIVERY_RECEIPT_DIR}/{report_date}.json"
+
+
+def _load_delivery_receipt(repo: str, token: str, report_date: str) -> JsonDict:
+    try:
+        raw, _sha = github_get_file(
+            repo,
+            _delivery_receipt_path(report_date),
+            token,
+            ref="main",
+        )
+        payload = json.loads(raw or "{}")
+        return payload if isinstance(payload, dict) else {}
+    except Exception as exc:
+        log.info("[DELIVERY] no readable receipt for %s: %s", report_date, exc)
+        return {}
+
+
+def _delivery_receipt_succeeded(receipt: JsonDict, report_date: str) -> bool:
+    return bool(
+        isinstance(receipt, dict)
+        and str(receipt.get("report_date") or "") == report_date
+        and str(receipt.get("status") or "").strip().lower() == "success"
+        and str(receipt.get("channel") or "").strip().lower() == "kakao"
+    )
+
+
+def _write_delivery_receipt(
+    repo: str,
+    token: str,
+    report_date: str,
+    daily_url: str,
+    kakao_text: str,
+    by_section: dict[str, list[Article]],
+    *,
+    publication_mode: str,
+) -> JsonDict:
+    path = _delivery_receipt_path(report_date)
+    payload: JsonDict = {
+        "schema_version": 1,
+        "report_date": report_date,
+        "status": "success",
+        "channel": "kakao",
+        "sent_at_kst": datetime.now(KST).isoformat(timespec="seconds"),
+        "page_url": ensure_absolute_http_url(daily_url),
+        "page_format": "full_formal_briefing",
+        "message_format": "normal_daily_summary",
+        "publication_mode": publication_mode or "normal",
+        "message_sha256": hashlib.sha256(kakao_text.encode("utf-8")).hexdigest(),
+        "section_counts": {
+            section: len(by_section.get(section, []) or []) for section in _section_keys()
+        },
+    }
+    raw_new = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
+    last_exc: Exception | None = None
+    for attempt in range(3):
+        try:
+            _raw_old, sha = github_get_file(repo, path, token, ref="main")
+            github_put_file(
+                repo,
+                path,
+                raw_new,
+                token,
+                f"Record Kakao delivery {report_date}",
+                sha=sha,
+                branch="main",
+            )
+            return payload
+        except Exception as exc:
+            last_exc = exc
+            existing = _load_delivery_receipt(repo, token, report_date)
+            if _delivery_receipt_succeeded(existing, report_date):
+                return existing
+            if attempt < 2:
+                time.sleep(exponential_backoff(attempt, base=0.5, cap=3.0, jitter=0.2))
+    raise RuntimeError(f"failed to persist Kakao delivery receipt for {report_date}") from last_exc
+
+
 def _kakao_send_status_for_exception(exc: Exception) -> str:
     if isinstance(exc, KakaoNonRetryableError):
         return "failed_non_retryable"
@@ -51527,6 +51621,70 @@ def _operational_quality_publishable(result: JsonDict) -> bool:
     )
 
 
+_PREPUBLISH_HARD_EDITORIAL_ISSUE_TYPES = frozenset(
+    {"false_positive", "off_topic", "factual_error", "unsafe_summary"}
+)
+
+
+def _prepublish_hard_editorial_issues(result: JsonDict) -> list[JsonDict]:
+    editorial = result.get("editorial", {}) if isinstance(result, dict) else {}
+    issues = editorial.get("issues", []) if isinstance(editorial, dict) else []
+    if not isinstance(issues, list):
+        return []
+    return [
+        issue
+        for issue in issues
+        if isinstance(issue, dict)
+        and (
+            str(issue.get("severity") or "").strip().lower() == "blocking"
+            or str(issue.get("type") or "").strip().lower()
+            in _PREPUBLISH_HARD_EDITORIAL_ISSUE_TYPES
+        )
+    ]
+
+
+def _prepublish_sla_fallback_publishable(result: JsonDict) -> bool:
+    """Allow a full formal briefing through when only soft editorial targets missed.
+
+    This is deliberately stricter about structural and reader-safety defects than
+    about model-scored editorial taste. It guarantees that the fallback is still
+    the normal four-section, five-card briefing rather than an alert-only page.
+    """
+    counts = result.get("counts", {}) if isinstance(result, dict) else {}
+    metrics = result.get("metrics", {}) if isinstance(result, dict) else {}
+    scores = result.get("scores", {}) if isinstance(result, dict) else {}
+    if not isinstance(counts, dict):
+        counts = {}
+    if not isinstance(metrics, dict):
+        metrics = {}
+    if not isinstance(scores, dict):
+        scores = {}
+    try:
+        operational_score = float(
+            result.get("operational_score", result.get("overall_score", 0.0)) or 0.0
+        )
+        reader_score = float(result.get("reader_quality_score", operational_score) or operational_score)
+        summary_presence = float(metrics.get("summary_presence_rate", 0.0) or 0.0)
+        commodity_score = float(scores.get("commodity_board_quality", 0.0) or 0.0)
+    except (TypeError, ValueError):
+        return False
+    section_counts = counts.get("briefing_by_section", {})
+    if not isinstance(section_counts, dict):
+        section_counts = {}
+    return bool(
+        operational_score >= PREPUBLISH_SLA_FALLBACK_MIN_SCORE
+        and reader_score >= PREPUBLISH_SLA_FALLBACK_MIN_SCORE
+        and int(metrics.get("reader_hard_issue_count", 0) or 0) == 0
+        and summary_presence >= 1.0
+        and commodity_score >= PREPUBLISH_SLA_FALLBACK_MIN_SCORE
+        and not _prepublish_hard_editorial_issues(result)
+        and all(
+            int(section_counts.get(section, 0) or 0) >= MAX_PER_SECTION
+            for section in _section_keys()
+        )
+    )
+
+
 def _should_run_full_editorial_eval(
     repo: str,
     token: str,
@@ -51923,7 +52081,9 @@ def _run_prepublish_quality_gate(
         run_editorial=False,
         adaptive_reason="policy_probe",
     )
-    if _prepublish_deadline_reached(report_date):
+    if PREPUBLISH_FORCE_SLA_FALLBACK:
+        run_editorial, adaptive_reason = False, "forced_sla_recovery"
+    elif _prepublish_deadline_reached(report_date):
         run_editorial, adaptive_reason = False, "deadline_reached"
     else:
         run_editorial, adaptive_reason = _should_run_full_editorial_eval(
@@ -52099,15 +52259,32 @@ def _run_prepublish_quality_gate(
             adaptive_reason=f"repair_attempt_{attempt}",
         )
 
-    passed = _prepublish_evaluation_passed(result) and not _prepublish_deadline_reached(report_date)
+    normal_passed = (
+        not PREPUBLISH_FORCE_SLA_FALLBACK
+        and _prepublish_evaluation_passed(result)
+    )
+    fallback_passed = bool(
+        not normal_passed
+        and PREPUBLISH_SLA_FALLBACK_ENABLED
+        and _prepublish_sla_fallback_publishable(result)
+    )
+    publishable = normal_passed or fallback_passed
+    publication_mode = "normal" if normal_passed else "sla_fallback" if fallback_passed else "blocked"
     result["prepublish_quality_gate"] = {
-        "status": "passed" if passed else "blocked",
+        "status": "passed" if normal_passed else "sla_fallback_passed" if fallback_passed else "blocked",
+        "publishable": publishable,
+        "publication_mode": publication_mode,
         "repair_count": len(repair_attempts),
         "applied_repair_count": applied_repair_count,
         "repair_proposal_limit": repair_proposal_limit,
         "repair_attempts": repair_attempts,
         "deadline_kst": PREPUBLISH_QUALITY_DEADLINE_KST,
+        "deadline_reached": _prepublish_deadline_reached(report_date),
         "minimum_operational_score": PREPUBLISH_QUALITY_MIN_OPERATIONAL_SCORE,
+        "sla_fallback_enabled": PREPUBLISH_SLA_FALLBACK_ENABLED,
+        "sla_fallback_forced": PREPUBLISH_FORCE_SLA_FALLBACK,
+        "sla_fallback_minimum_score": PREPUBLISH_SLA_FALLBACK_MIN_SCORE,
+        "hard_editorial_issue_count": len(_prepublish_hard_editorial_issues(result)),
         "model": EDITORIAL_OPENAI_MODEL,
         "usage_events": list(OPENAI_USAGE_EVENTS),
         "estimated_cost_usd": round(
@@ -52116,12 +52293,18 @@ def _run_prepublish_quality_gate(
         ),
     }
     _write_prepublish_evaluation_artifacts(result, report_date)
-    if not passed:
+    if not publishable:
         _notify_quality_hold(report_date, result, daily_url)
         if PREPUBLISH_QUALITY_FAIL_CLOSED:
             raise RuntimeError(
-                f"Prepublish quality gate blocked {report_date}; no page or Kakao briefing was published."
+                f"Prepublish hard-safety gate blocked {report_date}; no page or Kakao briefing was published."
             )
+    elif fallback_passed:
+        log.warning(
+            "[QUALITY GATE] publishing the full formal briefing via SLA fallback "
+            "(minimum_score=%.1f, hard_issues=0)",
+            PREPUBLISH_SLA_FALLBACK_MIN_SCORE,
+        )
     return current_sections, current_html, result
 
 
@@ -52382,6 +52565,7 @@ def main() -> None:
 
     # 품질 채점·자동수정은 페이지/인덱스/state/Kakao 게시보다 반드시 먼저 실행한다.
     # 실패 시 fail-closed로 아래의 모든 구독자 대상 부작용을 차단한다.
+    _prepublish_result: JsonDict = {}
     if PREPUBLISH_QUALITY_GATE_ENABLED:
         if saved_snap is None:
             raise RuntimeError("Prepublish quality gate snapshot is unavailable.")
@@ -52563,16 +52747,42 @@ def main() -> None:
 
     daily_url = ensure_absolute_http_url(daily_url)
     log_kakao_link(daily_url)
-    try:
-        kakao_send_to_me(kakao_text, daily_url)
-        _write_kakao_send_status("success")
-        log.info("[OK] Kakao message sent. URL=%s", daily_url)
-    except Exception as e:
-        _write_kakao_send_status(_kakao_send_status_for_exception(e))
-        if KAKAO_FAIL_OPEN:
-            _log_kakao_fail_open(e)
+    existing_receipt = _load_delivery_receipt(repo, GH_TOKEN, report_date)
+    if _delivery_receipt_succeeded(existing_receipt, report_date):
+        _write_kakao_send_status("already_delivered")
+        log.info("[DELIVERY] Kakao duplicate suppressed by successful receipt for %s", report_date)
+    else:
+        try:
+            kakao_send_to_me(kakao_text, daily_url)
+        except Exception as e:
+            _write_kakao_send_status(_kakao_send_status_for_exception(e))
+            if KAKAO_FAIL_OPEN:
+                _log_kakao_fail_open(e)
+            else:
+                raise
         else:
-            raise
+            publication_mode = "normal"
+            gate = _prepublish_result.get("prepublish_quality_gate", {})
+            if isinstance(gate, dict):
+                publication_mode = str(gate.get("publication_mode") or "normal")
+            try:
+                _write_delivery_receipt(
+                    repo,
+                    GH_TOKEN,
+                    report_date,
+                    daily_url,
+                    kakao_text,
+                    by_section,
+                    publication_mode=publication_mode,
+                )
+                _write_kakao_send_status("success")
+                log.info("[OK] Kakao message sent and delivery receipt recorded. URL=%s", daily_url)
+            except Exception as e:
+                _write_kakao_send_status("sent_receipt_failed")
+                if KAKAO_FAIL_OPEN:
+                    log.error("[DELIVERY] Kakao sent but receipt persistence failed: %s", e)
+                else:
+                    raise
 
 
 
