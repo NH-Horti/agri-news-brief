@@ -31,7 +31,7 @@ class PrepublishQualityGateTests(unittest.TestCase):
 
     def test_editorial_pass_also_requires_deterministic_quality(self):
         result = {
-            "operational_score": 88.99,
+            "operational_score": main.PREPUBLISH_QUALITY_MIN_OPERATIONAL_SCORE - 0.01,
             "counts": {"briefing_by_section": {section: 5 for section in main._section_keys()}},
             "metrics": {"reader_hard_issue_count": 0, "summary_presence_rate": 1.0},
             "scores": {"commodity_board_quality": 100.0},
@@ -39,9 +39,77 @@ class PrepublishQualityGateTests(unittest.TestCase):
         }
         self.assertFalse(main._prepublish_evaluation_passed(result))
 
-        result["operational_score"] = 94.0
-        result["reader_quality_score"] = 94.0
+        result["operational_score"] = main.PREPUBLISH_QUALITY_MIN_OPERATIONAL_SCORE
+        result["reader_quality_score"] = main.PREPUBLISH_QUALITY_MIN_OPERATIONAL_SCORE
         self.assertTrue(main._prepublish_evaluation_passed(result))
+
+    def _sla_fallback_result(self) -> dict:
+        return {
+            "operational_score": main.PREPUBLISH_SLA_FALLBACK_MIN_SCORE,
+            "reader_quality_score": main.PREPUBLISH_SLA_FALLBACK_MIN_SCORE,
+            "counts": {
+                "briefing_by_section": {
+                    section: main.MAX_PER_SECTION for section in main._section_keys()
+                }
+            },
+            "metrics": {"reader_hard_issue_count": 0, "summary_presence_rate": 1.0},
+            "scores": {
+                "commodity_board_quality": main.PREPUBLISH_SLA_FALLBACK_MIN_SCORE
+            },
+            "editorial": {
+                "status": "success",
+                "score": 70.0,
+                "issues": [
+                    {"type": "weak_core", "severity": "major", "section": "policy"}
+                ],
+                "acceptance_gate": {"passed": False},
+            },
+        }
+
+    def test_sla_fallback_accepts_full_formal_briefing_with_only_soft_issues(self):
+        result = self._sla_fallback_result()
+
+        self.assertFalse(main._prepublish_evaluation_passed(result))
+        self.assertTrue(main._prepublish_sla_fallback_publishable(result))
+
+    def test_sla_fallback_rejects_hard_editorial_or_structural_issues(self):
+        result = self._sla_fallback_result()
+        result["editorial"]["issues"] = [
+            {"type": "factual_error", "severity": "blocking", "section": "supply"}
+        ]
+        self.assertFalse(main._prepublish_sla_fallback_publishable(result))
+
+        result = self._sla_fallback_result()
+        result["counts"]["briefing_by_section"]["pest"] = main.MAX_PER_SECTION - 1
+        self.assertFalse(main._prepublish_sla_fallback_publishable(result))
+
+    def test_sla_fallback_rejects_score_below_floor(self):
+        result = self._sla_fallback_result()
+        result["operational_score"] = main.PREPUBLISH_SLA_FALLBACK_MIN_SCORE - 0.01
+
+        self.assertFalse(main._prepublish_sla_fallback_publishable(result))
+
+    def test_delivery_receipt_records_formal_page_and_normal_kakao_format(self):
+        sections = self._raw_sections()
+        with (
+            patch.object(main, "github_get_file", return_value=(None, None)),
+            patch.object(main, "github_put_file") as put_file,
+        ):
+            receipt = main._write_delivery_receipt(
+                "owner/repo",
+                "token",
+                "2026-07-28",
+                "https://example.com/archive/2026-07-28.html",
+                "normal daily message",
+                sections,
+                publication_mode="sla_fallback",
+            )
+
+        self.assertTrue(main._delivery_receipt_succeeded(receipt, "2026-07-28"))
+        self.assertEqual(receipt["page_format"], "full_formal_briefing")
+        self.assertEqual(receipt["message_format"], "normal_daily_summary")
+        self.assertEqual(receipt["section_counts"], {section: 5 for section in main._section_keys()})
+        put_file.assert_called_once()
 
     def _raw_sections(self) -> dict[str, list[main.Article]]:
         raw: dict[str, list[main.Article]] = {}

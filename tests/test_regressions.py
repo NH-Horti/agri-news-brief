@@ -178,6 +178,7 @@ class TestRegressions(unittest.TestCase):
 
     def test_secrets_check_workflow_exists(self):
         self.assertIn("name: agri-news-brief (validate API secrets)", self.secrets_check_text)
+        self.assertIn("cron: '30 20 * * 0-4'", self.secrets_check_text)
         self.assertIn("Validate Naver and Kakao secrets", self.secrets_check_text)
         self.assertIn("https://openapi.naver.com/v1/search/news.json", self.secrets_check_text)
         self.assertIn("https://kauth.kakao.com/oauth/token", self.secrets_check_text)
@@ -193,15 +194,18 @@ class TestRegressions(unittest.TestCase):
         self.assertIn("WINDOW_MIN_HOURS: '0'", self.maintenance_text)
         self.assertIn("WINDOW_MIN_HOURS: '0'", self.rebuild_text)
 
-    def test_daily_watchdog_recovers_only_a_missing_cloudflare_dispatch(self):
+    def test_daily_watchdog_recovers_a_missing_delivery_receipt(self):
         self.assertIn("name: agri-news-brief (daily watchdog)", self.daily_watchdog_text)
-        self.assertIn("cron: '10,20 21 * * 0-4'", self.daily_watchdog_text)
+        self.assertIn("cron: '10,20,35,50 21 * * 0-4'", self.daily_watchdog_text)
         self.assertIn("actions: write", self.daily_watchdog_text)
         self.assertIn("WORKFLOW_FILE: daily.yml", self.daily_watchdog_text)
         self.assertIn("TZ=Asia/Seoul date +%F", self.daily_watchdog_text)
+        self.assertIn('receipt_path="docs/delivery/${report_date}.json"', self.daily_watchdog_text)
+        self.assertIn("if [[ \"$receipt_status\" == 'success' ]]", self.daily_watchdog_text)
         self.assertIn(".workflow_runs[]", self.daily_watchdog_text)
-        self.assertIn("if [[ -n \"$matching_run\" ]]", self.daily_watchdog_text)
+        self.assertIn("$run_status\" == 'in_progress'", self.daily_watchdog_text)
         self.assertIn("inputs[trigger_source]=github-watchdog", self.daily_watchdog_text)
+        self.assertIn("inputs[force_sla_fallback]=true", self.daily_watchdog_text)
         self.assertIn("DRY_RUN: ${{ inputs.dry_run || 'false' }}", self.daily_watchdog_text)
 
     def test_daily_workflow_runs_eval_harness_and_feedback_loop(self):
@@ -225,14 +229,19 @@ class TestRegressions(unittest.TestCase):
         self.assertIn('echo "- Editorial evaluation model: gpt-5.6-sol"', self.rebuild_text)
         self.assertIn("PREPUBLISH_QUALITY_GATE_ENABLED: 'true'", self.daily_text)
         self.assertIn("PREPUBLISH_QUALITY_MAX_REPAIRS: '5'", self.daily_text)
+        self.assertIn("cancel-in-progress: false", self.daily_text)
         self.assertIn("quality_recovery:", self.daily_text)
+        self.assertIn("force_sla_fallback:", self.daily_text)
         self.assertIn("default: false", self.daily_text)
         self.assertIn(
             "PREPUBLISH_QUALITY_DEADLINE_KST: ${{ inputs.quality_recovery && '23:59' || '06:50' }}",
             self.daily_text,
         )
-        self.assertIn("PREPUBLISH_QUALITY_MIN_OPERATIONAL_SCORE: '89'", self.daily_text)
-        self.assertIn("--fail-under 85", self.daily_text)
+        self.assertIn("PREPUBLISH_QUALITY_MIN_OPERATIONAL_SCORE: '85'", self.daily_text)
+        self.assertIn("PREPUBLISH_SLA_FALLBACK_ENABLED: 'true'", self.daily_text)
+        self.assertIn("PREPUBLISH_SLA_FALLBACK_MIN_SCORE: '82'", self.daily_text)
+        self.assertIn("DELIVERY_RECEIPT_DIR: docs/delivery", self.daily_text)
+        self.assertIn("--fail-under 82", self.daily_text)
         self.assertIn("Evaluate rebuilt report quality", self.rebuild_text)
         self.assertIn("SELECTION_FEEDBACK_PATH: docs/evals/latest-selection-feedback.json", self.rebuild_text)
         self.assertIn("--editorial-eval", self.rebuild_text)

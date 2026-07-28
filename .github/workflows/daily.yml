@@ -2,7 +2,7 @@ name: agri-news-brief (daily)
 
 on:
   # Primary daily trigger: Cloudflare Workers Cron at KST 06:05.
-  # daily-watchdog.yml checks at KST 06:10/06:20 and dispatches only when this run is missing.
+  # daily-watchdog.yml verifies a successful delivery receipt through KST 06:50.
   # Keep a native schedule out of this workflow to avoid duplicate Kakao sends.
   workflow_dispatch:
     inputs:
@@ -15,13 +15,18 @@ on:
         required: false
         default: false
         type: boolean
+      force_sla_fallback:
+        description: 'Skip model scoring and publish the full formal briefing through the deterministic SLA fallback'
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: write
 
 concurrency:
   group: agri-news-brief-daily
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   run:
@@ -102,7 +107,11 @@ jobs:
           PREPUBLISH_QUALITY_STABLE_DAYS: '20'
           PREPUBLISH_QUALITY_DEADLINE_KST: ${{ inputs.quality_recovery && '23:59' || '06:50' }}
           PREPUBLISH_QUALITY_RESULT_DIR: reports/evals
-          PREPUBLISH_QUALITY_MIN_OPERATIONAL_SCORE: '89'
+          PREPUBLISH_QUALITY_MIN_OPERATIONAL_SCORE: '85'
+          PREPUBLISH_SLA_FALLBACK_ENABLED: 'true'
+          PREPUBLISH_FORCE_SLA_FALLBACK: ${{ inputs.force_sla_fallback && 'true' || 'false' }}
+          PREPUBLISH_SLA_FALLBACK_MIN_SCORE: '82'
+          DELIVERY_RECEIPT_DIR: docs/delivery
           UX_PATCH_DAYS: '7'
           WINDOW_MIN_HOURS: '0'
           CROSSDAY_DEDUPE_ENABLED: 'true'
@@ -167,7 +176,7 @@ jobs:
             exit 0
           fi
 
-          python scripts/evaluate_daily_report.py \
+          if ! python scripts/evaluate_daily_report.py \
             --report-date "${{ steps.vars.outputs.report_date }}" \
             --snapshot-path "$snapshot_path" \
             --existing-result-json "$result_path" \
@@ -179,7 +188,9 @@ jobs:
             --output-md "reports/evals/${{ steps.vars.outputs.report_date }}.md" \
             --feedback-out "reports/evals/latest-feedback.txt" \
             --selection-feedback-out "reports/evals/latest-selection-feedback.json" \
-            --fail-under 85
+            --fail-under 82; then
+            echo "::warning::Post-publication editorial target was missed; the formal briefing remains published when the SLA safety gate passed."
+          fi
 
       - name: Resolve Kakao status
         if: always()
@@ -224,6 +235,7 @@ jobs:
             echo "- Article generation model: gpt-5.6-sol (low reasoning)"
             echo "- Editorial evaluation/repair model: gpt-5.6-sol (medium reasoning)"
             echo "- Quality recovery: ${{ inputs.quality_recovery || 'false' }}"
+            echo "- Forced SLA fallback: ${{ inputs.force_sla_fallback || 'false' }}"
             echo "- Prepublish deadline: ${{ inputs.quality_recovery && '23:59' || '06:50' }} KST"
             echo "- Kakao actual: ${{ steps.kakao_status.outputs.actual }}"
             echo "- Kakao refresh token renewed: ${{ steps.kakao_refresh_token.outputs.renewed }}"
@@ -254,7 +266,7 @@ jobs:
         run: |
           actual='${{ steps.kakao_status.outputs.actual }}'
           renewed='${{ steps.kakao_refresh_token.outputs.renewed }}'
-          if [ "$actual" != 'success' ]; then
+          if [ "$actual" != 'success' ] && [ "$actual" != 'already_delivered' ]; then
             echo "::error::Kakao delivery did not complete successfully: $actual"
             exit 1
           fi

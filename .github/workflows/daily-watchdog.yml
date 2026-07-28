@@ -1,11 +1,10 @@
 name: agri-news-brief (daily watchdog)
 
 on:
-  # Cloudflare is the primary trigger at KST 06:05. This independent check runs
-  # at KST 06:10, then retries the check at 06:20 in case GitHub delayed or
-  # dropped the first schedule event. Each check recovers only a missing dispatch.
+  # Cloudflare is the primary trigger at KST 06:05. These checks verify an
+  # actual Kakao delivery receipt, not merely the existence of a workflow run.
   schedule:
-    - cron: '10,20 21 * * 0-4'
+    - cron: '10,20,35,50 21 * * 0-4'
   workflow_dispatch:
     inputs:
       dry_run:
@@ -28,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Check for today's daily run and recover if missing
+      - name: Verify today's delivery and recover if missing
         id: watchdog
         shell: bash
         env:
@@ -40,6 +39,14 @@ jobs:
           set -euo pipefail
 
           report_date="$(TZ=Asia/Seoul date +%F)"
+          receipt_path="docs/delivery/${report_date}.json"
+          receipt_status="$(
+            gh api --method GET "repos/${REPO}/contents/${receipt_path}?ref=main" --jq '.content // ""' 2>/dev/null \
+              | tr -d '\n' \
+              | base64 --decode 2>/dev/null \
+              | jq -r '.status // empty' 2>/dev/null \
+              || true
+          )"
           runs_json="$(
             gh api --method GET \
               "repos/${REPO}/actions/workflows/${WORKFLOW_FILE}/runs" \
@@ -59,28 +66,36 @@ jobs:
             ' <<<"$runs_json"
           )"
 
+          run_url=''
+          run_status='missing'
+          run_conclusion='missing'
           if [[ -n "$matching_run" ]]; then
             run_url="$(jq -r '.html_url' <<<"$matching_run")"
             run_status="$(jq -r '.status' <<<"$matching_run")"
             run_conclusion="$(jq -r '.conclusion // "pending"' <<<"$matching_run")"
-            result='already-dispatched'
-            echo "Daily run already exists: ${run_url} (${run_status}/${run_conclusion})"
+          fi
+
+          if [[ "$receipt_status" == 'success' ]]; then
+            result='delivery-confirmed'
+            echo "Kakao delivery receipt confirmed: ${receipt_path}"
+          elif [[ "$run_status" == 'queued' || "$run_status" == 'in_progress' ]]; then
+            result='daily-run-active'
+            echo "Delivery receipt is pending while the daily run is active: ${run_url}"
           elif [[ "$DRY_RUN" == 'true' ]]; then
-            run_url=''
-            run_status='missing'
-            run_conclusion='dry-run'
-            result='missing-dry-run'
-            echo "Daily run is missing; dry-run requested, so recovery dispatch was skipped."
+            result='delivery-missing-dry-run'
+            echo "Delivery receipt is missing; dry-run requested, so recovery dispatch was skipped."
           else
             gh api --method POST \
               "repos/${REPO}/actions/workflows/${WORKFLOW_FILE}/dispatches" \
               -f ref=main \
-              -f 'inputs[trigger_source]=github-watchdog'
+              -f 'inputs[trigger_source]=github-watchdog' \
+              -f 'inputs[quality_recovery]=true' \
+              -f 'inputs[force_sla_fallback]=true'
             run_url="https://github.com/${REPO}/actions/workflows/${WORKFLOW_FILE}"
             run_status='dispatched'
             run_conclusion='pending'
             result='recovery-dispatched'
-            echo "Cloudflare dispatch was missing; recovery dispatch submitted."
+            echo "Delivery receipt was missing; full-briefing SLA recovery was dispatched."
           fi
 
           {
@@ -92,6 +107,7 @@ jobs:
             echo '## Daily Watchdog Summary'
             echo "- Report date (KST): $report_date"
             echo "- Result: $result"
+            echo "- Delivery receipt: $receipt_path (${receipt_status:-missing})"
             echo "- Daily status: $run_status/$run_conclusion"
             if [[ -n "$run_url" ]]; then
               echo "- Daily run: $run_url"

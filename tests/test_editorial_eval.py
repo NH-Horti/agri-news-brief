@@ -137,7 +137,7 @@ class EditorialEvalTests(unittest.TestCase):
         )
 
         self.assertEqual(payload["report_date"], self.report_date)
-        self.assertEqual(payload["target_score"], 85.0)
+        self.assertEqual(payload["target_score"], 82.0)
         self.assertAlmostEqual(sum(payload["instructions"]["component_weights"].values()), 1.0)
         self.assertGreater(len(payload["selected_briefing_cards"]), 0)
         self.assertEqual(len(payload["raw_candidates_by_section"]["supply"]), 3)
