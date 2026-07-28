@@ -1,51 +1,52 @@
 {
-  "report_date": "2026-07-28",
-  "generated_at_kst": "2026-07-28T09:52:03+09:00",
+  "report_date": "2026-07-29",
+  "generated_at_kst": "2026-07-29T06:19:24+09:00",
   "scores": {
     "section_alignment": 100.0,
-    "core_quality": 97.14,
-    "commodity_board_quality": 98.14
+    "core_quality": 100.0,
+    "commodity_board_quality": 88.43
   },
   "metrics": {
-    "section_alignment_low_fit_rate": 0.0,
+    "section_alignment_low_fit_rate": 0.0526,
     "section_alignment_cross_gap_rate": 0.0,
     "content_false_positive_rate": 0.0,
     "reader_hard_issue_count": 0,
     "reader_hard_issue_rate": 0.0,
-    "reader_quality_penalty": 11.04,
-    "reader_quality_cap": 100.0,
+    "reader_quality_penalty": 1.6895,
+    "reader_quality_cap": 95.0,
     "weak_core_rate": 0.0,
     "policy_wrong_section_rate": 0.0,
-    "promotional_filler_rate": 0.2,
-    "promotional_core_rate": 0.25,
-    "weak_core_editorial_rate": 0.25,
+    "promotional_filler_rate": 0.0526,
+    "promotional_core_rate": 0.0,
+    "weak_core_editorial_rate": 0.0,
     "pest_theme_duplicate_rate": 0.0,
-    "dist_weak_ops_rate": 0.05,
-    "editorial_quality_penalty": 5.3,
+    "dist_weak_ops_rate": 0.0,
+    "editorial_quality_penalty": 0.1053,
     "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0,
     "commodity_primary_title_item_focus_rate": 1.0,
-    "commodity_primary_title_issue_signal_rate": 0.8333,
-    "commodity_primary_strict_link_rate": 0.8333,
+    "commodity_primary_title_issue_signal_rate": 1.0,
+    "commodity_primary_strict_link_rate": 1.0,
     "commodity_primary_low_rank_rate": 0.0,
-    "commodity_primary_count": 12,
-    "commodity_active_today_total": 16,
-    "commodity_active_today_unlinked_total": 4,
-    "commodity_managed_unlinked_total": 21,
+    "commodity_primary_count": 4,
+    "commodity_active_today_total": 18,
+    "commodity_active_today_unlinked_total": 14,
+    "commodity_managed_unlinked_total": 29,
     "commodity_board_daily_min_primary_count": 6,
-    "commodity_board_low_coverage": false,
-    "commodity_board_coverage_rate": 0.3636,
+    "commodity_board_low_coverage": true,
+    "commodity_board_coverage_rate": 0.1212,
     "commodity_primary_title_item_missing_rate": 0.0,
     "commodity_primary_body_only_rate": 0.0,
     "commodity_primary_false_link_rate": 0.0,
-    "commodity_pool_count": 6,
+    "commodity_pool_count": 28,
     "commodity_pool_false_link_rate": 0.0,
-    "commodity_primary_dominant_section_rate": 0.5
+    "commodity_primary_dominant_section_rate": 0.75
   },
   "selection_guardrails": {
     "driver_tags": [
-      "low_tier_source_concentration"
+      "commodity_board",
+      "commodity_board_low_coverage"
     ],
     "section_card_min_fit": {
       "default": 0.8,
@@ -74,8 +75,8 @@
     "disable_relaxed_core_fill": false,
     "final_low_tier_max_per_section": 1,
     "final_low_tier_max_total": 4,
-    "commodity_active_min_rank": 1,
-    "commodity_program_core_min_rank": 1,
+    "commodity_active_min_rank": 2,
+    "commodity_program_core_min_rank": 3,
     "commodity_require_issue_signal": false,
     "commodity_require_direct_item_focus": false,
     "commodity_strict_primary_only": true,
@@ -83,40 +84,12 @@
   },
   "editorial_quality_samples": [
     {
-      "title": "복날에 지갑 열자 '정부 30% 할인'으로 삼계탕 물가 방어하는 법",
-      "href": "https://www.korea.kr/news/reporterView.do?newsId=148968804&call_from=naver_news",
-      "section": "policy",
-      "is_core": true,
-      "reasons": [
-        "promotional_or_event_filler"
-      ]
-    },
-    {
-      "title": "농협 개혁 2라운드…與 “중앙회장 상임화 추진”",
-      "href": "https://www.sedaily.com/article/20072481",
+      "title": "내가 산 샤인머스캣 컵과일, 취약계층 아동에게는 힘",
+      "href": "https://www.donga.com/news/Economy/article/all/20260728/134380537/2",
       "section": "policy",
       "is_core": false,
       "reasons": [
         "promotional_or_event_filler"
-      ]
-    },
-    {
-      "title": "온라인도매시장 전수조사…위법거래 없지만 촘촘한 모니터링 위해 제도...",
-      "href": "https://www.aflnews.co.kr/news/articleView.html?idxno=325224",
-      "section": "dist",
-      "is_core": true,
-      "reasons": [
-        "promotional_or_event_filler"
-      ]
-    },
-    {
-      "title": "수원지구원예 농협 ·평택원예 농협 ·평택시로컬푸드재단, 공공급식 농산물...",
-      "href": "https://www.nongmin.com/article/20260727500352",
-      "section": "dist",
-      "is_core": false,
-      "reasons": [
-        "promotional_or_event_filler",
-        "dist_event_or_development_without_ops"
       ]
     }
   ],
