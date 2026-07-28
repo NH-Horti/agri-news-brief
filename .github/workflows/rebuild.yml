@@ -181,6 +181,7 @@ jobs:
           KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
           KAKAO_REFRESH_TOKEN: ${{ secrets.KAKAO_REFRESH_TOKEN }}
           KAKAO_STATUS_FILE: ${{ runner.temp }}/kakao-status.txt
+          KAKAO_FAIL_OPEN: 'true'
           GA4_MEASUREMENT_ID: ${{ secrets.GA4_MEASUREMENT_ID }}
 
           PUBLISH_MODE: github_pages
@@ -191,6 +192,7 @@ jobs:
           MAINTENANCE_TASK: ${{ steps.vars.outputs.maintenance_task }}
           FORCE_REPORT_DATE: ${{ steps.vars.outputs.report_date }}
           MAINTENANCE_SEND_KAKAO: ${{ steps.vars.outputs.send_kakao }}
+          DELIVERY_RECEIPT_DIR: docs/delivery
           REPLAY_SNAPSHOT_PATH: ${{ steps.vars.outputs.replay_snapshot_path }}
           REPLAY_WRITE_SNAPSHOT: ${{ steps.vars.outputs.replay_write_snapshot }}
           REPLAY_ALLOW_OPENAI: 'false'
@@ -289,15 +291,32 @@ jobs:
 
           echo "actual=$actual" >> "$GITHUB_OUTPUT"
 
+      - name: Enforce Kakao delivery
+        if: always()
+        shell: bash
+        run: |
+          requested='${{ steps.vars.outputs.send_kakao }}'
+          actual='${{ steps.kakao_status.outputs.actual }}'
+          if [ "$requested" = 'true' ] && [ "$actual" != 'success' ] && [ "$actual" != 'already_delivered' ]; then
+            echo "::error::Kakao delivery did not complete with a durable receipt: $actual"
+            exit 1
+          fi
+
       - name: Verify rebuilt production archive content
         id: verify_archive
         shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
         run: |
           set -euo pipefail
 
           archive_path="docs/archive/${{ steps.vars.outputs.report_date }}.html"
-          if [ ! -f "$archive_path" ]; then
-            echo "Archive file was not generated: $archive_path"
+          mkdir -p "$(dirname "$archive_path")"
+          if ! gh api \
+            -H 'Accept: application/vnd.github.raw+json' \
+            "repos/${REPO}/contents/${archive_path}?ref=main" > "$archive_path"; then
+            echo "Published archive could not be fetched from main: $archive_path"
             exit 1
           fi
 

@@ -5,6 +5,8 @@ on:
   # actual Kakao delivery receipt, not merely the existence of a workflow run.
   schedule:
     - cron: '10,20,35,50 21 * * 0-4'
+    # Final KST 09:15 check runs after daily.yml's 150-minute timeout window.
+    - cron: '15 0 * * 1-5'
   workflow_dispatch:
     inputs:
       dry_run:
@@ -95,7 +97,7 @@ jobs:
             run_status='dispatched'
             run_conclusion='pending'
             result='recovery-dispatched'
-            echo "Delivery receipt was missing; full-briefing SLA recovery was dispatched."
+            echo "Delivery receipt was missing; standard-briefing SLA recovery was dispatched."
           fi
 
           {

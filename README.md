@@ -182,18 +182,26 @@ or sends the normal Kakao briefing, it now:
 4. re-evaluates the repaired edition, with at most five applied repair attempts;
 5. normally accepts an editorial score of 82 and operational/reader scores of
    85; and
-6. if only soft editorial targets still miss, publishes the same formal
-   four-section, five-card-per-section page through the SLA fallback when the
-   deterministic operational and reader scores are at least 78, all summaries
-   are present, and no hard reader or editorial issue exists.
+6. if only soft editorial targets still miss, publishes the same standard
+   four-section page through the SLA fallback when each section has at least
+   four safe cards, deterministic operational and reader scores are at least
+   78, all summaries are present, and no hard reader or editorial issue exists;
+   an operator-forced recovery ignores the score floor but keeps those summary,
+   hard-issue, and section-safety checks.
 
-The fallback never creates an alert-only or reduced page. It continues through
-the normal page renderer and normal Kakao summary builder. After a successful
-Kakao send, `docs/delivery/YYYY-MM-DD.json` is written as the authoritative
-delivery receipt. A same-day rerun suppresses duplicate sends when that receipt
-already exists. The watchdog checks the receipt rather than the mere existence
-of an Actions run and dispatches a forced deterministic recovery when delivery
-is still missing and no daily run is active.
+The fallback never creates an alert-only page. It continues through the normal
+page renderer and normal Kakao summary builder. After a successful Kakao send,
+including a production rebuild or replay, `docs/delivery/YYYY-MM-DD.json` is
+written as the authoritative delivery receipt. A same-day rerun suppresses
+duplicate sends when that receipt already exists. The watchdog checks the
+receipt rather than the mere existence of an Actions run, dispatches a forced
+deterministic recovery when delivery is still missing and no daily run is
+active, and performs a final 09:15 KST check after the daily timeout window.
+
+The 05:30 KST credential preflight validates Naver, OpenAI quota, and Kakao.
+If OpenAI returns `insufficient_quota` during generation, the run opens a local
+circuit breaker, stops repeated model calls, uses deterministic two-sentence
+summaries, and continues through the SLA delivery policy.
 
 Full model review runs
 daily until 20 consecutive evaluated reports pass with
