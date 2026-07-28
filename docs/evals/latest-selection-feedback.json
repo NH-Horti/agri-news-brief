@@ -1,27 +1,27 @@
 {
   "report_date": "2026-07-29",
-  "generated_at_kst": "2026-07-29T07:02:55+09:00",
+  "generated_at_kst": "2026-07-29T07:07:31+09:00",
   "scores": {
     "section_alignment": 100.0,
     "core_quality": 100.0,
     "commodity_board_quality": 88.43
   },
   "metrics": {
-    "section_alignment_low_fit_rate": 0.0526,
+    "section_alignment_low_fit_rate": 0.0,
     "section_alignment_cross_gap_rate": 0.0,
     "content_false_positive_rate": 0.0,
     "reader_hard_issue_count": 0,
     "reader_hard_issue_rate": 0.0,
-    "reader_quality_penalty": 1.6895,
+    "reader_quality_penalty": 0.75,
     "reader_quality_cap": 95.0,
     "weak_core_rate": 0.0,
     "policy_wrong_section_rate": 0.0,
-    "promotional_filler_rate": 0.0526,
+    "promotional_filler_rate": 0.0,
     "promotional_core_rate": 0.0,
     "weak_core_editorial_rate": 0.0,
     "pest_theme_duplicate_rate": 0.0,
     "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 0.1053,
+    "editorial_quality_penalty": 0.0,
     "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0,
@@ -39,7 +39,7 @@
     "commodity_primary_title_item_missing_rate": 0.0,
     "commodity_primary_body_only_rate": 0.0,
     "commodity_primary_false_link_rate": 0.0,
-    "commodity_pool_count": 28,
+    "commodity_pool_count": 27,
     "commodity_pool_false_link_rate": 0.0,
     "commodity_primary_dominant_section_rate": 0.75
   },
@@ -82,17 +82,7 @@
     "commodity_strict_primary_only": true,
     "commodity_disable_primary_fallback": true
   },
-  "editorial_quality_samples": [
-    {
-      "title": "내가 산 샤인머스캣 컵과일, 취약계층 아동에게는 힘",
-      "href": "https://www.donga.com/news/Economy/article/all/20260728/134380537/2",
-      "section": "policy",
-      "is_core": false,
-      "reasons": [
-        "promotional_or_event_filler"
-      ]
-    }
-  ],
+  "editorial_quality_samples": [],
   "reader_hard_issue_samples": [],
   "editorial_improvement_plan": {}
 }
