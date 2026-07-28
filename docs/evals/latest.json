@@ -1,14 +1,14 @@
 {
   "report_date": "2026-07-28",
-  "generated_at_kst": "2026-07-28T09:35:33+09:00",
+  "generated_at_kst": "2026-07-28T09:52:03+09:00",
   "status": "warn",
-  "overall_score": 79.53,
-  "operational_score": 90.57,
-  "reader_quality_score": 79.53,
+  "overall_score": 79.48,
+  "operational_score": 90.52,
+  "reader_quality_score": 79.48,
   "reader_quality_gate": {
     "status": "clear",
-    "headline_score": 79.53,
-    "operational_score": 90.57,
+    "headline_score": 79.48,
+    "operational_score": 90.52,
     "penalty": 11.04,
     "cap": 100.0,
     "reasons": []
@@ -19,15 +19,15 @@
     "source_quality": 60.0,
     "summary_quality": 100.0,
     "freshness": 100.0,
-    "retrieval_support": 88.75,
+    "retrieval_support": 88.12,
     "section_alignment": 100.0,
-    "core_quality": 97.17,
+    "core_quality": 97.14,
     "commodity_board_quality": 98.14,
-    "reader_quality": 79.53
+    "reader_quality": 79.48
   },
   "counts": {
     "briefing_total": 20,
-    "commodity_total": 41,
+    "commodity_total": 42,
     "commodity_primary_total": 12,
     "commodity_pool_total": 6,
     "commodity_active_today_total": 16,
@@ -46,15 +46,15 @@
       "pest": 2
     },
     "commodity_by_section": {
-      "supply": 12,
+      "supply": 13,
       "policy": 6,
       "dist": 17,
       "pest": 6
     },
     "raw_by_section": {
-      "supply": 176,
-      "policy": 113,
-      "dist": 64,
+      "supply": 181,
+      "policy": 107,
+      "dist": 61,
       "pest": 53
     },
     "expected_briefing_by_section": {
@@ -105,7 +105,7 @@
     "within_72h_rate": 1.0,
     "stale_over_96h_rate": 0.0,
     "freshness_window_mode": "regular",
-    "seed_coverage_score": 0.625,
+    "seed_coverage_score": 0.6042,
     "section_alignment_fit_avg": 3.7335,
     "section_alignment_low_fit_rate": 0.0,
     "section_alignment_cross_gap_rate": 0.0,
@@ -134,7 +134,7 @@
     "preferred_slot_gap_total": 0,
     "preferred_slot_penalty": 0.0,
     "core_fit_avg": 3.5112,
-    "core_rank_percentile_avg": 0.8604,
+    "core_rank_percentile_avg": 0.86,
     "core_stage_core_rate": 1.0,
     "weak_core_rate": 0.0,
     "commodity_primary_item_focus_rate": 1.0,
@@ -183,7 +183,7 @@
     "seed_coverage": {
       "supply": 0.5833,
       "policy": 0.5,
-      "dist": 0.75,
+      "dist": 0.6667,
       "pest": 0.6667
     },
     "section_alignment": {
@@ -193,9 +193,9 @@
       "pest": 1.0
     },
     "core_quality": {
-      "supply": 0.9416,
-      "policy": 0.9039,
-      "dist": 0.9766,
+      "supply": 0.9412,
+      "policy": 0.9079,
+      "dist": 0.9719,
       "pest": 1.0
     }
   },
@@ -363,7 +363,7 @@
     "reason": "429 Client Error: Too Many Requests for url: https://api.openai.com/v1/responses",
     "rubric_version": 3,
     "model": "gpt-5.6-sol",
-    "generated_at_kst": "2026-07-28T09:35:34+09:00",
+    "generated_at_kst": "2026-07-28T09:53:53+09:00",
     "raw_response_excerpt": ""
   },
   "prepublish_quality_gate": {
