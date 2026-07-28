@@ -31,7 +31,7 @@ class PrepublishQualityGateTests(unittest.TestCase):
 
     def test_editorial_pass_also_requires_deterministic_quality(self):
         result = {
-            "operational_score": 89.0,
+            "operational_score": 88.99,
             "counts": {"briefing_by_section": {section: 5 for section in main._section_keys()}},
             "metrics": {"reader_hard_issue_count": 0, "summary_presence_rate": 1.0},
             "scores": {"commodity_board_quality": 100.0},

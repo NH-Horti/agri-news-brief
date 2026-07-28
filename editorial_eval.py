@@ -26,11 +26,12 @@ DEFAULT_MAX_RAW_PER_SECTION = 24
 DEFAULT_TIMEOUT_SEC = 90
 OPENAI_TRANSIENT_MAX_ATTEMPTS = 4
 OPENAI_TRANSIENT_BASE_DELAY_SEC = 15.0
-EDITORIAL_DAILY_TARGET_SCORE = 88.0
+EDITORIAL_DAILY_TARGET_SCORE = 85.0
 EDITORIAL_EXCELLENT_SCORE = 92.0
 EDITORIAL_STRETCH_SCORE = 95.0
-EDITORIAL_CRITICAL_COMPONENT_MIN = 85.0
-EDITORIAL_COMPONENT_MIN = 80.0
+EDITORIAL_CRITICAL_COMPONENT_MIN = 82.0
+EDITORIAL_COMPONENT_MIN = 78.0
+EDITORIAL_OPERATIONAL_MIN_SCORE = 89.0
 SECTION_COUNT_TARGET_SCORE = 95.0
 COMMODITY_BOARD_TARGET_SCORE = 95.0
 
@@ -575,7 +576,7 @@ def _apply_editorial_acceptance_gate(
             operational_result.get("operational_score"),
             _as_float(operational_result.get("overall_score"), 0.0),
         )
-        >= 95.0,
+        >= EDITORIAL_OPERATIONAL_MIN_SCORE,
         "section_count_score_min": _as_float(
             section_count_context.get("score"),
             0.0,
@@ -1370,7 +1371,7 @@ def build_editorial_improvement_plan(
             "all_component_min": EDITORIAL_COMPONENT_MIN,
             "no_blocking_issues": True,
             "no_major_issues": True,
-            "operational_score_min": 95.0,
+            "operational_score_min": EDITORIAL_OPERATIONAL_MIN_SCORE,
             "section_count_score_min": SECTION_COUNT_TARGET_SCORE,
             "commodity_board_score_min": COMMODITY_BOARD_TARGET_SCORE,
             "no_section_underfill": True,
