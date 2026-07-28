@@ -51947,7 +51947,7 @@ def _run_prepublish_quality_gate(
     if excluded_counts:
         log.info("[QUALITY GATE] prefiltered locally invalid repair candidates: %s", excluded_counts)
 
-    repair_proposal_limit = PREPUBLISH_QUALITY_MAX_REPAIRS + 3
+    repair_proposal_limit = PREPUBLISH_QUALITY_MAX_REPAIRS + 5
     repair_proposal_count = 0
     applied_repair_count = 0
     while (
@@ -52012,22 +52012,77 @@ def _run_prepublish_quality_gate(
                     and _repair_validation_error_excludes_candidate(error)
                 ):
                     repair_excluded_links[section].add(link)
-            if attempt < repair_proposal_limit and any(repair_excluded_links.values()):
+            if attempt < repair_proposal_limit:
                 continue
             break
-        applied_repair_count += 1
-        repair_attempts[-1]["applied_repair"] = applied_repair_count
+        proposed_cards = {
+            section: [
+                {
+                    "keys": _repair_article_link_keys(article),
+                    "link": article.canon_url or article.link,
+                    "title": article.title,
+                }
+                for article in repaired_sections.get(section, []) or []
+            ]
+            for section in _section_keys()
+        }
         invalidated_summaries = _invalidate_editorial_bad_summary_cache(
             editorial_result,
             repaired_sections,
             summary_cache,
         )
         repair_attempts[-1]["invalidated_summary_cache_entries"] = len(invalidated_summaries)
-        current_sections = fill_summaries(repaired_sections, cache=summary_cache)
-        _finalize_sections_for_render(current_sections)
-        if any(len(current_sections.get(section, []) or []) < MAX_PER_SECTION for section in _section_keys()):
-            repair_attempts[-1]["status"] = "rejected_after_local_validation"
+        candidate_sections = fill_summaries(repaired_sections, cache=summary_cache)
+        _finalize_sections_for_render(candidate_sections)
+        underfilled_sections = [
+            section
+            for section in _section_keys()
+            if len(candidate_sections.get(section, []) or []) < MAX_PER_SECTION
+        ]
+        if underfilled_sections:
+            finalization_errors: list[JsonDict] = []
+            for section in underfilled_sections:
+                retained_keys: set[str] = set()
+                for article in candidate_sections.get(section, []) or []:
+                    retained_keys.update(_repair_article_link_keys(article))
+                removed_cards = [
+                    card
+                    for card in proposed_cards.get(section, [])
+                    if not set(card.get("keys") or set()).intersection(retained_keys)
+                ]
+                if removed_cards:
+                    for card in removed_cards:
+                        finalization_errors.append(
+                            {
+                                "section": section,
+                                "reason": "post_finalize_candidate_removed",
+                                "link": str(card.get("link") or ""),
+                                "title": str(card.get("title") or "")[:180],
+                            }
+                        )
+                else:
+                    finalization_errors.append(
+                        {
+                            "section": section,
+                            "reason": "post_finalize_section_underfill",
+                            "link": "",
+                            "title": "",
+                        }
+                    )
+            repair_attempts[-1]["status"] = "rejected_after_finalization"
+            repair_attempts[-1]["validation_errors"] = finalization_errors
+            repair_validation_errors.extend(finalization_errors)
+            for error in finalization_errors:
+                section = str(error.get("section") or "")
+                link = str(error.get("link") or "").strip()
+                if section in repair_excluded_links and link:
+                    repair_excluded_links[section].add(link)
+            if attempt < repair_proposal_limit:
+                continue
             break
+        current_sections = candidate_sections
+        applied_repair_count += 1
+        repair_attempts[-1]["applied_repair"] = applied_repair_count
         current_html = render_daily_page(
             report_date,
             start_kst,
