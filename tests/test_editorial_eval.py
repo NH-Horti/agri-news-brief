@@ -76,6 +76,24 @@ class _FakeSession:
         )
 
 
+class _RateLimitedResponse:
+    status_code = 429
+    headers = {"Retry-After": "0"}
+
+    def raise_for_status(self):
+        raise editorial_eval.requests.HTTPError("429 Too Many Requests")
+
+
+class _RateLimitedOnceSession(_FakeSession):
+    def post(self, url, headers=None, json=None, timeout=None):
+        if not self.requests:
+            self.requests.append(
+                {"url": url, "headers": headers or {}, "json": json or {}, "timeout": timeout}
+            )
+            return _RateLimitedResponse()
+        return super().post(url, headers=headers, json=json, timeout=timeout)
+
+
 def json_module_dumps(payload):
     return json.dumps(payload)
 
@@ -162,6 +180,24 @@ class EditorialEvalTests(unittest.TestCase):
         self.assertIn("bad_summary", issue_schema["type"]["enum"])
         self.assertEqual(result["usage"]["input_tokens"], 1000)
         self.assertEqual(result["usage"]["cached_input_tokens"], 200)
+
+    def test_evaluate_editorial_quality_retries_transient_429(self):
+        session = _RateLimitedOnceSession()
+        with patch.object(editorial_eval.time, "sleep") as sleep_mock:
+            result = editorial_eval.evaluate_editorial_quality(
+                self.report_date,
+                self.html_text,
+                self.snapshot_payload,
+                self._operational_with_uniform_counts(),
+                api_key="test-key",
+                model="test-model",
+                max_raw_per_section=2,
+                session_factory=lambda: session,
+            )
+
+        self.assertEqual(result["status"], "success")
+        self.assertEqual(len(session.requests), 2)
+        sleep_mock.assert_called_once_with(0.0)
 
     def test_default_model_is_gpt_5_6_sol_and_does_not_follow_generation_model(self):
         session = _FakeSession()

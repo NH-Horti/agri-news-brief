@@ -4,6 +4,7 @@ from datetime import datetime
 import json
 import os
 import re
+import time
 from typing import Any
 
 import requests
@@ -23,6 +24,8 @@ EDITORIAL_RUBRIC_VERSION = 3
 DEFAULT_EDITORIAL_MODEL = "gpt-5.6-sol"
 DEFAULT_MAX_RAW_PER_SECTION = 24
 DEFAULT_TIMEOUT_SEC = 90
+OPENAI_TRANSIENT_MAX_ATTEMPTS = 4
+OPENAI_TRANSIENT_BASE_DELAY_SEC = 15.0
 EDITORIAL_DAILY_TARGET_SCORE = 88.0
 EDITORIAL_EXCELLENT_SCORE = 92.0
 EDITORIAL_STRETCH_SCORE = 95.0
@@ -86,6 +89,45 @@ EDITORIAL_HARD_BLOCKING_TYPES = {
     "factual_error",
     "unsafe_summary",
 }
+
+
+def _post_openai_response_with_retry(
+    session: Any,
+    *,
+    headers: dict[str, str],
+    request_body: dict[str, Any],
+    timeout_sec: int,
+) -> Any:
+    """Retry transient Responses API failures, especially short-lived 429s."""
+    for attempt in range(OPENAI_TRANSIENT_MAX_ATTEMPTS):
+        try:
+            response = session.post(
+                "https://api.openai.com/v1/responses",
+                headers=headers,
+                json=request_body,
+                timeout=timeout_sec,
+            )
+        except requests.RequestException:
+            if attempt + 1 >= OPENAI_TRANSIENT_MAX_ATTEMPTS:
+                raise
+            time.sleep(min(60.0, OPENAI_TRANSIENT_BASE_DELAY_SEC * (2**attempt)))
+            continue
+
+        status_code = int(getattr(response, "status_code", 200) or 200)
+        if status_code != 429 and status_code < 500:
+            response.raise_for_status()
+            return response
+        if attempt + 1 >= OPENAI_TRANSIENT_MAX_ATTEMPTS:
+            response.raise_for_status()
+
+        retry_after = str(getattr(response, "headers", {}).get("Retry-After", "") or "").strip()
+        try:
+            delay = float(retry_after)
+        except ValueError:
+            delay = OPENAI_TRANSIENT_BASE_DELAY_SEC * (2**attempt)
+        time.sleep(max(0.0, min(60.0, delay)))
+
+    raise RuntimeError("OpenAI response retry loop exhausted")
 
 
 def _score_schema() -> dict[str, Any]:
@@ -1029,16 +1071,15 @@ def evaluate_editorial_quality(
     session = session_factory()
     raw_text = ""
     try:
-        response = session.post(
-            "https://api.openai.com/v1/responses",
+        response = _post_openai_response_with_retry(
+            session,
             headers={
                 "Authorization": f"Bearer {resolved_key}",
                 "Content-Type": "application/json",
             },
-            json=request_body,
-            timeout=timeout_sec,
+            request_body=request_body,
+            timeout_sec=timeout_sec,
         )
-        response.raise_for_status()
         response_payload = response.json()
         raw_text = _extract_response_text(response_payload)
         parsed = extract_json_object(raw_text)
@@ -1157,16 +1198,15 @@ def propose_editorial_repair(
     session = session_factory()
     raw_text = ""
     try:
-        response = session.post(
-            "https://api.openai.com/v1/responses",
+        response = _post_openai_response_with_retry(
+            session,
             headers={
                 "Authorization": f"Bearer {resolved_key}",
                 "Content-Type": "application/json",
             },
-            json=request_body,
-            timeout=timeout_sec,
+            request_body=request_body,
+            timeout_sec=timeout_sec,
         )
-        response.raise_for_status()
         response_payload = response.json()
         raw_text = _extract_response_text(response_payload)
         parsed = extract_json_object(raw_text)
