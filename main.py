@@ -91,6 +91,7 @@ from replay import (
     load_snapshot as _replay_load_snapshot,
 )
 from ux_patch import build_archive_ux_html
+from story_dedup import canonical_event_fingerprint, duplicate_event_reason
 
 
 _ENV_KEY_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
@@ -3473,6 +3474,9 @@ def _dist_story_signature(title: str, desc: str) -> str | None:
     if not text:
         return None
     compact = re.sub(r"\s+", "", text)
+    shared_fingerprint = canonical_event_fingerprint(title, desc)
+    if shared_fingerprint and shared_fingerprint[0] == "facility_upgrade":
+        return "EV:" + ":".join(shared_fingerprint)
     # ✅ 서울시-가락시장-부적합 농수산물(잔류농약/방사능/수거검사/불시검사) 같은 보도자료 다매체 중복을 강하게 제거
     if "서울시" in text and "가락시장" in text and ("농수산물" in text or "농산물" in text):
         if ("부적합" in text or "잔류농약" in text or "방사능" in text) and ("수거" in text or "검사" in text or "불시" in text):
@@ -4764,6 +4768,14 @@ def _duplicate_story_pair_reason(a: "Article", b: "Article") -> str:
     url_b = str(getattr(b, "canon_url", "") or "")
     if url_a and url_b and url_a == url_b:
         return "same_url"
+    shared_reason = duplicate_event_reason(
+        getattr(a, "title", "") or "",
+        getattr(a, "description", "") or "",
+        getattr(b, "title", "") or "",
+        getattr(b, "description", "") or "",
+    )
+    if shared_reason:
+        return shared_reason
     try:
         if _is_similar_title(getattr(a, "title_key", "") or "", getattr(b, "title_key", "") or ""):
             return "similar_title"
@@ -12118,6 +12130,25 @@ def is_dist_primary_supply_price_story(title: str, desc: str) -> bool:
     text = _nfkc_lower(f"{title or ''} {desc or ''}".strip())
     if not text:
         return False
+    strong_field_loss = bool(
+        _title_has_horti_item(title or "")
+        and any(
+            term in ttl_l
+            for term in (
+                "밭에서 썩", "수확 포기", "수확을 포기", "팔수록 손해", "생산비도 안",
+                "가격 폭락", "가격 급락", "값 폭락", "산지폐기", "산지 폐기", "갈아엎",
+            )
+        )
+    )
+    strong_title_dist_ops = any(
+        term in ttl_l
+        for term in (
+            "산지유통센터", "물류센터", "온라인도매시장", "정산시스템", "공판장 개장",
+            "경매 시작", "경매 개시", "수출길", "선적", "통관", "검역", "원산지 단속",
+        )
+    )
+    if strong_field_loss and not strong_title_dist_ops:
+        return True
     if is_dist_quality_field_ops_context(title, desc):
         return False
     title_supply_hits = count_any(ttl_l, [w.lower() for w in _DIST_PRIMARY_SUPPLY_TITLE_TERMS])
@@ -17657,6 +17688,38 @@ def _dynamic_threshold(candidates_sorted: list["Article"], section_key: str) -> 
         thr = max(_base_floor, thr - relief)
     return thr
 
+
+def _is_supply_priority_threshold_rescue(article: "Article", section_key: str, section_conf: JsonDict) -> bool:
+    """Keep high-confidence managed-commodity field crises in the supply pool.
+
+    A day's unusually high top score must not hide a major cabbage/onion/etc.
+    price collapse merely because the article uses concrete field language
+    ("harvest abandoned", "rotting in fields") instead of generic score terms.
+    """
+    if section_key != "supply" or not isinstance(article, Article):
+        return False
+    if not is_dist_primary_supply_price_story(article.title or "", article.description or ""):
+        return False
+    managed = _managed_commodity_match_summary(article.title or "", article.description or "")
+    if int(managed.get("program_core_count") or 0) < 1:
+        return False
+    if press_priority(article.press, article.domain) < 2:
+        return False
+    try:
+        fit_score = section_fit_score(
+            article.title or "",
+            article.description or "",
+            section_conf,
+            article.domain or "",
+            article.press or "",
+        )
+    except Exception:
+        return False
+    return bool(
+        fit_score >= 1.2
+        and float(getattr(article, "score", 0.0) or 0.0) >= BASE_MIN_SCORE.get("supply", 6.0) + 6.0
+    )
+
 def select_top_articles(candidates: list[Article], section_key: str, max_n: int) -> list[Article]:
     """섹션별 기사 선택.
 
@@ -17716,7 +17779,12 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
     high_score_low_fit_rescue_margin = _selection_guardrail_number("high_score_low_fit_rescue_margin", 3.0)
 
     hf_pre_margin = float(HF_SEMANTIC_MAX_BOOST) + 0.5 if HF_SEMANTIC_RERANK_ENABLED else 0.0
-    pre_pool = [a for a in candidates_sorted_raw if a.score >= (thr - hf_pre_margin)]
+    pre_pool = [
+        a
+        for a in candidates_sorted_raw
+        if a.score >= (thr - hf_pre_margin)
+        or _is_supply_priority_threshold_rescue(a, section_key, sec_conf)
+    ]
 
     # dist/supply: 동일 이슈(APC 준공, 공급비용 압박 후속 리포트 등)가 여러 건 반복될 때
     # '이벤트 키'로 먼저 1차 클러스터링하여 중복으로 핵심이 밀리는 문제를 완화한다.
@@ -17742,7 +17810,12 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
     # semantic boost를 반영한 adjusted score로 threshold 적용
     # HF API 장애 시(adjustments 비어 있음) boost=0이므로 순수 keyword score 기반으로 fallback된다.
     # 이때 pre_pool 마진 확장 대상은 자연히 탈락하여 no-HF baseline과 동일하게 동작한다.
-    pool = [a for a in pre_pool if (a.score + a.semantic_boost) >= thr]
+    pool = [
+        a
+        for a in pre_pool
+        if (a.score + a.semantic_boost) >= thr
+        or _is_supply_priority_threshold_rescue(a, section_key, sec_conf)
+    ]
 
     if not pool:
         return []
@@ -18847,7 +18920,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 break
             if dist_market_disruption_scope(a.title or "", a.description or "") != "systemic":
                 continue
-            if a.score < core_min:
+            if a.score < core_min and not _is_supply_priority_threshold_rescue(a, section_key, sec_conf):
                 continue
             if _is_dist_weak_tail_story(a):
                 continue
@@ -18867,7 +18940,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
     for a in _core_iteration_pool(pool):
         if len(core) >= 2:
             break
-        if a.score < core_min:
+        if a.score < core_min and not _is_supply_priority_threshold_rescue(a, section_key, sec_conf):
             continue
         if _already_used(a):
             continue
@@ -18991,7 +19064,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             dist_eff_thr = thr
             if section_key == "dist" and apc_ctx_local and any(w in text for w in ("준공","완공","개장","개소","가동","선별","선과","저온","저온저장","저장고","ca저장")):
                 dist_eff_thr = max(0.0, thr - 0.8)
-            if a.score < dist_eff_thr:
+            if a.score < dist_eff_thr and not _is_supply_priority_threshold_rescue(a, section_key, sec_conf):
                 continue
             if _already_used(a):
                 continue
@@ -19288,7 +19361,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if section_key == "policy" and not _is_policy_tail_candidate(a):
                 continue
             # 점수 꼬리(tail)가 약하면 추가하지 않는다(필요시 2~3개로 종료)
-            if a.score < tail_cut:
+            if a.score < tail_cut and not _is_supply_priority_threshold_rescue(a, section_key, sec_conf):
                 continue
             if _already_used(a):
                 continue
@@ -19388,7 +19461,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
             if section_key == "policy" and not _is_policy_tail_candidate(a):
                 continue
             # 점수 꼬리(tail)가 약하면 추가하지 않는다(필요시 2~3개로 종료)
-            if a.score < tail_cut:
+            if a.score < tail_cut and not _is_supply_priority_threshold_rescue(a, section_key, sec_conf):
                 continue
             if _already_used(a):
                 continue
@@ -20498,7 +20571,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                     return "hf_semantic_noise"
                 if not _headline_gate_relaxed(a, section_key):
                     return "headline_gate"
-                if a.score < tail_cut:
+                if a.score < tail_cut and not _is_supply_priority_threshold_rescue(a, section_key, sec_conf):
                     return "tail_cut"
                 if section_key == "supply":
                     if _is_supply_policy_like_tail_story(a):
@@ -23125,6 +23198,7 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
         dist_export_field_like = is_dist_export_field_context(a.title or "", a.description or "", dom, press)
         policy_export_support_like = is_policy_export_support_brief_context(a.title or "", a.description or "", dom, press)
         supply_price_outlook_like = is_supply_price_outlook_context(a.title or "", a.description or "")
+        dominant_supply_story = is_dist_primary_supply_price_story(a.title or "", a.description or "")
 
         # candidate set: current + (supply/dist/policy/pest)
         cand_keys = []
@@ -23220,6 +23294,7 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
         force_move_to_pest = (cur != "pest") and strong_pest_context and ("pest" in conf_by_key)
         prefer_move_to_dist = (
             cur != "dist"
+            and not dominant_supply_story
             and not dist_program_event_noise_like
             and not dist_unanchored_agritech_noise_like
             and (dist_market_disruption or dist_market_ops_like or dist_supply_center_like or dist_sales_channel_ops_like or is_dist_export_shipping_context(a.title, a.description) or dist_export_field_like or dist_export_support_hub_like or (local_org_feature and (not dist_local_org_tail) and has_apc_agri_context(txt)))
@@ -23234,6 +23309,7 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
         )
         preserve_dist_owner = (
             cur == "dist"
+            and not dominant_supply_story
             and not dist_program_event_noise_like
             and not dist_unanchored_agritech_noise_like
             and (
@@ -23262,11 +23338,16 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
         )
         prefer_move_to_supply = (
             cur != "supply"
-            and supply_price_outlook_like
+            and (supply_price_outlook_like or dominant_supply_story)
             and not policy_domain_override(dom, txt)
             and ("supply" in cand_scores)
-            and (cand_fits.get("supply", float("-inf")) + 0.2 >= cur_fit)
-            and (cand_scores.get("supply", float("-inf")) + 1.5 >= cur_score)
+            and (
+                dominant_supply_story
+                or (
+                    (cand_fits.get("supply", float("-inf")) + 0.2 >= cur_fit)
+                    and (cand_scores.get("supply", float("-inf")) + 1.5 >= cur_score)
+                )
+            )
         )
         if preserve_dist_owner:
             if best_key in ("supply", "policy"):
@@ -23300,7 +23381,7 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
                 if best_fit_key == "policy":
                     best_fit_key = cur
                     best_fit_score = cur_fit
-        if cur == "supply" and supply_price_outlook_like:
+        if cur == "supply" and (supply_price_outlook_like or dominant_supply_story):
             best_key = cur
             best_score = cur_score
             prefer_move_to_policy = False
@@ -23355,6 +23436,28 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
                     moved += 1
             except Exception:
                 pass
+
+        if a.section != cur:
+            # A replay snapshot can carry selection metadata from an older owner.
+            # Once ownership changes, stale fit/core/stage values must not influence
+            # later ranking, duplicate representative choice, or diagnostics.
+            target_fit = cand_fits.get(a.section)
+            if target_fit is None:
+                try:
+                    target_conf = conf_by_key.get(a.section, {})
+                    target_fit = section_fit_score(
+                        a.title or "",
+                        a.description or "",
+                        target_conf,
+                        dom,
+                        press,
+                    )
+                except Exception:
+                    target_fit = 0.0
+            a.selection_fit_score = round(float(target_fit or 0.0), 3)
+            a.is_core = False
+            a.selection_stage = "section_owner_reassign"
+            a.selection_note = f"dominant_editorial_owner:{a.section}"
 
         target = a.section
         di = local_dedupe_by.get(target)
@@ -27657,7 +27760,11 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
                 agri_media_bonus = 1 if d in {"agrinet.co.kr","nongmin.com","aflnews.co.kr","farminsight.net","wonyesanup.co.kr"} else 0
                 dist_min_hits = 2 if agri_media_bonus else 3
                 # 농업전문매체 기사라도 유통/도매/APC/출하/물류 신호가 최소 2개는 있어야 dist로 이동
-                if dist_like_hits >= dist_min_hits and (best_horti_score(a.title, a.description) >= 1.6 or count_any(txt, [t.lower() for t in ("농산물","농식품","원예","과수","과일","채소","청과","화훼","절화")]) >= 1):
+                if (
+                    dist_like_hits >= dist_min_hits
+                    and not is_dist_primary_supply_price_story(a.title or "", a.description or "")
+                    and (best_horti_score(a.title, a.description) >= 1.6 or count_any(txt, [t.lower() for t in ("농산물","농식품","원예","과수","과일","채소","청과","화훼","절화")]) >= 1)
+                ):
                     # dist 기준으로도 통과할 때만 이동
                     try:
                         if is_relevant(a.title, a.description, d, a.canon_url or a.url, dist_conf, p):
@@ -29123,6 +29230,34 @@ def _build_sections_phase123(
             _sync_debug_with_final_sections(final_by_section)
     except Exception as e:
         log.warning("[WARN] final soft-news core gate failed: %s", e)
+
+    try:
+        # Source/domain/reader-quality substitutions run after earlier dedupe passes and
+        # can both create a section gap and reintroduce another outlet's version of an
+        # event. Restore qualified gaps even when no duplicate was removed in this
+        # pass, then reassert the global invariant with duplicate-aware refill.
+        publish_gap_refilled = _recover_preferred_section_counts_from_raw(
+            final_by_section,
+            raw_by_section,
+            max_items=PREFERRED_PER_SECTION,
+        )
+        publish_dedupe_removed, publish_dedupe_refilled = _final_global_story_dedupe(
+            final_by_section,
+            raw_by_section,
+            max_passes=3,
+        )
+        if publish_gap_refilled or publish_dedupe_removed or publish_dedupe_refilled:
+            _ensure_final_selection_fit(final_by_section)
+            _demote_soft_news_final_cores(final_by_section, raw_by_section)
+            _sync_debug_with_final_sections(final_by_section)
+            log.info(
+                "[REBALANCE] publication invariant gap-refilled=%d dedupe-removed=%d dedupe-refilled=%d",
+                publish_gap_refilled,
+                publish_dedupe_removed,
+                publish_dedupe_refilled,
+            )
+    except Exception as e:
+        log.warning("[WARN] publication invariant dedupe failed: %s", e)
 
     # The raw commodity pool is deliberately broader than the final briefing,
     # but cap/filter decisions must never make an eligible selected card vanish
@@ -32783,6 +32918,11 @@ def _preferred_tail_block_reason(
     if section_key == "supply":
         if _is_foodservice_supply_chain_slot_story(article):
             return ""
+        if is_dist_primary_supply_price_story(title, desc):
+            # Commodity price collapse, harvest abandonment, and field disposal are
+            # decision-critical supply stories even when the headline has no generic
+            # "price/supply" token or the body mentions market fees and logistics.
+            return ""
         nonmarket_hits = count_any(
             text,
             [w.lower() for w in ("화장품", "뷰티", "레시피", "요리", "맛집", "관광", "체험", "시식")],
@@ -34309,6 +34449,13 @@ def _candidate_conflicts_with_final(
             existing_ident = _article_selection_identity(existing)
             if candidate_ident and existing_ident and candidate_ident == existing_ident:
                 return True
+            if duplicate_event_reason(
+                candidate.title or "",
+                candidate.description or "",
+                existing.title or "",
+                existing.description or "",
+            ):
+                return True
             if str(other_section or "") == section_key and candidate_story_sig:
                 try:
                     if candidate_story_sig == _final_story_signature(section_key, existing):
@@ -34559,6 +34706,9 @@ def _final_story_signature(section_key: str, article: Article) -> tuple[str, ...
     text = _nfkc_lower(f"{article.title or ''} {article.description or ''}")
     if not text.strip():
         return ()
+    shared_fingerprint = canonical_event_fingerprint(article.title or "", article.description or "")
+    if shared_fingerprint:
+        return ("canonical_event",) + shared_fingerprint
     if "월동채소" in text and any(term in text for term in ("가격", "약세", "하락", "생산량", "출하")):
         return (section_key, "제주_월동채소_가격수급")
     if "햇사레" in text and "복숭아" in text and "출하" in text:
@@ -38139,6 +38289,13 @@ def _is_publish_policy_price_package_title(title: str) -> bool:
 
 def _publish_editorial_duplicate_story(section_key: str, left: Article, right: Article) -> bool:
     if _article_selection_identity(left) == _article_selection_identity(right):
+        return True
+    if duplicate_event_reason(
+        left.title or "",
+        left.description or "",
+        right.title or "",
+        right.description or "",
+    ):
         return True
     try:
         if _is_similar_title(left.title_key or "", right.title_key or ""):

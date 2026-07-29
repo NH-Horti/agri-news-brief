@@ -196,6 +196,143 @@ class TestSameEventMultiOutlet(unittest.TestCase):
         )
         self.assertEqual(reason, "same_online_market_logistics_program")
 
+    def test_same_apc_upgrade_is_deduped_across_outlets(self):
+        articles = [
+            _mk(
+                "dist",
+                "무주군, 스마트 APC 전환으로 산지유통센터 첨단화",
+                "무주군이 7억7000만원을 투입해 ERP 포장라인과 복분자 냉동창고를 구축했다.",
+                press="전라일보",
+                domain="jeollailbo.com",
+            ),
+            _mk(
+                "dist",
+                "무주군, 농산물산지유통센터 고도화…선별 체계·냉동시설 보완",
+                "전북 무주군은 농림식품부 공모사업으로 산지유통센터의 선별 체계와 냉동시설을 보완했다.",
+                press="연합뉴스",
+                domain="yna.co.kr",
+            ),
+            _mk(
+                "dist",
+                "무주 농산물산지유통센터 첨단화 완료…산지유통 경쟁력 강화",
+                "무주군이 스마트 APC 전환사업을 마치고 연간 6000톤 선별 기반을 마련했다.",
+                press="뉴스핌",
+                domain="newspim.com",
+            ),
+        ]
+
+        self.assertTrue(main._duplicate_story_pair_reason(articles[0], articles[1]))
+        self.assertTrue(main._duplicate_story_pair_reason(articles[0], articles[2]))
+        final = {"supply": [], "policy": [], "dist": list(articles), "pest": []}
+        removed, _refilled = main._final_global_story_dedupe(final, None, min_keep=1)
+        self.assertEqual(removed, 2)
+        self.assertEqual(len(final["dist"]), 1)
+
+    def test_same_quantified_supply_program_is_cross_section_duplicate(self):
+        supply = _mk(
+            "supply",
+            "농협·농식품부, 여름 과채류 수급 안정에 12억4천만원 투입",
+            "여름철 과채류 가격과 출하 안정을 위해 농가 지원에 나선다.",
+            press="연합뉴스",
+            domain="yna.co.kr",
+        )
+        policy = _mk(
+            "policy",
+            "농협, 폭염 대응 하절기 과채류 수급 안정 대책 추진…12억4천만원 투입",
+            "농림축산식품부와 농협이 할인 지원과 출하비 지원 대책을 시행한다.",
+            press="세계일보",
+            domain="segye.com",
+        )
+
+        self.assertTrue(main._duplicate_story_pair_reason(supply, policy))
+
+    def test_same_supply_program_matches_when_one_headline_omits_amount(self):
+        detailed = _mk(
+            "policy",
+            "농협, 폭염 대응 하절기 과채류 수급 안정 대책 추진…12억4천만원 투입",
+            "농림축산식품부와 농협이 생산부터 유통까지 지원한다.",
+            press="세계일보",
+            domain="segye.com",
+        )
+        short = _mk(
+            "policy",
+            "농협-농식품부, 과채류 수급 안정에 협력",
+            "주요 과채류의 도매가격이 기준가격 아래면 참여 농가를 지원한다.",
+            press="보건신문",
+            domain="bokuennews.com",
+        )
+
+        self.assertEqual(
+            main._duplicate_story_pair_reason(detailed, short),
+            "same_supply_stabilization_program",
+        )
+
+    def test_same_food_cost_relief_release_matches_across_headline_angles(self):
+        price_angle = _mk(
+            "policy",
+            '농식품부, 식품업계 원가부담 완화 지원…"물가 안정 총력"',
+            "수입 원재료 할당관세와 원료 구매자금 융자를 지원한다.",
+            press="SBS",
+            domain="biz.sbs.co.kr",
+        )
+        industry_angle = _mk(
+            "policy",
+            '식품업계 잇단 인상에…농식품부 "원가 부담 완화 지원"',
+            "식품업체의 가격 인상 시기를 분산하고 할인 행사를 확대한다.",
+            press="연합뉴스TV",
+            domain="yonhapnewstv.co.kr",
+        )
+
+        self.assertEqual(
+            main._duplicate_story_pair_reason(price_angle, industry_angle),
+            "same_food_industry_cost_relief",
+        )
+
+    def test_field_price_collapse_is_owned_by_supply_not_distribution(self):
+        article = _mk(
+            "dist",
+            '"가락시장 수수료도 안 나와"…밭에서 썩는 고랭지 배추',
+            (
+                "강원 고랭지에서 배추 가격 폭락으로 수확을 포기하는 농가가 늘었다. "
+                "가락시장 가격이 생산비와 포장비, 운임에도 못 미쳐 팔수록 손해다."
+            ),
+            press="YTN",
+            domain="ytn.co.kr",
+            score=40.0,
+        )
+        raw = {"supply": [], "policy": [], "dist": [article], "pest": []}
+
+        self.assertTrue(main.is_dist_primary_supply_price_story(article.title, article.description))
+        self.assertEqual(
+            main._postbuild_article_reject_reason(article, "dist", apply_selection_fit=False),
+            "dist_primary_supply_price_story",
+        )
+        self.assertEqual(
+            main._preferred_tail_block_reason(
+                article,
+                "supply",
+                current_count=4,
+                raw_count=20,
+            ),
+            "",
+        )
+        self.assertTrue(
+            main._is_supply_priority_threshold_rescue(
+                article,
+                "supply",
+                main._get_section_conf("supply") or {},
+            )
+        )
+        main._global_section_reassign(
+            raw,
+            datetime(2026, 7, 28, 6, 0, tzinfo=KST),
+            datetime(2026, 7, 29, 6, 0, tzinfo=KST),
+        )
+        self.assertIn(article, raw["supply"])
+        self.assertNotIn(article, raw["dist"])
+        self.assertEqual(article.selection_stage, "section_owner_reassign")
+        self.assertGreater(article.selection_fit_score, 4.0)
+
     def test_onion_price_recovery_reports_are_same_event(self):
         reason = main._same_event_story_reason(
             "양파값 회복에 882억 투입한 농협, 효과 봤다",

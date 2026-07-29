@@ -1223,6 +1223,57 @@ class ReportEvalTests(unittest.TestCase):
         self.assertEqual(result["metrics"]["story_duplicate_rate"], 0.5)
         self.assertIn(result["story_duplicate_samples"][0]["reason"], {"known_duplicate_url", "same_event_numbers"})
 
+    def test_eval_uses_source_independent_event_fingerprint(self) -> None:
+        html = """
+        <div data-surface="briefing_card" data-section="dist"
+          data-article-title="무주군, 스마트 APC 전환으로 산지유통센터 첨단화"
+          data-href="https://one.example/apc" data-article-id="apc-a"
+          data-target-domain="one.example"><div class="sum">무주군이 ERP 포장라인을 구축했다.</div></div>
+        <div data-surface="briefing_card" data-section="dist"
+          data-article-title="무주군, 농산물산지유통센터 고도화…선별 체계·냉동시설 보완"
+          data-href="https://two.example/apc" data-article-id="apc-b"
+          data-target-domain="two.example"><div class="sum">전북 무주군이 냉동시설을 보완했다.</div></div>
+        <div data-surface="briefing_card" data-section="dist"
+          data-article-title="무주 농산물산지유통센터 첨단화 완료…산지유통 경쟁력 강화"
+          data-href="https://three.example/apc" data-article-id="apc-c"
+          data-target-domain="three.example"><div class="sum">무주군 스마트 APC 사업이 완료됐다.</div></div>
+        """
+        samples, duplicate_indices = report_eval._briefing_story_duplicate_samples(
+            report_eval.parse_report_html(html)
+        )
+
+        self.assertEqual(duplicate_indices, {1, 2})
+        self.assertTrue(all(sample["reason"] == "same_facility_upgrade" for sample in samples))
+
+    def test_eval_detects_amount_omission_and_press_release_headline_angles(self) -> None:
+        html = """
+        <div data-surface="briefing_card" data-section="policy"
+          data-article-title="농협, 하절기 과채류 수급 안정 대책…12억4천만원 투입"
+          data-href="https://one.example/program" data-article-id="program-a"
+          data-target-domain="one.example"><div class="sum">농식품부와 함께 추진한다.</div></div>
+        <div data-surface="briefing_card" data-section="policy"
+          data-article-title="농협-농식품부, 과채류 수급 안정에 협력"
+          data-href="https://two.example/program" data-article-id="program-b"
+          data-target-domain="two.example"></div>
+        <div data-surface="briefing_card" data-section="policy"
+          data-article-title="농식품부, 식품업계 원가부담 완화 지원…물가 안정 총력"
+          data-href="https://three.example/cost" data-article-id="cost-a"
+          data-target-domain="three.example"></div>
+        <div data-surface="briefing_card" data-section="policy"
+          data-article-title="식품업계 잇단 인상에…농식품부 원가 부담 완화 지원"
+          data-href="https://four.example/cost" data-article-id="cost-b"
+          data-target-domain="four.example"></div>
+        """
+        samples, duplicate_indices = report_eval._briefing_story_duplicate_samples(
+            report_eval.parse_report_html(html)
+        )
+
+        self.assertEqual(duplicate_indices, {1, 3})
+        self.assertEqual(
+            {sample["reason"] for sample in samples},
+            {"same_supply_stabilization_program", "same_food_industry_cost_relief"},
+        )
+
     def test_eval_scores_editorial_selection_risks(self) -> None:
         articles = [
             ("policy", "5월 입하 이후, 품종 교체 및 주산지 변동으로 일부 농산물 가격 오름세", "https://example.com/policy-price", True, "core"),
