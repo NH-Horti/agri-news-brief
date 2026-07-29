@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-29T01:15:57+09:00",
+  "generated_at": "2026-07-30T00:58:46+09:00",
   "section_jump": [
     {
       "date": "2026-04-24",
@@ -58,12 +58,6 @@
     {
       "date": "2026-07-20",
       "count": 2,
-      "section": "supply",
-      "surface": "briefing_chip"
-    },
-    {
-      "date": "2026-04-01",
-      "count": 1,
       "section": "supply",
       "surface": "briefing_chip"
     },
@@ -268,22 +262,10 @@
   ],
   "view_switch": [
     {
-      "date": "2026-04-01",
-      "count": 13,
-      "from_view": "briefing",
-      "to_view": "commodity"
-    },
-    {
       "date": "2026-05-27",
       "count": 7,
       "from_view": "briefing",
       "to_view": "commodity"
-    },
-    {
-      "date": "2026-04-01",
-      "count": 5,
-      "from_view": "commodity",
-      "to_view": "briefing"
     },
     {
       "date": "2026-04-16",
@@ -305,6 +287,12 @@
     },
     {
       "date": "2026-07-14",
+      "count": 5,
+      "from_view": "briefing",
+      "to_view": "commodity"
+    },
+    {
+      "date": "2026-07-29",
       "count": 5,
       "from_view": "briefing",
       "to_view": "commodity"
@@ -826,27 +814,6 @@
       "to_date": "2026-06-22"
     },
     {
-      "date": "2026-04-01",
-      "count": 2,
-      "nav_type": "latest_brief",
-      "from_date": "(not set)",
-      "to_date": "2026-03-31"
-    },
-    {
-      "date": "2026-04-01",
-      "count": 2,
-      "nav_type": "latest_brief",
-      "from_date": "(not set)",
-      "to_date": "2026-04-01"
-    },
-    {
-      "date": "2026-04-01",
-      "count": 2,
-      "nav_type": "prev_date",
-      "from_date": "2026-03-31",
-      "to_date": "2026-03-30"
-    },
-    {
       "date": "2026-04-12",
       "count": 2,
       "nav_type": "next_date",
@@ -957,6 +924,13 @@
       "nav_type": "archive_index",
       "from_date": "2026-07-14",
       "to_date": "(not set)"
+    },
+    {
+      "date": "2026-07-29",
+      "count": 2,
+      "nav_type": "archive_index",
+      "from_date": "2026-07-29",
+      "to_date": ""
     },
     {
       "date": "2026-04-02",
