@@ -11,6 +11,8 @@ import re
 from typing import Any
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
+from story_dedup import duplicate_event_reason
+
 
 KST = timezone(timedelta(hours=9))
 SECTION_KEYS = ("supply", "policy", "dist", "pest")
@@ -865,6 +867,15 @@ def _story_duplicate_reason(left: SurfaceArticle, right: SurfaceArticle) -> str:
         return "same_url_duplicate"
     if any(fragment in right_url.lower() for fragment in _KNOWN_DUPLICATE_URL_FRAGMENTS):
         return "known_duplicate_url"
+
+    shared_reason = duplicate_event_reason(
+        left.title,
+        left.summary,
+        right.title,
+        right.summary,
+    )
+    if shared_reason:
+        return shared_reason
 
     left_text = _normalize_spaces(f"{left.title} {left.summary}").lower()
     right_text = _normalize_spaces(f"{right.title} {right.summary}").lower()
