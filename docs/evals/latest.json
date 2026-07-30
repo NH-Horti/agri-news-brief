@@ -1,63 +1,63 @@
 {
-  "report_date": "2026-07-30",
-  "generated_at_kst": "2026-07-30T06:18:11+09:00",
-  "status": "warn",
-  "overall_score": 80.36,
-  "operational_score": 90.48,
-  "reader_quality_score": 80.36,
+  "report_date": "2026-07-31",
+  "generated_at_kst": "2026-07-31T06:18:08+09:00",
+  "status": "pass",
+  "overall_score": 91.11,
+  "operational_score": 92.61,
+  "reader_quality_score": 91.11,
   "reader_quality_gate": {
     "status": "capped",
-    "headline_score": 80.36,
-    "operational_score": 90.48,
-    "penalty": 10.12,
-    "cap": 90.0,
+    "headline_score": 91.11,
+    "operational_score": 92.61,
+    "penalty": 1.5,
+    "cap": 95.0,
     "reasons": [
-      "pest_theme_duplicate"
+      "preferred_slot_underfill"
     ]
   },
   "scores": {
-    "completeness": 100.0,
-    "diversity": 88.0,
-    "source_quality": 40.0,
-    "summary_quality": 92.5,
+    "completeness": 92.8,
+    "diversity": 91.84,
+    "source_quality": 71.11,
+    "summary_quality": 96.67,
     "freshness": 100.0,
-    "retrieval_support": 90.0,
-    "section_alignment": 98.64,
-    "core_quality": 100.0,
-    "commodity_board_quality": 96.08,
-    "reader_quality": 80.36
+    "retrieval_support": 84.7,
+    "section_alignment": 96.67,
+    "core_quality": 94.73,
+    "commodity_board_quality": 90.9,
+    "reader_quality": 91.11
   },
   "counts": {
-    "briefing_total": 20,
-    "commodity_total": 29,
-    "commodity_primary_total": 7,
-    "commodity_pool_total": 12,
-    "commodity_active_today_total": 14,
-    "commodity_active_today_unlinked_total": 7,
-    "commodity_managed_unlinked_total": 26,
+    "briefing_total": 18,
+    "commodity_total": 49,
+    "commodity_primary_total": 13,
+    "commodity_pool_total": 14,
+    "commodity_active_today_total": 19,
+    "commodity_active_today_unlinked_total": 6,
+    "commodity_managed_unlinked_total": 20,
     "briefing_by_section": {
       "supply": 5,
       "policy": 5,
       "dist": 5,
-      "pest": 5
+      "pest": 3
     },
     "core_by_section": {
       "supply": 2,
-      "policy": 1,
+      "policy": 2,
       "dist": 2,
-      "pest": 1
+      "pest": 2
     },
     "commodity_by_section": {
-      "supply": 17,
-      "policy": 6,
-      "dist": 3,
-      "pest": 3
+      "supply": 36,
+      "policy": 3,
+      "dist": 4,
+      "pest": 6
     },
     "raw_by_section": {
-      "supply": 238,
-      "policy": 127,
-      "dist": 59,
-      "pest": 68
+      "supply": 318,
+      "policy": 110,
+      "dist": 67,
+      "pest": 26
     },
     "expected_briefing_by_section": {
       "supply": 5,
@@ -81,44 +81,44 @@
       "supply": 0,
       "policy": 0,
       "dist": 0,
-      "pest": 0
+      "pest": 2
     },
-    "low_tier_source_total": 6,
+    "low_tier_source_total": 4,
     "low_tier_source_by_section": {
       "supply": 1,
       "policy": 1,
-      "dist": 3,
+      "dist": 1,
       "pest": 1
     }
   },
   "metrics": {
     "briefing_title_unique_rate": 1.0,
-    "briefing_domain_diversity_rate": 0.85,
-    "low_tier_source_rate": 0.3,
-    "low_tier_source_excess_count": 2,
-    "source_quality_penalty": 3.6,
-    "surface_reuse_penalty": 0.0408,
+    "briefing_domain_diversity_rate": 0.6667,
+    "low_tier_source_rate": 0.2222,
+    "low_tier_source_excess_count": 0,
+    "source_quality_penalty": 0.0,
+    "surface_reuse_penalty": 0.0,
     "summary_presence_rate": 1.0,
-    "summary_length_ok_rate": 0.75,
-    "summary_numeric_rate": 0.75,
-    "summary_opening_diversity": 0.95,
+    "summary_length_ok_rate": 0.8889,
+    "summary_numeric_rate": 0.6111,
+    "summary_opening_diversity": 1.0,
     "matched_article_rate": 1.0,
     "within_48h_rate": 1.0,
     "within_72h_rate": 1.0,
     "stale_over_96h_rate": 0.0,
     "freshness_window_mode": "regular",
-    "seed_coverage_score": 0.6667,
-    "section_alignment_fit_avg": 3.7205,
-    "section_alignment_low_fit_rate": 0.1,
-    "section_alignment_cross_gap_rate": 0.0,
+    "seed_coverage_score": 0.5833,
+    "section_alignment_fit_avg": 3.0561,
+    "section_alignment_low_fit_rate": 0.0556,
+    "section_alignment_cross_gap_rate": 0.0556,
     "section_alignment_weak_stage_rate": 0.0,
     "content_false_positive_rate": 0.0,
     "reader_hard_issue_count": 0,
     "reader_hard_issue_rate": 0.0,
     "reader_hard_core_issue_count": 0,
-    "reader_quality_penalty": 10.12,
-    "reader_quality_cap": 90.0,
-    "preferred_slot_reader_penalty_weight": 1.5,
+    "reader_quality_penalty": 1.5,
+    "reader_quality_cap": 95.0,
+    "preferred_slot_reader_penalty_weight": 0.75,
     "off_scope_foreign_rate": 0.0,
     "story_duplicate_rate": 0.0,
     "cross_section_duplicate_rate": 0.0,
@@ -126,49 +126,49 @@
     "semantic_false_positive_penalty": 0.0,
     "story_duplicate_penalty": 0.0,
     "policy_wrong_section_rate": 0.0,
-    "promotional_filler_rate": 0.1,
+    "promotional_filler_rate": 0.0,
     "promotional_core_rate": 0.0,
     "weak_core_editorial_rate": 0.0,
-    "pest_theme_duplicate_rate": 0.05,
-    "dist_weak_ops_rate": 0.1,
-    "editorial_quality_penalty": 1.4,
-    "preferred_slot_gap_rate": 0.0,
-    "preferred_slot_gap_total": 0,
-    "preferred_slot_penalty": 0.0,
-    "core_fit_avg": 3.8767,
-    "core_rank_percentile_avg": 0.9042,
+    "pest_theme_duplicate_rate": 0.0,
+    "dist_weak_ops_rate": 0.0,
+    "editorial_quality_penalty": 0.0,
+    "preferred_slot_gap_rate": 0.1,
+    "preferred_slot_gap_total": 2,
+    "preferred_slot_penalty": 1.5,
+    "core_fit_avg": 3.4,
+    "core_rank_percentile_avg": 0.8788,
     "core_stage_core_rate": 1.0,
-    "weak_core_rate": 0.0,
+    "weak_core_rate": 0.125,
     "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0,
-    "commodity_primary_fit_avg": 3.18,
-    "commodity_primary_rank_avg": 3.5714,
+    "commodity_primary_fit_avg": 3.6877,
+    "commodity_primary_rank_avg": 3.2308,
     "commodity_primary_title_item_focus_rate": 1.0,
-    "commodity_primary_title_issue_signal_rate": 1.0,
-    "commodity_primary_strict_link_rate": 1.0,
+    "commodity_primary_title_issue_signal_rate": 0.9231,
+    "commodity_primary_strict_link_rate": 0.9231,
     "commodity_primary_low_rank_rate": 0.0,
-    "commodity_primary_count": 7,
-    "commodity_active_today_total": 14,
-    "commodity_active_today_unlinked_total": 7,
-    "commodity_managed_unlinked_total": 26,
+    "commodity_primary_count": 13,
+    "commodity_active_today_total": 19,
+    "commodity_active_today_unlinked_total": 6,
+    "commodity_managed_unlinked_total": 20,
     "commodity_board_daily_min_primary_count": 6,
     "commodity_board_low_coverage": false,
-    "commodity_board_coverage_rate": 0.2121,
+    "commodity_board_coverage_rate": 0.3939,
     "commodity_primary_title_item_missing_rate": 0.0,
     "commodity_primary_body_only_rate": 0.0,
     "commodity_primary_false_link_rate": 0.0,
-    "commodity_pool_count": 12,
+    "commodity_pool_count": 14,
     "commodity_pool_false_link_rate": 0.0,
-    "commodity_primary_dominant_section_rate": 0.5714,
-    "commodity_primary_section_balance_score": 0.6735
+    "commodity_primary_dominant_section_rate": 0.6923,
+    "commodity_primary_section_balance_score": 0.2418
   },
   "section_scores": {
     "briefing_fill": {
       "supply": 1.0,
       "policy": 1.0,
       "dist": 1.0,
-      "pest": 1.0
+      "pest": 0.6
     },
     "core_fill": {
       "supply": 1.0,
@@ -180,113 +180,95 @@
       "supply": 1.0,
       "policy": 1.0,
       "dist": 1.0,
-      "pest": 1.0
+      "pest": 0.84
     },
     "seed_coverage": {
       "supply": 0.8333,
-      "policy": 0.5,
-      "dist": 0.6667,
-      "pest": 0.6667
+      "policy": 0.4167,
+      "dist": 0.5833,
+      "pest": 0.5
     },
     "section_alignment": {
       "supply": 1.0,
-      "policy": 0.7,
+      "policy": 0.8364,
       "dist": 1.0,
       "pest": 1.0
     },
     "core_quality": {
       "supply": 1.0,
       "policy": 1.0,
-      "dist": 0.9746,
-      "pest": 0.9559
+      "dist": 1.0,
+      "pest": 0.6104
     }
   },
   "freshness_samples": [
     {
-      "title": "폭염·휴가철 먹거리 물가 비상…농식품부, 수급관리 총력",
-      "section": "policy",
-      "age_hours": 21.2
-    },
-    {
-      "title": "농협경제지주, NS홈쇼핑·홈플러스 익스프레스 손잡고 국산 농산물 판로...",
+      "title": "'78% 넘긴 공정률'…청주 새 농수산물도매시장, 2027년 개장 향해 속도",
       "section": "dist",
-      "age_hours": 20.3
+      "age_hours": 22.5
     },
     {
-      "title": "농협-NS홈쇼핑, 국산 농산물 유통 협력 나서",
-      "section": "dist",
-      "age_hours": 20.0
+      "title": "\"지금이 맛 좋을 때\"…현대그린푸드, 경산 샤인 머스켓·영천 자두 예약...",
+      "section": "supply",
+      "age_hours": 20.9
     },
     {
-      "title": "K-농업과학기술협의체, 포도 재배 현장서 병해충 대응 해법 찾아",
-      "section": "pest",
-      "age_hours": 20.0
-    },
-    {
-      "title": "[문제열의 窓] 고창 선운산 수박 이 보여준 브랜드의 가치",
-      "section": "dist",
-      "age_hours": 19.7
-    },
-    {
-      "title": "농특위, 제29차 본회의 개최",
-      "section": "dist",
-      "age_hours": 19.7
-    },
-    {
-      "title": "농업재해 피해 농가 복구비 지원",
-      "section": "policy",
-      "age_hours": 19.5
-    },
-    {
-      "title": "지역경제 선도하는 품목농협 - 아산원예 농협",
+      "title": "창원시, 폭염·가뭄에 과수 일소 피해 우려… 특별 예찰",
       "section": "pest",
       "age_hours": 19.5
+    },
+    {
+      "title": "농림위성 AI 기업 '새팜', 노바벤처스로부터 Pre A 투자 유치",
+      "section": "policy",
+      "age_hours": 19.2
+    },
+    {
+      "title": "안산시, 벼 농지 875㏊에 헬기·드론 항공방제",
+      "section": "pest",
+      "age_hours": 19.1
+    },
+    {
+      "title": "올해 보리 생산량 47.3%↑…파종기 가격 상승에 재배면적 '쑥'",
+      "section": "supply",
+      "age_hours": 17.9
+    },
+    {
+      "title": "농협, 농식품부와 함께 여름철 과채류 수급 안정 대책 실시",
+      "section": "policy",
+      "age_hours": 15.2
+    },
+    {
+      "title": "홍성농협, 공동 항공방제 …벼 병해충 적기 진행",
+      "section": "pest",
+      "age_hours": 14.3
     }
   ],
   "content_false_positive_samples": [],
   "reader_hard_issue_samples": [],
   "story_duplicate_samples": [],
-  "commodity_primary_linkage_samples": [],
-  "commodity_pool_linkage_samples": [],
-  "editorial_quality_samples": [
+  "commodity_primary_linkage_samples": [
     {
-      "title": "농협-NS홈쇼핑, 국산 농산물 유통 협력 나서",
-      "href": "http://www.finomy.com/news/articleView.html?idxno=258217",
-      "section": "dist",
-      "is_core": false,
+      "title": "국산 감귤 '하례조생'으로 품종료 부담 덜고 소득 올린다",
+      "item_label": "감귤(만감류)",
+      "section": "supply",
+      "surface": "commodity_primary",
+      "representative_rank": 3,
       "reasons": [
-        "promotional_or_event_filler",
-        "dist_event_or_development_without_ops"
-      ]
-    },
-    {
-      "title": "농협경제지주, NS홈쇼핑·홈플러스 익스프레스 손잡고 국산 농산물 판로...",
-      "href": "https://www.getnews.co.kr/news/articleView.html?idxno=876377",
-      "section": "dist",
-      "is_core": false,
-      "reasons": [
-        "promotional_or_event_filler",
-        "dist_event_or_development_without_ops"
-      ]
-    },
-    {
-      "title": "청송군, 폭염·병해충 대응 '현장기술지원단' 8개 반 운영",
-      "href": "https://www.dkilbo.com/news/articleView.html?idxno=549931",
-      "section": "pest",
-      "is_core": false,
-      "reasons": [
-        "pest_theme_duplicate:general_pest"
+        "title_issue_missing"
       ]
     }
   ],
+  "commodity_pool_linkage_samples": [],
+  "editorial_quality_samples": [],
   "improvement_hints": [
-    "최하위 매체 비중이 높습니다. 섹션당 tier-1 1건, 전체 20% 이하를 목표로 하고 같은 이슈의 tier-2+ 원문으로 교체하세요.",
-    "요약 문장 품질 편차가 큽니다. 품목·지역·수치·대응을 앞 문장에 명시하도록 프롬프트 피드백을 자동 반영하세요.",
-    "편집 품질상 약한 기사 선택이 감지되었습니다 (promotional_filler=10%, dist_weak_ops=10%, pest_theme_duplicate=5%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요."
+    "선정 결과가 약한 섹션이 있습니다: pest. 해당 섹션은 raw 후보가 충분하므로 임계치/재배치 규칙을 다시 보는 편이 좋습니다.",
+    "품목 보드 대표기사가 품목 핵심 이슈를 충분히 대변하지 못합니다. 제목에서 품목명과 수급·가격·병해충 신호가 함께 보이는 기사, representative rank 상위 후보, 비수급 섹션의 직접 이슈 후보를 우선하세요.",
+    "리콜 시드 결손이 보입니다: policy. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요.",
+    "raw 후보가 충분한데 선호 카드 수(섹션당 5개)에 못 미친 섹션이 있습니다: pest(-2). 빈 5번째 슬롯에는 고품질 수급·유통 cross-fill 후보를 재검토하세요."
   ],
   "selection_guardrails": {
     "driver_tags": [
-      "low_tier_source_concentration"
+      "commodity_board"
     ],
     "section_card_min_fit": {
       "default": 0.8,
@@ -315,8 +297,8 @@
     "disable_relaxed_core_fill": false,
     "final_low_tier_max_per_section": 1,
     "final_low_tier_max_total": 4,
-    "commodity_active_min_rank": 1,
-    "commodity_program_core_min_rank": 1,
+    "commodity_active_min_rank": 2,
+    "commodity_program_core_min_rank": 3,
     "commodity_require_issue_signal": false,
     "commodity_require_direct_item_focus": false,
     "commodity_strict_primary_only": true,
@@ -336,9 +318,9 @@
     "model": "gpt-5.6-sol"
   },
   "prepublish_quality_gate": {
-    "status": "sla_fallback_passed",
-    "publishable": true,
-    "publication_mode": "sla_fallback",
+    "status": "blocked",
+    "publishable": false,
+    "publication_mode": "blocked",
     "repair_count": 0,
     "applied_repair_count": 0,
     "repair_proposal_limit": 10,
