@@ -120,6 +120,27 @@ class PrepublishQualityGateTests(unittest.TestCase):
             result["counts"]["briefing_by_section"]["policy"] = main.MIN_FALLBACK_PER_SECTION - 1
             self.assertFalse(main._prepublish_sla_fallback_publishable(result))
 
+    def test_this_weeks_failure_shapes_are_recoverable_under_current_policy(self):
+        july_28 = self._sla_fallback_result()
+        july_28["operational_score"] = 89.87
+        july_28["reader_quality_score"] = 76.10
+
+        july_29 = self._sla_fallback_result()
+        july_29["operational_score"] = 94.66
+        july_29["reader_quality_score"] = 92.97
+        july_29["counts"]["briefing_by_section"]["policy"] = main.SOFT_MIN_PER_SECTION
+
+        july_31 = self._sla_fallback_result()
+        july_31["operational_score"] = 92.61
+        july_31["reader_quality_score"] = 91.11
+        july_31["counts"]["briefing_by_section"]["pest"] = main.MIN_FALLBACK_PER_SECTION
+        july_31["editorial"] = {"status": "skipped", "reason": "openai_quota_unavailable"}
+
+        with patch.object(main, "PREPUBLISH_FORCE_SLA_FALLBACK", True):
+            self.assertTrue(main._prepublish_sla_fallback_publishable(july_28))
+            self.assertTrue(main._prepublish_sla_fallback_publishable(july_31))
+        self.assertTrue(main._prepublish_sla_fallback_publishable(july_29))
+
     def test_delivery_receipt_records_formal_page_and_normal_kakao_format(self):
         sections = self._raw_sections()
         with (

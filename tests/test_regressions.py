@@ -8,6 +8,7 @@ DAILY_WATCHDOG_WORKFLOW = ROOT / ".github" / "workflows" / "daily-watchdog.yml"
 MAINTENANCE_WORKFLOW = ROOT / ".github" / "workflows" / "maintenance.yml"
 REBUILD_WORKFLOW = ROOT / ".github" / "workflows" / "rebuild.yml"
 CI_WORKFLOW = ROOT / ".github" / "workflows" / "ci.yml"
+CI_RUNNER = ROOT / "scripts" / "run_ci_regression_suite.py"
 SECRETS_CHECK_WORKFLOW = ROOT / ".github" / "workflows" / "secrets-check.yml"
 PROD_INDEX_HTML = ROOT / "docs" / "index.html"
 
@@ -20,6 +21,7 @@ class TestRegressions(unittest.TestCase):
         cls.maintenance_text = MAINTENANCE_WORKFLOW.read_text(encoding="utf-8")
         cls.rebuild_text = REBUILD_WORKFLOW.read_text(encoding="utf-8")
         cls.ci_text = CI_WORKFLOW.read_text(encoding="utf-8")
+        cls.ci_runner_text = CI_RUNNER.read_text(encoding="utf-8")
         cls.secrets_check_text = SECRETS_CHECK_WORKFLOW.read_text(encoding="utf-8")
         cls.prod_index_text = PROD_INDEX_HTML.read_text(encoding="utf-8")
 
@@ -178,25 +180,28 @@ class TestRegressions(unittest.TestCase):
 
     def test_secrets_check_workflow_exists(self):
         self.assertIn("name: agri-news-brief (validate API secrets)", self.secrets_check_text)
-        self.assertIn("cron: '30 20 * * 0-4'", self.secrets_check_text)
+        self.assertIn("cron: '45 19 * * 0-4'", self.secrets_check_text)
         self.assertIn("Validate Naver, OpenAI, and Kakao secrets", self.secrets_check_text)
         self.assertIn("https://openapi.naver.com/v1/search/news.json", self.secrets_check_text)
         self.assertIn("https://kauth.kakao.com/oauth/token", self.secrets_check_text)
         self.assertIn('append_summary("- Kakao: success (token refresh)")', self.secrets_check_text)
 
-    def test_prod_workflows_do_not_extend_window(self):
-        self.assertIn("Primary daily trigger: Cloudflare Workers Cron at KST 06:05.", self.daily_text)
+    def test_prod_workflows_keep_window_and_have_independent_early_trigger(self):
+        self.assertIn("Independent early trigger at KST 05:35", self.daily_text)
         self.assertIn("workflow_dispatch:", self.daily_text)
         self.assertIn("trigger_source", self.daily_text)
-        self.assertNotIn("schedule:", self.daily_text)
-        self.assertNotIn("cron:", self.daily_text)
+        self.assertIn("schedule:", self.daily_text)
+        self.assertIn("cron: '35 20 * * 0-4'", self.daily_text)
+        self.assertIn("timeout-minutes: 25", self.daily_text)
+        self.assertIn("cancel-in-progress: ${{ inputs.force_sla_fallback == true }}", self.daily_text)
         self.assertIn("WINDOW_MIN_HOURS: '0'", self.daily_text)
         self.assertIn("WINDOW_MIN_HOURS: '0'", self.maintenance_text)
         self.assertIn("WINDOW_MIN_HOURS: '0'", self.rebuild_text)
 
     def test_daily_watchdog_recovers_a_missing_delivery_receipt(self):
         self.assertIn("name: agri-news-brief (daily watchdog)", self.daily_watchdog_text)
-        self.assertIn("cron: '10,20,35,50 21 * * 0-4'", self.daily_watchdog_text)
+        self.assertIn("cron: '50 20 * * 0-4'", self.daily_watchdog_text)
+        self.assertIn("cron: '20,35,50,55 21 * * 0-4'", self.daily_watchdog_text)
         self.assertIn("cron: '15 0 * * 1-5'", self.daily_watchdog_text)
         self.assertIn("workflow_run:", self.daily_watchdog_text)
         self.assertIn("workflows: ['agri-news-brief (daily)']", self.daily_watchdog_text)
@@ -205,13 +210,13 @@ class TestRegressions(unittest.TestCase):
         self.assertIn("WORKFLOW_FILE: daily.yml", self.daily_watchdog_text)
         self.assertIn("TZ=Asia/Seoul date +%F", self.daily_watchdog_text)
         self.assertIn('receipt_path="docs/delivery/${report_date}.json"', self.daily_watchdog_text)
-        self.assertIn("if [[ \"$receipt_status\" == 'success' ]]", self.daily_watchdog_text)
-        self.assertIn(".workflow_runs[]", self.daily_watchdog_text)
-        self.assertIn("$run_status\" == 'in_progress'", self.daily_watchdog_text)
+        self.assertIn("scripts/delivery_watchdog_decision.py", self.daily_watchdog_text)
+        self.assertIn("cancel_and_dispatch", self.daily_watchdog_text)
+        self.assertIn("actions/runs/${run_id}/cancel", self.daily_watchdog_text)
+        self.assertIn("delivery-confirmed-on-time", self.daily_watchdog_text)
+        self.assertIn("delivery-confirmed-late", self.daily_watchdog_text)
         self.assertIn("inputs[trigger_source]=github-watchdog", self.daily_watchdog_text)
         self.assertIn("inputs[force_sla_fallback]=true", self.daily_watchdog_text)
-        self.assertIn('recovery_run_count="$(', self.daily_watchdog_text)
-        self.assertIn('"$recovery_run_count" -ge 2', self.daily_watchdog_text)
         self.assertIn("DRY_RUN: ${{ inputs.dry_run || 'false' }}", self.daily_watchdog_text)
 
     def test_daily_workflow_runs_eval_harness_and_feedback_loop(self):
@@ -235,7 +240,9 @@ class TestRegressions(unittest.TestCase):
         self.assertIn('echo "- Editorial evaluation model: gpt-5.6-sol"', self.rebuild_text)
         self.assertIn("PREPUBLISH_QUALITY_GATE_ENABLED: 'true'", self.daily_text)
         self.assertIn("PREPUBLISH_QUALITY_MAX_REPAIRS: '5'", self.daily_text)
-        self.assertIn("cancel-in-progress: false", self.daily_text)
+        self.assertIn(
+            "cancel-in-progress: ${{ inputs.force_sla_fallback == true }}", self.daily_text
+        )
         self.assertIn("quality_recovery:", self.daily_text)
         self.assertIn("force_sla_fallback:", self.daily_text)
         self.assertIn("recovery=${{ inputs.quality_recovery || false }}", self.daily_text)
@@ -248,6 +255,8 @@ class TestRegressions(unittest.TestCase):
         self.assertIn("PREPUBLISH_SLA_FALLBACK_ENABLED: 'true'", self.daily_text)
         self.assertIn("PREPUBLISH_SLA_FALLBACK_MIN_SCORE: '78'", self.daily_text)
         self.assertIn("DELIVERY_RECEIPT_DIR: docs/delivery", self.daily_text)
+        self.assertIn("DAILY_RECEIPT_EARLY_EXIT_ENABLED: 'true'", self.daily_text)
+        self.assertIn("def _daily_delivery_already_succeeded", self.text)
         self.assertIn("--fail-under 82", self.daily_text)
         self.assertIn('if [ "$eval_status" -eq 2 ]', self.daily_text)
         self.assertIn('elif [ "$eval_status" -ne 0 ]', self.daily_text)
@@ -259,6 +268,11 @@ class TestRegressions(unittest.TestCase):
         self.assertIn("application/vnd.github.raw+json", self.rebuild_text)
         self.assertIn("Validate Naver, OpenAI, and Kakao secrets", self.secrets_check_text)
         self.assertIn("https://api.openai.com/v1/responses", self.secrets_check_text)
+
+    def test_ci_covers_delivery_sla_regressions(self):
+        self.assertIn('"tests.test_delivery_watchdog_decision"', self.ci_runner_text)
+        self.assertIn('"tests.test_prepublish_quality"', self.ci_runner_text)
+        self.assertIn('"tests.test_kakao_runtime_behavior"', self.ci_runner_text)
 
     def test_briefing_cards_expose_eval_metadata(self):
         self.assertIn('data-selection-fit="', self.text)

@@ -5,7 +5,7 @@
 Run local checks manually:
 
 ```bash
-python -m py_compile main.py collector.py io_github.py retry_utils.py schemas.py ux_patch.py ranking.py orchestrator.py observability.py replay.py hf_semantics.py
+python -m py_compile main.py collector.py io_github.py retry_utils.py schemas.py ux_patch.py ranking.py orchestrator.py observability.py replay.py hf_semantics.py scripts/delivery_watchdog_decision.py
 python -m mypy --config-file mypy.ini
 python -m unittest discover -s tests -p "test_*.py"
 ```
@@ -161,7 +161,7 @@ Use three branches:
 ### Production workflows (main only)
 
 - `.github/workflows/daily.yml`
-- `.github/workflows/daily-watchdog.yml` (06:10/06:20/06:35/06:50 KST delivery-receipt recovery)
+- `.github/workflows/daily-watchdog.yml` (05:50/06:20/06:35/06:50/06:55 KST delivery-receipt recovery and 09:15 audit)
 - `.github/workflows/rebuild.yml`
 - `.github/workflows/maintenance.yml`
 - `.github/workflows/ux_patch.yml`
@@ -170,9 +170,12 @@ Use three branches:
 
 ### Daily prepublish quality gate
 
-The production daily workflow starts at 06:05 KST and treats 06:50 KST as the
-publication deadline. Before it writes the daily page, updates the index/state,
-or sends the normal Kakao briefing, it now:
+The production daily workflow has two independent triggers: GitHub's native
+05:35 KST schedule and the Cloudflare 06:05 KST dispatch. The first successful
+Kakao receipt wins, and a duplicate trigger exits before collection or model
+calls. The job has a 25-minute hard timeout so a delayed or stuck primary cannot
+consume the recovery window before the 07:00 KST delivery SLA. Before it writes
+the daily page, updates the index/state, or sends the normal Kakao briefing, it:
 
 1. generates the candidate briefing with `gpt-5.6-sol` at low reasoning effort;
 2. runs the deterministic report evaluator and a `gpt-5.6-sol` editorial review;
@@ -193,15 +196,19 @@ or sends the normal Kakao briefing, it now:
 The fallback never creates an alert-only page. It continues through the normal
 page renderer and normal Kakao summary builder. After a successful Kakao send,
 including a production rebuild or replay, `docs/delivery/YYYY-MM-DD.json` is
-written as the authoritative delivery receipt. A same-day rerun suppresses
-duplicate sends when that receipt already exists. The watchdog checks the
-receipt rather than the mere existence of an Actions run, dispatches a forced
-deterministic recovery immediately when the primary daily run completes without
-a receipt, retains scheduled checks as delayed-event backups, caps automatic
-recovery at two attempts per day, and performs a final 09:15 KST check after the
-daily timeout window.
+written as the authoritative delivery receipt. A same-day daily trigger
+suppresses the entire duplicate build when that receipt already exists; rebuild
+and maintenance workflows remain unaffected. The watchdog checks the receipt
+rather than the mere existence or conclusion of an Actions run. It dispatches a
+forced deterministic recovery immediately when a primary finishes without a
+receipt, cancels a primary that is 25 minutes old after 06:30 or 10 minutes old
+after 06:40, and lets a forced recovery replace any older queued primary. The
+05:50/06:20/06:35/06:50/06:55 KST checks are delayed-event backups, automatic
+recovery is capped at two attempts per day, and the 09:15 audit explicitly fails
+if the Kakao receipt timestamp missed 07:00 KST.
 
-The 05:30 KST credential preflight validates Naver, OpenAI quota, and Kakao.
+The 04:45 KST credential preflight validates Naver, OpenAI quota, and Kakao,
+leaving schedule-delay headroom before both production triggers.
 If OpenAI returns `insufficient_quota` during generation, the run opens a local
 circuit breaker, stops repeated model calls, uses deterministic two-sentence
 summaries, and continues through the SLA delivery policy.
