@@ -198,6 +198,9 @@ class TestRegressions(unittest.TestCase):
         self.assertIn("name: agri-news-brief (daily watchdog)", self.daily_watchdog_text)
         self.assertIn("cron: '10,20,35,50 21 * * 0-4'", self.daily_watchdog_text)
         self.assertIn("cron: '15 0 * * 1-5'", self.daily_watchdog_text)
+        self.assertIn("workflow_run:", self.daily_watchdog_text)
+        self.assertIn("workflows: ['agri-news-brief (daily)']", self.daily_watchdog_text)
+        self.assertIn("!contains(github.event.workflow_run.display_title, 'recovery=true')", self.daily_watchdog_text)
         self.assertIn("actions: write", self.daily_watchdog_text)
         self.assertIn("WORKFLOW_FILE: daily.yml", self.daily_watchdog_text)
         self.assertIn("TZ=Asia/Seoul date +%F", self.daily_watchdog_text)
@@ -207,6 +210,8 @@ class TestRegressions(unittest.TestCase):
         self.assertIn("$run_status\" == 'in_progress'", self.daily_watchdog_text)
         self.assertIn("inputs[trigger_source]=github-watchdog", self.daily_watchdog_text)
         self.assertIn("inputs[force_sla_fallback]=true", self.daily_watchdog_text)
+        self.assertIn('recovery_run_count="$(', self.daily_watchdog_text)
+        self.assertIn('"$recovery_run_count" -ge 2', self.daily_watchdog_text)
         self.assertIn("DRY_RUN: ${{ inputs.dry_run || 'false' }}", self.daily_watchdog_text)
 
     def test_daily_workflow_runs_eval_harness_and_feedback_loop(self):
@@ -233,6 +238,7 @@ class TestRegressions(unittest.TestCase):
         self.assertIn("cancel-in-progress: false", self.daily_text)
         self.assertIn("quality_recovery:", self.daily_text)
         self.assertIn("force_sla_fallback:", self.daily_text)
+        self.assertIn("recovery=${{ inputs.quality_recovery || false }}", self.daily_text)
         self.assertIn("default: false", self.daily_text)
         self.assertIn(
             "PREPUBLISH_QUALITY_DEADLINE_KST: ${{ inputs.quality_recovery && '23:59' || '06:50' }}",

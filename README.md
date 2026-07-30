@@ -186,8 +186,9 @@ or sends the normal Kakao briefing, it now:
    four-section page through the SLA fallback when each section has at least
    four safe cards, deterministic operational and reader scores are at least
    78, all summaries are present, and no hard reader or editorial issue exists;
-   an operator-forced recovery ignores the score floor but keeps those summary,
-   hard-issue, and section-safety checks.
+   an operator-forced recovery ignores the score floor and permits the audited
+   three-safe-card emergency floor for an underfilled section, while keeping
+   summary completeness plus hard reader/editorial safety checks.
 
 The fallback never creates an alert-only page. It continues through the normal
 page renderer and normal Kakao summary builder. After a successful Kakao send,
@@ -195,8 +196,10 @@ including a production rebuild or replay, `docs/delivery/YYYY-MM-DD.json` is
 written as the authoritative delivery receipt. A same-day rerun suppresses
 duplicate sends when that receipt already exists. The watchdog checks the
 receipt rather than the mere existence of an Actions run, dispatches a forced
-deterministic recovery when delivery is still missing and no daily run is
-active, and performs a final 09:15 KST check after the daily timeout window.
+deterministic recovery immediately when the primary daily run completes without
+a receipt, retains scheduled checks as delayed-event backups, caps automatic
+recovery at two attempts per day, and performs a final 09:15 KST check after the
+daily timeout window.
 
 The 05:30 KST credential preflight validates Naver, OpenAI quota, and Kakao.
 If OpenAI returns `insufficient_quota` during generation, the run opens a local

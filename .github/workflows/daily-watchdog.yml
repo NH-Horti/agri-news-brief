@@ -7,6 +7,9 @@ on:
     - cron: '10,20,35,50 21 * * 0-4'
     # Final KST 09:15 check runs after daily.yml's 150-minute timeout window.
     - cron: '15 0 * * 1-5'
+  workflow_run:
+    workflows: ['agri-news-brief (daily)']
+    types: [completed]
   workflow_dispatch:
     inputs:
       dry_run:
@@ -25,7 +28,15 @@ concurrency:
 
 jobs:
   ensure-daily-run:
-    if: github.ref_name == 'main'
+    if: >-
+      github.ref_name == 'main' &&
+      (
+        github.event_name != 'workflow_run' ||
+        (
+          github.event.workflow_run.head_branch == 'main' &&
+          !contains(github.event.workflow_run.display_title, 'recovery=true')
+        )
+      )
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -67,6 +78,18 @@ jobs:
               | last // empty
             ' <<<"$runs_json"
           )"
+          recovery_run_count="$(
+            jq -r --arg report_date "$report_date" '
+              [
+                .workflow_runs[]
+                | select(
+                    ((((.created_at | fromdateiso8601) + 32400) | strftime("%Y-%m-%d")) == $report_date)
+                    and ((.display_title // "") | contains("recovery=true"))
+                  )
+              ]
+              | length
+            ' <<<"$runs_json"
+          )"
 
           run_url=''
           run_status='missing'
@@ -86,6 +109,9 @@ jobs:
           elif [[ "$DRY_RUN" == 'true' ]]; then
             result='delivery-missing-dry-run'
             echo "Delivery receipt is missing; dry-run requested, so recovery dispatch was skipped."
+          elif [[ "$recovery_run_count" -ge 2 ]]; then
+            result='recovery-attempt-limit-reached'
+            echo "Delivery receipt is missing after ${recovery_run_count} recovery runs; automatic redispatch was stopped."
           else
             gh api --method POST \
               "repos/${REPO}/actions/workflows/${WORKFLOW_FILE}/dispatches" \
@@ -111,6 +137,7 @@ jobs:
             echo "- Result: $result"
             echo "- Delivery receipt: $receipt_path (${receipt_status:-missing})"
             echo "- Daily status: $run_status/$run_conclusion"
+            echo "- Recovery runs today: $recovery_run_count/2"
             if [[ -n "$run_url" ]]; then
               echo "- Daily run: $run_url"
             fi
