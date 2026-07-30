@@ -1,20 +1,20 @@
 {
   "report_date": "2026-07-31",
-  "generated_at_kst": "2026-07-31T06:18:08+09:00",
+  "generated_at_kst": "2026-07-31T07:26:50+09:00",
   "scores": {
-    "section_alignment": 96.67,
-    "core_quality": 94.73,
+    "section_alignment": 87.41,
+    "core_quality": 100.0,
     "commodity_board_quality": 90.9
   },
   "metrics": {
     "section_alignment_low_fit_rate": 0.0556,
     "section_alignment_cross_gap_rate": 0.0556,
-    "content_false_positive_rate": 0.0,
+    "content_false_positive_rate": 0.0556,
     "reader_hard_issue_count": 0,
     "reader_hard_issue_rate": 0.0,
-    "reader_quality_penalty": 1.5,
+    "reader_quality_penalty": 8.0,
     "reader_quality_cap": 95.0,
-    "weak_core_rate": 0.125,
+    "weak_core_rate": 0.0,
     "policy_wrong_section_rate": 0.0,
     "promotional_filler_rate": 0.0,
     "promotional_core_rate": 0.0,
@@ -45,18 +45,19 @@
   },
   "selection_guardrails": {
     "driver_tags": [
+      "semantic_false_positive",
       "commodity_board"
     ],
     "section_card_min_fit": {
       "default": 0.8,
-      "supply": 0.82,
-      "policy": 0.82,
-      "dist": 0.95,
+      "supply": 0.9,
+      "policy": 0.88,
+      "dist": 1.05,
       "pest": 0.78
     },
-    "section_low_fit_rescue_min": 0.15,
-    "high_score_low_fit_rescue_margin": 3.0,
-    "tail_score_floor_delta": 0.0,
+    "section_low_fit_rescue_min": 0.35,
+    "high_score_low_fit_rescue_margin": 4.4,
+    "tail_score_floor_delta": 0.5,
     "core_fit_min": {
       "default": 1.2,
       "supply": 1.4,
