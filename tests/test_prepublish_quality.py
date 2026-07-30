@@ -82,6 +82,10 @@ class PrepublishQualityGateTests(unittest.TestCase):
         result = self._sla_fallback_result()
         result["counts"]["briefing_by_section"]["pest"] = main.SOFT_MIN_PER_SECTION - 1
         self.assertFalse(main._prepublish_sla_fallback_publishable(result))
+        self.assertIn(
+            f"section_underfill:pest={main.SOFT_MIN_PER_SECTION - 1}/{main.SOFT_MIN_PER_SECTION}",
+            main._prepublish_sla_fallback_blockers(result),
+        )
 
     def test_sla_fallback_accepts_one_underfilled_section_at_soft_floor(self):
         result = self._sla_fallback_result()
@@ -100,12 +104,20 @@ class PrepublishQualityGateTests(unittest.TestCase):
         result["operational_score"] = 0.0
         result["reader_quality_score"] = 0.0
         result["scores"]["commodity_board_quality"] = 0.0
-        result["counts"]["briefing_by_section"]["policy"] = main.SOFT_MIN_PER_SECTION
+        result["counts"]["briefing_by_section"]["policy"] = main.MIN_FALLBACK_PER_SECTION
 
         with patch.object(main, "PREPUBLISH_FORCE_SLA_FALLBACK", True):
             self.assertTrue(main._prepublish_sla_fallback_publishable(result))
+            self.assertEqual(
+                main._prepublish_sla_minimum_per_section(),
+                main.MIN_FALLBACK_PER_SECTION,
+            )
 
             result["metrics"]["summary_presence_rate"] = 0.99
+            self.assertFalse(main._prepublish_sla_fallback_publishable(result))
+
+            result["metrics"]["summary_presence_rate"] = 1.0
+            result["counts"]["briefing_by_section"]["policy"] = main.MIN_FALLBACK_PER_SECTION - 1
             self.assertFalse(main._prepublish_sla_fallback_publishable(result))
 
     def test_delivery_receipt_records_formal_page_and_normal_kakao_format(self):

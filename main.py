@@ -51899,6 +51899,16 @@ def _prepublish_sla_fallback_publishable(result: JsonDict) -> bool:
     cannot suppress the entire edition. An operator-forced recovery ignores
     scores while retaining summary, hard-issue, and section safety checks.
     """
+    return not _prepublish_sla_fallback_blockers(result)
+
+
+def _prepublish_sla_minimum_per_section() -> int:
+    """Use the audited emergency floor only for an operator-forced recovery."""
+    return MIN_FALLBACK_PER_SECTION if PREPUBLISH_FORCE_SLA_FALLBACK else SOFT_MIN_PER_SECTION
+
+
+def _prepublish_sla_fallback_blockers(result: JsonDict) -> list[str]:
+    """Return stable, operator-readable reasons why SLA publication is unsafe."""
     counts = result.get("counts", {}) if isinstance(result, dict) else {}
     metrics = result.get("metrics", {}) if isinstance(result, dict) else {}
     scores = result.get("scores", {}) if isinstance(result, dict) else {}
@@ -51916,28 +51926,40 @@ def _prepublish_sla_fallback_publishable(result: JsonDict) -> bool:
         summary_presence = float(metrics.get("summary_presence_rate", 0.0) or 0.0)
         commodity_score = float(scores.get("commodity_board_quality", 0.0) or 0.0)
     except (TypeError, ValueError):
-        return False
+        return ["invalid_quality_metrics"]
     section_counts = counts.get("briefing_by_section", {})
     if not isinstance(section_counts, dict):
         section_counts = {}
-    score_floor_passed = bool(
-        PREPUBLISH_FORCE_SLA_FALLBACK
-        or (
-            operational_score >= PREPUBLISH_SLA_FALLBACK_MIN_SCORE
-            and reader_score >= PREPUBLISH_SLA_FALLBACK_MIN_SCORE
-            and commodity_score >= PREPUBLISH_SLA_FALLBACK_MIN_SCORE
-        )
-    )
-    return bool(
-        score_floor_passed
-        and int(metrics.get("reader_hard_issue_count", 0) or 0) == 0
-        and summary_presence >= 1.0
-        and not _prepublish_hard_editorial_issues(result)
-        and all(
-            int(section_counts.get(section, 0) or 0) >= SOFT_MIN_PER_SECTION
-            for section in _section_keys()
-        )
-    )
+    blockers: list[str] = []
+    if not PREPUBLISH_FORCE_SLA_FALLBACK:
+        below_floor = [
+            name
+            for name, score in (
+                ("operational", operational_score),
+                ("reader", reader_score),
+                ("commodity", commodity_score),
+            )
+            if score < PREPUBLISH_SLA_FALLBACK_MIN_SCORE
+        ]
+        if below_floor:
+            blockers.append("score_floor:" + ",".join(below_floor))
+    hard_reader_issues = int(metrics.get("reader_hard_issue_count", 0) or 0)
+    if hard_reader_issues:
+        blockers.append(f"reader_hard_issues:{hard_reader_issues}")
+    if summary_presence < 1.0:
+        blockers.append(f"summary_presence:{summary_presence:.4f}")
+    hard_editorial_issues = _prepublish_hard_editorial_issues(result)
+    if hard_editorial_issues:
+        blockers.append(f"editorial_hard_issues:{len(hard_editorial_issues)}")
+    minimum_per_section = _prepublish_sla_minimum_per_section()
+    underfilled = [
+        f"{section}={int(section_counts.get(section, 0) or 0)}/{minimum_per_section}"
+        for section in _section_keys()
+        if int(section_counts.get(section, 0) or 0) < minimum_per_section
+    ]
+    if underfilled:
+        blockers.append("section_underfill:" + ",".join(underfilled))
+    return blockers
 
 
 def _should_run_full_editorial_eval(
@@ -52525,6 +52547,8 @@ def _run_prepublish_quality_gate(
         and PREPUBLISH_SLA_FALLBACK_ENABLED
         and _prepublish_sla_fallback_publishable(result)
     )
+    fallback_blockers = _prepublish_sla_fallback_blockers(result)
+    fallback_minimum_per_section = _prepublish_sla_minimum_per_section()
     publishable = normal_passed or fallback_passed
     publication_mode = (
         "normal"
@@ -52559,7 +52583,8 @@ def _run_prepublish_quality_gate(
         "sla_fallback_forced": PREPUBLISH_FORCE_SLA_FALLBACK,
         "sla_fallback_minimum_score": PREPUBLISH_SLA_FALLBACK_MIN_SCORE,
         "sla_fallback_score_enforced": not PREPUBLISH_FORCE_SLA_FALLBACK,
-        "sla_fallback_minimum_per_section": SOFT_MIN_PER_SECTION,
+        "sla_fallback_minimum_per_section": fallback_minimum_per_section,
+        "sla_fallback_blockers": fallback_blockers,
         "hard_editorial_issue_count": len(_prepublish_hard_editorial_issues(result)),
         "model": EDITORIAL_OPENAI_MODEL,
         "usage_events": list(OPENAI_USAGE_EVENTS),
@@ -52573,7 +52598,9 @@ def _run_prepublish_quality_gate(
         _notify_quality_hold(report_date, result, daily_url)
         if PREPUBLISH_QUALITY_FAIL_CLOSED:
             raise RuntimeError(
-                f"Prepublish hard-safety gate blocked {report_date}; no page or Kakao briefing was published."
+                f"Prepublish safety gate blocked {report_date}; "
+                f"blockers={fallback_blockers or ['normal_quality_gate']}; "
+                "no page or Kakao briefing was published."
             )
     elif fallback_passed:
         log.warning(
@@ -52581,7 +52608,7 @@ def _run_prepublish_quality_gate(
             "(forced=%s, minimum_score=%.1f, minimum_per_section=%d, hard_issues=0)",
             PREPUBLISH_FORCE_SLA_FALLBACK,
             PREPUBLISH_SLA_FALLBACK_MIN_SCORE,
-            SOFT_MIN_PER_SECTION,
+            fallback_minimum_per_section,
         )
     return current_sections, current_html, result
 

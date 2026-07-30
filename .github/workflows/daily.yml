@@ -1,4 +1,6 @@
 name: agri-news-brief (daily)
+run-name: >-
+  daily · trigger=${{ inputs.trigger_source || 'github' }} · recovery=${{ inputs.quality_recovery || false }}
 
 on:
   # Primary daily trigger: Cloudflare Workers Cron at KST 06:05.
