@@ -1,51 +1,51 @@
 {
-  "report_date": "2026-07-30",
-  "generated_at_kst": "2026-07-30T06:18:11+09:00",
+  "report_date": "2026-07-31",
+  "generated_at_kst": "2026-07-31T06:18:08+09:00",
   "scores": {
-    "section_alignment": 98.64,
-    "core_quality": 100.0,
-    "commodity_board_quality": 96.08
+    "section_alignment": 96.67,
+    "core_quality": 94.73,
+    "commodity_board_quality": 90.9
   },
   "metrics": {
-    "section_alignment_low_fit_rate": 0.1,
-    "section_alignment_cross_gap_rate": 0.0,
+    "section_alignment_low_fit_rate": 0.0556,
+    "section_alignment_cross_gap_rate": 0.0556,
     "content_false_positive_rate": 0.0,
     "reader_hard_issue_count": 0,
     "reader_hard_issue_rate": 0.0,
-    "reader_quality_penalty": 10.12,
-    "reader_quality_cap": 90.0,
-    "weak_core_rate": 0.0,
+    "reader_quality_penalty": 1.5,
+    "reader_quality_cap": 95.0,
+    "weak_core_rate": 0.125,
     "policy_wrong_section_rate": 0.0,
-    "promotional_filler_rate": 0.1,
+    "promotional_filler_rate": 0.0,
     "promotional_core_rate": 0.0,
     "weak_core_editorial_rate": 0.0,
-    "pest_theme_duplicate_rate": 0.05,
-    "dist_weak_ops_rate": 0.1,
-    "editorial_quality_penalty": 1.4,
+    "pest_theme_duplicate_rate": 0.0,
+    "dist_weak_ops_rate": 0.0,
+    "editorial_quality_penalty": 0.0,
     "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0,
     "commodity_primary_title_item_focus_rate": 1.0,
-    "commodity_primary_title_issue_signal_rate": 1.0,
-    "commodity_primary_strict_link_rate": 1.0,
+    "commodity_primary_title_issue_signal_rate": 0.9231,
+    "commodity_primary_strict_link_rate": 0.9231,
     "commodity_primary_low_rank_rate": 0.0,
-    "commodity_primary_count": 7,
-    "commodity_active_today_total": 14,
-    "commodity_active_today_unlinked_total": 7,
-    "commodity_managed_unlinked_total": 26,
+    "commodity_primary_count": 13,
+    "commodity_active_today_total": 19,
+    "commodity_active_today_unlinked_total": 6,
+    "commodity_managed_unlinked_total": 20,
     "commodity_board_daily_min_primary_count": 6,
     "commodity_board_low_coverage": false,
-    "commodity_board_coverage_rate": 0.2121,
+    "commodity_board_coverage_rate": 0.3939,
     "commodity_primary_title_item_missing_rate": 0.0,
     "commodity_primary_body_only_rate": 0.0,
     "commodity_primary_false_link_rate": 0.0,
-    "commodity_pool_count": 12,
+    "commodity_pool_count": 14,
     "commodity_pool_false_link_rate": 0.0,
-    "commodity_primary_dominant_section_rate": 0.5714
+    "commodity_primary_dominant_section_rate": 0.6923
   },
   "selection_guardrails": {
     "driver_tags": [
-      "low_tier_source_concentration"
+      "commodity_board"
     ],
     "section_card_min_fit": {
       "default": 0.8,
@@ -74,44 +74,14 @@
     "disable_relaxed_core_fill": false,
     "final_low_tier_max_per_section": 1,
     "final_low_tier_max_total": 4,
-    "commodity_active_min_rank": 1,
-    "commodity_program_core_min_rank": 1,
+    "commodity_active_min_rank": 2,
+    "commodity_program_core_min_rank": 3,
     "commodity_require_issue_signal": false,
     "commodity_require_direct_item_focus": false,
     "commodity_strict_primary_only": true,
     "commodity_disable_primary_fallback": true
   },
-  "editorial_quality_samples": [
-    {
-      "title": "농협-NS홈쇼핑, 국산 농산물 유통 협력 나서",
-      "href": "http://www.finomy.com/news/articleView.html?idxno=258217",
-      "section": "dist",
-      "is_core": false,
-      "reasons": [
-        "promotional_or_event_filler",
-        "dist_event_or_development_without_ops"
-      ]
-    },
-    {
-      "title": "농협경제지주, NS홈쇼핑·홈플러스 익스프레스 손잡고 국산 농산물 판로...",
-      "href": "https://www.getnews.co.kr/news/articleView.html?idxno=876377",
-      "section": "dist",
-      "is_core": false,
-      "reasons": [
-        "promotional_or_event_filler",
-        "dist_event_or_development_without_ops"
-      ]
-    },
-    {
-      "title": "청송군, 폭염·병해충 대응 '현장기술지원단' 8개 반 운영",
-      "href": "https://www.dkilbo.com/news/articleView.html?idxno=549931",
-      "section": "pest",
-      "is_core": false,
-      "reasons": [
-        "pest_theme_duplicate:general_pest"
-      ]
-    }
-  ],
+  "editorial_quality_samples": [],
   "reader_hard_issue_samples": [],
   "editorial_improvement_plan": {}
 }
