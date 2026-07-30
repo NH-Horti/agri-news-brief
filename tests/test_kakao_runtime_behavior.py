@@ -56,6 +56,30 @@ class _DummyLogger:
 
 
 class TestKakaoRuntimeBehavior(unittest.TestCase):
+    def test_daily_early_exit_uses_existing_delivery_receipt(self):
+        receipt = {"report_date": "2026-08-03", "status": "success", "channel": "kakao"}
+        with (
+            patch.object(main, "DAILY_RECEIPT_EARLY_EXIT_ENABLED", True),
+            patch.object(main, "_load_delivery_receipt", return_value=receipt),
+            patch.object(main, "_write_kakao_send_status") as write_status,
+        ):
+            self.assertTrue(
+                main._daily_delivery_already_succeeded("owner/repo", "token", "2026-08-03")
+            )
+
+        write_status.assert_called_once_with("already_delivered")
+
+    def test_delivery_receipt_early_exit_is_disabled_outside_daily_workflow(self):
+        with (
+            patch.object(main, "DAILY_RECEIPT_EARLY_EXIT_ENABLED", False),
+            patch.object(main, "_load_delivery_receipt") as load_receipt,
+        ):
+            self.assertFalse(
+                main._daily_delivery_already_succeeded("owner/repo", "token", "2026-08-03")
+            )
+
+        load_receipt.assert_not_called()
+
     def test_write_kakao_send_status_writes_status_file(self):
         old_path = main.KAKAO_STATUS_FILE
         try:

@@ -1105,6 +1105,9 @@ PREPUBLISH_SLA_FALLBACK_MIN_SCORE = max(
 DELIVERY_RECEIPT_DIR = (
     os.getenv("DELIVERY_RECEIPT_DIR", "docs/delivery") or "docs/delivery"
 ).strip().strip("/")
+DAILY_RECEIPT_EARLY_EXIT_ENABLED = os.getenv(
+    "DAILY_RECEIPT_EARLY_EXIT_ENABLED", "false"
+).strip().lower() in ("1", "true", "yes", "y")
 EDITORIAL_OPENAI_MODEL = (os.getenv("EDITORIAL_OPENAI_MODEL", "gpt-5.6-sol") or "gpt-5.6-sol").strip()
 EDITORIAL_REASONING_EFFORT = (os.getenv("EDITORIAL_REASONING_EFFORT", "medium") or "medium").strip()
 EDITORIAL_REPAIR_REASONING_EFFORT = (
@@ -50346,6 +50349,21 @@ def _delivery_receipt_succeeded(receipt: JsonDict, report_date: str) -> bool:
     )
 
 
+def _daily_delivery_already_succeeded(repo: str, token: str, report_date: str) -> bool:
+    """Stop duplicate triggers before collection, rendering, or model calls."""
+    if not DAILY_RECEIPT_EARLY_EXIT_ENABLED:
+        return False
+    receipt = _load_delivery_receipt(repo, token, report_date)
+    if not _delivery_receipt_succeeded(receipt, report_date):
+        return False
+    _write_kakao_send_status("already_delivered")
+    log.info(
+        "[DELIVERY] successful receipt already exists for %s; skipping duplicate daily build",
+        report_date,
+    )
+    return True
+
+
 def _write_delivery_receipt(
     repo: str,
     token: str,
@@ -52773,6 +52791,8 @@ def main() -> None:
         except Exception:
             force_iso = ""
     report_date = REPORT_DATE_OVERRIDE or force_iso or end_kst.date().isoformat()
+    if _daily_delivery_already_succeeded(repo, GH_TOKEN, report_date):
+        return
 
     # -----------------------------
     # 72h 슬라이딩 윈도우 + 크로스데이(최근 N일) 중복 방지 초기화

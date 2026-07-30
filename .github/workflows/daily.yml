@@ -3,9 +3,10 @@ run-name: >-
   daily · trigger=${{ inputs.trigger_source || 'github' }} · recovery=${{ inputs.quality_recovery || false }}
 
 on:
-  # Primary daily trigger: Cloudflare Workers Cron at KST 06:05.
-  # daily-watchdog.yml verifies a successful delivery receipt through KST 06:50.
-  # Keep a native schedule out of this workflow to avoid duplicate Kakao sends.
+  # Independent early trigger at KST 05:35 (UTC Sunday-Thursday). Cloudflare
+  # remains the second trigger at 06:05; the delivery receipt suppresses duplicates.
+  schedule:
+    - cron: '35 20 * * 0-4'
   workflow_dispatch:
     inputs:
       trigger_source:
@@ -28,13 +29,16 @@ permissions:
 
 concurrency:
   group: agri-news-brief-daily
-  cancel-in-progress: false
+  # A forced SLA recovery replaces any delayed primary still occupying the slot.
+  cancel-in-progress: ${{ inputs.force_sla_fallback == true }}
 
 jobs:
   run:
     if: github.ref_name == 'main'
     runs-on: ubuntu-latest
-    timeout-minutes: 150
+    # A stuck primary must terminate early enough for a full forced recovery
+    # to finish before the 07:00 KST sharing deadline.
+    timeout-minutes: 25
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -114,6 +118,7 @@ jobs:
           PREPUBLISH_FORCE_SLA_FALLBACK: ${{ inputs.force_sla_fallback && 'true' || 'false' }}
           PREPUBLISH_SLA_FALLBACK_MIN_SCORE: '78'
           DELIVERY_RECEIPT_DIR: docs/delivery
+          DAILY_RECEIPT_EARLY_EXIT_ENABLED: 'true'
           UX_PATCH_DAYS: '7'
           WINDOW_MIN_HOURS: '0'
           CROSSDAY_DEDUPE_ENABLED: 'true'
