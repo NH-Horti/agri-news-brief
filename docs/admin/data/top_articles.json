@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-01T01:13:04+09:00",
+  "generated_at": "2026-08-02T00:28:26+09:00",
   "rows": [
     {
       "date": "2026-05-20",
@@ -78,6 +78,19 @@
       "users": 1,
       "archive_url": "",
       "source_url": ""
+    },
+    {
+      "date": "2026-07-31",
+      "article_id": "4be500b7d287",
+      "title": "'동반 하락' 무 ·배춧값 잔혹사···고랭지채소의 운명은",
+      "report_date": "2026-07-31",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.ikpnews.net",
+      "clicks": 6,
+      "users": 2,
+      "archive_url": "/agri-news-brief/archive/2026-07-31.html#sec-supply",
+      "source_url": "http://www.ikpnews.net/news/articleView.html?idxno=71078"
     },
     {
       "date": "2026-05-12",
@@ -182,19 +195,6 @@
       "users": 3,
       "archive_url": "",
       "source_url": ""
-    },
-    {
-      "date": "2026-07-31",
-      "article_id": "4be500b7d287",
-      "title": "'동반 하락' 무 ·배춧값 잔혹사···고랭지채소의 운명은",
-      "report_date": "2026-07-31",
-      "section": "supply",
-      "surface": "briefing_open",
-      "target_domain": "www.ikpnews.net",
-      "clicks": 5,
-      "users": 2,
-      "archive_url": "/agri-news-brief/archive/2026-07-31.html#sec-supply",
-      "source_url": "http://www.ikpnews.net/news/articleView.html?idxno=71078"
     },
     {
       "date": "2026-04-20",
@@ -3393,6 +3393,19 @@
       "users": 2,
       "archive_url": "/agri-news-brief/archive/2026-07-30.html#sec-policy",
       "source_url": "https://www.farmnmarket.com/news/article.html?no=27254"
+    },
+    {
+      "date": "2026-07-31",
+      "article_id": "8d61a4add4e7",
+      "title": "구리 도매시장 휴업 논의 시작...\"산지 의견 수렴 맞나?\" 논란",
+      "report_date": "2026-07-31",
+      "section": "dist",
+      "surface": "briefing_open",
+      "target_domain": "www.nongmin.com",
+      "clicks": 2,
+      "users": 2,
+      "archive_url": "",
+      "source_url": ""
     },
     {
       "date": "2026-07-31",
@@ -11735,19 +11748,6 @@
       "section": "policy",
       "surface": "briefing_card",
       "target_domain": "www.newsis.com",
-      "clicks": 1,
-      "users": 1,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-07-31",
-      "article_id": "8d61a4add4e7",
-      "title": "구리 도매시장 휴업 논의 시작...\"산지 의견 수렴 맞나?\" 논란",
-      "report_date": "2026-07-31",
-      "section": "dist",
-      "surface": "briefing_open",
-      "target_domain": "www.nongmin.com",
       "clicks": 1,
       "users": 1,
       "archive_url": "",
