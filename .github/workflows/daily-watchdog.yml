@@ -86,15 +86,22 @@ jobs:
           run_conclusion="$(jq -r '.run_conclusion' "$decision_file")"
           run_age_minutes="$(jq -r '.run_age_minutes' "$decision_file")"
           recovery_run_count="$(jq -r '.recovery_run_count' "$decision_file")"
+          failed_primary_run_count="$(jq -r '.failed_primary_run_count // 0' "$decision_file")"
           receipt_status="$(jq -r '.receipt_status' "$decision_file")"
           receipt_timestamp="$(jq -r '.receipt_timestamp' "$decision_file")"
           delivery_on_time="$(jq -r '.delivery_on_time' "$decision_file")"
 
           if [[ "$action" == 'cancel_and_dispatch' && -n "$run_id" ]]; then
-            echo "Cancelling stale daily run ${run_id} (${run_age_minutes} minutes old)."
+            if [[ "$result" == 'failed-primary-with-active-replacement' ]]; then
+              echo "Cancelling active primary replacement ${run_id}; an earlier primary run already failed."
+              recovery_result='failed-primary-recovery-dispatched'
+            else
+              echo "Cancelling stale daily run ${run_id} (${run_age_minutes} minutes old)."
+              recovery_result='stale-run-recovery-dispatched'
+            fi
             gh api --method POST "repos/${REPO}/actions/runs/${run_id}/cancel" || true
             action='dispatch'
-            result='stale-run-recovery-dispatched'
+            result="$recovery_result"
           fi
 
           if [[ "$action" == 'dispatch' ]]; then
@@ -107,7 +114,7 @@ jobs:
             run_url="https://github.com/${REPO}/actions/workflows/${WORKFLOW_FILE}"
             run_status='dispatched'
             run_conclusion='pending'
-            if [[ "$result" != 'stale-run-recovery-dispatched' ]]; then
+            if [[ "$result" != 'stale-run-recovery-dispatched' && "$result" != 'failed-primary-recovery-dispatched' ]]; then
               result='recovery-dispatched'
             fi
             echo "Delivery receipt was missing; standard-briefing SLA recovery was dispatched."
@@ -134,6 +141,7 @@ jobs:
             echo "- Receipt timestamp: ${receipt_timestamp:-unknown}"
             echo "- Delivered by 07:00 KST: $delivery_on_time"
             echo "- Daily status: $run_status/$run_conclusion (age=${run_age_minutes}m)"
+            echo "- Failed primary runs today: $failed_primary_run_count"
             echo "- Recovery runs today: $recovery_run_count/2"
             if [[ -n "$run_url" ]]; then
               echo "- Daily run: $run_url"

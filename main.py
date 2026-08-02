@@ -51925,6 +51925,18 @@ def _prepublish_sla_minimum_per_section() -> int:
     return MIN_FALLBACK_PER_SECTION if PREPUBLISH_FORCE_SLA_FALLBACK else SOFT_MIN_PER_SECTION
 
 
+def _daily_summary_allow_openai() -> bool:
+    """Keep a forced SLA recovery on the deterministic fast path.
+
+    A watchdog recovery is dispatched only after the normal path has already
+    failed or is no longer likely to finish before 07:00. Repeating the OpenAI
+    summary batch at that point can consume the entire remaining SLA window.
+    The non-model summary fallback still normalizes crawler descriptions and is
+    checked by the same prepublish safety gate before anything is delivered.
+    """
+    return not PREPUBLISH_FORCE_SLA_FALLBACK
+
+
 def _prepublish_sla_fallback_blockers(result: JsonDict) -> list[str]:
     """Return stable, operator-readable reasons why SLA publication is unsafe."""
     counts = result.get("counts", {}) if isinstance(result, dict) else {}
@@ -52880,7 +52892,11 @@ def main() -> None:
                 raise RuntimeError("Prepublish quality gate requires a replay snapshot.") from exc
             log.warning("[WARN] replay snapshot save failed: %s", exc)
     summary_cache = load_summary_cache(repo, GH_TOKEN)
-    by_section = fill_summaries(by_section, cache=summary_cache)
+    by_section = fill_summaries(
+        by_section,
+        cache=summary_cache,
+        allow_openai=_daily_summary_allow_openai(),
+    )
     try:
         save_summary_cache(repo, GH_TOKEN, summary_cache)
     except Exception as e:

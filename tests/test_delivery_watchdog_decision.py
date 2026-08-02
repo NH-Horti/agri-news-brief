@@ -101,6 +101,75 @@ class DeliveryWatchdogDecisionTests(unittest.TestCase):
 
         self.assertEqual(decision["action"], "cancel_and_dispatch")
 
+    def test_failed_primary_preempts_a_new_primary_after_recovery_cutoff(self):
+        decision = decide_delivery_action(
+            {},
+            {
+                "workflow_runs": [
+                    self._run(14, "2026-08-02T21:05:00Z"),
+                    self._run(
+                        15,
+                        "2026-08-02T21:27:00Z",
+                        status="in_progress",
+                        conclusion="",
+                        title="daily trigger=github-schedule recovery=false",
+                    ),
+                ]
+            },
+            now=datetime(2026, 8, 2, 21, 31, tzinfo=timezone.utc),
+            report_date="2026-08-03",
+        )
+
+        self.assertEqual(decision["action"], "cancel_and_dispatch")
+        self.assertEqual(decision["result"], "failed-primary-with-active-replacement")
+        self.assertEqual(decision["run_id"], "15")
+        self.assertEqual(decision["run_age_minutes"], 4)
+        self.assertEqual(decision["failed_primary_run_count"], 1)
+
+    def test_failed_primary_does_not_preempt_before_recovery_cutoff(self):
+        decision = decide_delivery_action(
+            {},
+            {
+                "workflow_runs": [
+                    self._run(16, "2026-08-02T21:05:00Z"),
+                    self._run(
+                        17,
+                        "2026-08-02T21:27:00Z",
+                        status="in_progress",
+                        conclusion="",
+                        title="daily trigger=github-schedule recovery=false",
+                    ),
+                ]
+            },
+            now=datetime(2026, 8, 2, 21, 29, tzinfo=timezone.utc),
+            report_date="2026-08-03",
+        )
+
+        self.assertEqual(decision["action"], "wait")
+        self.assertEqual(decision["result"], "daily-run-active")
+
+    def test_failed_primary_does_not_preempt_an_active_recovery(self):
+        decision = decide_delivery_action(
+            {},
+            {
+                "workflow_runs": [
+                    self._run(18, "2026-08-02T21:05:00Z"),
+                    self._run(
+                        19,
+                        "2026-08-02T21:27:00Z",
+                        status="in_progress",
+                        conclusion="",
+                        title="daily trigger=github-watchdog recovery=true",
+                    ),
+                ]
+            },
+            now=datetime(2026, 8, 2, 21, 31, tzinfo=timezone.utc),
+            report_date="2026-08-03",
+        )
+
+        self.assertEqual(decision["action"], "wait")
+        self.assertEqual(decision["result"], "daily-run-active")
+
     def test_recovery_limit_stops_dispatch_loop(self):
         runs = [
             self._run(

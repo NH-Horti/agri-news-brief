@@ -38,6 +38,22 @@ def _receipt_timestamp(receipt: dict[str, Any]) -> datetime | None:
     return _parse_timestamp(receipt.get("sent_at_kst") or receipt.get("confirmed_at_kst"))
 
 
+def _is_recovery_run(run: dict[str, Any]) -> bool:
+    return "recovery=true" in str(run.get("display_title") or "")
+
+
+def _is_failed_primary_run(run: dict[str, Any]) -> bool:
+    if _is_recovery_run(run) or str(run.get("status") or "") != "completed":
+        return False
+    return str(run.get("conclusion") or "").strip().lower() in {
+        "action_required",
+        "cancelled",
+        "failure",
+        "startup_failure",
+        "timed_out",
+    }
+
+
 def decide_delivery_action(
     receipt: dict[str, Any],
     runs_payload: dict[str, Any],
@@ -93,11 +109,8 @@ def decide_delivery_action(
     ]
     matching_runs.sort(key=lambda row: str(row.get("created_at") or ""))
     latest = matching_runs[-1] if matching_runs else {}
-    recovery_run_count = sum(
-        1
-        for row in matching_runs
-        if "recovery=true" in str(row.get("display_title") or "")
-    )
+    recovery_run_count = sum(1 for row in matching_runs if _is_recovery_run(row))
+    failed_primary_run_count = sum(1 for row in matching_runs if _is_failed_primary_run(row))
     run_status = str(latest.get("status") or "missing")
     run_conclusion = str(latest.get("conclusion") or ("pending" if latest else "missing"))
     run_created = _parse_timestamp(latest.get("created_at"))
@@ -117,12 +130,30 @@ def decide_delivery_action(
         "run_conclusion": run_conclusion,
         "run_age_minutes": run_age_minutes,
         "recovery_run_count": recovery_run_count,
+        "failed_primary_run_count": failed_primary_run_count,
     }
 
     if run_status in {"queued", "in_progress"}:
+        failed_primary_takeover = bool(
+            now_kst >= stale_cutoff
+            and failed_primary_run_count > 0
+            and not _is_recovery_run(latest)
+        )
         stale = now_kst >= stale_cutoff and run_age_minutes >= stale_after_minutes
         hard_deadline_stale = now_kst >= hard_cutoff and run_age_minutes >= hard_cutoff_minimum_age
-        if stale or hard_deadline_stale:
+        if failed_primary_takeover or stale or hard_deadline_stale:
+            if recovery_run_count >= recovery_limit:
+                return {
+                    **base,
+                    "result": "recovery-attempt-limit-reached",
+                    "action": "none",
+                }
+            if failed_primary_takeover:
+                return {
+                    **base,
+                    "result": "failed-primary-with-active-replacement",
+                    "action": "cancel_and_dispatch",
+                }
             return {**base, "result": "stale-daily-run", "action": "cancel_and_dispatch"}
         return {**base, "result": "daily-run-active", "action": "wait"}
     if dry_run:

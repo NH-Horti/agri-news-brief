@@ -120,6 +120,13 @@ class PrepublishQualityGateTests(unittest.TestCase):
             result["counts"]["briefing_by_section"]["policy"] = main.MIN_FALLBACK_PER_SECTION - 1
             self.assertFalse(main._prepublish_sla_fallback_publishable(result))
 
+    def test_forced_sla_recovery_disables_openai_summary_batch(self):
+        with patch.object(main, "PREPUBLISH_FORCE_SLA_FALLBACK", True):
+            self.assertFalse(main._daily_summary_allow_openai())
+
+        with patch.object(main, "PREPUBLISH_FORCE_SLA_FALLBACK", False):
+            self.assertTrue(main._daily_summary_allow_openai())
+
     def test_this_weeks_failure_shapes_are_recoverable_under_current_policy(self):
         july_28 = self._sla_fallback_result()
         july_28["operational_score"] = 89.87
