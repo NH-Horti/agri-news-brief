@@ -1,6 +1,51 @@
 {
   "reports": [
     {
+      "report_date": "2026-08-03",
+      "generated_at_kst": "2026-08-03T06:53:14+09:00",
+      "overall_score": 51.9,
+      "operational_score": 89.95,
+      "reader_quality_score": 86.35,
+      "reader_quality_gate_status": "clear",
+      "reader_quality_gate_reasons": [],
+      "editorial_score": 51.9,
+      "editorial_model_reported_score": 51.9,
+      "editorial_score_method": "weighted_components_v1",
+      "editorial_quality_tier": "needs_major_iteration",
+      "editorial_acceptance_passed": false,
+      "editorial_status": "needs_major_iteration",
+      "quality_gate_status": "needs_major_iteration",
+      "quality_gate_reason": "editorial_blocking_issue",
+      "status": "fail",
+      "section_alignment": 98.64,
+      "core_quality": 80.6,
+      "commodity_board_quality": 91.39,
+      "briefing_total": 20,
+      "commodity_total": 34,
+      "commodity_active_today_total": 17,
+      "commodity_active_today_unlinked_total": 6,
+      "commodity_managed_unlinked_total": 22,
+      "summary_presence_rate": 1.0,
+      "within_72h_rate": 1.0,
+      "briefing_title_unique_rate": 1.0,
+      "low_tier_source_rate": 0.3,
+      "low_tier_source_excess_count": 2,
+      "content_false_positive_rate": 0.0,
+      "reader_hard_issue_count": 0,
+      "reader_quality_penalty": 3.6,
+      "editorial_quality_penalty": 0.0,
+      "commodity_primary_false_link_rate": 0.0,
+      "commodity_pool_false_link_rate": 0.0,
+      "policy_wrong_section_rate": 0.0,
+      "promotional_filler_rate": 0.0,
+      "promotional_core_rate": 0.0,
+      "pest_theme_duplicate_rate": 0.0,
+      "guardrail_driver_tags": [
+        "low_tier_source_concentration",
+        "core_quality"
+      ]
+    },
+    {
       "report_date": "2026-07-31",
       "generated_at_kst": "2026-07-31T07:26:50+09:00",
       "overall_score": 77.47,
@@ -2354,5 +2399,5 @@
       "briefing_title_unique_rate": 1.0
     }
   ],
-  "updated_at_kst": "2026-07-31T07:26:50+09:00"
+  "updated_at_kst": "2026-08-03T06:53:14+09:00"
 }
