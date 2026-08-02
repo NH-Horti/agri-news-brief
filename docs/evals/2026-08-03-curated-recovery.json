@@ -1,0 +1,234 @@
+{
+  "report_date": "2026-08-03",
+  "status": "manual_editorial_recovery",
+  "generated_at_kst": "2026-08-03T07:05:10+09:00",
+  "recovery_reason": "Post-delivery editorial repair after the SLA replay exposed duplicate, off-topic, promotional, and weak-core selections.",
+  "review_checks": {
+    "off_topic_removed": true,
+    "promotional_filler_removed": true,
+    "duplicate_distribution_story_removed": true,
+    "duplicate_pest_story_removed": true,
+    "missed_policy_candidate_restored": true,
+    "all_summaries_manually_verified": true
+  },
+  "section_counts": {
+    "supply": 5,
+    "policy": 5,
+    "dist": 5,
+    "pest": 5
+  },
+  "core_counts": {
+    "supply": 3,
+    "policy": 3,
+    "dist": 3,
+    "pest": 3
+  },
+  "operational_score": 93.42,
+  "reader_quality_score": 90.54,
+  "scores": {
+    "completeness": 100.0,
+    "diversity": 96.0,
+    "source_quality": 80.0,
+    "summary_quality": 98.5,
+    "freshness": 95.71,
+    "retrieval_support": 78.33,
+    "section_alignment": 100.0,
+    "core_quality": 84.49,
+    "commodity_board_quality": 88.0,
+    "reader_quality": 90.54
+  },
+  "counts": {
+    "briefing_total": 20,
+    "commodity_total": 8,
+    "commodity_primary_total": 6,
+    "commodity_pool_total": 2,
+    "commodity_active_today_total": 8,
+    "commodity_active_today_unlinked_total": 2,
+    "commodity_managed_unlinked_total": 27,
+    "briefing_by_section": {
+      "supply": 5,
+      "policy": 5,
+      "dist": 5,
+      "pest": 5
+    },
+    "core_by_section": {
+      "supply": 3,
+      "policy": 3,
+      "dist": 3,
+      "pest": 3
+    },
+    "commodity_by_section": {
+      "supply": 6,
+      "policy": 0,
+      "dist": 1,
+      "pest": 1
+    },
+    "raw_by_section": {
+      "supply": 348,
+      "policy": 144,
+      "dist": 72,
+      "pest": 16
+    },
+    "expected_briefing_by_section": {
+      "supply": 5,
+      "policy": 5,
+      "dist": 5,
+      "pest": 5
+    },
+    "soft_fallback_briefing_by_section": {
+      "supply": 4,
+      "policy": 4,
+      "dist": 4,
+      "pest": 4
+    },
+    "minimum_fallback_briefing_by_section": {
+      "supply": 3,
+      "policy": 3,
+      "dist": 3,
+      "pest": 3
+    },
+    "preferred_slot_gap_by_section": {
+      "supply": 0,
+      "policy": 0,
+      "dist": 0,
+      "pest": 0
+    },
+    "low_tier_source_total": 4,
+    "low_tier_source_by_section": {
+      "supply": 0,
+      "policy": 2,
+      "dist": 0,
+      "pest": 2
+    }
+  },
+  "selected": {
+    "supply": [
+      {
+        "url": "https://mbn.co.kr/pages/news/newsView.php?news_seq_no=5209697",
+        "title": "폭염에 먹거리 물가도 비상…복숭아 55%·참외 73% 급등",
+        "summary": "기록적인 폭염으로 복숭아와 참외 등 제철 과일 도매가격이 한 달 전보다 크게 올랐다. 깻잎·애호박·오이 가격도 두 배 이상 뛰어 여름철 장바구니 부담이 커졌다.",
+        "is_core": true
+      },
+      {
+        "url": "https://www.hankyung.com/article/2026080200551",
+        "title": "마늘 한 달 새 80% 급락…이상생장 탓에 상품성 훼손",
+        "summary": "마늘 가격이 이상생장에 따른 상품성 저하로 한 달 사이 급락했다. 벌마늘 피해로 수요가 줄면서 ㎏당 가격은 전월보다 78%가량 떨어졌다.",
+        "is_core": true
+      },
+      {
+        "url": "https://www.nongmin.com/article/20260731500557",
+        "title": "[한눈에 보는 시세] 토마토, 재배면적 늘어 평년 대비 약세",
+        "summary": "토마토는 재배면적 증가로 서울 가락시장 시세가 전년과 평년보다 약세를 보였다. 7월 31일 5㎏ 상품은 1만3828원으로 지난해 7월 평균보다 14% 낮았다.",
+        "is_core": false
+      },
+      {
+        "url": "http://www.amnews.co.kr/news/articleView.html?idxno=73740",
+        "title": "화훼 자조금협의회, 절화 수급·가격 안정 나서",
+        "summary": "전국 절화 주산지에서 여름철 비수기 가격 폭락을 막기 위한 출하량 조절이 진행되고 있다. 화훼자조금협의회는 주요 공판장과 연계해 봉화 거베라 약 6만1000본 등 산지 물량을 조절했다.",
+        "is_core": false
+      },
+      {
+        "url": "https://www.ytn.co.kr/_ln/0115_202608022330339150",
+        "title": "폭염에 메마른 농지…제주 당근 파종도 비상",
+        "summary": "제주 동부 당근 주산지는 토양수분 부족과 낮은 저수율로 파종 차질이 우려된다. 일부 지점의 수분 부족은 적정 기준의 25배 수준이며 제주도는 급수장비를 집중 투입하기로 했다.",
+        "is_core": true
+      }
+    ],
+    "policy": [
+      {
+        "url": "https://ikpnews.net/news/articleView.html?idxno=71080",
+        "title": "농식품부, 여름철 농축산물 수급상황 점검",
+        "summary": "농식품부는 폭염에 대비해 농축산물 수급과 가공식품 가격을 점검했다. 생육 모니터링과 병해충 대응, 가뭄지역 긴급 급수를 강화하고 식품업계에는 인상 품목과 시기 분산을 요청했다.",
+        "is_core": true
+      },
+      {
+        "url": "https://www.aflnews.co.kr/news/articleView.html?idxno=325638",
+        "title": "농산물가격안정제도 시행 임박…실행 기준 마련 서둘러야",
+        "summary": "농산물가격안정제도가 오는 27일 시행되지만 대상 품목과 기준가격, 차액 지급 비율이 아직 확정되지 않았다. 시행 전 심의위원회 논의와 구체적인 집행 기준 마련이 요구된다.",
+        "is_core": true
+      },
+      {
+        "url": "https://www.etoday.co.kr/news/view/2610040",
+        "title": "농가 안전망 ‘반쪽’…품목별 보호장치가 먼저",
+        "summary": "FTA 피해보전직불제는 최근 10년 평균 집행률이 37%에 그쳤고 올해 105개 조사 품목 중 염소고기만 지원 요건을 충족했다. 협상 단계부터 민감품목별 보호장치를 마련해야 한다는 지적이 나온다.",
+        "is_core": false
+      },
+      {
+        "url": "https://ikpnews.net/news/articleView.html?idxno=71108",
+        "title": "콩나물콩 TRQ 1만t 증대…생산기반 영향 논란",
+        "summary": "정부가 5% 저율관세를 적용하는 콩나물콩 시장접근물량을 1만t 늘리기로 했다. 생산자 측은 최근 가격이 안정적인 데다 재배면적과 자급률이 낮아 국내 생산기반을 더 약화할 수 있다고 우려한다.",
+        "is_core": true
+      },
+      {
+        "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=406016",
+        "title": "충북, 기후대응 농정 전환·농산물 가격 하락 대책 요구",
+        "summary": "충북도의회에서 기후위기에 맞춘 농정 전환과 농산물 가격 하락 대책의 필요성이 제기됐다. 도의원들은 생산 안정과 농가 경영 보호를 위한 정책 보강을 촉구했다.",
+        "is_core": false
+      }
+    ],
+    "dist": [
+      {
+        "url": "https://www.newsis.com/view/NISX20260731_0003732147",
+        "title": "공급망 위기 속 K-농식품 수출…검역·물류·판로 전 과정 지원",
+        "summary": "보호무역과 국제분쟁으로 농식품 수출은 생산부터 검역·인증·통관·물류·현지 유통까지 전 과정 관리가 중요해졌다. 정부는 FTA 국내보완대책과 해외시장·콜드체인·판로 지원을 연계하고 있다.",
+        "is_core": false
+      },
+      {
+        "url": "https://www.etnews.com/20260802000040",
+        "title": "산지부터 소비까지 바꾼다…농축산물 유통 혁신 본격화",
+        "summary": "정부가 온라인 농산물도매시장과 스마트 산지유통센터, AI 수급관리로 농축산물 유통체계 개편에 나섰다. 온라인 도매시장 누적 거래액은 지난달 말 2조6279억원을 기록했다.",
+        "is_core": true
+      },
+      {
+        "url": "https://news1.kr/local/daegu-gyeongbuk/6246408",
+        "title": "AI가 복숭아 당도 판별·로봇 포장…경북 농산물 유통 혁신",
+        "summary": "경북도가 2030년까지 1433억원을 투입해 AI·로봇 기반 스마트 APC를 확대한다. 영천의 복숭아 처리량은 8시간 기준 80t에서 120t으로 늘고 작업인력은 28명에서 8명으로 줄었다.",
+        "is_core": true
+      },
+      {
+        "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=406008",
+        "title": "경북포도 수출 쑥…상반기 44.2% 증가",
+        "summary": "경북 포도 수출이 올해 상반기 전년 동기보다 44.2% 증가했다. 국내 최대 포도 주산지의 수출 확대가 이어지며 생산자 조직과 해외 판로 관리의 중요성도 커지고 있다.",
+        "is_core": true
+      },
+      {
+        "url": "https://www.nongmin.com/article/20260731500391",
+        "title": "‘임실N복숭아’ 대형마트 판로 확대…지난해 매출 93억원",
+        "summary": "임실 산지유통조직은 공선회원 89명이 복숭아 1315t을 출하해 지난해 93억원이 넘는 매출을 올렸다. 물량의 93% 이상을 대형마트에 공급했고 올해는 매출 110억원을 목표로 한다.",
+        "is_core": false
+      }
+    ],
+    "pest": [
+      {
+        "url": "https://www.newsam.co.kr/news/article.html?no=43622",
+        "title": "고온다습기에 확산하는 배추 무름병…배수·초기 제거가 핵심",
+        "summary": "배추 무름병은 고온다습·과습·연작 조건에서 빠르게 퍼져 조직을 썩게 만드는 세균성 병해다. 장마 뒤 배수를 개선하고 병든 포기를 조기에 제거해 전염원을 줄이는 것이 중요하다.",
+        "is_core": true
+      },
+      {
+        "url": "https://www.aflnews.co.kr/news/articleView.html?idxno=325564",
+        "title": "농진청, 농작물 병해충 중앙예찰단 가동",
+        "summary": "농촌진흥청이 중앙예찰단을 꾸려 비래해충과 주요 병해충 발생을 조사하고 현장 기술지원을 강화한다. 올해 벼 도열병은 전국 3783㏊에서 확인돼 예찰과 초기 방제가 요구된다.",
+        "is_core": true
+      },
+      {
+        "url": "http://www.jndn.com/article.php?aid=1785657350437068109",
+        "title": "함평군, 벼 병해충 방제·밭작물 가뭄 대응 강화",
+        "summary": "함평군은 7월 초부터 8월 말까지 벼 재배면적 6000㏊를 대상으로 병해충 방제를 추진한다. 밭작물 가뭄 대응 현장지도도 병행해 작물 피해를 줄일 계획이다.",
+        "is_core": false
+      },
+      {
+        "url": "https://www.nongmin.com/article/20260731500553",
+        "title": "더위·병충해 강한 고랭지채소 품종 개발 급선무",
+        "summary": "고랭지채소 생산을 위협하는 씨스트선충은 지난해 누적 564㏊에서 확인됐고 올해 516.5㏊에서 공적 방제가 이뤄졌다. 내서성·내병성 품종과 지역 맞춤 재배기술, 방제작업 지원 확대가 요구된다.",
+        "is_core": true
+      },
+      {
+        "url": "http://www.webplusnews.kr/news/articleView.html?idxno=43715",
+        "title": "경북농업기술원, 폭염기 원예작물 생육관리 강화",
+        "summary": "경북 사과·포도·복숭아 등 원예작물은 8월 폭염과 건조 장기화에 따른 생육 피해 관리가 시급해졌다. 기술원은 미세살수·차광망·적정 관수와 병해충 예방을 당부했다.",
+        "is_core": false
+      }
+    ]
+  }
+}

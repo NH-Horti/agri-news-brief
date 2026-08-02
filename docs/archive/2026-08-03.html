@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <meta name="agri-build" content="b226981" />
+  <meta name="agri-build" content="6a25608" />
 
   <meta name="application-name" content="농산물 뉴스 브리프" />
   <meta name="apple-mobile-web-app-title" content="농산물 뉴스 브리프" />
@@ -308,7 +308,7 @@
     @media (prefers-color-scheme: dark){
       .homeHeader{background:rgba(15,23,42,.86);border-bottom-color:#334155}
     }
-    
+
     .swipeHint{display:none;align-items:center;justify-content:center;gap:8px;margin:8px 0 2px;color:var(--muted);font-size:12px;user-select:none;opacity:.9;transition:opacity .25s ease, transform .25s ease}
     .swipeHint.show{display:flex}
     .swipeHint.hide{opacity:0;transform:translateY(-4px)}
@@ -515,7 +515,7 @@
           <h1>[2026-08-03 농산물 뉴스 Brief]</h1>
           <div class="sub">기간: 2026-07-31 06:00 ~ 2026-08-03 06:00 · 기사 20건</div>
         </div>
-        
+
   <button id="installAppButton" class="installAction isHidden" type="button">
     <span class="installActionIcon" aria-hidden="true">
       <svg viewBox="0 0 24 24" fill="none">
@@ -658,7 +658,12 @@
         </div>
         <button class="navBtn disabled" data-nav="next" type="button" data-msg="다음 브리핑이 없습니다.">다음 ▶</button>
       </div>
-<div id="navLoading" class="navLoading" aria-live="polite" aria-atomic="true">
+      <div id="swipeHint" class="swipeHint" aria-hidden="true">
+        <span class="arrow">◀</span>
+        <span class="txt pill">좌우 스와이프로 날짜 이동</span>
+        <span class="arrow">▶</span>
+      </div>
+      <div id="navLoading" class="navLoading" aria-live="polite" aria-atomic="true">
         <span class="badge">날짜 이동 중…</span>
       </div>
     </div>
@@ -683,7 +688,7 @@
   </div>
 
   <div class="wrap">
-    
+
       <div class="viewTabs" role="tablist" aria-label="보기 전환">
         <button class="viewTab isActive" data-view-tab="briefing" type="button" role="tab" aria-selected="true" aria-controls="view-briefing">
           <span class="viewTabEyebrow">핵심 요약</span>
@@ -699,15 +704,15 @@
           <span class="viewTabTitle">전체 품목 보드</span>
           <span class="viewTabDesc">품목별 관련 기사 풀과 대표 이슈를 바로 파악합니다.</span>
           <span class="viewTabStats">
-            <span class="viewTabStat"><strong>11</strong>개 연결 품목</span>
-            <span class="viewTabStat"><strong>6</strong>개 후보 미연결</span>
+            <span class="viewTabStat"><strong>6</strong>개 연결 품목</span>
+            <span class="viewTabStat"><strong>2</strong>개 후보 미연결</span>
           </span>
         </button>
       </div>
-    
-    
+
+
     <section id="view-briefing" class="viewPane briefingPane isActive" data-view-pane="briefing" role="tabpanel">
-      
+
     <section class="briefingHero" aria-labelledby="briefingHeroTitle">
       <div class="briefingHeroMain">
         <h2 id="briefingHeroTitle">오늘의 브리핑 <span class="briefingEyebrow">오늘 꼭 확인할 핵심 기사</span></h2>
@@ -724,16 +729,16 @@
         </div>
         <div class="briefingHeroStat">
           <span class="briefingHeroStatLabel">핵심</span>
-          <strong>7건</strong>
+          <strong>12건</strong>
         </div>
       </div>
     </section>
-    
+
       <div class="chipbar briefingChipbar" data-view-pane-anchor="briefing"><div class="chipwrap"><div class="chips" data-swipe-ignore="1"><a class="chip" style="--chip-color:#0f766e;--chip-soft:rgba(15,118,110,0.120);--chip-border:rgba(15,118,110,0.360);" href="#sec-supply"><span class="chipTitle">품목 및 수급 동향</span><span class="chipN">5</span></a>
 <a class="chip" style="--chip-color:#1d4ed8;--chip-soft:rgba(29,78,216,0.120);--chip-border:rgba(29,78,216,0.360);" href="#sec-policy"><span class="chipTitle">정책 및 주요 이슈</span><span class="chipN">5</span></a>
 <a class="chip" style="--chip-color:#6d28d9;--chip-soft:rgba(109,40,217,0.120);--chip-border:rgba(109,40,217,0.360);" href="#sec-dist"><span class="chipTitle">유통 및 현장</span><span class="chipN">5</span></a>
 <a class="chip" style="--chip-color:#b45309;--chip-soft:rgba(180,83,9,0.120);--chip-border:rgba(180,83,9,0.360);" href="#sec-pest"><span class="chipTitle">생육 리스크 및 방제</span><span class="chipN">5</span></a></div></div></div>
-      
+
             <section id="sec-supply" class="sec" style="--sec-color:#0f766e">
               <div class="secHead" style="border-left:8px solid #0f766e;">
                 <div class="secTitle">
@@ -743,11 +748,29 @@
                 <div class="secCount">5건</div>
               </div>
               <div class="secBody">
-            <div class="card" style="border-left-color:#0f766e" data-href="https://www.hankyung.com/article/2026080200551" data-track="article" data-article-id="caba39d9436d" data-article-title="마늘 한 달 새 80% 급락…이상생장 탓에 상품성 훼손" data-report-date="2026-08-03" data-section="supply" data-surface="briefing_card" data-target-domain="www.hankyung.com" data-selection-fit="6.890" data-selection-stage="supply_publish_editorial_core" data-is-core="1" data-press-tier="3">
+            <div class="card" style="border-left-color:#0f766e" data-href="http://www.mbn.co.kr/pages/news/newsView.php?news_seq_no=5209697" data-track="article" data-article-id="f9e0d110d6c6" data-article-title="폭염에 먹거리 물가도 비상…복숭아 55%·참외 73% 급등" data-report-date="2026-08-03" data-section="supply" data-surface="briefing_card" data-target-domain="www.mbn.co.kr" data-selection-fit="9.050" data-selection-stage="manual_editorial_recovery_core" data-is-core="1" data-press-tier="3">
               <div class="cardTop">
                 <div class="meta">
                   <span class="badgeCore">핵심</span>
-                  
+
+                  <span class="press">MBN</span>
+                  <span class="dot">·</span>
+                  <span class="time">08/01 19:41</span>
+                  <span class="dot">·</span>
+                  <span class="topic">정책</span>
+                </div>
+              <a class="btnOpen" data-swipe-ignore="1" href="http://www.mbn.co.kr/pages/news/newsView.php?news_seq_no=5209697" data-track="article" data-article-id="f9e0d110d6c6" data-article-title="폭염에 먹거리 물가도 비상…복숭아 55%·참외 73% 급등" data-report-date="2026-08-03" data-section="supply" data-surface="briefing_open" data-target-domain="www.mbn.co.kr" target="_top" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">폭염에 먹거리 물가도 비상…복숭아 55%·참외 73% 급등</div>
+              <div class="sum">기록적인 폭염으로 복숭아와 참외 등 제철 과일 도매가격이 한 달 전보다 크게 올랐다. 깻잎·애호박·오이 가격도 두 배 이상 뛰어 여름철 장바구니 부담이 커졌다.</div>
+            </div>
+
+
+            <div class="card" style="border-left-color:#0f766e" data-href="https://www.hankyung.com/article/2026080200551" data-track="article" data-article-id="caba39d9436d" data-article-title="마늘 한 달 새 80% 급락…이상생장 탓에 상품성 훼손" data-report-date="2026-08-03" data-section="supply" data-surface="briefing_card" data-target-domain="www.hankyung.com" data-selection-fit="6.890" data-selection-stage="manual_editorial_recovery_core" data-is-core="1" data-press-tier="3">
+              <div class="cardTop">
+                <div class="meta">
+                  <span class="badgeCore">핵심</span>
+
                   <span class="press">한국경제</span>
                   <span class="dot">·</span>
                   <span class="time">08/02 16:56</span>
@@ -757,83 +780,65 @@
               <a class="btnOpen" data-swipe-ignore="1" href="https://www.hankyung.com/article/2026080200551" data-track="article" data-article-id="caba39d9436d" data-article-title="마늘 한 달 새 80% 급락…이상생장 탓에 상품성 훼손" data-report-date="2026-08-03" data-section="supply" data-surface="briefing_open" data-target-domain="www.hankyung.com" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">마늘 한 달 새 80% 급락…이상생장 탓에 상품성 훼손</div>
-              <div class="sum">마늘 가격이 이상생장에 따른 상품성 저하로 한 달 사이 급락했다. 납작하게 자라는 등 품질 훼손이 가격 하락으로 이어지며 낙폭은 한 달 새 80%에 달했다.</div>
+              <div class="sum">마늘 가격이 이상생장에 따른 상품성 저하로 한 달 사이 급락했다. 벌마늘 피해로 수요가 줄면서 ㎏당 가격은 전월보다 78%가량 떨어졌다.</div>
             </div>
-            
 
-            <div class="card" style="border-left-color:#0f766e" data-href="https://www.nongmin.com/article/20260731500557" data-track="article" data-article-id="e2e35147a580" data-article-title="[한눈에 보는 시세] 토마토 , 재배면적 늘어 평년 대비 약세" data-report-date="2026-08-03" data-section="supply" data-surface="briefing_card" data-target-domain="www.nongmin.com" data-selection-fit="2.700" data-selection-stage="supply_publish_market_core" data-is-core="1" data-press-tier="3">
+
+            <div class="card" style="border-left-color:#0f766e" data-href="https://www.ytn.co.kr/_ln/0115_202608022330339150" data-track="article" data-article-id="2829e9223896" data-article-title="폭염에 메마른 농지…제주 당근 파종도 비상" data-report-date="2026-08-03" data-section="supply" data-surface="briefing_card" data-target-domain="www.ytn.co.kr" data-selection-fit="5.000" data-selection-stage="manual_editorial_recovery_core" data-is-core="1" data-press-tier="3">
               <div class="cardTop">
                 <div class="meta">
                   <span class="badgeCore">핵심</span>
-                  
+
+                  <span class="press">YTN</span>
+                  <span class="dot">·</span>
+                  <span class="time">08/02 23:30</span>
+                  <span class="dot">·</span>
+                  <span class="topic">정책</span>
+                </div>
+              <a class="btnOpen" data-swipe-ignore="1" href="https://www.ytn.co.kr/_ln/0115_202608022330339150" data-track="article" data-article-id="2829e9223896" data-article-title="폭염에 메마른 농지…제주 당근 파종도 비상" data-report-date="2026-08-03" data-section="supply" data-surface="briefing_open" data-target-domain="www.ytn.co.kr" target="_top" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">폭염에 메마른 농지…제주 당근 파종도 비상</div>
+              <div class="sum">제주 동부 당근 주산지는 토양수분 부족과 낮은 저수율로 파종 차질이 우려된다. 일부 지점의 수분 부족은 적정 기준의 25배 수준이며 제주도는 급수장비를 집중 투입하기로 했다.</div>
+            </div>
+
+
+            <div class="card" style="border-left-color:#0f766e" data-href="https://www.nongmin.com/article/20260731500557" data-track="article" data-article-id="c4c5ce9fa4db" data-article-title="[한눈에 보는 시세] 토마토, 재배면적 늘어 평년 대비 약세" data-report-date="2026-08-03" data-section="supply" data-surface="briefing_card" data-target-domain="www.nongmin.com" data-selection-fit="5.000" data-selection-stage="manual_editorial_recovery_tail" data-is-core="0" data-press-tier="3">
+              <div class="cardTop">
+                <div class="meta">
+
+
                   <span class="press">농민신문</span>
                   <span class="dot">·</span>
                   <span class="time">08/03 05:01</span>
                   <span class="dot">·</span>
                   <span class="topic">정책</span>
                 </div>
-              <a class="btnOpen" data-swipe-ignore="1" href="https://www.nongmin.com/article/20260731500557" data-track="article" data-article-id="e2e35147a580" data-article-title="[한눈에 보는 시세] 토마토 , 재배면적 늘어 평년 대비 약세" data-report-date="2026-08-03" data-section="supply" data-surface="briefing_open" data-target-domain="www.nongmin.com" target="_top" rel="noopener">원문 열기</a>
+              <a class="btnOpen" data-swipe-ignore="1" href="https://www.nongmin.com/article/20260731500557" data-track="article" data-article-id="c4c5ce9fa4db" data-article-title="[한눈에 보는 시세] 토마토, 재배면적 늘어 평년 대비 약세" data-report-date="2026-08-03" data-section="supply" data-surface="briefing_open" data-target-domain="www.nongmin.com" target="_top" rel="noopener">원문 열기</a>
               </div>
-              <div class="ttl">[한눈에 보는 시세] 토마토 , 재배면적 늘어 평년 대비 약세</div>
-              <div class="sum">토마토는 재배면적 증가로 서울 가락시장 시세가 전년과 평년보다 약세를 보였다. 7월31일 5㎏ 상품은 1만3828원으로 지난해 7월 평균보다 14% 낮아 기상변수도 주시해야 한다.</div>
+              <div class="ttl">[한눈에 보는 시세] 토마토, 재배면적 늘어 평년 대비 약세</div>
+              <div class="sum">토마토는 재배면적 증가로 서울 가락시장 시세가 전년과 평년보다 약세를 보였다. 7월 31일 5㎏ 상품은 1만3828원으로 지난해 7월 평균보다 14% 낮았다.</div>
             </div>
-            
 
-            <div class="card" style="border-left-color:#0f766e" data-href="http://www.amnews.co.kr/news/articleView.html?idxno=73740" data-track="article" data-article-id="fb365d7e96ce" data-article-title="화훼 자조금협의회, 절화 수급· 가격 안정 나서" data-report-date="2026-08-03" data-section="supply" data-surface="briefing_card" data-target-domain="www.amnews.co.kr" data-selection-fit="6.240" data-selection-stage="supply_publish_market_core" data-is-core="0" data-press-tier="2">
+
+            <div class="card" style="border-left-color:#0f766e" data-href="http://www.amnews.co.kr/news/articleView.html?idxno=73740" data-track="article" data-article-id="3f8e14de88f4" data-article-title="화훼 자조금협의회, 절화 수급·가격 안정 나서" data-report-date="2026-08-03" data-section="supply" data-surface="briefing_card" data-target-domain="www.amnews.co.kr" data-selection-fit="6.240" data-selection-stage="manual_editorial_recovery_tail" data-is-core="0" data-press-tier="2">
               <div class="cardTop">
                 <div class="meta">
-                  
-                  
+
+
                   <span class="press">농축유통신문</span>
                   <span class="dot">·</span>
                   <span class="time">07/31 20:48</span>
                   <span class="dot">·</span>
                   <span class="topic">화훼</span>
                 </div>
-              <a class="btnOpen" data-swipe-ignore="1" href="http://www.amnews.co.kr/news/articleView.html?idxno=73740" data-track="article" data-article-id="fb365d7e96ce" data-article-title="화훼 자조금협의회, 절화 수급· 가격 안정 나서" data-report-date="2026-08-03" data-section="supply" data-surface="briefing_open" data-target-domain="www.amnews.co.kr" target="_top" rel="noopener">원문 열기</a>
+              <a class="btnOpen" data-swipe-ignore="1" href="http://www.amnews.co.kr/news/articleView.html?idxno=73740" data-track="article" data-article-id="3f8e14de88f4" data-article-title="화훼 자조금협의회, 절화 수급·가격 안정 나서" data-report-date="2026-08-03" data-section="supply" data-surface="briefing_open" data-target-domain="www.amnews.co.kr" target="_top" rel="noopener">원문 열기</a>
               </div>
-              <div class="ttl">화훼 자조금협의회, 절화 수급· 가격 안정 나서</div>
-              <div class="sum">전국 절화 주산지에서 여름철 비수기 가격 폭락을 막기 위한 출하량 조절이 진행되고 있다. 한국화훼자조금협의회는 주요 공판장과 연계해 산지 폐기를 추진했으며 봉화 거베라 약 6만1000본도 포함했다.</div>
-            </div>
-            
-
-            <div class="card" style="border-left-color:#0f766e" data-href="https://www.etoday.co.kr/news/view/2600780" data-track="article" data-article-id="228ce4dd12ed" data-article-title="늦은 장마에 역대급 폭염, 식단까지 바꾼다…급식업계, ‘공급망 재편’..." data-report-date="2026-08-03" data-section="supply" data-surface="briefing_card" data-target-domain="www.etoday.co.kr" data-selection-fit="8.010" data-selection-stage="final_dedupe_refill" data-is-core="0" data-press-tier="3">
-              <div class="cardTop">
-                <div class="meta">
-                  
-                  
-                  <span class="press">이투데이</span>
-                  <span class="dot">·</span>
-                  <span class="time">08/02 16:00</span>
-                  <span class="dot">·</span>
-                  <span class="topic">호박</span>
-                </div>
-              <a class="btnOpen" data-swipe-ignore="1" href="https://www.etoday.co.kr/news/view/2600780" data-track="article" data-article-id="228ce4dd12ed" data-article-title="늦은 장마에 역대급 폭염, 식단까지 바꾼다…급식업계, ‘공급망 재편’..." data-report-date="2026-08-03" data-section="supply" data-surface="briefing_open" data-target-domain="www.etoday.co.kr" target="_top" rel="noopener">원문 열기</a>
-              </div>
-              <div class="ttl">늦은 장마에 역대급 폭염, 식단까지 바꾼다…급식업계, ‘공급망 재편’...</div>
-              <div class="sum">늦은 장마와 극심한 폭염으로 농산물 출하와 가격이 어긋나며 급식업계의 식단 운영 부담이 커졌다. 대형 급식사는 연간 계약으로 단가 조정이 어려워 스마트팜·계약재배·대체식단을 확대하고 있다.</div>
-            </div>
-            
-
-            <div class="card" style="border-left-color:#0f766e" data-href="https://www.hankyung.com/article/2026080202071" data-track="article" data-article-id="6f3cddae8eec" data-article-title="멀쩡한 &#x27; 포도 밭&#x27; 붙태운 이유가…MZ 돌변에 &#x27;비명&#x27; 터진 곳" data-report-date="2026-08-03" data-section="supply" data-surface="briefing_card" data-target-domain="www.hankyung.com" data-selection-fit="2.900" data-selection-stage="core" data-is-core="0" data-press-tier="3">
-              <div class="cardTop">
-                <div class="meta">
-                  
-                  
-                  <span class="press">한국경제</span>
-                  <span class="dot">·</span>
-                  <span class="time">08/02 18:27</span>
-                  <span class="dot">·</span>
-                  <span class="topic">포도</span>
-                </div>
-              <a class="btnOpen" data-swipe-ignore="1" href="https://www.hankyung.com/article/2026080202071" data-track="article" data-article-id="6f3cddae8eec" data-article-title="멀쩡한 &#x27; 포도 밭&#x27; 붙태운 이유가…MZ 돌변에 &#x27;비명&#x27; 터진 곳" data-report-date="2026-08-03" data-section="supply" data-surface="briefing_open" data-target-domain="www.hankyung.com" target="_top" rel="noopener">원문 열기</a>
-              </div>
-              <div class="ttl">멀쩡한 &#x27; 포도 밭&#x27; 붙태운 이유가…MZ 돌변에 &#x27;비명&#x27; 터진 곳</div>
-              <div class="sum">프랑스 보르도 포도밭은 산불 확산에 직면했고 미국 산지는 와인 판매 부진으로 생산 감축에 나섰다. 미국에서는 포도밭을 갈아엎는 사례가 나타나며 생산량 감소에 따른 와인 가격 변동성 확대가 예상된다.</div>
+              <div class="ttl">화훼 자조금협의회, 절화 수급·가격 안정 나서</div>
+              <div class="sum">전국 절화 주산지에서 여름철 비수기 가격 폭락을 막기 위한 출하량 조절이 진행되고 있다. 화훼자조금협의회는 주요 공판장과 연계해 봉화 거베라 약 6만1000본 등 산지 물량을 조절했다.</div>
             </div>
             </div>
             </section>
-            
+
 
             <section id="sec-policy" class="sec" style="--sec-color:#1d4ed8">
               <div class="secHead" style="border-left:8px solid #1d4ed8;">
@@ -844,97 +849,97 @@
                 <div class="secCount">5건</div>
               </div>
               <div class="secBody">
-            <div class="card" style="border-left-color:#1d4ed8" data-href="https://www.jeonmae.co.kr/news/articleView.html?idxno=1280155" data-track="article" data-article-id="b33b9af82100" data-article-title="함양군, 농식품부에 양파 수급 안정·국비사업 지원 건의" data-report-date="2026-08-03" data-section="policy" data-surface="briefing_card" data-target-domain="www.jeonmae.co.kr" data-selection-fit="2.490" data-selection-stage="policy_publish_editorial_core" data-is-core="1" data-press-tier="1">
+            <div class="card" style="border-left-color:#1d4ed8" data-href="http://www.ikpnews.net/news/articleView.html?idxno=71080" data-track="article" data-article-id="3563c3a679fd" data-article-title="농식품부, 여름철 농축산물 수급상황 점검" data-report-date="2026-08-03" data-section="policy" data-surface="briefing_card" data-target-domain="www.ikpnews.net" data-selection-fit="7.290" data-selection-stage="manual_editorial_recovery_core" data-is-core="1" data-press-tier="1">
               <div class="cardTop">
                 <div class="meta">
                   <span class="badgeCore">핵심</span>
-                  
-                  <span class="press">전국매일신문</span>
-                  <span class="dot">·</span>
-                  <span class="time">08/02 17:08</span>
-                  <span class="dot">·</span>
-                  <span class="topic">양파</span>
-                </div>
-              <a class="btnOpen" data-swipe-ignore="1" href="https://www.jeonmae.co.kr/news/articleView.html?idxno=1280155" data-track="article" data-article-id="b33b9af82100" data-article-title="함양군, 농식품부에 양파 수급 안정·국비사업 지원 건의" data-report-date="2026-08-03" data-section="policy" data-surface="briefing_open" data-target-domain="www.jeonmae.co.kr" target="_top" rel="noopener">원문 열기</a>
-              </div>
-              <div class="ttl">함양군, 농식품부에 양파 수급 안정·국비사업 지원 건의</div>
-              <div class="sum">경남 함양군은 양파 생산량 증가에 대응해 농식품부에 수급 안정과 국비사업 지원을 건의했다. 군은 수출·대도시 특판·대형 유통업체 판촉·온라인 판매를 추진하고 정부의 소비 촉진 지원을 요청했다.</div>
-            </div>
-            
 
-            <div class="card" style="border-left-color:#1d4ed8" data-href="https://www.aflnews.co.kr/news/articleView.html?idxno=325638" data-track="article" data-article-id="0d366265cc7e" data-article-title="농산물가격안정제도, 시행 한 달 앞…실행 방안 마련 서둘러야" data-report-date="2026-08-03" data-section="policy" data-surface="briefing_card" data-target-domain="www.aflnews.co.kr" data-selection-fit="5.970" data-selection-stage="policy_priority_core" data-is-core="1" data-press-tier="2">
+                  <span class="press">한국농정신문</span>
+                  <span class="dot">·</span>
+                  <span class="time">08/02 20:48</span>
+                  <span class="dot">·</span>
+                  <span class="topic">애호박</span>
+                </div>
+              <a class="btnOpen" data-swipe-ignore="1" href="http://www.ikpnews.net/news/articleView.html?idxno=71080" data-track="article" data-article-id="3563c3a679fd" data-article-title="농식품부, 여름철 농축산물 수급상황 점검" data-report-date="2026-08-03" data-section="policy" data-surface="briefing_open" data-target-domain="www.ikpnews.net" target="_top" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">농식품부, 여름철 농축산물 수급상황 점검</div>
+              <div class="sum">농식품부는 폭염에 대비해 농축산물 수급과 가공식품 가격을 점검했다. 생육 모니터링과 병해충 대응, 가뭄지역 긴급 급수를 강화하고 식품업계에는 인상 품목과 시기 분산을 요청했다.</div>
+            </div>
+
+
+            <div class="card" style="border-left-color:#1d4ed8" data-href="https://www.aflnews.co.kr/news/articleView.html?idxno=325638" data-track="article" data-article-id="9065b3b0fa93" data-article-title="농산물가격안정제도 시행 임박…실행 기준 마련 서둘러야" data-report-date="2026-08-03" data-section="policy" data-surface="briefing_card" data-target-domain="www.aflnews.co.kr" data-selection-fit="5.970" data-selection-stage="manual_editorial_recovery_core" data-is-core="1" data-press-tier="2">
               <div class="cardTop">
                 <div class="meta">
                   <span class="badgeCore">핵심</span>
-                  
+
                   <span class="press">농수축산신문</span>
                   <span class="dot">·</span>
                   <span class="time">07/31 18:02</span>
                   <span class="dot">·</span>
                   <span class="topic">정책</span>
                 </div>
-              <a class="btnOpen" data-swipe-ignore="1" href="https://www.aflnews.co.kr/news/articleView.html?idxno=325638" data-track="article" data-article-id="0d366265cc7e" data-article-title="농산물가격안정제도, 시행 한 달 앞…실행 방안 마련 서둘러야" data-report-date="2026-08-03" data-section="policy" data-surface="briefing_open" data-target-domain="www.aflnews.co.kr" target="_top" rel="noopener">원문 열기</a>
+              <a class="btnOpen" data-swipe-ignore="1" href="https://www.aflnews.co.kr/news/articleView.html?idxno=325638" data-track="article" data-article-id="9065b3b0fa93" data-article-title="농산물가격안정제도 시행 임박…실행 기준 마련 서둘러야" data-report-date="2026-08-03" data-section="policy" data-surface="briefing_open" data-target-domain="www.aflnews.co.kr" target="_top" rel="noopener">원문 열기</a>
               </div>
-              <div class="ttl">농산물가격안정제도, 시행 한 달 앞…실행 방안 마련 서둘러야</div>
-              <div class="sum">농산물가격안정제도가 오는 27일 시행되지만 대상 품목과 지원 기준 등 실행 방안이 확정되지 않았다. 기준가격과 차액 지급 비율은 심의위원회 심의를 거쳐 농식품부 장관이 확정하도록 규정돼 있다.</div>
+              <div class="ttl">농산물가격안정제도 시행 임박…실행 기준 마련 서둘러야</div>
+              <div class="sum">농산물가격안정제도가 오는 27일 시행되지만 대상 품목과 기준가격, 차액 지급 비율이 아직 확정되지 않았다. 시행 전 심의위원회 논의와 구체적인 집행 기준 마련이 요구된다.</div>
             </div>
-            
 
-            <div class="card" style="border-left-color:#1d4ed8" data-href="https://www.nongmin.com/article/20260731500305" data-track="article" data-article-id="f5365ed1e22c" data-article-title="“햇 사과 공급 안정에 최선”…농식품부, 경북 영주서 현장점검" data-report-date="2026-08-03" data-section="policy" data-surface="briefing_card" data-target-domain="www.nongmin.com" data-selection-fit="0.600" data-selection-stage="policy_publish_editorial_replacement" data-is-core="0" data-press-tier="3">
+
+            <div class="card" style="border-left-color:#1d4ed8" data-href="http://www.ikpnews.net/news/articleView.html?idxno=71108" data-track="article" data-article-id="86fb5906aa40" data-article-title="콩나물콩 TRQ 1만t 증대…생산기반 영향 논란" data-report-date="2026-08-03" data-section="policy" data-surface="briefing_card" data-target-domain="www.ikpnews.net" data-selection-fit="5.580" data-selection-stage="manual_editorial_recovery_core" data-is-core="1" data-press-tier="1">
               <div class="cardTop">
                 <div class="meta">
-                  
-                  
-                  <span class="press">농민신문</span>
+                  <span class="badgeCore">핵심</span>
+
+                  <span class="press">한국농정신문</span>
                   <span class="dot">·</span>
-                  <span class="time">07/31 17:30</span>
+                  <span class="time">08/02 20:48</span>
                   <span class="dot">·</span>
-                  <span class="topic">사과</span>
+                  <span class="topic">기타</span>
                 </div>
-              <a class="btnOpen" data-swipe-ignore="1" href="https://www.nongmin.com/article/20260731500305" data-track="article" data-article-id="f5365ed1e22c" data-article-title="“햇 사과 공급 안정에 최선”…농식품부, 경북 영주서 현장점검" data-report-date="2026-08-03" data-section="policy" data-surface="briefing_open" data-target-domain="www.nongmin.com" target="_top" rel="noopener">원문 열기</a>
+              <a class="btnOpen" data-swipe-ignore="1" href="http://www.ikpnews.net/news/articleView.html?idxno=71108" data-track="article" data-article-id="86fb5906aa40" data-article-title="콩나물콩 TRQ 1만t 증대…생산기반 영향 논란" data-report-date="2026-08-03" data-section="policy" data-surface="briefing_open" data-target-domain="www.ikpnews.net" target="_top" rel="noopener">원문 열기</a>
               </div>
-              <div class="ttl">“햇 사과 공급 안정에 최선”…농식품부, 경북 영주서 현장점검</div>
-              <div class="sum">경북 영주 햇사과 산지에서 농식품부가 생육과 수확 품질을 살피며 공급 안정 상황을 점검했다. 송미령 장관은 30일 쓰가루 재배 농장을 찾아 현장을 확인하고 사과 안정생산 추진단의 활동을 점검했다.</div>
+              <div class="ttl">콩나물콩 TRQ 1만t 증대…생산기반 영향 논란</div>
+              <div class="sum">정부가 5% 저율관세를 적용하는 콩나물콩 시장접근물량을 1만t 늘리기로 했다. 생산자 측은 최근 가격이 안정적인 데다 재배면적과 자급률이 낮아 국내 생산기반을 더 약화할 수 있다고 우려한다.</div>
             </div>
-            
 
-            <div class="card" style="border-left-color:#1d4ed8" data-href="https://www.etoday.co.kr/news/view/2609470" data-track="article" data-article-id="446b621cdd31" data-article-title="[논현논단] ‘농림위성’ 발사, 국가자산 축적 계기다" data-report-date="2026-08-03" data-section="policy" data-surface="briefing_card" data-target-domain="www.etoday.co.kr" data-selection-fit="0.060" data-selection-stage="final_cross_day_policy_upgrade" data-is-core="0" data-press-tier="3">
+
+            <div class="card" style="border-left-color:#1d4ed8" data-href="https://www.etoday.co.kr/news/view/2610040" data-track="article" data-article-id="7f7c5cd434e5" data-article-title="농가 안전망 ‘반쪽’…품목별 보호장치가 먼저" data-report-date="2026-08-03" data-section="policy" data-surface="briefing_card" data-target-domain="www.etoday.co.kr" data-selection-fit="5.000" data-selection-stage="manual_editorial_recovery_tail" data-is-core="0" data-press-tier="3">
               <div class="cardTop">
                 <div class="meta">
-                  
-                  
+
+
                   <span class="press">이투데이</span>
                   <span class="dot">·</span>
-                  <span class="time">07/31 06:02</span>
+                  <span class="time">08/03 05:02</span>
                   <span class="dot">·</span>
-                  <span class="topic">포도</span>
+                  <span class="topic">정책</span>
                 </div>
-              <a class="btnOpen" data-swipe-ignore="1" href="https://www.etoday.co.kr/news/view/2609470" data-track="article" data-article-id="446b621cdd31" data-article-title="[논현논단] ‘농림위성’ 발사, 국가자산 축적 계기다" data-report-date="2026-08-03" data-section="policy" data-surface="briefing_open" data-target-domain="www.etoday.co.kr" target="_top" rel="noopener">원문 열기</a>
+              <a class="btnOpen" data-swipe-ignore="1" href="https://www.etoday.co.kr/news/view/2610040" data-track="article" data-article-id="7f7c5cd434e5" data-article-title="농가 안전망 ‘반쪽’…품목별 보호장치가 먼저" data-report-date="2026-08-03" data-section="policy" data-surface="briefing_open" data-target-domain="www.etoday.co.kr" target="_top" rel="noopener">원문 열기</a>
               </div>
-              <div class="ttl">[논현논단] ‘농림위성’ 발사, 국가자산 축적 계기다</div>
-              <div class="sum">국내 최초 농림위성이 정밀한 작황 예측과 농업재해 대응을 지원할 국가 농업자산으로 주목받고 있다. 위성은 7월7일 미국 반덴버그 우주군기지에서 발사됐으며 개방형 운영을 통한 농업혁신 필요성도 제시됐다.</div>
+              <div class="ttl">농가 안전망 ‘반쪽’…품목별 보호장치가 먼저</div>
+              <div class="sum">FTA 피해보전직불제는 최근 10년 평균 집행률이 37%에 그쳤고 올해 105개 조사 품목 중 염소고기만 지원 요건을 충족했다. 협상 단계부터 민감품목별 보호장치를 마련해야 한다는 지적이 나온다.</div>
             </div>
-            
 
-            <div class="card" style="border-left-color:#1d4ed8" data-href="https://www.agrinet.co.kr/news/articleView.html?idxno=406016" data-track="article" data-article-id="3c48dabf98b6" data-article-title="&quot;충북, 기후대응 농정 전환···농산물 가격 하락 대책 필요&quot;" data-report-date="2026-08-03" data-section="policy" data-surface="briefing_card" data-target-domain="www.agrinet.co.kr" data-selection-fit="3.020" data-selection-stage="policy_publish_editorial_replacement" data-is-core="0" data-press-tier="2">
+
+            <div class="card" style="border-left-color:#1d4ed8" data-href="https://www.agrinet.co.kr/news/articleView.html?idxno=406016" data-track="article" data-article-id="6da3f6ffd67e" data-article-title="충북, 기후대응 농정 전환·농산물 가격 하락 대책 요구" data-report-date="2026-08-03" data-section="policy" data-surface="briefing_card" data-target-domain="www.agrinet.co.kr" data-selection-fit="5.000" data-selection-stage="manual_editorial_recovery_tail" data-is-core="0" data-press-tier="2">
               <div class="cardTop">
                 <div class="meta">
-                  
-                  
+
+
                   <span class="press">한국농어민신문</span>
                   <span class="dot">·</span>
                   <span class="time">07/31 19:15</span>
                   <span class="dot">·</span>
                   <span class="topic">양배추</span>
                 </div>
-              <a class="btnOpen" data-swipe-ignore="1" href="https://www.agrinet.co.kr/news/articleView.html?idxno=406016" data-track="article" data-article-id="3c48dabf98b6" data-article-title="&quot;충북, 기후대응 농정 전환···농산물 가격 하락 대책 필요&quot;" data-report-date="2026-08-03" data-section="policy" data-surface="briefing_open" data-target-domain="www.agrinet.co.kr" target="_top" rel="noopener">원문 열기</a>
+              <a class="btnOpen" data-swipe-ignore="1" href="https://www.agrinet.co.kr/news/articleView.html?idxno=406016" data-track="article" data-article-id="6da3f6ffd67e" data-article-title="충북, 기후대응 농정 전환·농산물 가격 하락 대책 요구" data-report-date="2026-08-03" data-section="policy" data-surface="briefing_open" data-target-domain="www.agrinet.co.kr" target="_top" rel="noopener">원문 열기</a>
               </div>
-              <div class="ttl">&quot;충북, 기후대응 농정 전환···농산물 가격 하락 대책 필요&quot;</div>
-              <div class="sum">충북 농업의 기후위기 대응 전환과 농산물 가격 하락 대책 마련 필요성이 도의회에서 제기됐다. 박희남·송미애 충북도의원은 지난달 본회의 5분 자유발언을 통해 관련 농정 대책을 촉구했다.</div>
+              <div class="ttl">충북, 기후대응 농정 전환·농산물 가격 하락 대책 요구</div>
+              <div class="sum">충북도의회에서 기후위기에 맞춘 농정 전환과 농산물 가격 하락 대책의 필요성이 제기됐다. 도의원들은 생산 안정과 농가 경영 보호를 위한 정책 보강을 촉구했다.</div>
             </div>
             </div>
             </section>
-            
+
 
             <section id="sec-dist" class="sec" style="--sec-color:#6d28d9">
               <div class="secHead" style="border-left:8px solid #6d28d9;">
@@ -945,97 +950,97 @@
                 <div class="secCount">5건</div>
               </div>
               <div class="secBody">
-            <div class="card" style="border-left-color:#6d28d9" data-href="https://www.gukjenews.com/news/articleView.html?idxno=3653117" data-track="article" data-article-id="20452fa2f5f9" data-article-title="AI가 선별하고 로봇이 포장…경북도, 스마트 APC로 농업 대전환" data-report-date="2026-08-03" data-section="dist" data-surface="briefing_card" data-target-domain="www.gukjenews.com" data-selection-fit="2.550" data-selection-stage="dist_publish_operational_core" data-is-core="1" data-press-tier="1">
+            <div class="card" style="border-left-color:#6d28d9" data-href="https://www.etnews.com/20260802000040" data-track="article" data-article-id="d768dc547c80" data-article-title="산지부터 소비까지 바꾼다…농축산물 유통 혁신 본격화" data-report-date="2026-08-03" data-section="dist" data-surface="briefing_card" data-target-domain="www.etnews.com" data-selection-fit="5.000" data-selection-stage="manual_editorial_recovery_core" data-is-core="1" data-press-tier="2">
               <div class="cardTop">
                 <div class="meta">
                   <span class="badgeCore">핵심</span>
-                  
-                  <span class="press">국제뉴스</span>
-                  <span class="dot">·</span>
-                  <span class="time">08/02 15:58</span>
-                  <span class="dot">·</span>
-                  <span class="topic">참외</span>
-                </div>
-              <a class="btnOpen" data-swipe-ignore="1" href="https://www.gukjenews.com/news/articleView.html?idxno=3653117" data-track="article" data-article-id="20452fa2f5f9" data-article-title="AI가 선별하고 로봇이 포장…경북도, 스마트 APC로 농업 대전환" data-report-date="2026-08-03" data-section="dist" data-surface="briefing_open" data-target-domain="www.gukjenews.com" target="_top" rel="noopener">원문 열기</a>
-              </div>
-              <div class="ttl">AI가 선별하고 로봇이 포장…경북도, 스마트 APC로 농업 대전환</div>
-              <div class="sum">경북도가 AI 선별과 로봇 포장을 접목한 스마트 APC를 확대해 산지유통의 디지털 전환을 추진한다. 도내 APC 133곳 중 준공 10년 이상 시설이 88곳으로, 노동력 부족과 유통비 증가 개선이 핵심 과제다.</div>
-            </div>
-            
 
-            <div class="card" style="border-left-color:#6d28d9" data-href="https://www.imaeil.com/page/view/2026080213341362805" data-track="article" data-article-id="1c8efccf196a" data-article-title="경북도, AI·로봇 활용 스마트 APC 확대…농산물 유통 &#x27;AX&#x27; 속도" data-report-date="2026-08-03" data-section="dist" data-surface="briefing_card" data-target-domain="www.imaeil.com" data-selection-fit="5.330" data-selection-stage="final_dedupe_refill" data-is-core="0" data-press-tier="2">
+                  <span class="press">전자신문</span>
+                  <span class="dot">·</span>
+                  <span class="time">08/02 10:19</span>
+                  <span class="dot">·</span>
+                  <span class="topic">정책</span>
+                </div>
+              <a class="btnOpen" data-swipe-ignore="1" href="https://www.etnews.com/20260802000040" data-track="article" data-article-id="d768dc547c80" data-article-title="산지부터 소비까지 바꾼다…농축산물 유통 혁신 본격화" data-report-date="2026-08-03" data-section="dist" data-surface="briefing_open" data-target-domain="www.etnews.com" target="_top" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">산지부터 소비까지 바꾼다…농축산물 유통 혁신 본격화</div>
+              <div class="sum">정부가 온라인 농산물도매시장과 스마트 산지유통센터, AI 수급관리로 농축산물 유통체계 개편에 나섰다. 온라인 도매시장 누적 거래액은 지난달 말 2조6279억원을 기록했다.</div>
+            </div>
+
+
+            <div class="card" style="border-left-color:#6d28d9" data-href="https://www.news1.kr/local/daegu-gyeongbuk/6246408" data-track="article" data-article-id="99450e21f496" data-article-title="AI가 복숭아 당도 판별·로봇 포장…경북 농산물 유통 혁신" data-report-date="2026-08-03" data-section="dist" data-surface="briefing_card" data-target-domain="www.news1.kr" data-selection-fit="6.540" data-selection-stage="manual_editorial_recovery_core" data-is-core="1" data-press-tier="2">
               <div class="cardTop">
                 <div class="meta">
-                  
-                  
-                  <span class="press">매일신문</span>
-                  <span class="dot">·</span>
-                  <span class="time">08/02 14:36</span>
-                  <span class="dot">·</span>
-                  <span class="topic">APC/산지유통</span>
-                </div>
-              <a class="btnOpen" data-swipe-ignore="1" href="https://www.imaeil.com/page/view/2026080213341362805" data-track="article" data-article-id="1c8efccf196a" data-article-title="경북도, AI·로봇 활용 스마트 APC 확대…농산물 유통 &#x27;AX&#x27; 속도" data-report-date="2026-08-03" data-section="dist" data-surface="briefing_open" data-target-domain="www.imaeil.com" target="_top" rel="noopener">원문 열기</a>
-              </div>
-              <div class="ttl">경북도, AI·로봇 활용 스마트 APC 확대…농산물 유통 &#x27;AX&#x27; 속도</div>
-              <div class="sum">경북도가 생산부터 판매까지 데이터를 연계하는 AI·로봇 기반 스마트 APC 구축을 확대한다. 2023년부터 26곳의 스마트화를 추진했으며 2030년까지 1433억원을 투입해 유통체계를 고도화한다.</div>
-            </div>
-            
+                  <span class="badgeCore">핵심</span>
 
-            <div class="card" style="border-left-color:#6d28d9" data-href="https://www.idaegu.com/news/articleView.html?idxno=664741" data-track="article" data-article-id="3e02f79f83c1" data-article-title="경북도, 스마트 APC로 농산물 유통 혁신" data-report-date="2026-08-03" data-section="dist" data-surface="briefing_card" data-target-domain="www.idaegu.com" data-selection-fit="5.300" data-selection-stage="dist_preferred_count_recovery" data-is-core="0" data-press-tier="1">
+                  <span class="press">뉴스1</span>
+                  <span class="dot">·</span>
+                  <span class="time">08/02 11:24</span>
+                  <span class="dot">·</span>
+                  <span class="topic">복숭아</span>
+                </div>
+              <a class="btnOpen" data-swipe-ignore="1" href="https://www.news1.kr/local/daegu-gyeongbuk/6246408" data-track="article" data-article-id="99450e21f496" data-article-title="AI가 복숭아 당도 판별·로봇 포장…경북 농산물 유통 혁신" data-report-date="2026-08-03" data-section="dist" data-surface="briefing_open" data-target-domain="www.news1.kr" target="_top" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">AI가 복숭아 당도 판별·로봇 포장…경북 농산물 유통 혁신</div>
+              <div class="sum">경북도가 2030년까지 1433억원을 투입해 AI·로봇 기반 스마트 APC를 확대한다. 영천의 복숭아 처리량은 8시간 기준 80t에서 120t으로 늘고 작업인력은 28명에서 8명으로 줄었다.</div>
+            </div>
+
+
+            <div class="card" style="border-left-color:#6d28d9" data-href="https://www.agrinet.co.kr/news/articleView.html?idxno=406008" data-track="article" data-article-id="4c0a88e6ac23" data-article-title="경북포도 수출 쑥…상반기 44.2% 증가" data-report-date="2026-08-03" data-section="dist" data-surface="briefing_card" data-target-domain="www.agrinet.co.kr" data-selection-fit="5.000" data-selection-stage="manual_editorial_recovery_core" data-is-core="1" data-press-tier="2">
               <div class="cardTop">
                 <div class="meta">
-                  
-                  
-                  <span class="press">아이대구</span>
-                  <span class="dot">·</span>
-                  <span class="time">08/02 12:30</span>
-                  <span class="dot">·</span>
-                  <span class="topic">APC/산지유통</span>
-                </div>
-              <a class="btnOpen" data-swipe-ignore="1" href="https://www.idaegu.com/news/articleView.html?idxno=664741" data-track="article" data-article-id="3e02f79f83c1" data-article-title="경북도, 스마트 APC로 농산물 유통 혁신" data-report-date="2026-08-03" data-section="dist" data-surface="briefing_open" data-target-domain="www.idaegu.com" target="_top" rel="noopener">원문 열기</a>
-              </div>
-              <div class="ttl">경북도, 스마트 APC로 농산물 유통 혁신</div>
-              <div class="sum">박찬국 경상북도 농축산유통국장은 “스마트 APC는 AI와 데이터를 기반으로 농산물 유통 경쟁력을 높이는 핵심 인프라”라며 “앞으로도 스마트 APC를 지속 확대해 생산부터 판매까지 데이터로 연결되는 산지유통체계를 구축하고, 농업인은 안정적인 소득을.</div>
-            </div>
-            
+                  <span class="badgeCore">핵심</span>
 
-            <div class="card" style="border-left-color:#6d28d9" data-href="https://www.kbmaeil.com/article/20260802500362" data-track="article" data-article-id="0a301e82931f" data-article-title="경북도 AI·로봇 활용한 ‘스마트 APC’ 구축...농산물 유통 혁신 가속화" data-report-date="2026-08-03" data-section="dist" data-surface="briefing_card" data-target-domain="www.kbmaeil.com" data-selection-fit="5.430" data-selection-stage="dist_publish_editorial_core" data-is-core="0" data-press-tier="2">
+                  <span class="press">한국농어민신문</span>
+                  <span class="dot">·</span>
+                  <span class="time">07/31 19:15</span>
+                  <span class="dot">·</span>
+                  <span class="topic">포도</span>
+                </div>
+              <a class="btnOpen" data-swipe-ignore="1" href="https://www.agrinet.co.kr/news/articleView.html?idxno=406008" data-track="article" data-article-id="4c0a88e6ac23" data-article-title="경북포도 수출 쑥…상반기 44.2% 증가" data-report-date="2026-08-03" data-section="dist" data-surface="briefing_open" data-target-domain="www.agrinet.co.kr" target="_top" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">경북포도 수출 쑥…상반기 44.2% 증가</div>
+              <div class="sum">경북 포도 수출이 올해 상반기 전년 동기보다 44.2% 증가했다. 국내 최대 포도 주산지의 수출 확대가 이어지며 생산자 조직과 해외 판로 관리의 중요성도 커지고 있다.</div>
+            </div>
+
+
+            <div class="card" style="border-left-color:#6d28d9" data-href="https://www.nongmin.com/article/20260731500391" data-track="article" data-article-id="8d737841d475" data-article-title="‘임실N복숭아’ 대형마트 판로 확대…지난해 매출 93억원" data-report-date="2026-08-03" data-section="dist" data-surface="briefing_card" data-target-domain="www.nongmin.com" data-selection-fit="5.000" data-selection-stage="manual_editorial_recovery_tail" data-is-core="0" data-press-tier="3">
               <div class="cardTop">
                 <div class="meta">
-                  
-                  
-                  <span class="press">경북매일</span>
-                  <span class="dot">·</span>
-                  <span class="time">08/02 13:18</span>
-                  <span class="dot">·</span>
-                  <span class="topic">APC/산지유통</span>
-                </div>
-              <a class="btnOpen" data-swipe-ignore="1" href="https://www.kbmaeil.com/article/20260802500362" data-track="article" data-article-id="0a301e82931f" data-article-title="경북도 AI·로봇 활용한 ‘스마트 APC’ 구축...농산물 유통 혁신 가속화" data-report-date="2026-08-03" data-section="dist" data-surface="briefing_open" data-target-domain="www.kbmaeil.com" target="_top" rel="noopener">원문 열기</a>
-              </div>
-              <div class="ttl">경북도 AI·로봇 활용한 ‘스마트 APC’ 구축...농산물 유통 혁신 가속화</div>
-              <div class="sum">경북 산지유통시설이 AI·로봇 기반 스마트 APC로 전환되며 농산물 유통 혁신에 속도를 내고 있다. 경북도는 2030년까지 1433억원을 투입하고, 133곳 중 10년 넘은 노후 APC 88곳의 개선을 추진한다.</div>
-            </div>
-            
 
-            <div class="card" style="border-left-color:#6d28d9" data-href="https://www.newsis.com/view/NISX20260802_0003732818" data-track="article" data-article-id="4210081b366b" data-article-title="경북도, 스마트 APC 확대 박차…2030년까지 1433억 투입" data-report-date="2026-08-03" data-section="dist" data-surface="briefing_card" data-target-domain="www.newsis.com" data-selection-fit="4.840" data-selection-stage="final_cross_day_dist_refill" data-is-core="0" data-press-tier="2">
+
+                  <span class="press">농민신문</span>
+                  <span class="dot">·</span>
+                  <span class="time">08/03 05:00</span>
+                  <span class="dot">·</span>
+                  <span class="topic">복숭아</span>
+                </div>
+              <a class="btnOpen" data-swipe-ignore="1" href="https://www.nongmin.com/article/20260731500391" data-track="article" data-article-id="8d737841d475" data-article-title="‘임실N복숭아’ 대형마트 판로 확대…지난해 매출 93억원" data-report-date="2026-08-03" data-section="dist" data-surface="briefing_open" data-target-domain="www.nongmin.com" target="_top" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">‘임실N복숭아’ 대형마트 판로 확대…지난해 매출 93억원</div>
+              <div class="sum">임실 산지유통조직은 공선회원 89명이 복숭아 1315t을 출하해 지난해 93억원이 넘는 매출을 올렸다. 물량의 93% 이상을 대형마트에 공급했고 올해는 매출 110억원을 목표로 한다.</div>
+            </div>
+
+
+            <div class="card" style="border-left-color:#6d28d9" data-href="https://www.newsis.com/view/NISX20260731_0003732147" data-track="article" data-article-id="a48681e4721c" data-article-title="공급망 위기 속 K-농식품 수출…검역·물류·판로 전 과정 지원" data-report-date="2026-08-03" data-section="dist" data-surface="briefing_card" data-target-domain="www.newsis.com" data-selection-fit="5.000" data-selection-stage="manual_editorial_recovery_tail" data-is-core="0" data-press-tier="2">
               <div class="cardTop">
                 <div class="meta">
-                  
-                  
+
+
                   <span class="press">뉴시스</span>
                   <span class="dot">·</span>
-                  <span class="time">08/02 08:32</span>
+                  <span class="time">08/02 08:00</span>
                   <span class="dot">·</span>
-                  <span class="topic">APC/산지유통</span>
+                  <span class="topic">정책</span>
                 </div>
-              <a class="btnOpen" data-swipe-ignore="1" href="https://www.newsis.com/view/NISX20260802_0003732818" data-track="article" data-article-id="4210081b366b" data-article-title="경북도, 스마트 APC 확대 박차…2030년까지 1433억 투입" data-report-date="2026-08-03" data-section="dist" data-surface="briefing_open" data-target-domain="www.newsis.com" target="_top" rel="noopener">원문 열기</a>
+              <a class="btnOpen" data-swipe-ignore="1" href="https://www.newsis.com/view/NISX20260731_0003732147" data-track="article" data-article-id="a48681e4721c" data-article-title="공급망 위기 속 K-농식품 수출…검역·물류·판로 전 과정 지원" data-report-date="2026-08-03" data-section="dist" data-surface="briefing_open" data-target-domain="www.newsis.com" target="_top" rel="noopener">원문 열기</a>
               </div>
-              <div class="ttl">경북도, 스마트 APC 확대 박차…2030년까지 1433억 투입</div>
-              <div class="sum">경북도가 AI와 로봇을 활용한 스마트 APC를 확대해 산지유통의 노동력·비용·품질 문제 개선에 나선다. 2030년까지 1433억원을 투입하며, 도내 APC 133곳 중 10년 이상 된 노후 시설은 88곳이다.</div>
+              <div class="ttl">공급망 위기 속 K-농식품 수출…검역·물류·판로 전 과정 지원</div>
+              <div class="sum">보호무역과 국제분쟁으로 농식품 수출은 생산부터 검역·인증·통관·물류·현지 유통까지 전 과정 관리가 중요해졌다. 정부는 FTA 국내보완대책과 해외시장·콜드체인·판로 지원을 연계하고 있다.</div>
             </div>
             </div>
             </section>
-            
+
 
             <section id="sec-pest" class="sec" style="--sec-color:#b45309">
               <div class="secHead" style="border-left:8px solid #b45309;">
@@ -1046,83 +1051,65 @@
                 <div class="secCount">5건</div>
               </div>
               <div class="secBody">
-            <div class="card" style="border-left-color:#b45309" data-href="http://www.webplusnews.kr/news/articleView.html?idxno=43715" data-track="article" data-article-id="ec249530aa80" data-article-title="경북농업기술원, 폭염 장기화에 원예작물 생육관리 비상…“적정 관수·병해충 예방이 수확 좌우”" data-report-date="2026-08-03" data-section="pest" data-surface="briefing_card" data-target-domain="www.webplusnews.kr" data-selection-fit="5.470" data-selection-stage="pest_publish_editorial_core" data-is-core="1" data-press-tier="1">
+            <div class="card" style="border-left-color:#b45309" data-href="https://www.newsam.co.kr/news/article.html?no=43622" data-track="article" data-article-id="91bb44e64354" data-article-title="고온다습기에 확산하는 배추 무름병…배수·초기 제거가 핵심" data-report-date="2026-08-03" data-section="pest" data-surface="briefing_card" data-target-domain="www.newsam.co.kr" data-selection-fit="5.960" data-selection-stage="manual_editorial_recovery_core" data-is-core="1" data-press-tier="1">
               <div class="cardTop">
                 <div class="meta">
                   <span class="badgeCore">핵심</span>
-                  
-                  <span class="press">웹플러스뉴스</span>
-                  <span class="dot">·</span>
-                  <span class="time">08/02 18:15</span>
-                  <span class="dot">·</span>
-                  <span class="topic">병해충</span>
-                </div>
-              <a class="btnOpen" data-swipe-ignore="1" href="http://www.webplusnews.kr/news/articleView.html?idxno=43715" data-track="article" data-article-id="ec249530aa80" data-article-title="경북농업기술원, 폭염 장기화에 원예작물 생육관리 비상…“적정 관수·병해충 예방이 수확 좌우”" data-report-date="2026-08-03" data-section="pest" data-surface="briefing_open" data-target-domain="www.webplusnews.kr" target="_top" rel="noopener">원문 열기</a>
-              </div>
-              <div class="ttl">경북농업기술원, 폭염 장기화에 원예작물 생육관리 비상…“적정 관수·병해충 예방이 수확 좌우”</div>
-              <div class="sum">경북 사과·포도·복숭아 등 원예작물은 8월 폭염과 건조 장기화에 따른 생육 피해 관리가 시급해졌다. 경북농업기술원은 고온 확률을 60~70%로 보고 적정 관수와 병해충 예방 등 현장 관리를 당부했다.</div>
-            </div>
-            
 
-            <div class="card" style="border-left-color:#b45309" data-href="https://www.hidomin.com/news/articleView.html?idxno=715576" data-track="article" data-article-id="97fe876a13e4" data-article-title="폭염·가뭄 이중고에 과수·채소 비상…경북농기원 &quot;수분관리 집중해야..." data-report-date="2026-08-03" data-section="pest" data-surface="briefing_card" data-target-domain="www.hidomin.com" data-selection-fit="4.850" data-selection-stage="final_core_quality_repair" data-is-core="1" data-press-tier="1">
-              <div class="cardTop">
-                <div class="meta">
-                  <span class="badgeCore">핵심</span>
-                  
-                  <span class="press">하이도민</span>
-                  <span class="dot">·</span>
-                  <span class="time">08/02 14:20</span>
-                  <span class="dot">·</span>
-                  <span class="topic">고추</span>
-                </div>
-              <a class="btnOpen" data-swipe-ignore="1" href="https://www.hidomin.com/news/articleView.html?idxno=715576" data-track="article" data-article-id="97fe876a13e4" data-article-title="폭염·가뭄 이중고에 과수·채소 비상…경북농기원 &quot;수분관리 집중해야..." data-report-date="2026-08-03" data-section="pest" data-surface="briefing_open" data-target-domain="www.hidomin.com" target="_top" rel="noopener">원문 열기</a>
-              </div>
-              <div class="ttl">폭염·가뭄 이중고에 과수·채소 비상…경북농기원 &quot;수분관리 집중해야...</div>
-              <div class="sum">연일 이어지는 기록적인 폭염과 가뭄으로 과수와 채소 등 원예작물 피해 우려가 커지고 있다. 사과와 포도, 복숭아 등 과수류는 강한 햇빛에 노출될 경우 과실 표면이 갈색으로 변하거나 괴사하는 일소 피해가 발생할 수 있다.</div>
-            </div>
-            
-
-            <div class="card" style="border-left-color:#b45309" data-href="https://www.newsam.co.kr/news/article.html?no=43626" data-track="article" data-article-id="4202045c5236" data-article-title="20년 넘게 호흡 맞춰 온 아그리젠토 충남지사!!" data-report-date="2026-08-03" data-section="pest" data-surface="briefing_card" data-target-domain="www.newsam.co.kr" data-selection-fit="5.220" data-selection-stage="pest_preferred_count_recovery" data-is-core="0" data-press-tier="1">
-              <div class="cardTop">
-                <div class="meta">
-                  
-                  
                   <span class="press">농기자재신문</span>
                   <span class="dot">·</span>
-                  <span class="time">08/01 03:44</span>
+                  <span class="time">08/01 03:56</span>
                   <span class="dot">·</span>
-                  <span class="topic">고추</span>
+                  <span class="topic">배추</span>
                 </div>
-              <a class="btnOpen" data-swipe-ignore="1" href="https://www.newsam.co.kr/news/article.html?no=43626" data-track="article" data-article-id="4202045c5236" data-article-title="20년 넘게 호흡 맞춰 온 아그리젠토 충남지사!!" data-report-date="2026-08-03" data-section="pest" data-surface="briefing_open" data-target-domain="www.newsam.co.kr" target="_top" rel="noopener">원문 열기</a>
+              <a class="btnOpen" data-swipe-ignore="1" href="https://www.newsam.co.kr/news/article.html?no=43622" data-track="article" data-article-id="91bb44e64354" data-article-title="고온다습기에 확산하는 배추 무름병…배수·초기 제거가 핵심" data-report-date="2026-08-03" data-section="pest" data-surface="briefing_open" data-target-domain="www.newsam.co.kr" target="_top" rel="noopener">원문 열기</a>
               </div>
-              <div class="ttl">20년 넘게 호흡 맞춰 온 아그리젠토 충남지사!!</div>
-              <div class="sum">충남 서산·태안의 마늘·양파와 천안·아산의 과수 시장을 중심으로 지역 맞춤형 방제사업이 운영되고 있다. 아그리젠토 충남지사는 관련 약제를 공급하며 과수 분야에서는 화상병 공동방제 수요에 대응하고 있다.</div>
+              <div class="ttl">고온다습기에 확산하는 배추 무름병…배수·초기 제거가 핵심</div>
+              <div class="sum">배추 무름병은 고온다습·과습·연작 조건에서 빠르게 퍼져 조직을 썩게 만드는 세균성 병해다. 장마 뒤 배수를 개선하고 병든 포기를 조기에 제거해 전염원을 줄이는 것이 중요하다.</div>
             </div>
-            
 
-            <div class="card" style="border-left-color:#b45309" data-href="https://www.khan.co.kr/article/202608011300001" data-track="article" data-article-id="118dfee95a02" data-article-title="“심기만 하면 끝?” 초보 텃밭족이 여름마다 후회하는 9가지 실수" data-report-date="2026-08-03" data-section="pest" data-surface="briefing_card" data-target-domain="www.khan.co.kr" data-selection-fit="1.100" data-selection-stage="pest_preferred_count_recovery" data-is-core="0" data-press-tier="3">
+
+            <div class="card" style="border-left-color:#b45309" data-href="https://www.aflnews.co.kr/news/articleView.html?idxno=325564" data-track="article" data-article-id="418448728600" data-article-title="농진청, 농작물 병해충 중앙예찰단 가동" data-report-date="2026-08-03" data-section="pest" data-surface="briefing_card" data-target-domain="www.aflnews.co.kr" data-selection-fit="5.000" data-selection-stage="manual_editorial_recovery_core" data-is-core="1" data-press-tier="2">
               <div class="cardTop">
                 <div class="meta">
-                  
-                  
-                  <span class="press">경향신문</span>
-                  <span class="dot">·</span>
-                  <span class="time">08/01 13:00</span>
-                  <span class="dot">·</span>
-                  <span class="topic">토마토</span>
-                </div>
-              <a class="btnOpen" data-swipe-ignore="1" href="https://www.khan.co.kr/article/202608011300001" data-track="article" data-article-id="118dfee95a02" data-article-title="“심기만 하면 끝?” 초보 텃밭족이 여름마다 후회하는 9가지 실수" data-report-date="2026-08-03" data-section="pest" data-surface="briefing_open" data-target-domain="www.khan.co.kr" target="_top" rel="noopener">원문 열기</a>
-              </div>
-              <div class="ttl">“심기만 하면 끝?” 초보 텃밭족이 여름마다 후회하는 9가지 실수</div>
-              <div class="sum">초보 텃밭 추천 작물은 상추, 깻잎, 쑥갓, 방울토마토, 고추, 가지, 부추, 대파, 애호박 정도다. “처음부터 너무 크게 시작한다” 가장 흔한 실수는 욕심이다.</div>
-            </div>
-            
+                  <span class="badgeCore">핵심</span>
 
-            <div class="card" style="border-left-color:#b45309" data-href="http://www.jndn.com/article.php?aid=1785657350437068109" data-track="article" data-article-id="6bf993966950" data-article-title="함평군, 벼 병해충 방제·밭작물 가뭄 대응 강화" data-report-date="2026-08-03" data-section="pest" data-surface="briefing_card" data-target-domain="www.jndn.com" data-selection-fit="3.210" data-selection-stage="pest_publish_editorial_core" data-is-core="0" data-press-tier="2">
+                  <span class="press">농수축산신문</span>
+                  <span class="dot">·</span>
+                  <span class="time">07/31 18:32</span>
+                  <span class="dot">·</span>
+                  <span class="topic">정책</span>
+                </div>
+              <a class="btnOpen" data-swipe-ignore="1" href="https://www.aflnews.co.kr/news/articleView.html?idxno=325564" data-track="article" data-article-id="418448728600" data-article-title="농진청, 농작물 병해충 중앙예찰단 가동" data-report-date="2026-08-03" data-section="pest" data-surface="briefing_open" data-target-domain="www.aflnews.co.kr" target="_top" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">농진청, 농작물 병해충 중앙예찰단 가동</div>
+              <div class="sum">농촌진흥청이 중앙예찰단을 꾸려 비래해충과 주요 병해충 발생을 조사하고 현장 기술지원을 강화한다. 올해 벼 도열병은 전국 3783㏊에서 확인돼 예찰과 초기 방제가 요구된다.</div>
+            </div>
+
+
+            <div class="card" style="border-left-color:#b45309" data-href="https://www.nongmin.com/article/20260731500553" data-track="article" data-article-id="a2df22b69d4a" data-article-title="더위·병충해 강한 고랭지채소 품종 개발 급선무" data-report-date="2026-08-03" data-section="pest" data-surface="briefing_card" data-target-domain="www.nongmin.com" data-selection-fit="5.000" data-selection-stage="manual_editorial_recovery_core" data-is-core="1" data-press-tier="3">
               <div class="cardTop">
                 <div class="meta">
-                  
-                  
+                  <span class="badgeCore">핵심</span>
+
+                  <span class="press">농민신문</span>
+                  <span class="dot">·</span>
+                  <span class="time">08/02 11:00</span>
+                  <span class="dot">·</span>
+                  <span class="topic">정책</span>
+                </div>
+              <a class="btnOpen" data-swipe-ignore="1" href="https://www.nongmin.com/article/20260731500553" data-track="article" data-article-id="a2df22b69d4a" data-article-title="더위·병충해 강한 고랭지채소 품종 개발 급선무" data-report-date="2026-08-03" data-section="pest" data-surface="briefing_open" data-target-domain="www.nongmin.com" target="_top" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">더위·병충해 강한 고랭지채소 품종 개발 급선무</div>
+              <div class="sum">고랭지채소 생산을 위협하는 씨스트선충은 지난해 누적 564㏊에서 확인됐고 올해 516.5㏊에서 공적 방제가 이뤄졌다. 내서성·내병성 품종과 지역 맞춤 재배기술, 방제작업 지원 확대가 요구된다.</div>
+            </div>
+
+
+            <div class="card" style="border-left-color:#b45309" data-href="http://www.jndn.com/article.php?aid=1785657350437068109" data-track="article" data-article-id="6bf993966950" data-article-title="함평군, 벼 병해충 방제·밭작물 가뭄 대응 강화" data-report-date="2026-08-03" data-section="pest" data-surface="briefing_card" data-target-domain="www.jndn.com" data-selection-fit="5.000" data-selection-stage="manual_editorial_recovery_tail" data-is-core="0" data-press-tier="2">
+              <div class="cardTop">
+                <div class="meta">
+
+
                   <span class="press">전남매일</span>
                   <span class="dot">·</span>
                   <span class="time">08/02 16:58</span>
@@ -1132,19 +1119,37 @@
               <a class="btnOpen" data-swipe-ignore="1" href="http://www.jndn.com/article.php?aid=1785657350437068109" data-track="article" data-article-id="6bf993966950" data-article-title="함평군, 벼 병해충 방제·밭작물 가뭄 대응 강화" data-report-date="2026-08-03" data-section="pest" data-surface="briefing_open" data-target-domain="www.jndn.com" target="_top" rel="noopener">원문 열기</a>
               </div>
               <div class="ttl">함평군, 벼 병해충 방제·밭작물 가뭄 대응 강화</div>
-              <div class="sum">함평군 농업기술센터는 벼 병해충 확산 을 막기 위해 7월 초부터 8월 말까지 벼 재배면적 6,000㏊를 대상으로. 벼 병해충 방제와 가뭄 대응 현장 지도를 더욱 강화해 농작물 피해를 최소화하는 데 최선을 다하겠다”고.</div>
+              <div class="sum">함평군은 7월 초부터 8월 말까지 벼 재배면적 6000㏊를 대상으로 병해충 방제를 추진한다. 밭작물 가뭄 대응 현장지도도 병행해 작물 피해를 줄일 계획이다.</div>
+            </div>
+
+
+            <div class="card" style="border-left-color:#b45309" data-href="http://www.webplusnews.kr/news/articleView.html?idxno=43715" data-track="article" data-article-id="3b5812380917" data-article-title="경북농업기술원, 폭염기 원예작물 생육관리 강화" data-report-date="2026-08-03" data-section="pest" data-surface="briefing_card" data-target-domain="www.webplusnews.kr" data-selection-fit="5.470" data-selection-stage="manual_editorial_recovery_tail" data-is-core="0" data-press-tier="1">
+              <div class="cardTop">
+                <div class="meta">
+
+
+                  <span class="press">웹플러스뉴스</span>
+                  <span class="dot">·</span>
+                  <span class="time">08/02 18:15</span>
+                  <span class="dot">·</span>
+                  <span class="topic">병해충</span>
+                </div>
+              <a class="btnOpen" data-swipe-ignore="1" href="http://www.webplusnews.kr/news/articleView.html?idxno=43715" data-track="article" data-article-id="3b5812380917" data-article-title="경북농업기술원, 폭염기 원예작물 생육관리 강화" data-report-date="2026-08-03" data-section="pest" data-surface="briefing_open" data-target-domain="www.webplusnews.kr" target="_top" rel="noopener">원문 열기</a>
+              </div>
+              <div class="ttl">경북농업기술원, 폭염기 원예작물 생육관리 강화</div>
+              <div class="sum">경북 사과·포도·복숭아 등 원예작물은 8월 폭염과 건조 장기화에 따른 생육 피해 관리가 시급해졌다. 기술원은 미세살수·차광망·적정 관수와 병해충 예방을 당부했다.</div>
             </div>
             </div>
             </section>
-            
+
     </section>
     <section id="view-commodity" class="viewPane commodityPane" data-view-pane="commodity" role="tabpanel" aria-hidden="true">
-      
+
     <section id="commodity-board" class="commodityBoard" aria-labelledby="commodityBoardTitle"
-      data-active-total="11"
-      data-active-today-total="17"
-      data-active-today-unlinked-total="6"
-      data-managed-unlinked-total="22">
+      data-active-total="6"
+      data-active-today-total="8"
+      data-active-today-unlinked-total="2"
+      data-managed-unlinked-total="27">
       <div class="commodityHead">
         <div class="commodityHeadMain">
           <h2 id="commodityBoardTitle">전체 품목 보드 <span class="commodityEyebrow">원예수급부 관리 품목</span></h2>
@@ -1157,26 +1162,26 @@
           </div>
           <div class="commodityHeadStat">
             <span class="commodityHeadStatLabel">오늘 연결</span>
-            <strong>11개</strong>
+            <strong>6개</strong>
           </div>
           <div class="commodityHeadStat">
             <span class="commodityHeadStatLabel">후보 미연결</span>
-            <strong>6개</strong>
+            <strong>2개</strong>
           </div>
         </div>
       </div>
-      <div class="chipbar commodityBoardNav" data-view-pane-anchor="commodity"><div class="chipwrap"><div class="commodityGroupNav"><a class="commodityGroupChip" data-swipe-ignore="1" style="--group-chip-color:#0f766e;--group-chip-soft:rgba(15,118,110,0.120);--group-chip-border:rgba(15,118,110,0.380);" href="#commodity-group-root_leaf">엽근채류<span>2</span></a><a class="commodityGroupChip" data-swipe-ignore="1" style="--group-chip-color:#b45309;--group-chip-soft:rgba(180,83,9,0.120);--group-chip-border:rgba(180,83,9,0.380);" href="#commodity-group-seasoning_veg">양념채소류<span>2</span></a><a class="commodityGroupChip" data-swipe-ignore="1" style="--group-chip-color:#6d28d9;--group-chip-soft:rgba(109,40,217,0.120);--group-chip-border:rgba(109,40,217,0.380);" href="#commodity-group-fruit_veg">과채류<span>3</span></a><a class="commodityGroupChip" data-swipe-ignore="1" style="--group-chip-color:#1d4ed8;--group-chip-soft:rgba(29,78,216,0.120);--group-chip-border:rgba(29,78,216,0.380);" href="#commodity-group-fruit_flower">과수화훼류<span>4</span></a></div></div></div>
-      
+      <div class="chipbar commodityBoardNav" data-view-pane-anchor="commodity"><div class="chipwrap"><div class="commodityGroupNav"><a class="commodityGroupChip" data-swipe-ignore="1" style="--group-chip-color:#0f766e;--group-chip-soft:rgba(15,118,110,0.120);--group-chip-border:rgba(15,118,110,0.380);" href="#commodity-group-root_leaf">엽근채류<span>1</span></a><a class="commodityGroupChip" data-swipe-ignore="1" style="--group-chip-color:#b45309;--group-chip-soft:rgba(180,83,9,0.120);--group-chip-border:rgba(180,83,9,0.380);" href="#commodity-group-seasoning_veg">양념채소류<span>1</span></a><a class="commodityGroupChip" data-swipe-ignore="1" style="--group-chip-color:#6d28d9;--group-chip-soft:rgba(109,40,217,0.120);--group-chip-border:rgba(109,40,217,0.380);" href="#commodity-group-fruit_veg">과채류<span>2</span></a><a class="commodityGroupChip" data-swipe-ignore="1" style="--group-chip-color:#1d4ed8;--group-chip-soft:rgba(29,78,216,0.120);--group-chip-border:rgba(29,78,216,0.380);" href="#commodity-group-fruit_flower">과수화훼류<span>2</span></a></div></div></div>
+
             <section id="commodity-group-root_leaf" class="commodityGroupBlock" style="--commodity-group-color:#0f766e;--commodity-group-soft:rgba(15,118,110,0.070);--commodity-group-border:rgba(15,118,110,0.220);">
               <div class="commodityGroupHead">
                 <div class="commodityGroupTitleWrap">
                   <span class="commodityGroupDot" style="background:#0f766e"></span>
                   <h3>엽근채류</h3>
                 </div>
-                <div class="commodityGroupMeta">오늘 후보 2개 · 연결 2개 · 수급사업 2 / 4</div>
+                <div class="commodityGroupMeta">오늘 후보 2개 · 연결 1개 · 수급사업 1 / 4</div>
               </div>
               <div class="commodityGrid">
-                
+
                 <article id="commodity-napa_cabbage" class="commodityTile isActive">
                   <div class="commodityTileTop">
                     <div class="commodityTileName">배추</div>
@@ -1184,239 +1189,117 @@
                   </div>
                   <div class="commodityTileMeta">
                     <span>기사 1건</span>
-                    <span>핵심 0건</span>
+                    <span>핵심 1건</span>
                   </div>
-                  <div class="commoditySignals"><span class="commoditySig" data-section="supply">수급</span></div>
-                  
+                  <div class="commoditySignals"><span class="commoditySig" data-section="pest">리스크</span></div>
+
         <div class="commodityStoryCluster">
           <div class="commodityPrimaryCard">
             <div class="commodityPrimaryHead">
               <div class="commodityPrimaryKicker">대표 기사</div>
-              
+
             </div>
-            <a class="commodityPrimaryStory" data-swipe-ignore="1" data-track="article" data-article-id="439019cbdcb9" data-article-title="무더위 피해 야간작업 나선 배추 밭" data-report-date="2026-08-03" data-section="supply" data-surface="commodity_primary" data-target-domain="www.nongmin.com" data-item-key="napa_cabbage" data-item-label="배추" data-representative-rank="3" data-representative-score="379.661" data-board-score="308.161" data-selection-fit="1.000" href="https://www.nongmin.com/article/20260729500143" target="_top" rel="noopener">무더위 피해 야간작업 나선 배추 밭</a>
-            <div class="commodityPrimaryMeta">수급 · 농민신문 · 07/31 18:22</div>
+            <a class="commodityPrimaryStory" data-swipe-ignore="1" data-track="article" data-article-id="91bb44e64354" data-article-title="고온다습기에 확산하는 배추 무름병…배수·초기 제거가 핵심" data-report-date="2026-08-03" data-section="pest" data-surface="commodity_primary" data-target-domain="www.newsam.co.kr" data-item-key="napa_cabbage" data-item-label="배추" data-representative-rank="4" data-representative-score="420.590" data-board-score="313.090" data-selection-fit="5.960" data-selection-stage="manual_editorial_recovery_core" data-is-core="1" href="https://www.newsam.co.kr/news/article.html?no=43622" target="_top" rel="noopener">고온다습기에 확산하는 배추 무름병…배수·초기 제거가 핵심</a>
+            <div class="commodityPrimaryMeta">리스크 · 농기자재신문 · 08/01 03:56</div>
           </div>
-          
-          
+
+
         </div>
-        
+
                 </article>
-                
-                <article id="commodity-carrot" class="commodityTile isActive">
+
+                <article id="commodity-carrot" class="commodityTile">
                   <div class="commodityTileTop">
                     <div class="commodityTileName">당근</div>
                     <span class="commodityBadge core">수급사업</span>
                   </div>
                   <div class="commodityTileMeta">
-                    <span>기사 2건</span>
-                    <span>핵심 0건</span>
+                    <span>기사 1건</span>
+                    <span>핵심 2건</span>
                   </div>
-                  <div class="commoditySignals"><span class="commoditySig" data-section="policy">정책</span><span class="commoditySig" data-section="supply">수급</span></div>
-                  
+                  <div class="commoditySignals"><span class="commoditySig" data-section="supply">수급</span></div>
+
         <div class="commodityStoryCluster">
           <div class="commodityPrimaryCard">
             <div class="commodityPrimaryHead">
               <div class="commodityPrimaryKicker">대표 기사</div>
-              
+
             </div>
-            <a class="commodityPrimaryStory" data-swipe-ignore="1" data-track="article" data-article-id="3b1ec9368479" data-article-title="폭염·가뭄 재앙…사막처럼 변해버린 당근밭" data-report-date="2026-08-03" data-section="policy" data-surface="commodity_primary" data-target-domain="www.jejunews.com" data-item-key="carrot" data-item-label="당근" data-representative-rank="3" data-representative-score="355.805" data-board-score="272.805" data-selection-fit="2.750" href="http://www.jejunews.com/news/articleView.html?idxno=2226989" target="_top" rel="noopener">폭염·가뭄 재앙…사막처럼 변해버린 당근밭</a>
-            <div class="commodityPrimaryMeta">정책 · 제주뉴스 · 08/02 15:18</div>
+            <a class="commodityPrimaryStory" data-swipe-ignore="1" data-track="article" data-article-id="2829e9223896" data-article-title="폭염에 메마른 농지…제주 당근 파종도 비상" data-report-date="2026-08-03" data-section="supply" data-surface="commodity_pool" data-target-domain="www.ytn.co.kr" data-item-key="carrot" data-item-label="당근" data-representative-rank="0" data-representative-score="295.290" data-board-score="292.290" data-selection-fit="5.000" data-selection-stage="manual_editorial_recovery_core" data-is-core="1" href="https://www.ytn.co.kr/_ln/0115_202608022330339150" target="_top" rel="noopener">폭염에 메마른 농지…제주 당근 파종도 비상</a>
+            <div class="commodityPrimaryMeta">수급 · YTN · 08/02 23:30</div>
           </div>
-          
-            <div class="commoditySupportList">
-              <div class="commoditySupportTitle">추가 기사</div>
-              
-            <a class="commoditySupportStory" data-swipe-ignore="1" data-track="article" data-article-id="7979df514b3f" data-article-title="강수 부족에 폭염까지…제주 당근 밭에 급수탑·물차 지원" data-report-date="2026-08-03" data-section="supply" data-surface="commodity_support" data-target-domain="www.newsis.com" data-item-key="carrot" data-item-label="당근" href="https://www.newsis.com/view/NISX20260802_0003732998" target="_top" rel="noopener">
-              <span class="commoditySupportLabel">수급</span>
-              <span class="commoditySupportText">강수 부족에 폭염까지…제주 당근 밭에 급수탑·물차 지원</span>
-            </a>
-            
-            </div>
-            
-          
+
+
         </div>
-        
+
                 </article>
-                
+
               </div>
-              
+
             <div class="commodityInactive">
               <div class="commodityInactiveTitle">오늘 관련 소식 없는 관리 품목 3개</div>
               <div class="commodityMiniGrid"><span class="commodityMiniChip isCore">무  ·수급</span><span class="commodityMiniChip isCore">감자  ·수급</span><span class="commodityMiniChip">양배추</span></div>
             </div>
-            
-              
+
+
             </section>
-            
+
             <section id="commodity-group-seasoning_veg" class="commodityGroupBlock" style="--commodity-group-color:#b45309;--commodity-group-soft:rgba(180,83,9,0.070);--commodity-group-border:rgba(180,83,9,0.220);">
               <div class="commodityGroupHead">
                 <div class="commodityGroupTitleWrap">
                   <span class="commodityGroupDot" style="background:#b45309"></span>
                   <h3>양념채소류</h3>
                 </div>
-                <div class="commodityGroupMeta">오늘 후보 3개 · 연결 2개 · 수급사업 2 / 4</div>
+                <div class="commodityGroupMeta">오늘 후보 1개 · 연결 1개 · 수급사업 1 / 4</div>
               </div>
               <div class="commodityGrid">
-                
-                <article id="commodity-onion" class="commodityTile isActive">
-                  <div class="commodityTileTop">
-                    <div class="commodityTileName">양파</div>
-                    <span class="commodityBadge core">수급사업</span>
-                  </div>
-                  <div class="commodityTileMeta">
-                    <span>기사 7건</span>
-                    <span>핵심 1건</span>
-                  </div>
-                  <div class="commoditySignals"><span class="commoditySig" data-section="policy">정책</span><span class="commoditySig" data-section="dist">유통</span><span class="commoditySig" data-section="supply">수급</span></div>
-                  
-        <div class="commodityStoryCluster">
-          <div class="commodityPrimaryCard">
-            <div class="commodityPrimaryHead">
-              <div class="commodityPrimaryKicker">대표 기사</div>
-              
-            </div>
-            <a class="commodityPrimaryStory" data-swipe-ignore="1" data-track="article" data-article-id="b2ea5cf5c195" data-article-title="함양군, 송미령 농식품부 장관에 양파 수급 대책 건의" data-report-date="2026-08-03" data-section="policy" data-surface="commodity_primary" data-target-domain="www.metroseoul.co.kr" data-item-key="onion" data-item-label="양파" data-representative-rank="4" data-representative-score="378.078" data-board-score="288.578" data-selection-fit="1.450" href="http://www.metroseoul.co.kr/article/20260731500304" target="_top" rel="noopener">함양군, 송미령 농식품부 장관에 양파 수급 대책 건의</a>
-            <div class="commodityPrimaryMeta">정책 · 메트로신문 · 08/02 07:06</div>
-          </div>
-          
-            <div class="commoditySupportList">
-              <div class="commoditySupportTitle">추가 기사</div>
-              
-            <a class="commoditySupportStory" data-swipe-ignore="1" data-track="article" data-article-id="549aee07b814" data-article-title="함양군, 양파 가격 안정·지역 농업 경쟁력 강화 정부 지원 건의" data-report-date="2026-08-03" data-section="dist" data-surface="commodity_support" data-target-domain="news.tf.co.kr" data-item-key="onion" data-item-label="양파" href="https://news.tf.co.kr/read/national/2349459.htm" target="_top" rel="noopener">
-              <span class="commoditySupportLabel">유통</span>
-              <span class="commoditySupportText">함양군, 양파 가격 안정·지역 농업 경쟁력 강화 정부 지원 건의</span>
-            </a>
-            
-            <a class="commoditySupportStory" data-swipe-ignore="1" data-track="article" data-article-id="c405125e1ff2" data-article-title="함양군, 농식품부에 양파 수급 안정 대책 건의" data-report-date="2026-08-03" data-section="policy" data-surface="commodity_support" data-target-domain="www.shinailbo.co.kr" data-item-key="onion" data-item-label="양파" href="https://www.shinailbo.co.kr/news/articleView.html?idxno=5046867" target="_top" rel="noopener">
-              <span class="commoditySupportLabel">정책</span>
-              <span class="commoditySupportText">함양군, 농식품부에 양파 수급 안정 대책 건의</span>
-            </a>
-            
-            </div>
-            
-          
-            <details class="commodityMoreWrap" data-swipe-ignore="1">
-              <summary class="commodityMoreSummary" data-swipe-ignore="1">관련 기사 4건 더 보기</summary>
-              <div class="commodityMoreList">
-            <a class="commodityMoreStory" data-swipe-ignore="1" data-track="article" data-article-id="b33b9af82100" data-article-title="함양군, 농식품부에 양파 수급 안정·국비사업 지원 건의" data-report-date="2026-08-03" data-section="policy" data-surface="commodity_more" data-target-domain="www.jeonmae.co.kr" data-item-key="onion" data-item-label="양파" href="https://www.jeonmae.co.kr/news/articleView.html?idxno=1280155" target="_top" rel="noopener">
-              <span class="commoditySupportLabel">정책</span>
-              <span class="commoditySupportText">함양군, 농식품부에 양파 수급 안정·국비사업 지원 건의</span>
-            </a>
-            
-            <a class="commodityMoreStory" data-swipe-ignore="1" data-track="article" data-article-id="7abd54a40808" data-article-title="함양군, 송미령 장관에 양파 가격 안정·국비사업 지원 건의" data-report-date="2026-08-03" data-section="supply" data-surface="commodity_more" data-target-domain="www.polinews.co.kr" data-item-key="onion" data-item-label="양파" href="https://www.polinews.co.kr/news/articleView.html?idxno=738858" target="_top" rel="noopener">
-              <span class="commoditySupportLabel">수급</span>
-              <span class="commoditySupportText">함양군, 송미령 장관에 양파 가격 안정·국비사업 지원 건의</span>
-            </a>
-            
-            <a class="commodityMoreStory" data-swipe-ignore="1" data-track="article" data-article-id="399257b64146" data-article-title="함양군, 양파 산업 육성·국비 지원 건의" data-report-date="2026-08-03" data-section="supply" data-surface="commodity_more" data-target-domain="www.gnmaeil.com" data-item-key="onion" data-item-label="양파" href="http://www.gnmaeil.com/news/articleView.html?idxno=591936" target="_top" rel="noopener">
-              <span class="commoditySupportLabel">수급</span>
-              <span class="commoditySupportText">함양군, 양파 산업 육성·국비 지원 건의</span>
-            </a>
-            
-            <a class="commodityMoreStory" data-swipe-ignore="1" data-track="article" data-article-id="53913708ab64" data-article-title="함양군, 농식품부에 양파 가격 안정·국비사업 지원 건의" data-report-date="2026-08-03" data-section="policy" data-surface="commodity_more" data-target-domain="www.breaknews.com" data-item-key="onion" data-item-label="양파" href="http://www.breaknews.com/1226058" target="_top" rel="noopener">
-              <span class="commoditySupportLabel">정책</span>
-              <span class="commoditySupportText">함양군, 농식품부에 양파 가격 안정·국비사업 지원 건의</span>
-            </a>
-            </div>
-            </details>
-            
-        </div>
-        
-                </article>
-                
+
                 <article id="commodity-garlic" class="commodityTile isActive">
                   <div class="commodityTileTop">
                     <div class="commodityTileName">마늘</div>
                     <span class="commodityBadge core">수급사업</span>
                   </div>
                   <div class="commodityTileMeta">
-                    <span>기사 2건</span>
-                    <span>핵심 1건</span>
+                    <span>기사 1건</span>
+                    <span>핵심 2건</span>
                   </div>
                   <div class="commoditySignals"><span class="commoditySig" data-section="supply">수급</span></div>
-                  
+
         <div class="commodityStoryCluster">
           <div class="commodityPrimaryCard">
             <div class="commodityPrimaryHead">
               <div class="commodityPrimaryKicker">대표 기사</div>
-              
+
             </div>
-            <a class="commodityPrimaryStory" data-swipe-ignore="1" data-track="article" data-article-id="7eade9ed591a" data-article-title="마늘 신품종 &#x27;백산&#x27; 합격점···저장성 검증은 과제" data-report-date="2026-08-03" data-section="supply" data-surface="commodity_primary" data-target-domain="www.agrinet.co.kr" data-item-key="garlic" data-item-label="마늘" data-representative-rank="4" data-representative-score="376.401" data-board-score="286.901" data-selection-fit="1.500" href="https://www.agrinet.co.kr/news/articleView.html?idxno=406061" target="_top" rel="noopener">마늘 신품종 &#x27;백산&#x27; 합격점···저장성 검증은 과제</a>
-            <div class="commodityPrimaryMeta">수급 · 한국농어민신문 · 07/31 19:14</div>
+            <a class="commodityPrimaryStory" data-swipe-ignore="1" data-track="article" data-article-id="caba39d9436d" data-article-title="마늘 한 달 새 80% 급락…이상생장 탓에 상품성 훼손" data-report-date="2026-08-03" data-section="supply" data-surface="commodity_primary" data-target-domain="www.hankyung.com" data-item-key="garlic" data-item-label="마늘" data-representative-rank="4" data-representative-score="424.560" data-board-score="317.060" data-selection-fit="6.890" data-selection-stage="manual_editorial_recovery_core" data-is-core="1" href="https://www.hankyung.com/article/2026080200551" target="_top" rel="noopener">마늘 한 달 새 80% 급락…이상생장 탓에 상품성 훼손</a>
+            <div class="commodityPrimaryMeta">수급 · 한국경제 · 08/02 16:56</div>
           </div>
-          
-            <div class="commoditySupportList">
-              <div class="commoditySupportTitle">추가 기사</div>
-              
-            <a class="commoditySupportStory" data-swipe-ignore="1" data-track="article" data-article-id="caba39d9436d" data-article-title="마늘 한 달 새 80% 급락…이상생장 탓에 상품성 훼손" data-report-date="2026-08-03" data-section="supply" data-surface="commodity_support" data-target-domain="www.hankyung.com" data-item-key="garlic" data-item-label="마늘" href="https://www.hankyung.com/article/2026080200551" target="_top" rel="noopener">
-              <span class="commoditySupportLabel">수급</span>
-              <span class="commoditySupportText">마늘 한 달 새 80% 급락…이상생장 탓에 상품성 훼손</span>
-            </a>
-            
-            </div>
-            
-          
+
+
         </div>
-        
+
                 </article>
-                
-                <article id="commodity-dry_red_pepper" class="commodityTile">
-                  <div class="commodityTileTop">
-                    <div class="commodityTileName">건고추</div>
-                    <span class="commodityBadge core">수급사업</span>
-                  </div>
-                  <div class="commodityTileMeta">
-                    <span>기사 2건</span>
-                    <span>핵심 0건</span>
-                  </div>
-                  <div class="commoditySignals"><span class="commoditySig" data-section="supply">수급</span></div>
-                  
-        <div class="commodityStoryCluster">
-          <div class="commodityPrimaryCard">
-            <div class="commodityPrimaryHead">
-              <div class="commodityPrimaryKicker">대표 기사</div>
-              
-            </div>
-            <a class="commodityPrimaryStory" data-swipe-ignore="1" data-track="article" data-article-id="596228247a5b" data-article-title="이마트 “햇 건고추 사전주문 하세요”" data-report-date="2026-08-03" data-section="supply" data-surface="commodity_pool" data-target-domain="www.sedaily.com" data-item-key="dry_red_pepper" data-item-label="건고추" data-representative-rank="1" data-representative-score="330.207" data-board-score="294.047" data-selection-fit="1.730" href="https://www.sedaily.com/article/20074694" target="_top" rel="noopener">이마트 “햇 건고추 사전주문 하세요”</a>
-            <div class="commodityPrimaryMeta">수급 · 서울경제 · 08/02 10:09</div>
-          </div>
-          
-            <div class="commoditySupportList">
-              <div class="commoditySupportTitle">추가 기사</div>
-              
-            <a class="commoditySupportStory" data-swipe-ignore="1" data-track="article" data-article-id="79d3e4c7fab2" data-article-title="이마트, &#x27;오더픽&#x27;으로 햇 건고추 사전예약···무료 제분 서비스 제공" data-report-date="2026-08-03" data-section="supply" data-surface="commodity_pool" data-target-domain="www.smartbizn.com" data-item-key="dry_red_pepper" data-item-label="건고추" href="https://www.smartbizn.com/news/articleView.html?idxno=150095" target="_top" rel="noopener">
-              <span class="commoditySupportLabel">수급</span>
-              <span class="commoditySupportText">이마트, &#x27;오더픽&#x27;으로 햇 건고추 사전예약···무료 제분 서비스 제공</span>
-            </a>
-            
-            </div>
-            
-          
-        </div>
-        
-                </article>
-                
+
               </div>
-              
+
             <div class="commodityInactive">
-              <div class="commodityInactiveTitle">오늘 관련 소식 없는 관리 품목 2개</div>
-              <div class="commodityMiniGrid"><span class="commodityMiniChip isCore">대파  ·수급</span><span class="commodityMiniChip">생강</span></div>
+              <div class="commodityInactiveTitle">오늘 관련 소식 없는 관리 품목 4개</div>
+              <div class="commodityMiniGrid"><span class="commodityMiniChip isCore">양파  ·수급</span><span class="commodityMiniChip isCore">건고추  ·수급</span><span class="commodityMiniChip isCore">대파  ·수급</span><span class="commodityMiniChip">생강</span></div>
             </div>
-            
-              
+
+
             </section>
-            
+
             <section id="commodity-group-fruit_veg" class="commodityGroupBlock" style="--commodity-group-color:#6d28d9;--commodity-group-soft:rgba(109,40,217,0.070);--commodity-group-border:rgba(109,40,217,0.220);">
               <div class="commodityGroupHead">
                 <div class="commodityGroupTitleWrap">
                   <span class="commodityGroupDot" style="background:#6d28d9"></span>
                   <h3>과채류</h3>
                 </div>
-                <div class="commodityGroupMeta">오늘 후보 5개 · 연결 3개 · 수급사업 2 / 5</div>
+                <div class="commodityGroupMeta">오늘 후보 2개 · 연결 2개 · 수급사업 1 / 5</div>
               </div>
               <div class="commodityGrid">
-                
+
                 <article id="commodity-tomato" class="commodityTile isActive">
                   <div class="commodityTileTop">
                     <div class="commodityTileName">토마토</div>
@@ -1424,406 +1307,164 @@
                   </div>
                   <div class="commodityTileMeta">
                     <span>기사 1건</span>
-                    <span>핵심 3건</span>
+                    <span>핵심 0건</span>
                   </div>
                   <div class="commoditySignals"><span class="commoditySig" data-section="supply">수급</span></div>
-                  
+
         <div class="commodityStoryCluster">
           <div class="commodityPrimaryCard">
             <div class="commodityPrimaryHead">
               <div class="commodityPrimaryKicker">대표 기사</div>
-              
+
             </div>
-            <a class="commodityPrimaryStory" data-swipe-ignore="1" data-track="article" data-article-id="e2e35147a580" data-article-title="[한눈에 보는 시세] 토마토 , 재배면적 늘어 평년 대비 약세" data-report-date="2026-08-03" data-section="supply" data-surface="commodity_primary" data-target-domain="www.nongmin.com" data-item-key="tomato" data-item-label="토마토" data-representative-rank="3" data-representative-score="403.974" data-board-score="320.974" data-selection-fit="2.700" data-is-core="1" href="https://www.nongmin.com/article/20260731500557" target="_top" rel="noopener">[한눈에 보는 시세] 토마토 , 재배면적 늘어 평년 대비 약세</a>
+            <a class="commodityPrimaryStory" data-swipe-ignore="1" data-track="article" data-article-id="c4c5ce9fa4db" data-article-title="[한눈에 보는 시세] 토마토, 재배면적 늘어 평년 대비 약세" data-report-date="2026-08-03" data-section="supply" data-surface="commodity_primary" data-target-domain="www.nongmin.com" data-item-key="tomato" data-item-label="토마토" data-representative-rank="3" data-representative-score="404.590" data-board-score="321.590" data-selection-fit="5.000" data-selection-stage="manual_editorial_recovery_tail" href="https://www.nongmin.com/article/20260731500557" target="_top" rel="noopener">[한눈에 보는 시세] 토마토, 재배면적 늘어 평년 대비 약세</a>
             <div class="commodityPrimaryMeta">수급 · 농민신문 · 08/03 05:01</div>
           </div>
-          
-          
+
+
         </div>
-        
+
                 </article>
-                
-                <article id="commodity-cucumber" class="commodityTile isActive">
-                  <div class="commodityTileTop">
-                    <div class="commodityTileName">오이</div>
-                    <span class="commodityBadge core">수급사업</span>
-                  </div>
-                  <div class="commodityTileMeta">
-                    <span>기사 1건</span>
-                    <span>핵심 1건</span>
-                  </div>
-                  <div class="commoditySignals"><span class="commoditySig" data-section="supply">수급</span></div>
-                  
-        <div class="commodityStoryCluster">
-          <div class="commodityPrimaryCard">
-            <div class="commodityPrimaryHead">
-              <div class="commodityPrimaryKicker">대표 기사</div>
-              
-            </div>
-            <a class="commodityPrimaryStory" data-swipe-ignore="1" data-track="article" data-article-id="543b11f5ebf4" data-article-title="&quot;폭염에 장보기 두려워&quot;…시금치· 오이 등 채소값 &#x27;급등&#x27;" data-report-date="2026-08-03" data-section="supply" data-surface="commodity_primary" data-target-domain="www.edaily.co.kr" data-item-key="cucumber" data-item-label="오이" data-representative-rank="3" data-representative-score="325.401" data-board-score="250.901" data-selection-fit="1.050" data-is-core="1" href="https://www.edaily.co.kr/news/newspath.asp?newsid=02256646645543384" target="_top" rel="noopener">&quot;폭염에 장보기 두려워&quot;…시금치· 오이 등 채소값 &#x27;급등&#x27;</a>
-            <div class="commodityPrimaryMeta">수급 · 이데일리 · 08/02 14:47</div>
-          </div>
-          
-          
-        </div>
-        
-                </article>
-                
-                <article id="commodity-lettuce" class="commodityTile isActive">
-                  <div class="commodityTileTop">
-                    <div class="commodityTileName">상추</div>
-                    
-                  </div>
-                  <div class="commodityTileMeta">
-                    <span>기사 1건</span>
-                    <span>핵심 0건</span>
-                  </div>
-                  <div class="commoditySignals"><span class="commoditySig" data-section="dist">유통</span></div>
-                  
-        <div class="commodityStoryCluster">
-          <div class="commodityPrimaryCard">
-            <div class="commodityPrimaryHead">
-              <div class="commodityPrimaryKicker">대표 기사</div>
-              
-            </div>
-            <a class="commodityPrimaryStory" data-swipe-ignore="1" data-track="article" data-article-id="a82bc0a55812" data-article-title="동화청과, 폭염 속 남원 상추 농가에 생수 1만 병 전달" data-report-date="2026-08-03" data-section="dist" data-surface="commodity_primary" data-target-domain="www.aflnews.co.kr" data-item-key="lettuce" data-item-label="상추" data-representative-rank="3" data-representative-score="418.602" data-board-score="337.102" data-selection-fit="3.010" href="https://www.aflnews.co.kr/news/articleView.html?idxno=325522" target="_top" rel="noopener">동화청과, 폭염 속 남원 상추 농가에 생수 1만 병 전달</a>
-            <div class="commodityPrimaryMeta">유통 · 농수축산신문 · 07/31 18:16</div>
-          </div>
-          
-          
-        </div>
-        
-                </article>
-                
-                <article id="commodity-oriental_melon" class="commodityTile">
+
+                <article id="commodity-oriental_melon" class="commodityTile isActive">
                   <div class="commodityTileTop">
                     <div class="commodityTileName">참외</div>
-                    
+
                   </div>
                   <div class="commodityTileMeta">
                     <span>기사 1건</span>
-                    <span>핵심 1건</span>
-                  </div>
-                  <div class="commoditySignals"><span class="commoditySig" data-section="dist">유통</span></div>
-                  
-        <div class="commodityStoryCluster">
-          <div class="commodityPrimaryCard">
-            <div class="commodityPrimaryHead">
-              <div class="commodityPrimaryKicker">대표 기사</div>
-              
-            </div>
-            <a class="commodityPrimaryStory" data-swipe-ignore="1" data-track="article" data-article-id="b13c10e7b5d4" data-article-title="AI가 복숭아 ·참외 선별···경북, 스마트 농산물유통센터 확대" data-report-date="2026-08-03" data-section="dist" data-surface="commodity_pool" data-target-domain="www.khan.co.kr" data-item-key="oriental_melon" data-item-label="참외" data-representative-rank="3" data-representative-score="437.313" data-board-score="357.313" data-selection-fit="5.370" data-selection-stage="tail" href="https://www.khan.co.kr/article/202608021039001" target="_top" rel="noopener">AI가 복숭아 ·참외 선별···경북, 스마트 농산물유통센터 확대</a>
-            <div class="commodityPrimaryMeta">유통 · 경향신문 · 08/02 10:39</div>
-          </div>
-          
-          
-        </div>
-        
-                </article>
-                
-                <article id="commodity-muskmelon" class="commodityTile">
-                  <div class="commodityTileTop">
-                    <div class="commodityTileName">멜론</div>
-                    
-                  </div>
-                  <div class="commodityTileMeta">
-                    <span>기사 1건</span>
-                    <span>핵심 0건</span>
+                    <span>핵심 2건</span>
                   </div>
                   <div class="commoditySignals"><span class="commoditySig" data-section="supply">수급</span></div>
-                  
+
         <div class="commodityStoryCluster">
           <div class="commodityPrimaryCard">
             <div class="commodityPrimaryHead">
               <div class="commodityPrimaryKicker">대표 기사</div>
-              
+
             </div>
-            <a class="commodityPrimaryStory" data-swipe-ignore="1" data-track="article" data-article-id="0cb175b906da" data-article-title="구내식당에 ‘신비 복숭아·얼스 멜론 ’…CJ프레시웨이, 제철 과일 확대" data-report-date="2026-08-03" data-section="supply" data-surface="commodity_pool" data-target-domain="www.thepowernews.co.kr" data-item-key="muskmelon" data-item-label="멜론" data-representative-rank="1" data-representative-score="247.593" data-board-score="205.312" data-selection-fit="2.240" href="https://www.thepowernews.co.kr/view.php?ud=202607310938578061de3f0aa1be_7" target="_top" rel="noopener">구내식당에 ‘신비 복숭아·얼스 멜론 ’…CJ프레시웨이, 제철 과일 확대</a>
-            <div class="commodityPrimaryMeta">수급 · 더파워뉴스 · 07/31 09:40</div>
+            <a class="commodityPrimaryStory" data-swipe-ignore="1" data-track="article" data-article-id="f9e0d110d6c6" data-article-title="폭염에 먹거리 물가도 비상…복숭아 55%·참외 73% 급등" data-report-date="2026-08-03" data-section="supply" data-surface="commodity_primary" data-target-domain="www.mbn.co.kr" data-item-key="oriental_melon" data-item-label="참외" data-representative-rank="4" data-representative-score="414.170" data-board-score="305.170" data-selection-fit="9.050" data-selection-stage="manual_editorial_recovery_core" data-is-core="1" href="http://www.mbn.co.kr/pages/news/newsView.php?news_seq_no=5209697" target="_top" rel="noopener">폭염에 먹거리 물가도 비상…복숭아 55%·참외 73% 급등</a>
+            <div class="commodityPrimaryMeta">수급 · MBN · 08/01 19:41</div>
           </div>
-          
-          
+
+
         </div>
-        
+
                 </article>
-                
+
               </div>
-              
+
             <div class="commodityInactive">
-              <div class="commodityInactiveTitle">오늘 관련 소식 없는 관리 품목 5개</div>
-              <div class="commodityMiniGrid"><span class="commodityMiniChip isCore">풋고추  ·수급</span><span class="commodityMiniChip isCore">애호박(쥬키니)  ·수급</span><span class="commodityMiniChip isCore">가지  ·수급</span><span class="commodityMiniChip">딸기</span><span class="commodityMiniChip">파프리카</span></div>
+              <div class="commodityInactiveTitle">오늘 관련 소식 없는 관리 품목 8개</div>
+              <div class="commodityMiniGrid"><span class="commodityMiniChip isCore">오이  ·수급</span><span class="commodityMiniChip isCore">풋고추  ·수급</span><span class="commodityMiniChip isCore">애호박(쥬키니)  ·수급</span><span class="commodityMiniChip isCore">가지  ·수급</span><span class="commodityMiniChip">상추</span><span class="commodityMiniChip">딸기</span><span class="commodityMiniChip">파프리카</span><span class="commodityMiniChip">멜론</span></div>
             </div>
-            
-              
+
+
             </section>
-            
+
             <section id="commodity-group-fruit_flower" class="commodityGroupBlock" style="--commodity-group-color:#1d4ed8;--commodity-group-soft:rgba(29,78,216,0.070);--commodity-group-border:rgba(29,78,216,0.220);">
               <div class="commodityGroupHead">
                 <div class="commodityGroupTitleWrap">
                   <span class="commodityGroupDot" style="background:#1d4ed8"></span>
                   <h3>과수화훼류</h3>
                 </div>
-                <div class="commodityGroupMeta">오늘 후보 7개 · 연결 4개 · 수급사업 1 / 5</div>
+                <div class="commodityGroupMeta">오늘 후보 3개 · 연결 2개 · 수급사업 0 / 5</div>
               </div>
               <div class="commodityGrid">
-                
-                <article id="commodity-apple" class="commodityTile isActive">
-                  <div class="commodityTileTop">
-                    <div class="commodityTileName">사과</div>
-                    <span class="commodityBadge core">수급사업</span>
-                  </div>
-                  <div class="commodityTileMeta">
-                    <span>기사 1건</span>
-                    <span>핵심 2건</span>
-                  </div>
-                  <div class="commoditySignals"><span class="commoditySig" data-section="policy">정책</span></div>
-                  
-        <div class="commodityStoryCluster">
-          <div class="commodityPrimaryCard">
-            <div class="commodityPrimaryHead">
-              <div class="commodityPrimaryKicker">대표 기사</div>
-              
-            </div>
-            <a class="commodityPrimaryStory" data-swipe-ignore="1" data-track="article" data-article-id="4de1f6bd642a" data-article-title="송미령 농식품부 장관, 경북 영주 현장서 햇사과 생육·출하 점검" data-report-date="2026-08-03" data-section="policy" data-surface="commodity_primary" data-target-domain="www.nongup.net" data-item-key="apple" data-item-label="사과" data-representative-rank="3" data-representative-score="443.625" data-board-score="365.405" data-selection-fit="2.110" href="http://www.nongup.net/news/articleView.html?idxno=33472" target="_top" rel="noopener">송미령 농식품부 장관, 경북 영주 현장서 햇사과 생육·출하 점검</a>
-            <div class="commodityPrimaryMeta">정책 · 농업정보신문 · 07/31 14:30</div>
-          </div>
-          
-          
-        </div>
-        
-                </article>
-                
+
                 <article id="commodity-flowers" class="commodityTile isActive">
                   <div class="commodityTileTop">
                     <div class="commodityTileName">화훼</div>
-                    
-                  </div>
-                  <div class="commodityTileMeta">
-                    <span>기사 5건</span>
-                    <span>핵심 0건</span>
-                  </div>
-                  <div class="commoditySignals"><span class="commoditySig" data-section="supply">수급</span><span class="commoditySig" data-section="policy">정책</span></div>
-                  
-        <div class="commodityStoryCluster">
-          <div class="commodityPrimaryCard">
-            <div class="commodityPrimaryHead">
-              <div class="commodityPrimaryKicker">대표 기사</div>
-              
-            </div>
-            <a class="commodityPrimaryStory" data-swipe-ignore="1" data-track="article" data-article-id="fb365d7e96ce" data-article-title="화훼 자조금협의회, 절화 수급· 가격 안정 나서" data-report-date="2026-08-03" data-section="supply" data-surface="commodity_primary" data-target-domain="www.amnews.co.kr" data-item-key="flowers" data-item-label="화훼" data-representative-rank="4" data-representative-score="724.157" data-board-score="615.157" data-selection-fit="6.240" data-selection-stage="supply_publish_market_core" href="http://www.amnews.co.kr/news/articleView.html?idxno=73740" target="_top" rel="noopener">화훼 자조금협의회, 절화 수급· 가격 안정 나서</a>
-            <div class="commodityPrimaryMeta">수급 · 농축유통신문 · 07/31 20:48</div>
-          </div>
-          
-            <div class="commoditySupportList">
-              <div class="commoditySupportTitle">추가 기사</div>
-              
-            <a class="commoditySupportStory" data-swipe-ignore="1" data-track="article" data-article-id="5fe5792c6c96" data-article-title="올 상반기 절화수입량 2억본···&quot;빈틈없이 검역을&quot;" data-report-date="2026-08-03" data-section="supply" data-surface="commodity_support" data-target-domain="www.agrinet.co.kr" data-item-key="flowers" data-item-label="화훼" href="https://www.agrinet.co.kr/news/articleView.html?idxno=406070" target="_top" rel="noopener">
-              <span class="commoditySupportLabel">수급</span>
-              <span class="commoditySupportText">올 상반기 절화수입량 2억본···&quot;빈틈없이 검역을&quot;</span>
-            </a>
-            
-            <a class="commoditySupportStory" data-swipe-ignore="1" data-track="article" data-article-id="29aa38296d51" data-article-title="한국 화훼 자조금협의회, 여름철 절화 수급조절 추진" data-report-date="2026-08-03" data-section="supply" data-surface="commodity_support" data-target-domain="www.farmnmarket.com" data-item-key="flowers" data-item-label="화훼" href="https://www.farmnmarket.com/news/article.html?no=27276" target="_top" rel="noopener">
-              <span class="commoditySupportLabel">수급</span>
-              <span class="commoditySupportText">한국 화훼 자조금협의회, 여름철 절화 수급조절 추진</span>
-            </a>
-            
-            </div>
-            
-          
-            <details class="commodityMoreWrap" data-swipe-ignore="1">
-              <summary class="commodityMoreSummary" data-swipe-ignore="1">관련 기사 2건 더 보기</summary>
-              <div class="commodityMoreList">
-            <a class="commodityMoreStory" data-swipe-ignore="1" data-track="article" data-article-id="a8e50fe52ea7" data-article-title="전국에서 거베라 6만 본·장미 15만 본 등 꽃 폐기 실시" data-report-date="2026-08-03" data-section="supply" data-surface="commodity_more" data-target-domain="www.aflnews.co.kr" data-item-key="flowers" data-item-label="화훼" href="https://www.aflnews.co.kr/news/articleView.html?idxno=325583" target="_top" rel="noopener">
-              <span class="commoditySupportLabel">수급</span>
-              <span class="commoditySupportText">전국에서 거베라 6만 본·장미 15만 본 등 꽃 폐기 실시</span>
-            </a>
-            
-            <a class="commodityMoreStory" data-swipe-ignore="1" data-track="article" data-article-id="24d843fa9b3e" data-article-title="한파 지나니 폭염·가뭄… 제주 농업재해 &#x27;사계절화&#x27;" data-report-date="2026-08-03" data-section="policy" data-surface="commodity_more" data-target-domain="www.fnnews.com" data-item-key="flowers" data-item-label="화훼" href="http://www.fnnews.com/news/202608011447352343" target="_top" rel="noopener">
-              <span class="commoditySupportLabel">정책</span>
-              <span class="commoditySupportText">한파 지나니 폭염·가뭄… 제주 농업재해 &#x27;사계절화&#x27;</span>
-            </a>
-            </div>
-            </details>
-            
-        </div>
-        
-                </article>
-                
-                <article id="commodity-plum" class="commodityTile isActive">
-                  <div class="commodityTileTop">
-                    <div class="commodityTileName">자두</div>
-                    
+
                   </div>
                   <div class="commodityTileMeta">
                     <span>기사 1건</span>
                     <span>핵심 0건</span>
                   </div>
                   <div class="commoditySignals"><span class="commoditySig" data-section="supply">수급</span></div>
-                  
+
         <div class="commodityStoryCluster">
           <div class="commodityPrimaryCard">
             <div class="commodityPrimaryHead">
               <div class="commodityPrimaryKicker">대표 기사</div>
-              
+
             </div>
-            <a class="commodityPrimaryStory" data-swipe-ignore="1" data-track="article" data-article-id="f2815e259075" data-article-title="[인천 소비] 이번 주말엔 &#x27;라면&#x27;...여름철 &#x27;자두·복숭아&#x27;도 반값" data-report-date="2026-08-03" data-section="supply" data-surface="commodity_primary" data-target-domain="news.ifm.kr" data-item-key="plum" data-item-label="자두" data-representative-rank="3" data-representative-score="260.725" data-board-score="179.225" data-selection-fit="5.250" href="https://news.ifm.kr/news/articleView.html?idxno=476189" target="_top" rel="noopener">[인천 소비] 이번 주말엔 &#x27;라면&#x27;...여름철 &#x27;자두·복숭아&#x27;도 반값</a>
-            <div class="commodityPrimaryMeta">수급 · IFM · 07/31 14:18</div>
+            <a class="commodityPrimaryStory" data-swipe-ignore="1" data-track="article" data-article-id="3f8e14de88f4" data-article-title="화훼 자조금협의회, 절화 수급·가격 안정 나서" data-report-date="2026-08-03" data-section="supply" data-surface="commodity_primary" data-target-domain="www.amnews.co.kr" data-item-key="flowers" data-item-label="화훼" data-representative-rank="3" data-representative-score="687.400" data-board-score="604.400" data-selection-fit="6.240" data-selection-stage="manual_editorial_recovery_tail" href="http://www.amnews.co.kr/news/articleView.html?idxno=73740" target="_top" rel="noopener">화훼 자조금협의회, 절화 수급·가격 안정 나서</a>
+            <div class="commodityPrimaryMeta">수급 · 농축유통신문 · 07/31 20:48</div>
           </div>
-          
-          
+
+
         </div>
-        
+
                 </article>
-                
+
                 <article id="commodity-peach" class="commodityTile isActive">
                   <div class="commodityTileTop">
                     <div class="commodityTileName">복숭아</div>
-                    
+
                   </div>
                   <div class="commodityTileMeta">
                     <span>기사 1건</span>
                     <span>핵심 3건</span>
                   </div>
                   <div class="commoditySignals"><span class="commoditySig" data-section="supply">수급</span></div>
-                  
+
         <div class="commodityStoryCluster">
           <div class="commodityPrimaryCard">
             <div class="commodityPrimaryHead">
               <div class="commodityPrimaryKicker">대표 기사</div>
-              
+
             </div>
-            <a class="commodityPrimaryStory" data-swipe-ignore="1" data-track="article" data-article-id="f2815e259075" data-article-title="[인천 소비] 이번 주말엔 &#x27;라면&#x27;...여름철 &#x27;자두·복숭아&#x27;도 반값" data-report-date="2026-08-03" data-section="supply" data-surface="commodity_primary" data-target-domain="news.ifm.kr" data-item-key="peach" data-item-label="복숭아" data-representative-rank="3" data-representative-score="232.725" data-board-score="151.225" data-selection-fit="5.250" href="https://news.ifm.kr/news/articleView.html?idxno=476189" target="_top" rel="noopener">[인천 소비] 이번 주말엔 &#x27;라면&#x27;...여름철 &#x27;자두·복숭아&#x27;도 반값</a>
-            <div class="commodityPrimaryMeta">수급 · IFM · 07/31 14:18</div>
+            <a class="commodityPrimaryStory" data-swipe-ignore="1" data-track="article" data-article-id="f9e0d110d6c6" data-article-title="폭염에 먹거리 물가도 비상…복숭아 55%·참외 73% 급등" data-report-date="2026-08-03" data-section="supply" data-surface="commodity_primary" data-target-domain="www.mbn.co.kr" data-item-key="peach" data-item-label="복숭아" data-representative-rank="4" data-representative-score="398.170" data-board-score="289.170" data-selection-fit="9.050" data-selection-stage="manual_editorial_recovery_core" data-is-core="1" href="http://www.mbn.co.kr/pages/news/newsView.php?news_seq_no=5209697" target="_top" rel="noopener">폭염에 먹거리 물가도 비상…복숭아 55%·참외 73% 급등</a>
+            <div class="commodityPrimaryMeta">수급 · MBN · 08/01 19:41</div>
           </div>
-          
-          
+
+
         </div>
-        
+
                 </article>
-                
-                <article id="commodity-sweet_persimmon" class="commodityTile">
-                  <div class="commodityTileTop">
-                    <div class="commodityTileName">단감</div>
-                    <span class="commodityBadge core">수급사업</span>
-                  </div>
-                  <div class="commodityTileMeta">
-                    <span>기사 1건</span>
-                    <span>핵심 0건</span>
-                  </div>
-                  <div class="commoditySignals"><span class="commoditySig" data-section="policy">정책</span></div>
-                  
-        <div class="commodityStoryCluster">
-          <div class="commodityPrimaryCard">
-            <div class="commodityPrimaryHead">
-              <div class="commodityPrimaryKicker">대표 기사</div>
-              
-            </div>
-            <a class="commodityPrimaryStory" data-swipe-ignore="1" data-track="article" data-article-id="387694c99ade" data-article-title="폭염·가뭄 언제까지…창원 대표과일 단감 농가 여름나기 근심" data-report-date="2026-08-03" data-section="policy" data-surface="commodity_pool" data-target-domain="www.yna.co.kr" data-item-key="sweet_persimmon" data-item-label="단감" data-representative-rank="0" data-representative-score="222.987" data-board-score="252.067" data-selection-fit="1.710" href="https://www.yna.co.kr/view/AKR20260731130600052?input=1195m" target="_top" rel="noopener">폭염·가뭄 언제까지…창원 대표과일 단감 농가 여름나기 근심</a>
-            <div class="commodityPrimaryMeta">정책 · 연합뉴스 · 08/01 08:00</div>
-          </div>
-          
-          
-        </div>
-        
-                </article>
-                
+
                 <article id="commodity-grape" class="commodityTile">
                   <div class="commodityTileTop">
                     <div class="commodityTileName">포도(샤인머스캣)</div>
                     <span class="commodityBadge core">수급사업</span>
                   </div>
                   <div class="commodityTileMeta">
-                    <span>기사 5건</span>
-                    <span>핵심 2건</span>
-                  </div>
-                  <div class="commoditySignals"><span class="commoditySig" data-section="supply">수급</span><span class="commoditySig" data-section="dist">유통</span></div>
-                  
-        <div class="commodityStoryCluster">
-          <div class="commodityPrimaryCard">
-            <div class="commodityPrimaryHead">
-              <div class="commodityPrimaryKicker">대표 기사</div>
-              
-            </div>
-            <a class="commodityPrimaryStory" data-swipe-ignore="1" data-track="article" data-article-id="6f3cddae8eec" data-article-title="멀쩡한 &#x27; 포도 밭&#x27; 붙태운 이유가…MZ 돌변에 &#x27;비명&#x27; 터진 곳" data-report-date="2026-08-03" data-section="supply" data-surface="commodity_pool" data-target-domain="www.hankyung.com" data-item-key="grape" data-item-label="포도(샤인머스캣)" data-representative-rank="4" data-representative-score="502.239" data-board-score="396.239" data-selection-fit="2.900" data-selection-stage="core" href="https://www.hankyung.com/article/2026080202071" target="_top" rel="noopener">멀쩡한 &#x27; 포도 밭&#x27; 붙태운 이유가…MZ 돌변에 &#x27;비명&#x27; 터진 곳</a>
-            <div class="commodityPrimaryMeta">수급 · 한국경제 · 08/02 18:27</div>
-          </div>
-          
-            <div class="commoditySupportList">
-              <div class="commoditySupportTitle">추가 기사</div>
-              
-            <a class="commoditySupportStory" data-swipe-ignore="1" data-track="article" data-article-id="9fc3ab2202a9" data-article-title="돌아온 샤인머스캣...농가는 &#x27;한숨&#x27;" data-report-date="2026-08-03" data-section="supply" data-surface="commodity_pool" data-target-domain="www.tbc.co.kr" data-item-key="grape" data-item-label="포도(샤인머스캣)" href="https://www.tbc.co.kr/news/view?pno=20260721175222AE02682&amp;id=209196" target="_top" rel="noopener">
-              <span class="commoditySupportLabel">수급</span>
-              <span class="commoditySupportText">돌아온 샤인머스캣...농가는 &#x27;한숨&#x27;</span>
-            </a>
-            
-            <a class="commoditySupportStory" data-swipe-ignore="1" data-track="article" data-article-id="8d5329cbbc1e" data-article-title="올여름 제철 과일 소비 늘린다…수박 웃고 포도 울고" data-report-date="2026-08-03" data-section="supply" data-surface="commodity_pool" data-target-domain="www.kwangju.co.kr" data-item-key="grape" data-item-label="포도(샤인머스캣)" href="http://www.kwangju.co.kr/article.php?aid=1785664200801831281" target="_top" rel="noopener">
-              <span class="commoditySupportLabel">수급</span>
-              <span class="commoditySupportText">올여름 제철 과일 소비 늘린다…수박 웃고 포도 울고</span>
-            </a>
-            
-            </div>
-            
-          
-            <details class="commodityMoreWrap" data-swipe-ignore="1">
-              <summary class="commodityMoreSummary" data-swipe-ignore="1">관련 기사 2건 더 보기</summary>
-              <div class="commodityMoreList">
-            <a class="commodityMoreStory" data-swipe-ignore="1" data-track="article" data-article-id="edca4b82f524" data-article-title="&#x27;경북포도&#x27; 수출 쑥 ···상반기 44.2% 증가" data-report-date="2026-08-03" data-section="dist" data-surface="commodity_pool" data-target-domain="www.agrinet.co.kr" data-item-key="grape" data-item-label="포도(샤인머스캣)" href="https://www.agrinet.co.kr/news/articleView.html?idxno=406008" target="_top" rel="noopener">
-              <span class="commoditySupportLabel">유통</span>
-              <span class="commoditySupportText">&#x27;경북포도&#x27; 수출 쑥 ···상반기 44.2% 증가</span>
-            </a>
-            
-            <a class="commodityMoreStory" data-swipe-ignore="1" data-track="article" data-article-id="e3147e22b968" data-article-title="&quot; 포도 밭 불태우고 폐업&quot;…와인 성지 캘리포니아, &#x27;역대급 불황&#x27;" data-report-date="2026-08-03" data-section="supply" data-surface="commodity_pool" data-target-domain="www.newsis.com" data-item-key="grape" data-item-label="포도(샤인머스캣)" href="https://www.newsis.com/view/NISX20260731_0003731941" target="_top" rel="noopener">
-              <span class="commoditySupportLabel">수급</span>
-              <span class="commoditySupportText">&quot; 포도 밭 불태우고 폐업&quot;…와인 성지 캘리포니아, &#x27;역대급 불황&#x27;</span>
-            </a>
-            </div>
-            </details>
-            
-        </div>
-        
-                </article>
-                
-                <article id="commodity-citrus" class="commodityTile">
-                  <div class="commodityTileTop">
-                    <div class="commodityTileName">감귤(만감류)</div>
-                    <span class="commodityBadge core">수급사업</span>
-                  </div>
-                  <div class="commodityTileMeta">
                     <span>기사 1건</span>
-                    <span>핵심 0건</span>
+                    <span>핵심 1건</span>
                   </div>
-                  <div class="commoditySignals"><span class="commoditySig" data-section="supply">수급</span></div>
-                  
+                  <div class="commoditySignals"><span class="commoditySig" data-section="dist">유통</span></div>
+
         <div class="commodityStoryCluster">
           <div class="commodityPrimaryCard">
             <div class="commodityPrimaryHead">
               <div class="commodityPrimaryKicker">대표 기사</div>
-              
+
             </div>
-            <a class="commodityPrimaryStory" data-swipe-ignore="1" data-track="article" data-article-id="217ece33a3b8" data-article-title="제주 감귤 하우스 지붕이 발전소로… 태풍 견디는 &#x27;RE100 온실&#x27; 만든다" data-report-date="2026-08-03" data-section="supply" data-surface="commodity_pool" data-target-domain="www.fnnews.com" data-item-key="citrus" data-item-label="감귤(만감류)" data-representative-rank="3" data-representative-score="405.817" data-board-score="325.817" data-selection-fit="3.050" href="http://www.fnnews.com/news/202607310759235607" target="_top" rel="noopener">제주 감귤 하우스 지붕이 발전소로… 태풍 견디는 &#x27;RE100 온실&#x27; 만든다</a>
-            <div class="commodityPrimaryMeta">수급 · 파이낸셜뉴스 · 07/31 08:04</div>
+            <a class="commodityPrimaryStory" data-swipe-ignore="1" data-track="article" data-article-id="4c0a88e6ac23" data-article-title="경북포도 수출 쑥…상반기 44.2% 증가" data-report-date="2026-08-03" data-section="dist" data-surface="commodity_pool" data-target-domain="www.agrinet.co.kr" data-item-key="grape" data-item-label="포도(샤인머스캣)" data-representative-rank="4" data-representative-score="392.960" data-board-score="283.960" data-selection-fit="5.000" data-selection-stage="manual_editorial_recovery_core" data-is-core="1" href="https://www.agrinet.co.kr/news/articleView.html?idxno=406008" target="_top" rel="noopener">경북포도 수출 쑥…상반기 44.2% 증가</a>
+            <div class="commodityPrimaryMeta">유통 · 한국농어민신문 · 07/31 19:15</div>
           </div>
-          
-          
+
+
         </div>
-        
+
                 </article>
-                
+
               </div>
-              
+
             <div class="commodityInactive">
-              <div class="commodityInactiveTitle">오늘 관련 소식 없는 관리 품목 6개</div>
-              <div class="commodityMiniGrid"><span class="commodityMiniChip isCore">배  ·수급</span><span class="commodityMiniChip">감/곶감</span><span class="commodityMiniChip">매실</span><span class="commodityMiniChip">유자</span><span class="commodityMiniChip">참다래</span><span class="commodityMiniChip">밤</span></div>
+              <div class="commodityInactiveTitle">오늘 관련 소식 없는 관리 품목 10개</div>
+              <div class="commodityMiniGrid"><span class="commodityMiniChip isCore">사과  ·수급</span><span class="commodityMiniChip isCore">배  ·수급</span><span class="commodityMiniChip isCore">단감  ·수급</span><span class="commodityMiniChip isCore">감귤(만감류)  ·수급</span><span class="commodityMiniChip">감/곶감</span><span class="commodityMiniChip">매실</span><span class="commodityMiniChip">유자</span><span class="commodityMiniChip">참다래</span><span class="commodityMiniChip">밤</span><span class="commodityMiniChip">자두</span></div>
             </div>
-            
-              
+
+
             </section>
-            
+
     </section>
-    
+
     </section>
     <div class="footer">* 자동 수집 결과입니다. 핵심 확인은 “원문 열기”로 원문을 확인하세요.</div>
-    
+
   </div>
 
   <script>
@@ -1833,7 +1474,7 @@
       var agriAnalyticsCtx = {
         enabled: true,
         measurementId: "G-M5Y1GRYB0J",
-        buildId: "b226981",
+        buildId: "6a25608",
         pageType: "archive",
         reportDate: "2026-08-03",
         viewMode: "briefing"
@@ -2940,7 +2581,7 @@ try { _ensureDates(); } catch (e) {}
     })();
   </script>
 
-  <!-- build: b226981 -->
+  <!-- build: 6a25608 -->
 
 </body>
 </html>
