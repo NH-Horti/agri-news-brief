@@ -228,6 +228,21 @@ class TestSameEventMultiOutlet(unittest.TestCase):
         self.assertEqual(removed, 2)
         self.assertEqual(len(final["dist"]), 1)
 
+    def test_same_province_smart_apc_program_is_deduped(self):
+        left = _mk(
+            "dist",
+            "경북도, AI 기반 스마트 APC 확대…농산물 유통 혁신 속도",
+            "경상북도는 2030년까지 1433억원을 투입해 스마트 APC 26곳을 구축한다.",
+        )
+        right = _mk(
+            "dist",
+            "AI가 선별하고 로봇이 포장…경북, 스마트 APC 26곳 구축",
+            "경북도는 노후 APC 88곳을 개선하고 국비 506억원을 포함해 총 1433억원을 투입한다.",
+            domain="other.example.com",
+        )
+
+        self.assertEqual(main._duplicate_story_pair_reason(left, right), "same_facility_upgrade")
+
     def test_same_quantified_supply_program_is_cross_section_duplicate(self):
         supply = _mk(
             "supply",

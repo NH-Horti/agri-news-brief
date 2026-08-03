@@ -1,5 +1,6 @@
 import unittest
 from datetime import datetime
+from pathlib import Path
 from unittest.mock import patch
 
 import main
@@ -372,6 +373,49 @@ class PrepublishQualityGateTests(unittest.TestCase):
 
         self.assertIn(invalid.link, excluded["supply"])
         self.assertNotIn(raw["supply"][1].link, excluded["supply"])
+
+    def test_subscriber_replay_runs_mandatory_quality_gate_before_publish(self):
+        selected = self._raw_sections()
+        corrected = {section: list(reversed(rows)) for section, rows in selected.items()}
+        start_kst = datetime(2026, 8, 3, 0, 0, tzinfo=main.KST)
+        end_kst = datetime(2026, 8, 3, 6, 0, tzinfo=main.KST)
+        events: list[str] = []
+
+        def run_gate(*args, **kwargs):
+            events.append("quality")
+            self.assertTrue(kwargs["force_editorial"])
+            self.assertFalse(kwargs["allow_sla_fallback"])
+            return corrected, "<html></html>", {
+                "prepublish_quality_gate": {"publishable": True}
+            }
+
+        def publish(*args, **kwargs):
+            events.append("publish")
+            self.assertIs(args[6], corrected)
+
+        with (
+            patch.object(main, "MAINTENANCE_SEND_KAKAO", True),
+            patch.object(main, "PLACEMENT_ONLY", False),
+            patch.object(
+                main,
+                "_build_sections_for_report",
+                return_value=(selected, {}, start_kst, end_kst),
+            ),
+            patch.object(
+                main,
+                "load_replay_snapshot",
+                return_value=(selected, start_kst, end_kst, {}, {}, Path("snapshot.json")),
+            ),
+            patch.object(main, "_list_archive_dates", return_value={"2026-08-01"}),
+            patch.object(main, "get_pages_base_url", return_value="https://example.com/brief"),
+            patch.object(main, "_run_prepublish_quality_gate", side_effect=run_gate),
+            patch.object(main, "_publish_maintenance_report", side_effect=publish),
+        ):
+            main.maintenance_replay_date(
+                "owner/repo", "token", "2026-08-03", "docs", allow_openai=False
+            )
+
+        self.assertEqual(events, ["quality", "publish"])
 
 
 if __name__ == "__main__":

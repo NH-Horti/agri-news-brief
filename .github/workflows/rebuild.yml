@@ -199,6 +199,15 @@ jobs:
           REPLAY_SNAPSHOT_DIR: .agri_replay
           MAX_PER_SECTION: ${{ steps.vars.outputs.max_per_section }}
 
+          # Subscriber-facing replay performs its editorial gate before Kakao.
+          # Bound each model call/repair so this safety check cannot recreate
+          # the unbounded latency and spend pattern from 2026-08-03.
+          EDITORIAL_OPENAI_TIMEOUT_SECONDS: '45'
+          EDITORIAL_OPENAI_MAX_ATTEMPTS: '1'
+          EDITORIAL_OPENAI_RETRY_DELAY_SECONDS: '0'
+          PREPUBLISH_QUALITY_MAX_REPAIRS: '1'
+          PREPUBLISH_QUALITY_MAX_PROPOSALS: '2'
+
           FORCE_RUN_ANYDAY: 'false'
           UX_PATCH_DAYS: ${{ steps.vars.outputs.ux_patch_days }}
           WINDOW_MIN_HOURS: '0'

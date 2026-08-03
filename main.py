@@ -51780,6 +51780,40 @@ def maintenance_replay_date(repo: str, token: str, report_date: str, site_path: 
         log.info("[PLACEMENT_ONLY] wrote %s", out_path)
         return
 
+    # A subscriber-facing replay is the last-resort recovery path.  It must not
+    # repeat the 2026-08-03 failure mode where Kakao delivery completed before
+    # the external editorial evaluation found a low-quality selection.
+    if MAINTENANCE_SEND_KAKAO:
+        raw_by_section, _snap_start, _snap_end, _snap_cache, _snap_debug, snapshot_path = load_replay_snapshot(report_date)
+        avail = _list_dev_preview_archive_dates(repo, token) if DEV_SINGLE_PAGE_MODE else _list_archive_dates(repo, token)
+        avail.add(report_date)
+        archive_dates_desc = sorted(avail, reverse=True)
+        base_url = get_pages_base_url(repo).rstrip("/")
+        daily_url = (
+            _dev_single_page_archive_url(report_date, base_url, cache_bust=True)
+            if DEV_SINGLE_PAGE_MODE
+            else build_daily_url(base_url, report_date, cache_bust=True)
+        )
+        by_section, _quality_html, quality_result = _run_prepublish_quality_gate(
+            repo,
+            token,
+            report_date,
+            start_kst,
+            end_kst,
+            daily_url,
+            archive_dates_desc,
+            site_path,
+            raw_by_section,
+            by_section,
+            summary_cache,
+            snapshot_path,
+            force_editorial=True,
+            allow_sla_fallback=False,
+        )
+        gate = quality_result.get("prepublish_quality_gate", {}) if isinstance(quality_result, dict) else {}
+        if not isinstance(gate, dict) or not gate.get("publishable"):
+            raise RuntimeError("Subscriber-facing replay did not pass the mandatory pre-send quality gate.")
+
     _publish_maintenance_report(
         repo,
         token,
@@ -52463,6 +52497,9 @@ def _run_prepublish_quality_gate(
     by_section: dict[str, list[Article]],
     summary_cache: dict[str, SummaryCacheEntry | str],
     snapshot_path: Path,
+    *,
+    force_editorial: bool = False,
+    allow_sla_fallback: bool = True,
 ) -> tuple[dict[str, list[Article]], str, JsonDict]:
     from editorial_eval import propose_editorial_repair
     from report_eval import load_snapshot_payload
@@ -52486,7 +52523,9 @@ def _run_prepublish_quality_gate(
         run_editorial=False,
         adaptive_reason="policy_probe",
     )
-    if PREPUBLISH_FORCE_SLA_FALLBACK:
+    if force_editorial:
+        run_editorial, adaptive_reason = True, "mandatory_replay_pre_send"
+    elif PREPUBLISH_FORCE_SLA_FALLBACK:
         run_editorial, adaptive_reason = False, "forced_sla_recovery"
     elif _OPENAI_QUOTA_EXHAUSTED:
         run_editorial, adaptive_reason = False, "openai_quota_unavailable"
@@ -52526,7 +52565,7 @@ def _run_prepublish_quality_gate(
     ):
         if _prepublish_evaluation_passed(result):
             break
-        if not run_editorial or _prepublish_deadline_reached(report_date):
+        if not run_editorial or (not force_editorial and _prepublish_deadline_reached(report_date)):
             break
         editorial_result = result.get("editorial", {})
         if not isinstance(editorial_result, dict) or editorial_result.get("status") != "success":
@@ -52675,6 +52714,7 @@ def _run_prepublish_quality_gate(
     )
     fallback_passed = bool(
         not normal_passed
+        and allow_sla_fallback
         and PREPUBLISH_SLA_FALLBACK_ENABLED
         and _prepublish_sla_fallback_publishable(result)
     )
@@ -52711,6 +52751,8 @@ def _run_prepublish_quality_gate(
         "deadline_reached": _prepublish_deadline_reached(report_date),
         "minimum_operational_score": PREPUBLISH_QUALITY_MIN_OPERATIONAL_SCORE,
         "sla_fallback_enabled": PREPUBLISH_SLA_FALLBACK_ENABLED,
+        "sla_fallback_allowed_for_run": allow_sla_fallback,
+        "editorial_forced_for_run": force_editorial,
         "sla_fallback_forced": PREPUBLISH_FORCE_SLA_FALLBACK,
         "sla_fallback_minimum_score": PREPUBLISH_SLA_FALLBACK_MIN_SCORE,
         "sla_fallback_score_enforced": not PREPUBLISH_FORCE_SLA_FALLBACK,
