@@ -185,6 +185,9 @@ class TestRegressions(unittest.TestCase):
         self.assertIn("https://openapi.naver.com/v1/search/news.json", self.secrets_check_text)
         self.assertIn("https://kauth.kakao.com/oauth/token", self.secrets_check_text)
         self.assertIn('append_summary("- Kakao: success (token refresh)")', self.secrets_check_text)
+        self.assertIn('status = "quota_exhausted"', self.secrets_check_text)
+        self.assertIn("deterministic summaries remain available", self.secrets_check_text)
+        self.assertIn("Delivery readiness: ready (AI quality enhancement is degraded)", self.secrets_check_text)
 
     def test_prod_workflows_keep_window_and_have_independent_early_trigger(self):
         self.assertIn("Independent early trigger at KST 05:35", self.daily_text)
@@ -239,7 +242,24 @@ class TestRegressions(unittest.TestCase):
         self.assertIn('echo "- Article generation model: gpt-5.6-sol"', self.rebuild_text)
         self.assertIn('echo "- Editorial evaluation model: gpt-5.6-sol"', self.rebuild_text)
         self.assertIn("PREPUBLISH_QUALITY_GATE_ENABLED: 'true'", self.daily_text)
-        self.assertIn("PREPUBLISH_QUALITY_MAX_REPAIRS: '5'", self.daily_text)
+        self.assertIn(
+            "PREPUBLISH_QUALITY_MAX_REPAIRS: ${{ inputs.quality_recovery && '5' || '1' }}",
+            self.daily_text,
+        )
+        self.assertIn(
+            "PREPUBLISH_QUALITY_MAX_PROPOSALS: ${{ inputs.quality_recovery && '10' || '2' }}",
+            self.daily_text,
+        )
+        self.assertIn("BODY_CRAWL_MAX_ARTICLES: '120'", self.daily_text)
+        self.assertIn("BODY_CRAWL_RETRY_TOTAL: '0'", self.daily_text)
+        self.assertIn(
+            "OPENAI_RETRY_MAX: ${{ inputs.quality_recovery && '3' || '1' }}",
+            self.daily_text,
+        )
+        self.assertIn(
+            "EDITORIAL_OPENAI_MAX_ATTEMPTS: ${{ inputs.quality_recovery && '4' || '1' }}",
+            self.daily_text,
+        )
         self.assertIn(
             "cancel-in-progress: ${{ inputs.force_sla_fallback == true }}", self.daily_text
         )

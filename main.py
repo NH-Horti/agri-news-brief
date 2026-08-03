@@ -1072,6 +1072,10 @@ OPENAI_SUMMARY_CACHE_MAX = int((os.getenv("OPENAI_SUMMARY_CACHE_MAX", "2000") or
 OPENAI_SUMMARY_CACHE_MAX = max(200, min(OPENAI_SUMMARY_CACHE_MAX, 20000))
 OPENAI_RETRY_MAX = int((os.getenv("OPENAI_RETRY_MAX", "3") or "3").strip() or 3)
 OPENAI_RETRY_MAX = max(1, min(OPENAI_RETRY_MAX, 8))
+OPENAI_SUMMARY_TIMEOUT_SECONDS = float((os.getenv("OPENAI_SUMMARY_TIMEOUT_SECONDS", "45") or "45").strip() or 45)
+OPENAI_SUMMARY_TIMEOUT_SECONDS = max(10.0, min(OPENAI_SUMMARY_TIMEOUT_SECONDS, 90.0))
+OPENAI_SUMMARY_MISSING_RETRY_MAX = int((os.getenv("OPENAI_SUMMARY_MISSING_RETRY_MAX", "5") or "5").strip() or 5)
+OPENAI_SUMMARY_MISSING_RETRY_MAX = max(0, min(OPENAI_SUMMARY_MISSING_RETRY_MAX, 10))
 _OPENAI_QUOTA_EXHAUSTED = False
 OPENAI_SUMMARY_FEEDBACK_PATH = os.getenv("OPENAI_SUMMARY_FEEDBACK_PATH", "docs/evals/latest-feedback.txt").strip()
 OPENAI_SUMMARY_FEEDBACK_MAX_CHARS = int((os.getenv("OPENAI_SUMMARY_FEEDBACK_MAX_CHARS", "600") or "600").strip() or 600)
@@ -1085,6 +1089,10 @@ PREPUBLISH_QUALITY_GATE_ENABLED = os.getenv("PREPUBLISH_QUALITY_GATE_ENABLED", "
 PREPUBLISH_QUALITY_FAIL_CLOSED = os.getenv("PREPUBLISH_QUALITY_FAIL_CLOSED", "true").strip().lower() in ("1", "true", "yes", "y")
 PREPUBLISH_QUALITY_ADAPTIVE = os.getenv("PREPUBLISH_QUALITY_ADAPTIVE", "true").strip().lower() in ("1", "true", "yes", "y")
 PREPUBLISH_QUALITY_MAX_REPAIRS = max(0, min(5, int((os.getenv("PREPUBLISH_QUALITY_MAX_REPAIRS", "5") or "5").strip() or 5)))
+PREPUBLISH_QUALITY_MAX_PROPOSALS = max(
+    0,
+    min(10, int((os.getenv("PREPUBLISH_QUALITY_MAX_PROPOSALS", "10") or "10").strip() or 10)),
+)
 PREPUBLISH_QUALITY_STABLE_DAYS = max(5, min(60, int((os.getenv("PREPUBLISH_QUALITY_STABLE_DAYS", "20") or "20").strip() or 20)))
 PREPUBLISH_QUALITY_DEADLINE_KST = (os.getenv("PREPUBLISH_QUALITY_DEADLINE_KST", "06:50") or "06:50").strip()
 PREPUBLISH_QUALITY_RESULT_DIR = (os.getenv("PREPUBLISH_QUALITY_RESULT_DIR", "reports/evals") or "reports/evals").strip()
@@ -2963,8 +2971,10 @@ def parse_pubdate_to_kst(pubdate_str: str) -> datetime:
 # 원문 크롤링으로 충분한 텍스트를 확보할 수 있다.
 _BODY_CRAWL_ENABLED = os.getenv("BODY_CRAWL_ENABLED", "true").strip().lower() in ("1", "true", "yes", "y")
 _BODY_CRAWL_MAX_WORKERS = max(1, min(int(os.getenv("BODY_CRAWL_MAX_WORKERS", "10") or "10"), 20))
-_BODY_CRAWL_TIMEOUT = 5.0  # connect timeout (접속 불가 서버 빠른 탈락)
-_BODY_CRAWL_READ_TIMEOUT = 10.0  # read timeout (본문 수신)
+_BODY_CRAWL_MAX_ARTICLES = max(20, min(int(os.getenv("BODY_CRAWL_MAX_ARTICLES", "120") or "120"), 400))
+_BODY_CRAWL_TIMEOUT = max(1.0, min(float(os.getenv("BODY_CRAWL_CONNECT_TIMEOUT", "3") or "3"), 10.0))
+_BODY_CRAWL_READ_TIMEOUT = max(2.0, min(float(os.getenv("BODY_CRAWL_READ_TIMEOUT", "7") or "7"), 20.0))
+_BODY_CRAWL_RETRY_TOTAL = max(0, min(int(os.getenv("BODY_CRAWL_RETRY_TOTAL", "0") or "0"), 2))
 _BODY_CRAWL_MAX_CHARS = 2000
 _BODY_CACHE: dict[str, str] = {}
 _BODY_CACHE_LOCK = threading.Lock()
@@ -2977,7 +2987,11 @@ def _body_crawl_session() -> requests.Session:
     s = getattr(_BODY_SESSION_LOCAL, "session", None)
     if s is None:
         s = requests.Session()
-        retry = Retry(total=1, connect=1, read=1, backoff_factor=0.3,
+        retry = Retry(
+                      total=_BODY_CRAWL_RETRY_TOTAL,
+                      connect=_BODY_CRAWL_RETRY_TOTAL,
+                      read=_BODY_CRAWL_RETRY_TOTAL,
+                      backoff_factor=0.3,
                       status_forcelist=[429, 500, 502, 503, 504])
         adapter = HTTPAdapter(max_retries=retry)
         s.mount("https://", adapter)
@@ -3131,6 +3145,71 @@ def _enrich_article_bodies(articles: list["Article"], *, max_workers: int | None
                 pass
 
     return enriched
+
+
+def _select_body_crawl_candidates(
+    raw_by_section: dict[str, list["Article"]],
+    *,
+    max_articles: int | None = None,
+) -> list["Article"]:
+    """Select a balanced, URL-deduplicated subset for best-effort body crawling.
+
+    Full-body text improves ranking, but crawling every search hit makes delivery
+    time depend on the slowest publishers.  The Naver title/description remains
+    the safe fallback, so daily publication only enriches the highest-ranked
+    candidates from each section and spends the remaining capacity globally.
+    """
+    limit = max(1, int(max_articles or _BODY_CRAWL_MAX_ARTICLES))
+    section_keys = [
+        str(section.get("key") or "").strip()
+        for section in SECTIONS
+        if str(section.get("key") or "").strip()
+    ]
+    if not section_keys:
+        section_keys = [str(key or "").strip() for key in raw_by_section if str(key or "").strip()]
+    quota = max(1, limit // max(1, len(section_keys)))
+    selected: list[Article] = []
+    seen_urls: set[str] = set()
+
+    def crawl_key(article: Article) -> str:
+        raw_url = str(article.originallink or article.link or article.canon_url or "").strip()
+        return canonicalize_url(raw_url) or raw_url
+
+    def priority(article: Article) -> tuple[float, float, float, str]:
+        return (
+            float(article.score or 0.0),
+            float(press_priority(article.press or "", article.domain or "") or 0.0),
+            float(article.pub_dt_kst.toordinal()) if article.pub_dt_kst else 0.0,
+            article.title or "",
+        )
+
+    def add(article: Article) -> bool:
+        key = crawl_key(article)
+        if not key or key in seen_urls or len(selected) >= limit:
+            return False
+        seen_urls.add(key)
+        selected.append(article)
+        return True
+
+    for section in section_keys:
+        added = 0
+        for article in sorted(raw_by_section.get(section, []) or [], key=priority, reverse=True):
+            if add(article):
+                added += 1
+            if added >= quota or len(selected) >= limit:
+                break
+
+    if len(selected) < limit:
+        remaining = [
+            article
+            for articles in (raw_by_section or {}).values()
+            for article in (articles or [])
+        ]
+        for article in sorted(remaining, key=priority, reverse=True):
+            if len(selected) >= limit:
+                break
+            add(article)
+    return selected
 
 
 def _best_effort_article_pubdate_kst(url: str) -> datetime | None:
@@ -27471,19 +27550,36 @@ def collect_raw_sections(start_kst: datetime, end_kst: datetime) -> dict[str, li
         all_articles: list[Article] = []
         for lst in raw_by_section.values():
             all_articles.extend(lst)
-        # 중복 URL 제거 (같은 기사가 여러 섹션에 있을 수 있음)
-        seen_urls: set[str] = set()
-        unique_articles: list[Article] = []
+        crawl_candidates = _select_body_crawl_candidates(
+            raw_by_section,
+            max_articles=_BODY_CRAWL_MAX_ARTICLES,
+        )
+        log.info(
+            "[BODY-CRAWL] bounded enrichment selected %d/%d candidates "
+            "(connect=%.1fs, read=%.1fs, retries=%d)",
+            len(crawl_candidates),
+            len(all_articles),
+            _BODY_CRAWL_TIMEOUT,
+            _BODY_CRAWL_READ_TIMEOUT,
+            _BODY_CRAWL_RETRY_TOTAL,
+        )
+        enriched = _enrich_article_bodies(crawl_candidates)
+        log.info("[BODY-CRAWL] enriched %d/%d selected articles with full body text", enriched, len(crawl_candidates))
+
+        # A URL can occur in more than one section. Reuse the enriched body for
+        # those copies without repeating a network request.
+        enriched_by_url: dict[str, str] = {}
+        for art in crawl_candidates:
+            raw_url = art.originallink or art.link or art.canon_url or ""
+            key = canonicalize_url(raw_url) or raw_url
+            if key and len(art.description or "") > len(enriched_by_url.get(key, "")):
+                enriched_by_url[key] = art.description or ""
         for art in all_articles:
-            url = art.originallink or art.link or ""
-            if url and url not in seen_urls:
-                seen_urls.add(url)
-                unique_articles.append(art)
-            elif url in seen_urls:
-                # 이미 크롤링된 기사와 동일 URL → 캐시에서 가져옴
-                unique_articles.append(art)
-        enriched = _enrich_article_bodies(unique_articles)
-        log.info("[BODY-CRAWL] enriched %d/%d articles with full body text", enriched, len(unique_articles))
+            raw_url = art.originallink or art.link or art.canon_url or ""
+            key = canonicalize_url(raw_url) or raw_url
+            body = enriched_by_url.get(key, "")
+            if body and len(body) > len(art.description or ""):
+                art.description = body
 
         # 재스코어링: 보강된 description으로 점수 재계산
         section_conf_map = {str(s.get("key") or "").strip(): s for s in SECTIONS}
@@ -29515,7 +29611,7 @@ def _openai_summarize_rows(rows: list[JsonDict]) -> dict[str, str]:
                 "https://api.openai.com/v1/responses",
                 headers={"Authorization": f"Bearer {OPENAI_API_KEY}", "Content-Type": "application/json"},
                 json=payload,
-                timeout=70,
+                timeout=OPENAI_SUMMARY_TIMEOUT_SECONDS,
             )
         except Exception as exc:
             backoff = exponential_backoff(attempt, base=0.8, cap=20.0, jitter=0.4)
@@ -29695,6 +29791,7 @@ def openai_summarize_batch(articles: list[Article], cache: dict[str, SummaryCach
         })
 
     mapping = {}
+    returned_keys: set[str] = set()
     article_by_key = {a.norm_key: a for a in to_sum if getattr(a, "norm_key", "")}
 
     def accept_summary(key: str, raw_value: str) -> bool:
@@ -29732,16 +29829,17 @@ def openai_summarize_batch(articles: list[Article], cache: dict[str, SummaryCach
         part = _openai_summarize_rows(rows)
         if part:
             for k, v in part.items():
+                returned_keys.add(str(k or "").strip())
                 accept_summary(k, v)
 
     # A large structured-output batch can occasionally omit a few rows. Retry
-    # at most ten missing rows in small batches: this repairs partial responses
-    # without multiplying outage latency across every article in the briefing.
+    # only rows omitted by the model. A returned-but-rejected summary is left to
+    # the deterministic fallback instead of spending another request on it.
     missing_rows = [
         row
         for row in rows_all
-        if str(row.get("id") or "").strip() not in mapping
-    ][:10] if not _OPENAI_QUOTA_EXHAUSTED else []
+        if str(row.get("id") or "").strip() not in returned_keys
+    ][:OPENAI_SUMMARY_MISSING_RETRY_MAX] if not _OPENAI_QUOTA_EXHAUSTED else []
     retry_batch_size = 5
     for i in range(0, len(missing_rows), retry_batch_size):
         retry_rows = missing_rows[i:i + retry_batch_size]
@@ -52416,7 +52514,10 @@ def _run_prepublish_quality_gate(
     if excluded_counts:
         log.info("[QUALITY GATE] prefiltered locally invalid repair candidates: %s", excluded_counts)
 
-    repair_proposal_limit = PREPUBLISH_QUALITY_MAX_REPAIRS + 5
+    repair_proposal_limit = min(
+        PREPUBLISH_QUALITY_MAX_PROPOSALS,
+        PREPUBLISH_QUALITY_MAX_REPAIRS + 5,
+    )
     repair_proposal_count = 0
     applied_repair_count = 0
     while (

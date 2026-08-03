@@ -6103,6 +6103,55 @@ class LocalRuntimeTests(TestCase):
         self.assertEqual(summarize.call_count, 2)
         self.assertEqual(mapping[article.norm_key], refreshed)
 
+    def test_summary_generation_does_not_retry_a_returned_rejected_row(self) -> None:
+        article = self._make_article(
+            section="supply",
+            title="배추 출하량 점검",
+            description="산지 배추 출하량과 도매가격을 점검했다.",
+            link="https://example.com/cabbage-summary-rejected",
+            topic="배추",
+        )
+        with (
+            patch.object(main, "OPENAI_API_KEY", "test-key"),
+            patch.object(
+                main,
+                "_openai_summarize_rows",
+                return_value={article.norm_key: "너무 짧음"},
+            ) as summarize,
+            patch.object(main, "_summary_quality_block_reason", return_value="length"),
+        ):
+            mapping = main.openai_summarize_batch([article], cache={})
+
+        summarize.assert_called_once()
+        self.assertEqual(mapping, {})
+
+    def test_body_crawl_candidates_are_bounded_balanced_and_url_deduplicated(self) -> None:
+        raw_by_section = {}
+        shared_url = "https://example.com/shared"
+        for section_index, section in enumerate(("supply", "policy", "dist", "pest")):
+            rows = []
+            for item_index in range(3):
+                link = shared_url if item_index == 0 and section_index < 2 else (
+                    f"https://example.com/{section}/{item_index}"
+                )
+                article = self._make_article(
+                    section=section,
+                    title=f"{section} candidate {item_index}",
+                    description="candidate description",
+                    link=link,
+                    topic=section,
+                )
+                article.score = 100 - item_index
+                rows.append(article)
+            raw_by_section[section] = rows
+
+        selected = main._select_body_crawl_candidates(raw_by_section, max_articles=4)
+
+        self.assertEqual(len(selected), 4)
+        self.assertEqual({article.section for article in selected}, {"supply", "policy", "dist", "pest"})
+        urls = [main.canonicalize_url(article.url) or article.url for article in selected]
+        self.assertEqual(len(urls), len(set(urls)))
+
     def test_openai_insufficient_quota_opens_run_circuit_without_retry(self) -> None:
         response = Mock()
         response.ok = False
