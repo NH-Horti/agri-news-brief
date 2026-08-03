@@ -22,7 +22,18 @@ from report_eval import (
 
 EDITORIAL_RUBRIC_VERSION = 3
 DEFAULT_EDITORIAL_MODEL = "gpt-5.6-sol"
-DEFAULT_MAX_RAW_PER_SECTION = 24
+DEFAULT_MAX_RAW_PER_SECTION = max(
+    5,
+    min(int(os.getenv("EDITORIAL_MAX_RAW_PER_SECTION", "10") or "10"), 24),
+)
+DEFAULT_EVAL_MAX_OUTPUT_TOKENS = max(
+    800,
+    min(int(os.getenv("EDITORIAL_EVAL_MAX_OUTPUT_TOKENS", "2400") or "2400"), 5000),
+)
+DEFAULT_REPAIR_MAX_OUTPUT_TOKENS = max(
+    800,
+    min(int(os.getenv("EDITORIAL_REPAIR_MAX_OUTPUT_TOKENS", "1800") or "1800"), 4000),
+)
 DEFAULT_TIMEOUT_SEC = max(
     15,
     min(int(os.getenv("EDITORIAL_OPENAI_TIMEOUT_SECONDS", "90") or "90"), 120),
@@ -653,7 +664,7 @@ def _raw_candidates(
         candidates[section] = [
             {
                 "title": _truncate(row.get("title"), 180),
-                "description": _truncate(row.get("description") or row.get("summary"), 520),
+                "description": _truncate(row.get("description") or row.get("summary"), 280),
                 "domain": _truncate(row.get("domain") or row.get("press"), 80),
                 "source_tier": int(_as_float(row.get("press_tier"), 0.0)),
                 "link": _truncate(row.get("canon_url") or row.get("link") or row.get("originallink"), 260),
@@ -686,7 +697,7 @@ def build_editorial_payload(
             "position": idx + 1,
             "section": article.section,
             "title": _truncate(article.title, 180),
-            "summary": _truncate(article.summary, 420),
+            "summary": _truncate(article.summary, 300),
             "domain": _truncate(article.domain, 80),
             "source_tier": int(article.press_tier),
             "href": _truncate(article.href, 260),
@@ -1073,9 +1084,14 @@ def evaluate_editorial_quality(
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": json.dumps(payload, ensure_ascii=False)},
         ],
-        "max_output_tokens": 5000,
+        "max_output_tokens": DEFAULT_EVAL_MAX_OUTPUT_TOKENS,
         "reasoning": {"effort": resolved_effort},
-        "text": _editorial_response_format(),
+        "text": {**_editorial_response_format(), "verbosity": "low"},
+        # Each edition has a different candidate pool, so the automatic cache
+        # was writing almost the entire one-off prompt at a 1.25x input rate
+        # without producing cache reads. Explicit mode disables that implicit
+        # breakpoint; no content block is marked for cache writing here.
+        "prompt_cache_options": {"mode": "explicit", "ttl": "30m"},
     }
 
     session = session_factory()
@@ -1200,9 +1216,10 @@ def propose_editorial_repair(
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": json.dumps(payload, ensure_ascii=False)},
         ],
-        "max_output_tokens": 4000,
+        "max_output_tokens": DEFAULT_REPAIR_MAX_OUTPUT_TOKENS,
         "reasoning": {"effort": resolved_effort},
-        "text": _editorial_repair_response_format(),
+        "text": {**_editorial_repair_response_format(), "verbosity": "low"},
+        "prompt_cache_options": {"mode": "explicit", "ttl": "30m"},
     }
 
     session = session_factory()

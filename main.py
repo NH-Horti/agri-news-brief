@@ -1094,6 +1094,21 @@ PREPUBLISH_QUALITY_MAX_PROPOSALS = max(
     min(10, int((os.getenv("PREPUBLISH_QUALITY_MAX_PROPOSALS", "10") or "10").strip() or 10)),
 )
 PREPUBLISH_QUALITY_STABLE_DAYS = max(5, min(60, int((os.getenv("PREPUBLISH_QUALITY_STABLE_DAYS", "20") or "20").strip() or 20)))
+EDITORIAL_MAX_RAW_PER_SECTION = max(
+    5,
+    min(24, int((os.getenv("EDITORIAL_MAX_RAW_PER_SECTION", "10") or "10").strip() or 10)),
+)
+PREPUBLISH_EDITORIAL_MAX_CALLS = max(
+    1,
+    min(12, int((os.getenv("PREPUBLISH_EDITORIAL_MAX_CALLS", "3") or "3").strip() or 3)),
+)
+PREPUBLISH_EDITORIAL_TOKEN_BUDGET = max(
+    10_000,
+    min(
+        500_000,
+        int((os.getenv("PREPUBLISH_EDITORIAL_TOKEN_BUDGET", "60000") or "60000").strip() or 60000),
+    ),
+)
 PREPUBLISH_QUALITY_DEADLINE_KST = (os.getenv("PREPUBLISH_QUALITY_DEADLINE_KST", "06:50") or "06:50").strip()
 PREPUBLISH_QUALITY_RESULT_DIR = (os.getenv("PREPUBLISH_QUALITY_RESULT_DIR", "reports/evals") or "reports/evals").strip()
 PREPUBLISH_QUALITY_MIN_OPERATIONAL_SCORE = max(
@@ -51976,16 +51991,23 @@ def _operational_quality_anomaly(result: JsonDict) -> bool:
         scores = {}
     try:
         operational_score = float(result.get("operational_score", result.get("overall_score", 0.0)) or 0.0)
+        reader_score = float(result.get("reader_quality_score", operational_score) or operational_score)
     except (TypeError, ValueError):
         operational_score = 0.0
+        reader_score = 0.0
     section_counts = counts.get("briefing_by_section", {})
     if not isinstance(section_counts, dict):
         section_counts = {}
     return bool(
-        operational_score < 95.0
+        operational_score < 92.0
+        or reader_score < 90.0
         or int(metrics.get("reader_hard_issue_count", 0) or 0) > 0
         or float(metrics.get("summary_presence_rate", 0.0) or 0.0) < 1.0
-        or float(scores.get("commodity_board_quality", 0.0) or 0.0) < 95.0
+        or float(scores.get("commodity_board_quality", 0.0) or 0.0) < 90.0
+        or int(metrics.get("low_tier_source_excess_count", 0) or 0) > 0
+        or float(metrics.get("content_false_positive_rate", 0.0) or 0.0) > 0.0
+        or float(metrics.get("promotional_filler_rate", 0.0) or 0.0) > 0.0
+        or float(metrics.get("pest_theme_duplicate_rate", 0.0) or 0.0) > 0.0
         or any(int(section_counts.get(section, 0) or 0) < MAX_PER_SECTION for section in _section_keys())
     )
 
@@ -52132,9 +52154,6 @@ def _should_run_full_editorial_eval(
 ) -> tuple[bool, str]:
     if not PREPUBLISH_QUALITY_ADAPTIVE:
         return True, "adaptive_disabled"
-    history = _load_quality_history(repo, token)
-    if not _quality_history_is_stable(history):
-        return True, "stabilization_period"
     if _operational_quality_anomaly(operational_result):
         return True, "deterministic_anomaly"
     try:
@@ -52142,7 +52161,14 @@ def _should_run_full_editorial_eval(
             return True, "weekly_monday_audit"
     except ValueError:
         return True, "invalid_report_date"
-    return False, "stable_non_audit_day"
+    history = _load_quality_history(repo, token)
+    if _quality_history_is_stable(history):
+        return False, "stable_non_audit_day"
+    # The deterministic evaluator is still a pre-send quality gate. Requiring
+    # twenty successful model reviews before allowing a clean day to use it
+    # alone forced a costly full review every business day and made the
+    # adaptive flag ineffective in practice.
+    return False, "deterministic_clean_sampling_period"
 
 
 def _compose_prepublish_evaluation(
@@ -52180,6 +52206,7 @@ def _compose_prepublish_evaluation(
         api_key=OPENAI_API_KEY,
         model=EDITORIAL_OPENAI_MODEL,
         reasoning_effort=EDITORIAL_REASONING_EFFORT,
+        max_raw_per_section=EDITORIAL_MAX_RAW_PER_SECTION,
     )
     result["editorial"] = editorial_result
     usage = editorial_result.get("usage") if isinstance(editorial_result, dict) else None
@@ -52204,6 +52231,35 @@ def _prepublish_evaluation_passed(result: JsonDict) -> bool:
     if isinstance(editorial, dict) and editorial.get("status") == "skipped":
         return _operational_quality_publishable(result)
     return False
+
+
+def _prepublish_editorial_usage_totals() -> tuple[int, int]:
+    rows = [
+        row
+        for row in OPENAI_USAGE_EVENTS
+        if str(row.get("stage") or "").startswith("editorial_")
+    ]
+    calls = len(rows)
+    tokens = 0
+    for row in rows:
+        try:
+            tokens += max(0, int(row.get("total_tokens", 0) or 0))
+        except (TypeError, ValueError):
+            continue
+    return calls, tokens
+
+
+def _prepublish_editorial_budget_available() -> bool:
+    calls, tokens = _prepublish_editorial_usage_totals()
+    if calls >= PREPUBLISH_EDITORIAL_MAX_CALLS or tokens >= PREPUBLISH_EDITORIAL_TOKEN_BUDGET:
+        return False
+    if calls <= 0 or tokens <= 0:
+        return True
+    # Reserve roughly one average completed call before starting the next one.
+    # This prevents a known-large prompt from crossing the run budget merely
+    # because exact tokens become available only after the API response.
+    average_call_tokens = max(1, (tokens + calls - 1) // calls)
+    return tokens + average_call_tokens <= PREPUBLISH_EDITORIAL_TOKEN_BUDGET
 
 
 def _repair_article_link_keys(article: Article) -> set[str]:
@@ -52570,6 +52626,17 @@ def _run_prepublish_quality_gate(
         editorial_result = result.get("editorial", {})
         if not isinstance(editorial_result, dict) or editorial_result.get("status") != "success":
             break
+        if not _prepublish_editorial_budget_available():
+            calls, tokens = _prepublish_editorial_usage_totals()
+            log.warning(
+                "[QUALITY GATE] editorial repair skipped by run budget "
+                "(calls=%d/%d tokens=%d/%d)",
+                calls,
+                PREPUBLISH_EDITORIAL_MAX_CALLS,
+                tokens,
+                PREPUBLISH_EDITORIAL_TOKEN_BUDGET,
+            )
+            break
         repair_proposal_count += 1
         attempt = repair_proposal_count
         repair = propose_editorial_repair(
@@ -52581,6 +52648,7 @@ def _run_prepublish_quality_gate(
             api_key=OPENAI_API_KEY,
             model=EDITORIAL_OPENAI_MODEL,
             reasoning_effort=EDITORIAL_REPAIR_REASONING_EFFORT,
+            max_raw_per_section=EDITORIAL_MAX_RAW_PER_SECTION,
             excluded_links_by_section=repair_excluded_links,
             prior_validation_errors=repair_validation_errors,
             prior_editorial_issues=repair_editorial_issues,
@@ -52700,16 +52768,38 @@ def _run_prepublish_quality_gate(
             archive_dates_desc,
             site_path,
         )
-        result = _compose_prepublish_evaluation(
-            report_date,
-            current_html,
-            snapshot_payload,
-            run_editorial=True,
-            adaptive_reason=f"repair_attempt_{attempt}",
-        )
+        if _prepublish_editorial_budget_available():
+            result = _compose_prepublish_evaluation(
+                report_date,
+                current_html,
+                snapshot_payload,
+                run_editorial=True,
+                adaptive_reason=f"repair_attempt_{attempt}",
+            )
+        else:
+            log.warning(
+                "[QUALITY GATE] editorial token/call budget reached after repair; "
+                "using deterministic verification"
+            )
+            result = _compose_prepublish_evaluation(
+                report_date,
+                current_html,
+                snapshot_payload,
+                run_editorial=False,
+                adaptive_reason="editorial_budget_exhausted_after_repair",
+            )
 
+    final_editorial = result.get("editorial", {}) if isinstance(result, dict) else {}
+    editorial_required_satisfied = bool(
+        not force_editorial
+        or (
+            isinstance(final_editorial, dict)
+            and final_editorial.get("status") == "success"
+        )
+    )
     normal_passed = (
         not PREPUBLISH_FORCE_SLA_FALLBACK
+        and editorial_required_satisfied
         and _prepublish_evaluation_passed(result)
     )
     fallback_passed = bool(
@@ -52753,6 +52843,7 @@ def _run_prepublish_quality_gate(
         "sla_fallback_enabled": PREPUBLISH_SLA_FALLBACK_ENABLED,
         "sla_fallback_allowed_for_run": allow_sla_fallback,
         "editorial_forced_for_run": force_editorial,
+        "editorial_required_satisfied": editorial_required_satisfied,
         "sla_fallback_forced": PREPUBLISH_FORCE_SLA_FALLBACK,
         "sla_fallback_minimum_score": PREPUBLISH_SLA_FALLBACK_MIN_SCORE,
         "sla_fallback_score_enforced": not PREPUBLISH_FORCE_SLA_FALLBACK,
@@ -52761,6 +52852,11 @@ def _run_prepublish_quality_gate(
         "hard_editorial_issue_count": len(_prepublish_hard_editorial_issues(result)),
         "model": EDITORIAL_OPENAI_MODEL,
         "usage_events": list(OPENAI_USAGE_EVENTS),
+        "editorial_usage_calls": _prepublish_editorial_usage_totals()[0],
+        "editorial_usage_tokens": _prepublish_editorial_usage_totals()[1],
+        "editorial_max_calls": PREPUBLISH_EDITORIAL_MAX_CALLS,
+        "editorial_token_budget": PREPUBLISH_EDITORIAL_TOKEN_BUDGET,
+        "editorial_budget_available": _prepublish_editorial_budget_available(),
         "estimated_cost_usd": round(
             sum(float(row.get("estimated_cost_usd", 0.0) or 0.0) for row in OPENAI_USAGE_EVENTS),
             6,

@@ -178,11 +178,12 @@ consume the recovery window before the 07:00 KST delivery SLA. Before it writes
 the daily page, updates the index/state, or sends the normal Kakao briefing, it:
 
 1. generates the candidate briefing with `gpt-5.6-sol` at low reasoning effort;
-2. runs the deterministic report evaluator and a `gpt-5.6-sol` editorial review;
-3. if the acceptance gate fails, asks the same model at medium reasoning effort
+2. always runs the deterministic report evaluator, and calls the bounded
+   `gpt-5.6-sol` editorial review only for deterministic anomalies or the Monday audit;
+3. if that editorial gate fails, asks the same model at low reasoning effort
    to select exactly five validated raw-pool links per section and regenerates
    changed summaries plus any selected summary explicitly rejected by the review;
-4. re-evaluates the repaired edition, with at most five applied repair attempts;
+4. re-evaluates the repaired edition within the run's model-call/token budget;
 5. normally accepts an editorial score of 82 and operational/reader scores of
    85; and
 6. if only soft editorial targets still miss, publishes the same standard
@@ -192,6 +193,13 @@ the daily page, updates the index/state, or sends the normal Kakao briefing, it:
    an operator-forced recovery ignores the score floor and permits the audited
    three-safe-card emergency floor for an underfilled section, while keeping
    summary completeness plus hard reader/editorial safety checks.
+
+The model review sees at most ten raw candidates per section, uses concise
+structured output, and disables one-off implicit prompt-cache writes. Normal
+runs allow at most three editorial calls and reserve 60,000 editorial tokens;
+explicit quality recovery doubles that token budget. Rebuild/replay workflows
+reuse an existing pre-send evaluation instead of paying for the same review a
+second time.
 
 The fallback never creates an alert-only page. It continues through the normal
 page renderer and normal Kakao summary builder. After a successful Kakao send,

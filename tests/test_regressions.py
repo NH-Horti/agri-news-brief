@@ -238,10 +238,16 @@ class TestRegressions(unittest.TestCase):
         self.assertIn("EDITORIAL_OPENAI_MODEL: gpt-5.6-sol", self.daily_text)
         self.assertIn("EDITORIAL_OPENAI_MODEL: gpt-5.6-sol", self.rebuild_text)
         self.assertIn('echo "- Article generation model: gpt-5.6-sol (low reasoning)"', self.daily_text)
-        self.assertIn('echo "- Editorial evaluation/repair model: gpt-5.6-sol (medium reasoning)"', self.daily_text)
+        self.assertIn('echo "- Editorial evaluation/repair model: gpt-5.6-sol (low reasoning, adaptive)"', self.daily_text)
         self.assertIn('echo "- Article generation model: gpt-5.6-sol"', self.rebuild_text)
-        self.assertIn('echo "- Editorial evaluation model: gpt-5.6-sol"', self.rebuild_text)
+        self.assertIn(
+            'echo "- Editorial evaluation model: gpt-5.6-sol (low reasoning, bounded/adaptive)"',
+            self.rebuild_text,
+        )
         self.assertIn("PREPUBLISH_QUALITY_GATE_ENABLED: 'true'", self.daily_text)
+        self.assertIn("EDITORIAL_MAX_RAW_PER_SECTION: '10'", self.daily_text)
+        self.assertIn("PREPUBLISH_EDITORIAL_TOKEN_BUDGET:", self.daily_text)
+        self.assertIn("--existing-result-json", self.rebuild_text)
         self.assertIn(
             "PREPUBLISH_QUALITY_MAX_REPAIRS: ${{ inputs.quality_recovery && '5' || '1' }}",
             self.daily_text,

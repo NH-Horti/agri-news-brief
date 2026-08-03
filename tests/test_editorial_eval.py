@@ -172,6 +172,12 @@ class EditorialEvalTests(unittest.TestCase):
         self.assertEqual(result["model_snapshot"], "test-model-snapshot")
         self.assertEqual(session.requests[0]["json"]["model"], "test-model")
         self.assertEqual(session.requests[0]["json"]["reasoning"], {"effort": "medium"})
+        self.assertEqual(session.requests[0]["json"]["max_output_tokens"], 2400)
+        self.assertEqual(session.requests[0]["json"]["text"]["verbosity"], "low")
+        self.assertEqual(
+            session.requests[0]["json"]["prompt_cache_options"],
+            {"mode": "explicit", "ttl": "30m"},
+        )
         self.assertEqual(session.requests[0]["json"]["text"]["format"]["type"], "json_schema")
         self.assertIn("raw_candidates_by_section", session.requests[0]["json"]["input"][1]["content"])
         self.assertIn("section_count_targets", session.requests[0]["json"]["input"][1]["content"])
@@ -274,6 +280,8 @@ class EditorialEvalTests(unittest.TestCase):
         self.assertTrue(all(len(result["sections"][section]) == 5 for section in report_eval.SECTION_KEYS))
         request = session.requests[0]["json"]
         self.assertEqual(request["reasoning"], {"effort": "medium"})
+        self.assertEqual(request["max_output_tokens"], 1800)
+        self.assertEqual(request["text"]["verbosity"], "low")
         schema = request["text"]["format"]["schema"]["properties"]["sections"]["properties"]
         self.assertTrue(all(schema[section]["minItems"] == 5 for section in report_eval.SECTION_KEYS))
 

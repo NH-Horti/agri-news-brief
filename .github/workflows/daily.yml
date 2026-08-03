@@ -83,8 +83,11 @@ jobs:
           OPENAI_SUMMARY_TIMEOUT_SECONDS: ${{ inputs.quality_recovery && '70' || '45' }}
           OPENAI_SUMMARY_MISSING_RETRY_MAX: '5'
           EDITORIAL_OPENAI_MODEL: gpt-5.6-sol
-          EDITORIAL_REASONING_EFFORT: medium
-          EDITORIAL_REPAIR_REASONING_EFFORT: medium
+          EDITORIAL_REASONING_EFFORT: low
+          EDITORIAL_REPAIR_REASONING_EFFORT: low
+          EDITORIAL_MAX_RAW_PER_SECTION: '10'
+          EDITORIAL_EVAL_MAX_OUTPUT_TOKENS: '2400'
+          EDITORIAL_REPAIR_MAX_OUTPUT_TOKENS: '1800'
           EDITORIAL_OPENAI_TIMEOUT_SECONDS: ${{ inputs.quality_recovery && '90' || '45' }}
           EDITORIAL_OPENAI_MAX_ATTEMPTS: ${{ inputs.quality_recovery && '4' || '1' }}
           EDITORIAL_OPENAI_RETRY_DELAY_SECONDS: ${{ inputs.quality_recovery && '15' || '0' }}
@@ -121,6 +124,8 @@ jobs:
           PREPUBLISH_QUALITY_ADAPTIVE: 'true'
           PREPUBLISH_QUALITY_MAX_REPAIRS: ${{ inputs.quality_recovery && '5' || '1' }}
           PREPUBLISH_QUALITY_MAX_PROPOSALS: ${{ inputs.quality_recovery && '10' || '2' }}
+          PREPUBLISH_EDITORIAL_MAX_CALLS: ${{ inputs.quality_recovery && '6' || '3' }}
+          PREPUBLISH_EDITORIAL_TOKEN_BUDGET: ${{ inputs.quality_recovery && '120000' || '60000' }}
           PREPUBLISH_QUALITY_STABLE_DAYS: '20'
           PREPUBLISH_QUALITY_DEADLINE_KST: ${{ inputs.quality_recovery && '23:59' || '06:50' }}
           PREPUBLISH_QUALITY_RESULT_DIR: reports/evals
@@ -258,7 +263,7 @@ jobs:
             echo "- Trigger source: ${{ github.event.inputs.trigger_source || 'github' }}"
             echo "- Report date: ${{ steps.vars.outputs.report_date }}"
             echo "- Article generation model: gpt-5.6-sol (low reasoning)"
-            echo "- Editorial evaluation/repair model: gpt-5.6-sol (medium reasoning)"
+            echo "- Editorial evaluation/repair model: gpt-5.6-sol (low reasoning, adaptive)"
             echo "- Quality recovery: ${{ inputs.quality_recovery || 'false' }}"
             echo "- Forced SLA fallback: ${{ inputs.force_sla_fallback || 'false' }}"
             echo "- Prepublish deadline: ${{ inputs.quality_recovery && '23:59' || '06:50' }} KST"

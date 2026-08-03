@@ -284,7 +284,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--fail-under", type=float, default=0.0)
     parser.add_argument("--editorial-eval", action="store_true")
     parser.add_argument("--editorial-model", default="")
-    parser.add_argument("--editorial-max-raw-per-section", type=int, default=24)
+    parser.add_argument("--editorial-max-raw-per-section", type=int, default=10)
     return parser
 
 
@@ -333,7 +333,7 @@ def main() -> int:
                 snapshot_payload,
                 result,
                 model=args.editorial_model or None,
-                max_raw_per_section=max(1, int(args.editorial_max_raw_per_section or 24)),
+                max_raw_per_section=max(1, int(args.editorial_max_raw_per_section or 10)),
             )
             result["editorial"] = editorial_result
             if editorial_result.get("status") == "success":

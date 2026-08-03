@@ -171,6 +171,12 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_MODEL: gpt-5.6-sol
           OPENAI_REASONING_EFFORT: low
+          EDITORIAL_OPENAI_MODEL: gpt-5.6-sol
+          EDITORIAL_REASONING_EFFORT: low
+          EDITORIAL_REPAIR_REASONING_EFFORT: low
+          EDITORIAL_MAX_RAW_PER_SECTION: '10'
+          EDITORIAL_EVAL_MAX_OUTPUT_TOKENS: '2400'
+          EDITORIAL_REPAIR_MAX_OUTPUT_TOKENS: '1800'
           OPENAI_SUMMARY_FEEDBACK_PATH: docs/evals/latest-feedback.txt
           SELECTION_FEEDBACK_PATH: docs/evals/latest-selection-feedback.json
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
@@ -207,6 +213,8 @@ jobs:
           EDITORIAL_OPENAI_RETRY_DELAY_SECONDS: '0'
           PREPUBLISH_QUALITY_MAX_REPAIRS: '1'
           PREPUBLISH_QUALITY_MAX_PROPOSALS: '2'
+          PREPUBLISH_EDITORIAL_MAX_CALLS: '3'
+          PREPUBLISH_EDITORIAL_TOKEN_BUDGET: '60000'
 
           FORCE_RUN_ANYDAY: 'false'
           UX_PATCH_DAYS: ${{ steps.vars.outputs.ux_patch_days }}
@@ -255,7 +263,8 @@ jobs:
           REPO: ${{ github.repository }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           EDITORIAL_OPENAI_MODEL: gpt-5.6-sol
-          EDITORIAL_REASONING_EFFORT: medium
+          EDITORIAL_REASONING_EFFORT: low
+          EDITORIAL_MAX_RAW_PER_SECTION: '10'
         run: |
           set -euo pipefail
 
@@ -265,20 +274,33 @@ jobs:
             exit 1
           fi
 
-          python scripts/evaluate_daily_report.py \
-            --report-date "${{ steps.vars.outputs.report_date }}" \
-            --snapshot-path "$snapshot_path" \
-            --repo "$REPO" \
-            --token "$GITHUB_TOKEN" \
-            --ref main \
-            --publish-branch main \
-            --output-json "reports/evals/${{ steps.vars.outputs.report_date }}.json" \
-            --output-md "reports/evals/${{ steps.vars.outputs.report_date }}.md" \
-            --feedback-out "reports/evals/latest-feedback.txt" \
-            --selection-feedback-out "reports/evals/latest-selection-feedback.json" \
-            --editorial-eval \
-            --editorial-model "$EDITORIAL_OPENAI_MODEL" \
+          eval_args=(
+            python scripts/evaluate_daily_report.py
+            --report-date "${{ steps.vars.outputs.report_date }}"
+            --snapshot-path "$snapshot_path"
+            --repo "$REPO"
+            --token "$GITHUB_TOKEN"
+            --ref main
+            --publish-branch main
+            --output-json "reports/evals/${{ steps.vars.outputs.report_date }}.json"
+            --output-md "reports/evals/${{ steps.vars.outputs.report_date }}.md"
+            --feedback-out "reports/evals/latest-feedback.txt"
+            --selection-feedback-out "reports/evals/latest-selection-feedback.json"
             --fail-under "${{ steps.vars.outputs.quality_fail_under }}"
+          )
+
+          result_path="reports/evals/${{ steps.vars.outputs.report_date }}.json"
+          if [ -f "$result_path" ]; then
+            echo "Reusing the mandatory pre-send quality result; no duplicate OpenAI review."
+            eval_args+=(--existing-result-json "$result_path")
+          else
+            eval_args+=(
+              --editorial-eval
+              --editorial-model "$EDITORIAL_OPENAI_MODEL"
+              --editorial-max-raw-per-section "$EDITORIAL_MAX_RAW_PER_SECTION"
+            )
+          fi
+          "${eval_args[@]}"
 
       - name: Resolve Kakao status
         if: always()
@@ -375,7 +397,7 @@ jobs:
             echo "- Eval JSON: https://raw.githubusercontent.com/${{ github.repository }}/main/docs/evals/${{ steps.vars.outputs.report_date }}.json"
             echo "- Archive verify: ${{ steps.verify_archive.outcome }}"
             echo "- Article generation model: gpt-5.6-sol"
-            echo "- Editorial evaluation model: gpt-5.6-sol"
+            echo "- Editorial evaluation model: gpt-5.6-sol (low reasoning, bounded/adaptive)"
             echo "- Kakao requested: ${{ steps.vars.outputs.send_kakao }}"
             echo "- Kakao actual: ${{ steps.kakao_status.outputs.actual }}"
             echo "- Archive: https://nh-horti.github.io/agri-news-brief/archive/${{ steps.vars.outputs.report_date }}.html"

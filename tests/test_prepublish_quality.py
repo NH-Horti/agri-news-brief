@@ -30,6 +30,70 @@ class PrepublishQualityGateTests(unittest.TestCase):
         reports[1]["editorial_score"] = 84.0
         self.assertFalse(main._quality_history_is_stable({"reports": reports}))
 
+    def _clean_operational_result(self) -> dict:
+        return {
+            "operational_score": 94.0,
+            "reader_quality_score": 93.0,
+            "counts": {
+                "briefing_by_section": {
+                    section: main.MAX_PER_SECTION for section in main._section_keys()
+                }
+            },
+            "metrics": {
+                "reader_hard_issue_count": 0,
+                "summary_presence_rate": 1.0,
+                "low_tier_source_excess_count": 0,
+                "content_false_positive_rate": 0.0,
+                "promotional_filler_rate": 0.0,
+                "pest_theme_duplicate_rate": 0.0,
+            },
+            "scores": {"commodity_board_quality": 94.0},
+        }
+
+    def test_adaptive_gate_skips_model_on_clean_non_audit_day(self):
+        with patch.object(main, "_load_quality_history", return_value={"reports": []}):
+            run_editorial, reason = main._should_run_full_editorial_eval(
+                "owner/repo", "token", "2026-08-04", self._clean_operational_result()
+            )
+
+        self.assertFalse(run_editorial)
+        self.assertEqual(reason, "deterministic_clean_sampling_period")
+
+    def test_adaptive_gate_keeps_anomaly_and_monday_model_reviews(self):
+        anomaly = self._clean_operational_result()
+        anomaly["reader_quality_score"] = 89.9
+        self.assertEqual(
+            main._should_run_full_editorial_eval(
+                "owner/repo", "token", "2026-08-04", anomaly
+            ),
+            (True, "deterministic_anomaly"),
+        )
+        self.assertEqual(
+            main._should_run_full_editorial_eval(
+                "owner/repo", "token", "2026-08-03", self._clean_operational_result()
+            ),
+            (True, "weekly_monday_audit"),
+        )
+
+    def test_editorial_budget_reserves_an_average_next_call(self):
+        with (
+            patch.object(main, "PREPUBLISH_EDITORIAL_MAX_CALLS", 3),
+            patch.object(main, "PREPUBLISH_EDITORIAL_TOKEN_BUDGET", 60_000),
+            patch.object(
+                main,
+                "OPENAI_USAGE_EVENTS",
+                [
+                    {"stage": "summary", "total_tokens": 100_000},
+                    {"stage": "editorial_eval", "total_tokens": 22_000},
+                ],
+            ),
+        ):
+            self.assertTrue(main._prepublish_editorial_budget_available())
+            main.OPENAI_USAGE_EVENTS.append(
+                {"stage": "editorial_repair", "total_tokens": 22_000}
+            )
+            self.assertFalse(main._prepublish_editorial_budget_available())
+
     def test_editorial_pass_also_requires_deterministic_quality(self):
         result = {
             "operational_score": main.PREPUBLISH_QUALITY_MIN_OPERATIONAL_SCORE - 0.01,
