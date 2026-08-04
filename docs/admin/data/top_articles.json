@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-04T01:41:44+09:00",
+  "generated_at": "2026-08-05T01:23:42+09:00",
   "rows": [
     {
       "date": "2026-05-20",
@@ -1157,6 +1157,32 @@
       "users": 3,
       "archive_url": "/agri-news-brief/archive/2026-07-31.html#sec-policy",
       "source_url": "https://www.aflnews.co.kr/news/articleView.html?idxno=325465"
+    },
+    {
+      "date": "2026-08-04",
+      "article_id": "53f25795b758",
+      "title": "[사설]2단계 농협 개혁, 경제사업 혁신에 달렸다",
+      "report_date": "2026-08-04",
+      "section": "policy",
+      "surface": "briefing_card",
+      "target_domain": "www.aflnews.co.kr",
+      "clicks": 3,
+      "users": 3,
+      "archive_url": "/agri-news-brief/archive/2026-08-04.html#sec-policy",
+      "source_url": "https://www.aflnews.co.kr/news/articleView.html?idxno=325670"
+    },
+    {
+      "date": "2026-08-04",
+      "article_id": "ba0ec610ff8f",
+      "title": "서충주농협 라이브커머스로 '하늘작 충주 복숭아 ' 400상자 전량 판매",
+      "report_date": "2026-08-04",
+      "section": "dist",
+      "surface": "briefing_card",
+      "target_domain": "www.cctimes.kr",
+      "clicks": 3,
+      "users": 2,
+      "archive_url": "/agri-news-brief/archive/2026-08-04.html#sec-dist",
+      "source_url": "http://www.cctimes.kr/news/articleView.html?idxno=919856"
     },
     {
       "date": "2026-04-08",
@@ -3434,43 +3460,30 @@
       "source_url": ""
     },
     {
-      "date": "2026-04-07",
-      "article_id": "6be59eefeb0c",
-      "title": "태국산 계란 224만개 10일부터 공급…육용종란 추가 수입 검토",
-      "report_date": "2026-04-07",
+      "date": "2026-08-04",
+      "article_id": "5d67613d0f32",
+      "title": "폭염에 시금치· 오이 등 채소 가격 80% 폭등…식탁물가 '비상'",
+      "report_date": "2026-08-04",
       "section": "supply",
-      "surface": "briefing_open",
-      "target_domain": "www.mt.co.kr",
-      "clicks": 1,
+      "surface": "briefing_card",
+      "target_domain": "www.news1.kr",
+      "clicks": 2,
       "users": 1,
       "archive_url": "",
       "source_url": ""
     },
     {
-      "date": "2026-04-07",
-      "article_id": "baabccfbaafd",
-      "title": "'강호동號' 농협, 핵심 전략으로 '농업 위기 정면 돌파' 나선다",
-      "report_date": "2026-04-07",
-      "section": "supply",
+      "date": "2026-08-04",
+      "article_id": "6fbe6f919cb5",
+      "title": "진병영 함양군수, 농식품부 송미령 장관 전격 면담...양파 가격 안정 및...",
+      "report_date": "2026-08-04",
+      "section": "policy",
       "surface": "briefing_open",
-      "target_domain": "www.dailypop.kr",
-      "clicks": 1,
+      "target_domain": "www.pointe.co.kr",
+      "clicks": 2,
       "users": 1,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-04-07",
-      "article_id": "f8a46c987cfa",
-      "title": "'과일 개화기에 큰일 날 뻔'… 대구·경북에 1㎝ 우박 쏟아져",
-      "report_date": "2026-04-07",
-      "section": "supply",
-      "surface": "briefing_open",
-      "target_domain": "news.sbs.co.kr",
-      "clicks": 1,
-      "users": 1,
-      "archive_url": "",
-      "source_url": ""
+      "archive_url": "/agri-news-brief/archive/2026-08-04.html#sec-policy",
+      "source_url": "https://www.pointe.co.kr/news/articleView.html?idxno=82714"
     },
     {
       "date": "2026-04-08",
@@ -11921,6 +11934,123 @@
       "users": 1,
       "archive_url": "/agri-news-brief/archive/2026-08-03.html#sec-supply",
       "source_url": "http://www.amnews.co.kr/news/articleView.html?idxno=73740"
+    },
+    {
+      "date": "2026-08-04",
+      "article_id": "1b524e109b4a",
+      "title": "전남광주특별시, 농업재해 피해복구비 81억 원 지원",
+      "report_date": "2026-08-04",
+      "section": "policy",
+      "surface": "briefing_card",
+      "target_domain": "www.aflnews.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-08-04.html#sec-policy",
+      "source_url": "https://www.aflnews.co.kr/news/articleView.html?idxno=325699"
+    },
+    {
+      "date": "2026-08-04",
+      "article_id": "1cae24a5b704",
+      "title": "[현장] 소비 부진에 저장무 출하 겹쳐…여름무 농가 '시름'",
+      "report_date": "2026-08-04",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.aflnews.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-08-04.html#sec-supply",
+      "source_url": "https://www.aflnews.co.kr/news/articleView.html?idxno=325641"
+    },
+    {
+      "date": "2026-08-04",
+      "article_id": "46671d5affa2",
+      "title": "경북 상주 외서농협, 청춘힐링 노래교실 ‘성료 ’",
+      "report_date": "2026-08-04",
+      "section": "dist",
+      "surface": "briefing_open",
+      "target_domain": "www.nongmin.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-08-04",
+      "article_id": "53f25795b758",
+      "title": "[사설]2단계 농협 개혁, 경제사업 혁신에 달렸다",
+      "report_date": "2026-08-04",
+      "section": "policy",
+      "surface": "briefing_open",
+      "target_domain": "www.aflnews.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-08-04.html#sec-policy",
+      "source_url": "https://www.aflnews.co.kr/news/articleView.html?idxno=325670"
+    },
+    {
+      "date": "2026-08-04",
+      "article_id": "5a9034246032",
+      "title": "거창 홍로 사과 일소피해 확산 우려",
+      "report_date": "2026-08-04",
+      "section": "pest",
+      "surface": "briefing_card",
+      "target_domain": "www.polinews.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-08-04.html#sec-pest",
+      "source_url": "https://www.polinews.co.kr/news/articleView.html?idxno=738887"
+    },
+    {
+      "date": "2026-08-04",
+      "article_id": "5a9034246032",
+      "title": "거창 홍로 사과 일소피해 확산 우려",
+      "report_date": "2026-08-04",
+      "section": "pest",
+      "surface": "briefing_open",
+      "target_domain": "www.polinews.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-08-04.html#sec-pest",
+      "source_url": "https://www.polinews.co.kr/news/articleView.html?idxno=738887"
+    },
+    {
+      "date": "2026-08-04",
+      "article_id": "9724522fe787",
+      "title": "\"물러서 폭삭\" 썩고 악취 진동…없던 병까지 생겼다",
+      "report_date": "2026-08-04",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "news.sbs.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-08-04",
+      "article_id": "a8b16d2f11e3",
+      "title": "진병영 함양군수, 송미령 농식품부 장관과 면담···농정 현안 건의",
+      "report_date": "2026-08-04",
+      "section": "policy",
+      "surface": "briefing_open",
+      "target_domain": "www.enewstoday.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-08-04.html#sec-policy",
+      "source_url": "http://www.enewstoday.co.kr/news/articleView.html?idxno=2455025"
+    },
+    {
+      "date": "2026-08-04",
+      "article_id": "ba0ec610ff8f",
+      "title": "서충주농협 라이브커머스로 '하늘작 충주 복숭아 ' 400상자 전량 판매",
+      "report_date": "2026-08-04",
+      "section": "dist",
+      "surface": "briefing_open",
+      "target_domain": "www.cctimes.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-08-04.html#sec-dist",
+      "source_url": "http://www.cctimes.kr/news/articleView.html?idxno=919856"
     }
   ]
 }
