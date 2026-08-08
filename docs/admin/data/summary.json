@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-08-08T00:10:01+09:00",
+  "generated_at": "2026-08-08T23:51:03+09:00",
   "windows": {
     "7": {
       "totals": {
-        "visits": 60,
+        "visits": 61,
         "users": 16,
-        "pageviews": 161,
+        "pageviews": 163,
         "article_clicks": 105,
-        "article_ctr": 0.652174,
-        "avg_engagement_sec": 196.65
+        "article_ctr": 0.644172,
+        "avg_engagement_sec": 150.29
       },
       "prev": {
         "visits": 49,
@@ -25,12 +25,12 @@
     },
     "30": {
       "totals": {
-        "visits": 209,
+        "visits": 210,
         "users": 23,
-        "pageviews": 612,
+        "pageviews": 614,
         "article_clicks": 381,
-        "article_ctr": 0.622549,
-        "avg_engagement_sec": 230.14
+        "article_ctr": 0.620521,
+        "avg_engagement_sec": 216.52
       },
       "prev": {
         "visits": 263,
@@ -47,12 +47,12 @@
     },
     "90": {
       "totals": {
-        "visits": 757,
+        "visits": 758,
         "users": 42,
-        "pageviews": 2073,
+        "pageviews": 2075,
         "article_clicks": 1187,
-        "article_ctr": 0.5726,
-        "avg_engagement_sec": 231.74
+        "article_ctr": 0.572048,
+        "avg_engagement_sec": 227.96
       },
       "prev": {
         "visits": 312,
