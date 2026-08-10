@@ -1,27 +1,27 @@
 ## Daily Eval (2026-08-11)
-- Overall: **61.10** (fail)
-- Operational: **97.10**
+- Overall: **52.80** (fail)
+- Operational: **95.95**
 - Reader quality: **84.00** (capped; penalty=6.7, cap=84.0, reasons=pest_theme_duplicate, commodity_false_link, commodity_false_link_severe)
-- Quality gate: **61.10** (needs_major_iteration, editorial_blocking_issue; editorial=61.1, operational=97.1)
-- Scores: completeness=100.0, diversity=100.0, source=100.0, summary=100.0, freshness=100.0, retrieval=83.5, section_fit=100.0, core=93.7, commodity=85.2
+- Quality gate: **52.80** (needs_major_iteration, editorial_blocking_issue; editorial=52.8, operational=96.0)
+- Scores: completeness=100.0, diversity=96.0, source=80.0, summary=100.0, freshness=100.0, retrieval=82.8, section_fit=100.0, core=88.3, commodity=85.2
 - Briefing cards: 20 / Commodity cards: 28
-- Sections: supply:5/5 raw=255, policy:5/5 raw=84, dist:5/5 raw=39, pest:5/5 raw=27
-- Metrics: title_unique=1.00, domain_diversity=0.85, low_tier=0.15, summary_presence=1.00, summary_numeric=1.00, fresh_72h=1.00, fit_avg=3.80, false_positive=0.00, hard_reader_issues=0, weak_core=0.00, editorial_penalty=0.4, commodity_weak=0.00, commodity_items=9, commodity_active_today=14, commodity_active_today_unlinked=5, commodity_coverage=0.27, commodity_strict_link=0.89, commodity_false_link=0.11, commodity_pool_false_link=0.00, commodity_dominant_section=0.78, semantic_penalty=0.0
+- Sections: supply:5/5 raw=255, policy:5/5 raw=83, dist:5/5 raw=39, pest:5/5 raw=26
+- Metrics: title_unique=1.00, domain_diversity=0.90, low_tier=0.20, summary_presence=1.00, summary_numeric=1.00, fresh_72h=1.00, fit_avg=3.80, false_positive=0.00, hard_reader_issues=0, weak_core=0.14, editorial_penalty=0.4, commodity_weak=0.00, commodity_items=9, commodity_active_today=14, commodity_active_today_unlinked=5, commodity_coverage=0.27, commodity_strict_link=0.89, commodity_false_link=0.11, commodity_pool_false_link=0.00, commodity_dominant_section=0.78, semantic_penalty=0.0
 
 
 ### Editorial Shadow Eval
-- Editorial: **61.10** (daily target 82, tier=needs_major_iteration, needs_major_iteration)
+- Editorial: **52.80** (daily target 82, tier=needs_major_iteration, needs_major_iteration)
 - Model: gpt-5.6-sol (resolved gpt-5.6-sol)
-- Model-reported score: 64.00; authoritative method=weighted_components_v1
+- Model-reported score: 54.00; authoritative method=weighted_components_v1
 - Acceptance: needs_iteration (blocking=1, major=4, reasons=editorial_score_min, no_blocking_issues, no_major_issues, critical_components_min, all_components_min, commodity_board_score_min)
 - Section count gate: 100.0 (target_met)
-- Components: article_selection=62.0, section_fit=66.0, core=50.0, summary=85.0, missed=55.0, noise=47.0
-- Summary: 수량과 요약 형식은 좋지만, 정책의 스마트폰 오탐과 유통의 동일 이벤트 중복이 치명적이다. 강한 보리 수급대책·출하비 지원 기사를 놓치고 홍보성 소재를 핵심으로 올려 편집 품질이 크게 낮아졌다.
-- [blocking] off_topic: "갤Z폴드8 256GB로 변경하면 지원금 추가" - 농업·농촌 정책과 무관한 이동통신 재고 기사다.
-- [major] duplicate_story: 농협대전공판장, '말복 맞이 아이스크림 나눔 이벤트' 진행 - 앞 카드와 아이스크림 1180개 전달이라는 동일 사건이다.
-- [major] weak_core: 새벽 유통현장 에 아이스크림 1180개…폭염 식힌 농협대전공판장 - 일회성 격려 이벤트로 핵심 유통 뉴스가 아니다. core에서 demote해야 한다.
-- [major] missed_candidate: “농가에 힘이 되겠습니다”…서울청과, 6개월간 2억4200만원 출하비 지원 - 운송·포장비 보전이라는 구체적 유통 지원책이 이벤트 기사보다 훨씬 강하다.
-- [major] missed_candidate: 과잉 보리 2만5000톤 특별 매입 - 정부와 업계의 과잉물량 매입은 전국 수급·가격 정책의 핵심 현안이다.
+- Components: article_selection=52.0, section_fit=57.0, core=43.0, summary=83.0, missed=40.0, noise=42.0
+- Summary: 형식과 기사 수는 충족했지만 휴대전화 기사가 정책 핵심에 포함됐고, 유통은 동일 아이스크림 행사 중복과 홍보성 기사로 채워졌다. 원료곡 매입·출하비 지원·과수 탄저병 등 더 강한 후보를 놓쳐 편집 수용이 어렵다.
+- [blocking] off_topic: "갤Z폴드8 256GB로 변경하면 지원금 추가" - 농업과 무관한 이동통신 단말기 재고 기사다.
+- [major] duplicate_story: 농협대전공판장, '말복 맞이 아이스크림 나눔 이벤트' 진행 - 앞 카드와 동일한 공판장·수량·행사를 반복한다.
+- [major] weak_core: 새벽 유통현장 에 아이스크림 1180개…폭염 식힌 농협대전공판장 - 단순 나눔 행사로 유통 운영 핵심성이 낮다. 코어에서 강등해야 한다.
+- [major] missed_candidate: 과잉 보리 2만5000톤 특별 매입 - 정부·업계의 과잉물량 매입과 가격 방어는 가장 강한 정책 후보였다.
+- [major] missed_candidate: “농가에 힘이 되겠습니다”…서울청과, 6개월간 2억4200만원 출하비 지원 - 포장·운송비 보전이라는 구체적 유통 지원이 행사성 카드보다 유용하다.
 
 ### Improvement Hints
 - 품목 보드 대표기사가 품목 핵심 이슈를 충분히 대변하지 못합니다. 제목에서 품목명과 수급·가격·병해충 신호가 함께 보이는 기사, representative rank 상위 후보, 비수급 섹션의 직접 이슈 후보를 우선하세요.
