@@ -1,6 +1,50 @@
 {
   "reports": [
     {
+      "report_date": "2026-08-14",
+      "generated_at_kst": "2026-08-14T06:19:47+09:00",
+      "overall_score": 80.03,
+      "operational_score": 95.81,
+      "reader_quality_score": 86.37,
+      "reader_quality_gate_status": "capped",
+      "reader_quality_gate_reasons": [
+        "pest_theme_duplicate"
+      ],
+      "editorial_score": 71.65,
+      "editorial_model_reported_score": 72.6,
+      "editorial_score_method": "weighted_components_v1",
+      "editorial_quality_tier": "needs_major_iteration",
+      "editorial_acceptance_passed": false,
+      "editorial_status": "needs_major_iteration",
+      "quality_gate_status": "needs_major_iteration",
+      "quality_gate_reason": "editorial_major_issue",
+      "status": "warn",
+      "section_alignment": 91.67,
+      "core_quality": 96.17,
+      "commodity_board_quality": 100.0,
+      "briefing_total": 20,
+      "commodity_total": 20,
+      "commodity_active_today_total": 15,
+      "commodity_active_today_unlinked_total": 6,
+      "commodity_managed_unlinked_total": 24,
+      "summary_presence_rate": 1.0,
+      "within_72h_rate": 1.0,
+      "briefing_title_unique_rate": 1.0,
+      "low_tier_source_rate": 0.2,
+      "low_tier_source_excess_count": 0,
+      "content_false_positive_rate": 0.0,
+      "reader_hard_issue_count": 0,
+      "reader_quality_penalty": 9.44,
+      "editorial_quality_penalty": 0.8,
+      "commodity_primary_false_link_rate": 0.0,
+      "commodity_pool_false_link_rate": 0.0,
+      "policy_wrong_section_rate": 0.0,
+      "promotional_filler_rate": 0.0,
+      "promotional_core_rate": 0.0,
+      "pest_theme_duplicate_rate": 0.1,
+      "guardrail_driver_tags": []
+    },
+    {
       "report_date": "2026-08-13",
       "generated_at_kst": "2026-08-13T06:22:17+09:00",
       "overall_score": 85.33,
@@ -2775,5 +2819,5 @@
       "briefing_title_unique_rate": 1.0
     }
   ],
-  "updated_at_kst": "2026-08-13T06:22:17+09:00"
+  "updated_at_kst": "2026-08-14T06:19:47+09:00"
 }
