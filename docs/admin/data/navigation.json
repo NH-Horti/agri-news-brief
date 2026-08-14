@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-14T00:16:52+09:00",
+  "generated_at": "2026-08-15T00:08:16+09:00",
   "section_jump": [
     {
       "date": "2026-04-24",
@@ -252,6 +252,12 @@
       "count": 1,
       "section": "도매시장",
       "surface": "topic_badge"
+    },
+    {
+      "date": "2026-08-14",
+      "count": 1,
+      "section": "root_leaf",
+      "surface": "commodity_group_chip"
     }
   ],
   "view_switch": [
@@ -377,6 +383,12 @@
     },
     {
       "date": "2026-08-12",
+      "count": 3,
+      "from_view": "briefing",
+      "to_view": "commodity"
+    },
+    {
+      "date": "2026-08-14",
       "count": 3,
       "from_view": "briefing",
       "to_view": "commodity"
@@ -1344,7 +1356,7 @@
       "count": 1,
       "nav_type": "archive_index",
       "from_date": "2026-08-13",
-      "to_date": ""
+      "to_date": "(not set)"
     },
     {
       "date": "2026-08-13",
@@ -1366,6 +1378,13 @@
       "nav_type": "select_date",
       "from_date": "2026-08-12",
       "to_date": "2026-08-13"
+    },
+    {
+      "date": "2026-08-14",
+      "count": 1,
+      "nav_type": "select_date",
+      "from_date": "2026-08-12",
+      "to_date": "2026-08-14"
     }
   ]
 }

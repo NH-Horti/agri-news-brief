@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-14T00:16:52+09:00",
+  "generated_at": "2026-08-15T00:08:16+09:00",
   "rows": [
     {
       "date": "2026-05-20",
@@ -1261,6 +1261,32 @@
       "users": 1,
       "archive_url": "",
       "source_url": ""
+    },
+    {
+      "date": "2026-08-14",
+      "article_id": "5016de7ca4d2",
+      "title": "여름 배추 기반 무너질라…“선제적 수급관리 강화해야”",
+      "report_date": "2026-08-14",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.nongmin.com",
+      "clicks": 3,
+      "users": 2,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-08-14",
+      "article_id": "dea743ba5489",
+      "title": "폭염·고수온에 밥상물가 비상… 정부, 800억 투입해 수급 안정 총력",
+      "report_date": "2026-08-14",
+      "section": "policy",
+      "surface": "briefing_card",
+      "target_domain": "www.fntoday.co.kr",
+      "clicks": 3,
+      "users": 2,
+      "archive_url": "/agri-news-brief/archive/2026-08-14.html#sec-policy",
+      "source_url": "https://www.fntoday.co.kr/news/articleView.html?idxno=390393"
     },
     {
       "date": "2026-04-20",
@@ -3694,41 +3720,54 @@
       "source_url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=65485"
     },
     {
-      "date": "2026-04-17",
-      "article_id": "2ffee4616765",
-      "title": "저장 ‘겨울무’ 품위 좋아… 무 가격 ‘반등’ 기대",
-      "report_date": "2026-04-17",
-      "section": "supply",
-      "surface": "briefing_open",
-      "target_domain": "www.nongmin.com",
-      "clicks": 1,
-      "users": 1,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-04-17",
-      "article_id": "c327e3802a34",
-      "title": "춘천 신북농협 “신선한 ‘소양강 토마토 ’가 곧 만나러 갑니다!”",
-      "report_date": "2026-04-17",
-      "section": "pest",
-      "surface": "briefing_card",
-      "target_domain": "www.nongmin.com",
-      "clicks": 1,
-      "users": 1,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-04-17",
-      "article_id": "ec083757232d",
-      "title": "중동 전쟁에 밥상 물가 상승 압력…'2%대 물가' 착시",
-      "report_date": "2026-04-17",
+      "date": "2026-08-14",
+      "article_id": "05717bc5fe66",
+      "title": "\"구체적 목표와 그에 맞는 계획을\"···내년 양파 수급정책 전망은",
+      "report_date": "2026-08-14",
       "section": "policy",
       "surface": "briefing_open",
-      "target_domain": "www.newspim.com",
-      "clicks": 1,
+      "target_domain": "www.ikpnews.net",
+      "clicks": 2,
       "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-08-14.html#sec-policy",
+      "source_url": "http://www.ikpnews.net/news/articleView.html?idxno=71166"
+    },
+    {
+      "date": "2026-08-14",
+      "article_id": "08aa2649772f",
+      "title": "폭염 영향에 배추 값 약 30% 급등",
+      "report_date": "2026-08-14",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.newsis.com",
+      "clicks": 2,
+      "users": 2,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-08-14",
+      "article_id": "d68ed19ec79c",
+      "title": "중국산 조화 면죄부, '국내 화훼 농가 다 죽인다'",
+      "report_date": "2026-08-14",
+      "section": "supply",
+      "surface": "commodity_pool",
+      "target_domain": "www.amnews.co.kr",
+      "clicks": 2,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-08-14",
+      "article_id": "eaf85694d7fb",
+      "title": "'황금 포도 '는 옛말… 샤인머스켓 가격 거봉보다 싸졌다",
+      "report_date": "2026-08-14",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.sidae.com",
+      "clicks": 2,
+      "users": 2,
       "archive_url": "",
       "source_url": ""
     },
@@ -12727,6 +12766,84 @@
       "users": 1,
       "archive_url": "/agri-news-brief/archive/2026-08-13.html#sec-policy",
       "source_url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=65435"
+    },
+    {
+      "date": "2026-08-14",
+      "article_id": "0105679a9c27",
+      "title": "폭염에 화상 입고 가뭄에 못 크고… 추석 과일값 예고된 폭등",
+      "report_date": "2026-08-14",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.busan.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-08-14",
+      "article_id": "05717bc5fe66",
+      "title": "\"구체적 목표와 그에 맞는 계획을\"···내년 양파 수급정책 전망은",
+      "report_date": "2026-08-14",
+      "section": "policy",
+      "surface": "briefing_card",
+      "target_domain": "www.ikpnews.net",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-08-14.html#sec-policy",
+      "source_url": "http://www.ikpnews.net/news/articleView.html?idxno=71166"
+    },
+    {
+      "date": "2026-08-14",
+      "article_id": "65508dabd849",
+      "title": "안전시설 미흡 논란… 89억 원대 영주 과수거점 APC 공사 현장 '주의'",
+      "report_date": "2026-08-14",
+      "section": "dist",
+      "surface": "briefing_open",
+      "target_domain": "www.dkilbo.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-08-14.html#sec-dist",
+      "source_url": "https://www.dkilbo.com/news/articleView.html?idxno=551330"
+    },
+    {
+      "date": "2026-08-14",
+      "article_id": "67836a93de67",
+      "title": "농식품부·aT, 동남아 수출 설명회 열고 할랄·식품안전 규제 대응법 짚...",
+      "report_date": "2026-08-14",
+      "section": "policy",
+      "surface": "briefing_card",
+      "target_domain": "www.news1.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-08-14",
+      "article_id": "7cd42542ef23",
+      "title": "정부, 농산물 폭염 피해 최소화…추석 성수기까지 주요 품목 50% 할인",
+      "report_date": "2026-08-14",
+      "section": "policy",
+      "surface": "briefing_card",
+      "target_domain": "www.ajunews.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-08-14.html#sec-policy",
+      "source_url": "https://www.ajunews.com/view/20260813084521318"
+    },
+    {
+      "date": "2026-08-14",
+      "article_id": "ebcc4519d418",
+      "title": "송영훈 의장, 제주 농산물 수급안정 현장 점검… \"기후변화 대응체계 강...",
+      "report_date": "2026-08-14",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.fnnews.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
     }
   ]
 }
