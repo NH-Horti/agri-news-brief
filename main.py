@@ -12272,11 +12272,37 @@ def is_dist_quality_field_ops_context(title: str, desc: str, dom: str = "", pres
     return False
 
 
+_DIST_WHOLESALE_PRICE_TITLE_TERMS = ("시세", "도매가격", "도매가", "경락", "경매가", "낙찰가")
+_DIST_WHOLESALE_MARKET_TERMS = (
+    "도매시장", "가락시장", "공판장", "경매", "반입", "출하", "청과", "중도매인", "산지유통",
+)
+_DIST_RETAIL_PRICE_TITLE_TERMS = ("밥상물가", "장바구니", "소매가", "마트", "외식", "식탁")
+
+
+def is_dist_wholesale_price_report(title: str, desc: str) -> bool:
+    """도매시세·경락값 리포트인지.
+
+    편집 지침은 유통 지면의 우선순위를 도매시세 → 정산 → 파업 → 물류 →
+    판매채널 순으로 둔다. 시세 리포트는 산지 가격 기사가 아니라 시장 운영
+    자체를 다루므로 수급 기사로 걸러내면 안 된다(2026-08-12 에 편집이 누락으로
+    지적한 '[한눈에 보는 시세] 여름사과 출하 마무리'가 그렇게 빠졌다).
+    """
+    ttl_l = _nfkc_lower(title or "")
+    text = _nfkc_lower(f"{title or ''} {desc or ''}".strip())
+    if not any(term in ttl_l for term in _DIST_WHOLESALE_PRICE_TITLE_TERMS):
+        return False
+    if any(term in ttl_l for term in _DIST_RETAIL_PRICE_TITLE_TERMS):
+        return False
+    return any(term in text for term in _DIST_WHOLESALE_MARKET_TERMS)
+
+
 def is_dist_primary_supply_price_story(title: str, desc: str) -> bool:
     """가격·작황·산지폐기 중심의 수급 기사가 dist 빈칸을 잠식하지 않도록 분리한다."""
     ttl_l = _nfkc_lower(title or "")
     text = _nfkc_lower(f"{title or ''} {desc or ''}".strip())
     if not text:
+        return False
+    if is_dist_wholesale_price_report(title, desc):
         return False
     strong_field_loss = bool(
         _title_has_horti_item(title or "")
@@ -52324,6 +52350,14 @@ def _prepublish_sla_fallback_blockers(result: JsonDict) -> list[str]:
     return blockers
 
 
+def _weekly_editorial_audit_due(report_date: str) -> bool:
+    """주간 편집 감사일(월요일)인지. 날짜가 이상하면 감사일로 본다."""
+    try:
+        return date.fromisoformat(report_date).weekday() == 0
+    except ValueError:
+        return True
+
+
 def _should_run_full_editorial_eval(
     repo: str,
     token: str,
@@ -52334,11 +52368,12 @@ def _should_run_full_editorial_eval(
         return True, "adaptive_disabled"
     if _operational_quality_anomaly(operational_result):
         return True, "deterministic_anomaly"
-    try:
-        if date.fromisoformat(report_date).weekday() == 0:
-            return True, "weekly_monday_audit"
-    except ValueError:
-        return True, "invalid_report_date"
+    if _weekly_editorial_audit_due(report_date):
+        try:
+            date.fromisoformat(report_date)
+        except ValueError:
+            return True, "invalid_report_date"
+        return True, "weekly_monday_audit"
     history = _load_quality_history(repo, token)
     if _quality_history_is_stable(history):
         return False, "stable_non_audit_day"
@@ -52427,9 +52462,18 @@ def _prepublish_editorial_usage_totals() -> tuple[int, int]:
     return calls, tokens
 
 
-def _prepublish_editorial_budget_available() -> bool:
+def _prepublish_editorial_budget_available(*, reserve_calls: int = 0) -> bool:
+    """편집 호출 예산이 남았는지.
+
+    reserve_calls 는 '이 호출 뒤에 반드시 더 써야 하는 호출 수'다. 교체안을
+    제안하면 그 결과를 다시 평가해야 하는데, 제안에 예산을 다 쓰면 검증 없이
+    발행된다(2026-08-13 이 그랬다). 검증하지 못할 교체안은 아예 시작하지 않는다.
+    """
     calls, tokens = _prepublish_editorial_usage_totals()
-    if calls >= PREPUBLISH_EDITORIAL_MAX_CALLS or tokens >= PREPUBLISH_EDITORIAL_TOKEN_BUDGET:
+    needed_calls = 1 + max(0, int(reserve_calls))
+    if calls + needed_calls > PREPUBLISH_EDITORIAL_MAX_CALLS:
+        return False
+    if tokens >= PREPUBLISH_EDITORIAL_TOKEN_BUDGET:
         return False
     if calls <= 0 or tokens <= 0:
         return True
@@ -52437,7 +52481,7 @@ def _prepublish_editorial_budget_available() -> bool:
     # This prevents a known-large prompt from crossing the run budget merely
     # because exact tokens become available only after the API response.
     average_call_tokens = max(1, (tokens + calls - 1) // calls)
-    return tokens + average_call_tokens <= PREPUBLISH_EDITORIAL_TOKEN_BUDGET
+    return tokens + average_call_tokens * needed_calls <= PREPUBLISH_EDITORIAL_TOKEN_BUDGET
 
 
 def _repair_article_link_keys(article: Article) -> set[str]:
@@ -52806,12 +52850,15 @@ def _run_prepublish_quality_gate(
     )
     if force_editorial:
         run_editorial, adaptive_reason = True, "mandatory_replay_pre_send"
-    elif PREPUBLISH_FORCE_SLA_FALLBACK:
-        run_editorial, adaptive_reason = False, "forced_sla_recovery"
     elif _OPENAI_QUOTA_EXHAUSTED:
         run_editorial, adaptive_reason = False, "openai_quota_unavailable"
     elif _prepublish_deadline_reached(report_date):
         run_editorial, adaptive_reason = False, "deadline_reached"
+    elif PREPUBLISH_FORCE_SLA_FALLBACK and not _weekly_editorial_audit_due(report_date):
+        # SLA 복구 모드는 비싼 단계를 건너뛰지만, 주간 감사일까지 건너뛰면
+        # 그 주 편집 평가가 한 번도 돌지 않는다(2026-08-10 월요일이 그랬다).
+        # 마감·쿼터 조건은 위에서 이미 걸러졌으므로 감사일은 통과시킨다.
+        run_editorial, adaptive_reason = False, "forced_sla_recovery"
     else:
         run_editorial, adaptive_reason = _should_run_full_editorial_eval(
             repo,
@@ -52851,6 +52898,12 @@ def _run_prepublish_quality_gate(
         editorial_result = result.get("editorial", {})
         if not isinstance(editorial_result, dict) or editorial_result.get("status") != "success":
             break
+        # 교체안 제안(1회)과 그 결과 재평가(1회)를 모두 감당할 수 있는지 미리 본다.
+        # 감당하지 못해도 교체안 자체는 시도한다 — 결정적 검증(postbuild·저티어
+        # 예산·점수 게이트)은 그대로 걸리고, 2026-08-13 처럼 교체가 지면을 실제로
+        # 개선하는 경우가 있기 때문이다. 다만 모델 재평가 없이 반영됐다는 사실을
+        # 기록해, 그날 점수를 다른 날과 같은 잣대로 오해하지 않게 한다.
+        repair_verification_funded = _prepublish_editorial_budget_available(reserve_calls=1)
         if not _prepublish_editorial_budget_available():
             calls, tokens = _prepublish_editorial_usage_totals()
             log.warning(
@@ -52893,6 +52946,7 @@ def _run_prepublish_quality_gate(
                 "status": repair.get("status"),
                 "reason": repair.get("reason", repair.get("rationale", "")),
                 "usage": usage or {},
+                "model_verification_funded": bool(repair_verification_funded),
             }
         )
         attempt_validation_errors: list[JsonDict] = []

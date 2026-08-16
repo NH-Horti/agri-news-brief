@@ -1715,14 +1715,19 @@ class LocalRuntimeTests(TestCase):
         raw_by_section = {"dist": [], "supply": [price_story]}
 
         self.assertTrue(main.is_dist_hard_logistics_metric_context(price_story.title, price_story.description))
-        self.assertTrue(main.is_dist_primary_supply_price_story(price_story.title, price_story.description))
         promoted = main._promote_dist_hard_logistics_core(final_by_section, raw_by_section)
 
         self.assertEqual(promoted, 0)
         self.assertEqual(price_story.section, "supply")
         self.assertNotIn(price_story, final_by_section["dist"])
 
-    def test_dist_tail_replacement_removes_primary_supply_price_story(self) -> None:
+    def test_dist_tail_replacement_keeps_the_wholesale_price_column(self) -> None:
+        """도매시세 칼럼은 유통 지면의 1순위 콘텐츠라 교육 기사에 자리를 내주지 않는다.
+
+        예전에는 이 칼럼을 '수급 가격 기사'로 보고 유통 교육 기사로 교체했다.
+        2026-08-12 편집 평가는 정반대로, 빠진 시세 칼럼을 최상위 유통 후보로
+        지목하고 유통 교육·행사 기사는 꼬리로만 쓰라고 했다.
+        """
         pallet_core = self._make_article(
             section="dist",
             title='"가락시장 물류 선진화 속도"…파렛트 운송지원 확대',
@@ -1748,16 +1753,17 @@ class LocalRuntimeTests(TestCase):
         pallet_core.is_core = True
         final_by_section = {"dist": [pallet_core, price_tail]}
 
-        self.assertTrue(main.is_dist_primary_supply_price_story(price_tail.title, price_tail.description))
-        self.assertTrue(main._is_optional_dist_editorial_tail(price_tail))
+        self.assertTrue(main.is_dist_wholesale_price_report(price_tail.title, price_tail.description))
+        self.assertFalse(main.is_dist_primary_supply_price_story(price_tail.title, price_tail.description))
+        self.assertFalse(main._is_optional_dist_editorial_tail(price_tail))
         self.assertEqual(
             main._replace_optional_dist_tail_from_raw(final_by_section, {"dist": [education]}),
-            1,
+            0,
         )
 
         links = {article.link for article in final_by_section["dist"]}
-        self.assertIn(education.link, links)
-        self.assertNotIn(price_tail.link, links)
+        self.assertIn(price_tail.link, links)
+        self.assertNotIn(education.link, links)
 
     def test_supply_recovery_prefers_price_crisis_response_over_local_launch(self) -> None:
         existing = [
