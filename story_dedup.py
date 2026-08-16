@@ -5,6 +5,8 @@ from __future__ import annotations
 import re
 import unicodedata
 
+from crop_risk_vocab import crop_bucket, named_pest_bucket
+
 
 EventFingerprint = tuple[str, ...]
 
@@ -80,6 +82,45 @@ def _money_amounts(text: str) -> frozenset[int]:
     return frozenset(amounts)
 
 
+# 같은 기관 보도자료를 여러 매체가 다시 쓴 경우. 제목 표현은 서로 달라도
+# (기관, 작물, 병해충, 조치)가 모두 같으면 독자에게는 한 건의 소식이다.
+# 2026-08-14 에 농진청 참깨 방제 보도자료가 두 카드로 실렸는데, 제목 유사도
+# 기반 dedup 은 이런 재가공을 잡지 못했다.
+_ADVISORY_AUTHORITIES: tuple[tuple[str, tuple[str, ...]], ...] = (
+    ("농진청", ("농촌진흥청", "농진청")),
+    ("검역본부", ("농림축산검역본부", "검역본부")),
+    ("농식품부", ("농림축산식품부", "농식품부")),
+    ("농업기술원", ("농업기술원", "농기원")),
+    ("농업기술센터", ("농업기술센터", "농기센터")),
+    ("산림청", ("산림청",)),
+)
+_ADVISORY_ACTIONS: tuple[tuple[str, tuple[str, ...]], ...] = (
+    ("control", ("방제", "약제 살포", "약제살포", "적기 방제", "긴급 방제")),
+    ("watch", ("예찰", "주의보", "경보", "발생 우려", "확산 우려", "예방")),
+    ("guidance", ("당부", "관리 요령", "안내", "지도", "요령")),
+)
+
+
+def _advisory_authority(compact: str) -> str:
+    for key, terms in _ADVISORY_AUTHORITIES:
+        if any(_compact(term) in compact for term in terms):
+            return key
+    return ""
+
+
+def _advisory_action(compact: str) -> str:
+    """가장 강한 조치 하나만 고른다.
+
+    같은 보도자료라도 매체마다 '적기 방제 당부'와 '발생 초기에 방제해야'처럼
+    동사 조합이 달라진다. 조치 집합 전체를 키에 넣으면 그 차이 때문에 같은
+    사건이 갈라지므로, 방제 > 예찰 > 안내 순으로 대표 조치를 정한다.
+    """
+    for key, terms in _ADVISORY_ACTIONS:
+        if any(_compact(term) in compact for term in terms):
+            return key
+    return ""
+
+
 def canonical_event_fingerprint(title: str, description: str = "") -> EventFingerprint:
     """Return a conservative event key, or an empty tuple when evidence is weak."""
     title_n = _normalize(title)
@@ -88,6 +129,19 @@ def canonical_event_fingerprint(title: str, description: str = "") -> EventFinge
     title_compact = _compact(title_n)
     if not compact:
         return ()
+
+    authority = _advisory_authority(compact)
+    if authority:
+        crop = crop_bucket(title_n) or crop_bucket(f"{title_n} {lead_n}")
+        # 병해충은 제목에 적힌 것만 본다. 기관 보도자료는 여러 병해충을 한꺼번에
+        # 다루는 일이 많아, 본문에서 뽑으면 매체마다 다른 이름이 잡혀 같은
+        # 보도자료가 갈라진다(농진청 참깨 안내가 실제로 그랬다).
+        pest = named_pest_bucket(title_n)
+        action = _advisory_action(compact)
+        # 작물이나 병해충 중 하나는 특정돼야 하고, 조치도 드러나야 한다.
+        # 기관 이름만 같다는 이유로 서로 다른 소식을 묶지 않는다.
+        if (crop or pest) and action:
+            return ("agency_advisory", authority, crop, pest, action)
 
     facility_family = bool(
         "apc" in compact
@@ -173,4 +227,5 @@ def duplicate_event_reason(
         "supply_stabilization_program": "same_supply_stabilization_program",
         "food_industry_cost_relief": "same_food_industry_cost_relief",
         "named_policy_program": "same_named_policy_program",
+        "agency_advisory": "same_agency_advisory",
     }.get(left[0], "same_canonical_event")
