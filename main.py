@@ -4096,8 +4096,25 @@ _CORE_CEREMONY_TITLE_TERMS = (
 )
 _CORE_EDU_VISIT_TITLE_TERMS = (
     "견학", "체험", "배웠다", "배운다", "배우다", "연수", "워크숍", "특강", "초청",
-    "벤치마킹", "교육",
+    "벤치마킹", "교육", "설명회",
     "민생 행보", "민생 현장", "현장 행보", "영농상담", "찾아간다",
+)
+# 기관장·지자체의 현장 방문 동정. 방문 자체는 시장에서 아무것도 바꾸지 않으므로
+# 핵심 슬롯이 아니라 tail 이다(예: "철원군, 가락동 도매 현장 방문해 농가 소득향상 노력").
+_CORE_FIELD_VISIT_RX = re.compile(
+    r"(?:방문(?:해|하고|한|해서)?|찾아|둘러보|현장\s*점검|현장\s*방문|간담)"
+    r".{0,24}(?:격려|당부|노력|점검|살펴|청취|소통|응원|독려)"
+    r"|(?:격려|위문|응원)\s*방문"
+)
+# 의회 건의문·결의안 채택. 제도 변화가 아니라 의사 표명이다.
+_CORE_COUNCIL_RESOLUTION_RX = re.compile(
+    r"(?:건의문|건의안|결의안|성명서|촉구문)\s*(?:등\s*)?(?:을|를)?\s*(?:채택|의결|발표|전달)"
+    r"|(?:채택|의결)한?\s*(?:건의문|건의안|결의안)"
+)
+# 공사·시공 현장 논란. 유통 운영 영향이 제한적이라 핵심 유통 기사로는 약하다.
+_CORE_CONSTRUCTION_DISPUTE_RX = re.compile(
+    r"(?:공사|시공|착공|공사장|건립)\s*(?:현장)?.{0,20}(?:논란|미흡|부실|의혹|주의|지적)"
+    r"|(?:안전시설|안전관리)\s*(?:미흡|부실)"
 )
 # 회의체 명칭은 단체 이름의 일부일 수 있어(예: ○○상생협의회의 반대 성명),
 # 제목에 개최·참석류 동사가 함께 있을 때만 행사 기사로 판정한다.
@@ -4107,6 +4124,10 @@ _CORE_PROMO_TITLE_TERMS = (
     "특별전", "판촉", "판매전", "홍보", "캠페인", "페스티벌", "축제", "시식", "증정",
     "경품", "팔아주기", "기탁", "전달식", "나눔", "자매결연", "맞손", "업무협약", "협약",
     "개점", "개업",
+    # 지역 작목반의 첫 출하·초매식은 수치가 없으면 홍보성이다. 편집 평가도
+    # "지역 첫 출하·행사·기관장 현장점검은 비핵심 꼬리기사로만"이라고 지적했다.
+    # 물량·가격 수치가 있으면 위쪽 _has_market_metric_evidence 예외로 살아남는다.
+    "첫 출하", "첫출하", "초매식", "첫 수확", "첫 경매식",
 )
 _CORE_ADMIN_INTERNAL_TITLE_TERMS = (
     "실행계획 수립", "경영평가", "경영혁신", "조직개편", "비전 선포", "청렴", "윤리경영",
@@ -4172,6 +4193,12 @@ def _soft_news_core_demote_reason(article: "Article") -> str:
         return "soft_news_promo_core"
     if any(term in title_l for term in _CORE_ADMIN_INTERNAL_TITLE_TERMS):
         return "soft_news_admin_internal_core"
+    if _CORE_COUNCIL_RESOLUTION_RX.search(title_l):
+        return "soft_news_council_resolution_core"
+    if _CORE_FIELD_VISIT_RX.search(title_l):
+        return "soft_news_field_visit_core"
+    if _CORE_CONSTRUCTION_DISPUTE_RX.search(title_l):
+        return "soft_news_construction_dispute_core"
     if _CORE_SUPPORT_GRANT_RX.search(title_l) or _CORE_SUPPORT_GRANT_ORG_RX.search(title):
         return "soft_news_support_grant_core"
     return ""
@@ -52431,7 +52458,19 @@ def _apply_model_editorial_repair(
     raw_by_section: dict[str, list[Article]],
     *,
     validation_errors: list[JsonDict] | None = None,
+    current_by_section: dict[str, list[Article]] | None = None,
 ) -> dict[str, list[Article]] | None:
+    """모델이 제안한 교체안을 섹션 단위로 검증해 통과한 섹션만 돌려준다.
+
+    예전에는 카드 한 장이 걸리면 네 섹션 제안을 통째로 버렸다. 2026-08-14 에는
+    정책 섹션의 저티어 한 건 때문에 병해충 중복 제거와 유통 코어 교체까지 전부
+    사라졌다. 검증에 걸린 섹션만 현재 선정을 유지하면 나머지 개선은 살아남는다.
+
+    current_by_section 이 있으면 부분 적용 모드로 동작한다(없으면 예전처럼
+    전부 통과해야 결과를 돌려준다).
+    """
+    partial = isinstance(current_by_section, dict)
+
     def reject(section: str, reason: str, *, link: str = "", title: str = "") -> None:
         if validation_errors is not None:
             validation_errors.append(
@@ -52459,22 +52498,29 @@ def _apply_model_editorial_repair(
         rows = sections.get(section, [])
         if not isinstance(rows, list) or len(rows) != MAX_PER_SECTION:
             reject(section, "section_card_count_invalid")
-            return None
+            if not partial:
+                return None
+            continue
         selected: list[Article] = []
+        section_identities: list[str] = []
+        section_failed = False
         for row in rows:
             if not isinstance(row, dict):
                 reject(section, "section_row_invalid")
-                return None
+                section_failed = True
+                break
             raw_link = str(row.get("link") or "").strip()
             candidate = candidate_index.get(raw_link) or candidate_index.get(canonicalize_url(raw_link))
             if candidate is None:
                 log.warning("[QUALITY GATE] repair link not found in %s raw pool: %s", section, raw_link)
                 reject(section, "link_not_in_raw_pool", link=raw_link)
-                return None
+                section_failed = True
+                break
             identity = candidate.norm_key or candidate.canon_url or candidate.title_key
-            if not identity or identity in used:
+            if not identity or identity in used or identity in section_identities:
                 reject(section, "missing_or_duplicate_identity", link=raw_link, title=candidate.title)
-                return None
+                section_failed = True
+                break
             clone = _clone_article(candidate)
             clone.section = section
             clone.forced_section = section
@@ -52490,9 +52536,15 @@ def _apply_model_editorial_repair(
                     clone.title[:100],
                 )
                 reject(section, reject_reason, link=raw_link, title=clone.title)
-                return None
-            used.add(identity)
+                section_failed = True
+                break
+            section_identities.append(identity)
             selected.append(clone)
+        if section_failed:
+            if not partial:
+                return None
+            continue
+        used.update(section_identities)
         core_count = sum(1 for article in selected if article.is_core)
         if core_count < 2:
             for article in selected:
@@ -52510,14 +52562,11 @@ def _apply_model_editorial_repair(
                         article.is_core = False
         repaired[section] = selected
 
-    low_tier_selected: list[tuple[str, Article]] = []
-    for section, selected in repaired.items():
-        section_low_tier = [
-            article
-            for article in selected
-            if press_tier(article.press or "", article.domain or "") <= 1
-        ]
-        low_tier_selected.extend((section, article) for article in section_low_tier)
+    def _low_tier(articles: list[Article]) -> list[Article]:
+        return [a for a in articles if press_tier(a.press or "", a.domain or "") <= 1]
+
+    for section in list(repaired):
+        section_low_tier = _low_tier(repaired[section])
         if len(section_low_tier) > FINAL_LOW_TIER_MAX_PER_SECTION:
             victim = min(
                 section_low_tier,
@@ -52533,10 +52582,31 @@ def _apply_model_editorial_repair(
                 link=victim.canon_url or victim.link,
                 title=victim.title,
             )
-            return None
-    if len(low_tier_selected) > FINAL_LOW_TIER_MAX_TOTAL:
+            if not partial:
+                return None
+            del repaired[section]
+
+    def _merged_low_tier_total() -> int:
+        total = 0
+        for section in _section_keys():
+            source = repaired.get(section)
+            if source is None and partial:
+                source = (current_by_section or {}).get(section) or []
+            total += len(_low_tier([a for a in (source or []) if isinstance(a, Article)]))
+        return total
+
+    # 전체 예산은 '적용 후 지면' 기준이다. 부분 적용에서는 유지되는 섹션의
+    # 저티어 카드도 함께 세야 실제 발행물과 어긋나지 않는다.
+    while _merged_low_tier_total() > FINAL_LOW_TIER_MAX_TOTAL:
+        offenders = [
+            (section, article)
+            for section in list(repaired)
+            for article in _low_tier(repaired[section])
+        ]
+        if not offenders:
+            break
         section, victim = min(
-            low_tier_selected,
+            offenders,
             key=lambda item: (
                 bool(item[1].is_core),
                 float(item[1].selection_fit_score or 0.0),
@@ -52549,6 +52619,10 @@ def _apply_model_editorial_repair(
             link=victim.canon_url or victim.link,
             title=victim.title,
         )
+        if not partial:
+            return None
+        del repaired[section]
+    if partial and not repaired:
         return None
     return repaired
 
@@ -52822,11 +52896,28 @@ def _run_prepublish_quality_gate(
             }
         )
         attempt_validation_errors: list[JsonDict] = []
-        repaired_sections = _apply_model_editorial_repair(
+        accepted_sections = _apply_model_editorial_repair(
             repair,
             raw_by_section,
             validation_errors=attempt_validation_errors,
+            current_by_section=current_sections,
         )
+        repaired_sections: dict[str, list[Article]] | None = None
+        if accepted_sections is not None:
+            # 검증에 걸린 섹션은 현재 선정을 그대로 두고, 통과한 섹션만 반영한다.
+            repaired_sections = {
+                section: list(accepted_sections.get(section) or current_sections.get(section) or [])
+                for section in _section_keys()
+            }
+            partial_sections = [s for s in _section_keys() if s not in accepted_sections]
+            if partial_sections:
+                repair_attempts[-1]["partially_applied_sections"] = sorted(accepted_sections)
+                repair_attempts[-1]["retained_sections"] = partial_sections
+                log.info(
+                    "[QUALITY GATE] repair partially applied: accepted=%s retained=%s",
+                    ",".join(sorted(accepted_sections)) or "-",
+                    ",".join(partial_sections),
+                )
         if repaired_sections is None:
             repair_attempts[-1]["status"] = "rejected_after_local_validation"
             repair_attempts[-1]["validation_errors"] = attempt_validation_errors
