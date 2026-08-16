@@ -11,6 +11,7 @@ import re
 from typing import Any
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
+from crop_risk_vocab import CROP_WEATHER_EVENT_TERMS, CROP_WEATHER_RISK_TERMS, classify_pest_theme
 from story_dedup import duplicate_event_reason
 
 
@@ -645,27 +646,15 @@ def _editorial_base_issue_reasons(article: SurfaceArticle, snapshot_body: str) -
 
 
 def _pest_editorial_theme(article: SurfaceArticle, snapshot_body: str = "") -> str:
+    """pest 카드의 편집 테마. 분류 규칙은 선정 가드와 공유한다.
+
+    main.py 의 중복 가드가 같은 함수를 쓰기 때문에, 가드가 통과시킨 지면을
+    여기서 감점하는 어긋남이 생기지 않는다. 기사 본인의 제목·본문만 넣고
+    생성 요약문은 넣지 않는다(가드는 요약 생성 전에 돌기 때문).
+    """
     if article.section != "pest":
         return ""
-    text = _editorial_text(article, snapshot_body)
-    if "식물검역증명서" in text or ("해외 직구 씨앗" in text and "검역" in text):
-        return "plant_quarantine"
-    if "과수화상병" in text or "화상병" in text:
-        return "fire_blight"
-    title_l = _normalize_spaces(article.title or "").lower()
-    if "역병" in title_l:
-        return "phytophthora"
-    if "돌발해충" in title_l:
-        return "outbreak_pest"
-    if "육묘장" in title_l and "병해충" in title_l:
-        return "nursery_pest"
-    if _has_any(title_l, ("토양 소독", "토양소독")):
-        return "soil_disinfection"
-    if "벼" in text and "병해충" in text:
-        return "rice_pest"
-    if "병해충" in text:
-        return "general_pest"
-    return ""
+    return classify_pest_theme(article.title or "", snapshot_body)
 
 
 def _semantic_false_positive_reason(article: SurfaceArticle, snapshot_body: str) -> str:
@@ -830,11 +819,20 @@ def _is_priority_field_risk_core(article: SurfaceArticle, snapshot_body: str) ->
         and "탄저병" in text
         and any(term in text for term in ("발생", "피해", "방제", "예방", "주의"))
     )
+    # 가뭄·폭염·한파처럼 병해충 이름이 없는 기상 생육피해도 코어 자격이 있다.
+    # 행정 대비계획이 아니라 실제 피해·대응 기사만 인정한다.
+    weather_field_damage = bool(
+        any(term in title for term in CROP_WEATHER_RISK_TERMS + CROP_WEATHER_EVENT_TERMS)
+        and any(term in title for term in ("피해", "비상", "확산", "경보", "주의보", "특보", "고사", "시들"))
+        and any(term in text for term in ("농작물", "농가", "재배", "과수", "과원", "밭작물", "출하", "생육"))
+        and any(term in text for term in ("급수", "관수", "방제", "대책", "지원", "복구", "예방", "피해"))
+    )
     return bool(
         (named_outbreak and outbreak_signal and urgent_control and crop_exposure)
         or authoritative_named_warning
         or operational_early_warning
         or multi_disease_field_advisory
+        or weather_field_damage
     )
 
 

@@ -1,0 +1,264 @@
+"""PR-1: 선정 가드와 평가 심판이 같은 테마 기준을 쓰는지, 기상 생육 리스크
+기사가 pest 섹션에 실제로 진입하는지 검증한다.
+
+배경: 2026-08 주간에 pest_theme_duplicate 가 5일 중 4일 발생해 최대 감점원이
+됐는데, 실제로 감점된 카드는 씨스트선충·콩꼬투리혹파리처럼 서로 다른 기사였고
+정작 같은 보도자료를 재가공한 참깨 기사 두 건은 그대로 통과했다. 원인은
+'병해충'만 있으면 전부 general_pest 로 묶던 과대포괄 버킷이었다.
+(reports/2026-08-16-weekly-score-improvement-plan.md)
+"""
+import unittest
+from datetime import datetime
+from pathlib import Path
+import sys
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+import crop_risk_vocab  # noqa: E402
+import main  # noqa: E402
+import report_eval  # noqa: E402
+
+
+# 2026-08-10~14 지면에서 실제로 쓰인 pest 카드들(제목, 본문 일부).
+LAST_WEEK_PEST_CARDS = (
+    ("폭염 지속, 멜론 고온피해 예방 안내", "폭염이 이어지면서 멜론 시설재배지의 고온 피해 예방 관리를 당부했다."),
+    ("충북농기원, 대추 과실 비대기 병해충 관리 강화 당부", "대추 과실 비대기에 병해충 관리와 방제를 강화해야 한다."),
+    ("해충 꼬이고 햇볕에 타고…\"비 소식만 기다린다\"", "폭염과 가뭄이 길어지며 밭작물 해충 피해와 일소 피해가 늘고 있다."),
+    ("전남광주농기원, 고온기 딸기 육묘관리 철저 당부", "고온기 딸기 육묘장 관리와 병해충 예찰을 당부했다."),
+    ("대추 농가 '콩꼬투리혹파리·미국선녀벌레' 비상", "대추 재배지에서 콩꼬투리혹파리와 미국선녀벌레 피해가 확산돼 방제가 시급하다."),
+    ("“씨스트선충 확산 막고 고랭지 배추 지켜라”", "고랭지 배추 재배지의 씨스트선충 확산을 막기 위해 예찰과 방제를 강화한다."),
+)
+
+
+class SharedPestThemeTests(unittest.TestCase):
+    """가드(main)와 심판(report_eval)이 같은 버킷을 내야 한다."""
+
+    def _guard_theme(self, title: str, desc: str) -> str:
+        article = main.Article(
+            section="pest",
+            title=title,
+            description=desc,
+            link="https://example.com/pest-theme",
+            originallink="https://example.com/pest-theme",
+            pub_dt_kst=datetime.now(main.KST),
+            domain="example.com",
+            press="",
+            norm_key="",
+            title_key=main.norm_title_key(title),
+            canon_url="https://example.com/pest-theme",
+            topic="",
+        )
+        return main._pest_editorial_theme_key(article)
+
+    def _judge_theme(self, title: str, desc: str) -> str:
+        article = report_eval.SurfaceArticle(
+            tag="div",
+            surface=report_eval.BRIEFING_SURFACE,
+            section="pest",
+            title=title,
+            href="https://example.com/pest-theme",
+            article_id="pest-theme",
+            domain="example.com",
+        )
+        return report_eval._pest_editorial_theme(article, desc)
+
+    def test_guard_and_judge_agree_on_every_card(self) -> None:
+        for title, desc in LAST_WEEK_PEST_CARDS:
+            with self.subTest(title=title):
+                self.assertEqual(self._guard_theme(title, desc), self._judge_theme(title, desc))
+
+    def test_distinct_field_risks_do_not_collide(self) -> None:
+        themes = [self._judge_theme(title, desc) for title, desc in LAST_WEEK_PEST_CARDS]
+        self.assertTrue(all(themes), msg=str(themes))
+        for theme in themes:
+            self.assertLessEqual(
+                themes.count(theme),
+                2,
+                msg=f"서로 다른 사안이 같은 버킷으로 묶였다: {theme} / {themes}",
+            )
+
+    def test_same_press_release_rework_shares_one_bucket(self) -> None:
+        """같은 사안(농진청 참깨 방제)은 하나로 묶여야 dedup 이 가능하다."""
+        first = self._judge_theme(
+            "참깨 수확 앞두고 병해충 확산 우려…“발생 초기에 방제 해야”",
+            "참깨 수확기를 앞두고 병해충 발생 초기 방제를 당부했다.",
+        )
+        second = self._judge_theme(
+            "농진청, 참깨 수확 앞두고 병해충 적기 방제 당부",
+            "농촌진흥청이 참깨 병해충 적기 방제를 당부했다.",
+        )
+        self.assertEqual(first, second)
+
+    def test_named_pest_beats_generic_bucket(self) -> None:
+        self.assertEqual(crop_risk_vocab.classify_pest_theme("씨스트선충 확산 막아라", "배추 병해충"), "nematode")
+        self.assertEqual(crop_risk_vocab.classify_pest_theme("고추 응애 피해 우려", "방제 당부"), "mite")
+        self.assertNotEqual(
+            crop_risk_vocab.classify_pest_theme("씨스트선충 확산", "배추 병해충"),
+            crop_risk_vocab.classify_pest_theme("콩꼬투리혹파리 비상", "대추 병해충"),
+        )
+
+    def test_short_crop_token_does_not_match_inside_a_longer_word(self) -> None:
+        # '배'가 '배추'/'무'가 '무름병' 안에서 잡히면 엉뚱한 버킷이 된다.
+        self.assertEqual(crop_risk_vocab.crop_bucket("배추 병해충 방제"), "배추")
+        self.assertEqual(crop_risk_vocab.crop_bucket("배 과원 방제 당부"), "배")
+        self.assertEqual(crop_risk_vocab.crop_bucket("무름병 잡는 미생물"), "")
+
+    def test_legacy_theme_keys_are_preserved(self) -> None:
+        cases = (
+            ("고추역병 6월부터 발생…배수 관리 필요", "phytophthora"),
+            ("영천시, 과수·산림지 돌발해충 합동방제", "outbreak_pest"),
+            ("고온기 육묘장 병해충 확산 우려", "nursery_pest"),
+            ("마늘·양파 여름철 토양 소독 당부", "soil_disinfection"),
+        )
+        for title, expected in cases:
+            with self.subTest(title=title):
+                self.assertEqual(self._judge_theme(title, f"{title} 병해충 방제 안내"), expected)
+
+
+class WeatherRiskVocabTests(unittest.TestCase):
+    """가뭄·폭염 기사가 pest 섹션에 들어오는지 (경남 가뭄 누락 재발 방지)."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.conf = {section["key"]: section for section in main.SECTIONS}
+        cls.now = datetime.now(main.KST)
+
+    def _is_relevant_for_pest(self, title: str, desc: str, url: str) -> bool:
+        dom = main.domain_of(url)
+        press = main.normalize_press_label(main.press_name_from_url(url), url)
+        return main.is_relevant(title, desc, dom, url, self.conf["pest"], press)
+
+    def test_direct_injury_terms_count_as_pest_signal_on_their_own(self) -> None:
+        for term in ("냉해", "고온피해", "일소", "우박", "습해"):
+            with self.subTest(term=term):
+                self.assertIn(term, main.PEST_WEATHER_TERMS)
+
+    def test_bare_weather_event_needs_a_crop_damage_signal(self) -> None:
+        """'폭염'·'가뭄'은 여름 물가·복지 기사에도 흔해 단독으로는 신호가 아니다."""
+        for term in ("가뭄", "폭염", "한파" if "한파" in crop_risk_vocab.CROP_WEATHER_EVENT_TERMS else "장마"):
+            with self.subTest(term=term):
+                self.assertNotIn(term, main.PEST_WEATHER_TERMS)
+
+        self.assertTrue(
+            crop_risk_vocab.weather_event_damage_signal(
+                "가뭄에 성주 참외 시들…고추 농사 직격탄",
+                "가뭄으로 참외가 시들고 고추 생육이 부진하다.",
+            )
+        )
+        self.assertFalse(
+            crop_risk_vocab.weather_event_damage_signal(
+                "40도 폭염에 시금치 한 달 새 152% 폭등",
+                "폭염으로 채소 소매가격이 급등하며 밥상물가 부담이 커졌다.",
+            )
+        )
+
+    def test_summer_price_story_stays_out_of_pest_section(self) -> None:
+        title = "40도 폭염에 '히트플레이션' 현실화…시금치 한 달 새 152% 폭등"
+        desc = "폭염으로 시금치 등 채소 소매가격이 급등하며 밥상물가 부담이 커졌다."
+        self.assertFalse(self._is_relevant_for_pest(title, desc, "https://example.com/heatflation"))
+
+    def test_drought_crop_damage_story_enters_pest_section(self) -> None:
+        title = "경남 가뭄 확산…밭작물 시들고 과수 생육 피해 비상"
+        desc = "경남 지역 가뭄이 길어지며 고추·참깨 등 밭작물이 시들고 과수 생육 피해가 커져 급수 대책과 관수 지원을 서두르고 있다."
+        self.assertTrue(main.is_pest_story_focus_strong(title, desc))
+        self.assertTrue(self._is_relevant_for_pest(title, desc, "https://example.com/drought-damage"))
+
+    def test_drought_crop_damage_survives_the_post_build_audit(self) -> None:
+        """유입만으로는 부족하다 — 발행 직전 감사까지 살아남아야 지면에 오른다."""
+        cases = (
+            (
+                "경남 전역 가뭄 '비상'…단감·참외 말라가고 급수 대책 총력",
+                "경남 전역 가뭄으로 단감과 참외 등 과수·채소가 말라가면서 농가가 관수와 급수 대책에 나섰다.",
+            ),
+            (
+                "폭염·가뭄에 제주 당근 파종 지연···파종률 20%",
+                "제주 당근 파종이 폭염과 가뭄으로 지연되면서 파종률이 20%에 그쳤다.",
+            ),
+        )
+        for title, desc in cases:
+            with self.subTest(title=title):
+                url = "https://example.com/drought-audit"
+                article = main.Article(
+                    section="pest",
+                    title=title,
+                    description=desc,
+                    link=url,
+                    originallink=url,
+                    pub_dt_kst=self.now,
+                    domain="example.com",
+                    press="연합뉴스",
+                    norm_key="",
+                    title_key=main.norm_title_key(title),
+                    canon_url=url,
+                    topic="",
+                )
+                reason = main._postbuild_article_reject_reason(article, "pest")
+                self.assertNotIn(reason, main._HARD_FINAL_POSTBUILD_REJECT_REASONS, msg=reason)
+                self.assertEqual(reason, "", msg=reason)
+
+    def test_foreign_drought_aid_story_is_rejected(self) -> None:
+        title = "가뭄 시달리는 과테말라···K-농업 '단비'"
+        desc = "과테말라 건조지역에 한국 농업기술을 전수해 가뭄 대응 관수 시설을 지원했다."
+        url = "https://example.com/guatemala"
+        article = main.Article(
+            section="pest",
+            title=title,
+            description=desc,
+            link=url,
+            originallink=url,
+            pub_dt_kst=self.now,
+            domain="example.com",
+            press="연합뉴스",
+            norm_key="",
+            title_key=main.norm_title_key(title),
+            canon_url=url,
+            topic="",
+        )
+        self.assertNotEqual(main._postbuild_article_reject_reason(article, "pest"), "")
+
+    def test_heat_welfare_campaign_stays_out_of_pest_section(self) -> None:
+        title = "폭염 대비 무더위 쉼터 운영…온열질환 예방 캠페인"
+        desc = "지자체가 폭염에 대비해 무더위 쉼터를 운영하고 생수 지원과 온열질환 예방 캠페인을 벌인다."
+        article = main.Article(
+            section="pest",
+            title=title,
+            description=desc,
+            link="https://example.com/heat-welfare",
+            originallink="https://example.com/heat-welfare",
+            pub_dt_kst=self.now,
+            domain="example.com",
+            press="",
+            norm_key="",
+            title_key=main.norm_title_key(title),
+            canon_url="https://example.com/heat-welfare",
+            topic="",
+        )
+        self.assertTrue(main._is_pest_weather_disaster_noise(article))
+
+    def test_supply_climate_gate_covers_drought_with_measured_output(self) -> None:
+        self.assertTrue(
+            main._is_supply_climate_output_context(
+                "가뭄에 배추 생산량 뚝",
+                "가뭄으로 배추 생산량이 전년 대비 20% 줄어 수급 불안이 커졌다.",
+            )
+        )
+
+    def test_judge_accepts_weather_field_damage_as_core(self) -> None:
+        article = report_eval.SurfaceArticle(
+            tag="div",
+            surface=report_eval.BRIEFING_SURFACE,
+            section="pest",
+            title="경남 가뭄 피해 확산…밭작물 고사 비상",
+            href="https://example.com/drought-core",
+            article_id="drought-core",
+            domain="example.com",
+            is_core=True,
+        )
+        body = "가뭄으로 밭작물이 고사하면서 농가 피해가 커져 급수 지원과 관수 대책을 추진한다."
+        self.assertTrue(report_eval._is_priority_field_risk_core(article, body))
+
+
+if __name__ == "__main__":
+    unittest.main()

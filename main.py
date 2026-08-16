@@ -55,6 +55,13 @@ import time
 import random
 import threading
 
+from crop_risk_vocab import (
+    CROP_WEATHER_DAMAGE_SIGNALS,
+    CROP_WEATHER_RISK_TERMS,
+    classify_pest_theme,
+    crop_bucket,
+    weather_event_damage_signal,
+)
 from collector import (
     NaverClientConfig,
     naver_news_search as _collector_naver_news_search,
@@ -2693,12 +2700,17 @@ SECTIONS: list[SectionConfig] = [
             # 기상·생육 리스크
             "폭염 농작물 피해", "장마 농작물 병해충", "침수 농작물 피해", "우박 과수 피해",
             "일소 피해 과수", "고온 생리장해 농작물",
+            "가뭄 농작물 피해", "가뭄 밭작물 시들음", "가뭄 급수 대책 농가", "가뭄 과수 피해",
+            "폭염 과수 일소 피해", "폭염 채소 생육 부진", "한파 농작물 피해",
+            "태풍 낙과 피해", "호우 농경지 침수 피해", "장마 습해 농작물",
             # 방제 행정·검역
             "긴급 방제 농작물", "공동방제 항공방제", "병해충 검역 격리",
         ],
         "must_terms": [
             "방제", "병해충", "약제", "살포", "예찰", "과수화상병", "화상병", "붉은 죽음", "매몰",
             "탄저병", "돌발해충", "풀무치", "메뚜기", "냉해", "동해", "저온피해", "서리", "생육", "월동",
+            # 기상 생육 리스크(가뭄·폭염 등)도 이 섹션이 담당한다.
+            "가뭄", "폭염", "고온피해", "한파", "태풍", "호우", "습해",
             # 병명·해충명 어휘 확장 (섹션 적합도·키워드 강도 계산에 사용)
             "역병", "노균병", "흰가루병", "잿빛곰팡이", "세균성점무늬병", "무름병", "뿌리혹",
             "시들음", "궤양병", "바이러스병", "선충", "갈색날개매미충", "미국선녀벌레", "꽃매미",
@@ -6311,8 +6323,10 @@ _CARROT_PLATFORM_MARKERS = [
 _CARROT_EDIBLE_MARKERS = [
     "농산물", "채소", "원예", "산지", "농가", "재배", "수확", "출하", "반입",
     "도매", "도매가격", "가락시장", "도매시장", "공판장", "경락", "경매",
-    "제주당근", "햇당근", "월동당근", "당근 가격", "당근 수급", "당근 시세",
+    "제주당근", "제주 당근", "햇당근", "월동당근", "당근 가격", "당근 수급", "당근 시세",
     "당근 재배", "당근 출하", "당근 도매가격",
+    # 파종·작황 기사는 중고거래 플랫폼 기사와 겹치지 않는 농사 어휘다.
+    "파종", "정식", "작황", "생육",
 ]
 
 
@@ -7019,10 +7033,20 @@ def _has_named_pest_signal(text: str) -> bool:
     )
 
 
+def _pest_weather_event_hits(title: str, desc: str = "") -> int:
+    """기상 현상 기사 중 작물 피해·대응이 실제로 드러난 것만 신호로 센다.
+
+    '폭염'·'가뭄'은 여름 물가 기사와 행정 대응 기사에도 흔히 나오므로,
+    단독 언급만으로 생육 리스크 지면 후보가 되지 않게 한다.
+    """
+    return 1 if weather_event_damage_signal(title, desc) else 0
+
+
 def _pest_title_signal_count(title: str) -> int:
     t = (title or "").lower()
     hits = count_any(t, [w.lower() for w in PEST_TITLE_CORE_TERMS])
     hits += count_any(t, [w.lower() for w in PEST_WEATHER_TERMS])
+    hits += _pest_weather_event_hits(title)
     if _has_named_pest_signal(t):
         hits += 1
     return hits
@@ -7086,7 +7110,7 @@ def is_news_roundup_brief_context(title: str, desc: str) -> bool:
 def is_pest_story_focus_strong(title: str, desc: str) -> bool:
     t = f"{title or ''} {desc or ''}".lower()
     strict_hits = count_any(t, [w.lower() for w in PEST_STRICT_TERMS])
-    weather_hits = count_any(t, [w.lower() for w in PEST_WEATHER_TERMS])
+    weather_hits = count_any(t, [w.lower() for w in PEST_WEATHER_TERMS]) + _pest_weather_event_hits(title, desc)
     managed_count = int(_managed_commodity_match_summary(title, desc).get("count") or 0)
     horti_hits = count_any(t, [w.lower() for w in PEST_HORTI_TERMS]) + managed_count
     action_hits = count_any(t, [w.lower() for w in _PEST_ACTION_TERMS])
@@ -12307,11 +12331,19 @@ _SECTION_FIT_SCORE_CACHE: dict[tuple[str, str, str, str, str], float] = {}
 
 
 def _is_supply_climate_output_context(title: str, desc: str) -> bool:
+    """기상 이슈지만 시장 영향이 수치로 드러나면 수급 섹션이 맡는다.
+
+    생육피해·경보 기사는 pest("생육 리스크 및 방제")가 담당하고, 여기로는
+    생산량·출하량 변화가 수치로 확인되는 기사만 넘어온다.
+    """
     title_l = _nfkc_lower(title or "")
     desc_l = _nfkc_lower(desc or "")
     text_l = _nfkc_lower(f"{title or ''} {desc or ''}")
     managed = int(_managed_commodity_match_summary(title or "", desc or "").get("count") or 0) >= 1
-    climate = any(term in title_l for term in ("폭염", "고온", "장마", "기후변화"))
+    climate = any(
+        term in title_l
+        for term in ("폭염", "고온", "장마", "기후변화", "가뭄", "태풍", "한파", "폭우", "집중호우")
+    )
     output = any(term in desc_l for term in ("생산량", "출하량", "수급 불안", "수급안정", "수급 안정"))
     measured = bool(
         re.search(r"\d+(?:\.\d+)?\s*%", text_l)
@@ -15283,7 +15315,9 @@ PEST_STRICT_TERMS = [
     # 미생물/바이오 방제
     "미생물", "바실러스", "길항균",
 ]
-PEST_WEATHER_TERMS = ["냉해", "동해", "서리", "한파", "저온피해", "우박", "폭우", "집중호우", "태풍", "폭설"]
+# 폭염·가뭄이 빠져 있던 탓에 순수 기상피해 기사가 pest 관련성·코어 게이트를
+# 통과하지 못했다(경남 가뭄 누락). 어휘는 평가와 공유한다.
+PEST_WEATHER_TERMS = list(CROP_WEATHER_RISK_TERMS)
 PEST_AGRI_CONTEXT_TERMS = [
     "농작물", "농업", "농가", "재배", "과수", "과원", "시설", "하우스",
     "사과", "배", "감귤", "포도", "딸기", "복숭아", "고추", "오이", "쌀", "벼",
@@ -15809,7 +15843,11 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
         else:
             if key == "pest":
                 pest_managed_count = int(_managed_commodity_match_summary(ttl, desc).get("count") or 0)
-                pest_signal_hits = count_any(text, [t.lower() for t in PEST_STRICT_TERMS]) + count_any(text, [t.lower() for t in PEST_WEATHER_TERMS])
+                pest_signal_hits = (
+                    count_any(text, [t.lower() for t in PEST_STRICT_TERMS])
+                    + count_any(text, [t.lower() for t in PEST_WEATHER_TERMS])
+                    + _pest_weather_event_hits(ttl, desc)
+                )
                 if is_pest_story_focus_strong(ttl, desc) or (pest_managed_count >= 1 and pest_signal_hits >= 1):
                     pass
                 else:
@@ -16106,7 +16144,7 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
 
         rice_hits = count_any(text, [t.lower() for t in PEST_RICE_TERMS])
         strict_hits = count_any(text, [t.lower() for t in PEST_STRICT_TERMS])
-        weather_hits = count_any(text, [t.lower() for t in PEST_WEATHER_TERMS])
+        weather_hits = count_any(text, [t.lower() for t in PEST_WEATHER_TERMS]) + _pest_weather_event_hits(ttl, desc)
         horti_hits = count_any(text, [t.lower() for t in PEST_HORTI_TERMS]) + managed_count
 
         # 벼 병해충은 원예수급부와 거리가 멀어 기본 제외(원예 신호 동반 시만 허용)
@@ -17468,13 +17506,30 @@ def _headline_gate(a: "Article", section_key: str) -> bool:
         if not has_any(text, [t.lower() for t in PEST_AGRI_CONTEXT_TERMS]):
             return False
         # 코어는 '헤드라인'에서 병해충/방제/기상피해 신호가 드러나야 한다(수필/일기/정치 제목 누수 방지).
-        title_hits = count_any(title, [t.lower() for t in PEST_STRICT_TERMS]) + count_any(title, [t.lower() for t in PEST_WEATHER_TERMS])
+        title_hits = (
+            count_any(title, [t.lower() for t in PEST_STRICT_TERMS])
+            + count_any(title, [t.lower() for t in PEST_WEATHER_TERMS])
+            + _pest_weather_event_hits(a.title or "", a.description or "")
+        )
         if title_hits == 0:
             return False
 
         strict_hits = count_any(text, [t.lower() for t in PEST_STRICT_TERMS])
-        weather_hits = count_any(text, [t.lower() for t in PEST_WEATHER_TERMS])
-        return (strict_hits >= 2) or (strict_hits >= 1 and weather_hits >= 1) or (weather_hits >= 2)
+        weather_hits = count_any(text, [t.lower() for t in PEST_WEATHER_TERMS]) + _pest_weather_event_hits(
+            a.title or "", a.description or ""
+        )
+        # 제목이 기상 현상과 작물 피해를 함께 말하면 그 자체로 코어 자격이 있다.
+        # (report_eval._is_priority_field_risk_core 의 기상재해 분기와 같은 기준)
+        title_l = _nfkc_lower(a.title or "")
+        weather_field_core = _pest_weather_event_hits(a.title or "", a.description or "") >= 1 and any(
+            term in title_l for term in CROP_WEATHER_DAMAGE_SIGNALS
+        )
+        return (
+            (strict_hits >= 2)
+            or (strict_hits >= 1 and weather_hits >= 1)
+            or (weather_hits >= 2)
+            or weather_field_core
+        )
 
     return True
 def _headline_gate_relaxed(a: "Article", section_key: str) -> bool:
@@ -23818,8 +23873,15 @@ def _has_pest_or_growth_risk_signal(title: str, desc: str) -> bool:
     if count_any(text, [w.lower() for w in _PEST_CONTROL_ACTION_TERMS]) >= 1:
         return True
     growth_hits = count_any(text, [w.lower() for w in _PEST_GROWTH_RISK_TERMS])
-    crop_hits = count_any(text, [w.lower() for w in _PEST_CROP_CONTEXT_TERMS])
-    return growth_hits >= 1 and crop_hits >= 1
+    # 품목명 자체가 작물 맥락이다("제주 당근 파종"에는 '작물'도 '재배'도 없다).
+    crop_hits = count_any(text, [w.lower() for w in _PEST_CROP_CONTEXT_TERMS]) + (
+        1 if crop_bucket(text) else 0
+    )
+    if growth_hits >= 1 and crop_hits >= 1:
+        return True
+    # 가뭄·폭염처럼 그 자체로는 피해를 뜻하지 않는 기상 현상은, 작물이 상했다는
+    # 신호가 함께 있을 때만 생육 리스크로 인정한다.
+    return crop_hits >= 1 and weather_event_damage_signal(title, desc)
 
 
 _FOODSERVICE_MENU_TITLE_TERMS = (
@@ -26319,6 +26381,16 @@ def _is_pest_weather_disaster_noise(article: "Article") -> bool:
     lead_l = _nfkc_lower(f"{title} {desc[:420]}")
     if count_any(title_l, [w.lower() for w in ("병해 예방", "고추 병해", "병해 관리")]) >= 1:
         return False
+    # 폭염 어휘가 pest 신호로 인정되면서 들어올 수 있는 복지·안전 캠페인 기사.
+    # 농작물 피해가 아니라 사람 보호가 주제이므로 생육 리스크 지면이 아니다.
+    if count_any(
+        lead_l,
+        [w.lower() for w in (
+            "온열질환", "무더위 쉼터", "폭염 쉼터", "쉼터 운영", "그늘막",
+            "봉사활동", "사회공헌", "위문", "생수 지원", "안전 캠페인",
+        )],
+    ) >= 1 and not _has_named_pest_signal(lead_l):
+        return True
     title_weather_hits = count_any(
         title_l,
         [w.lower() for w in ("장마", "태풍", "집중호우", "호우", "폭우", "농업재해")],
@@ -26426,18 +26498,14 @@ def _pest_replacement_candidate_rank(article: "Article", pest_conf: JsonDict) ->
 
 
 def _pest_editorial_theme_key(article: "Article") -> str:
+    """pest 카드의 편집 테마. 분류 규칙은 report_eval 의 심판과 공유한다."""
     title = article.title or ""
     desc = article.description or ""
-    text = _nfkc_lower(f"{title} {desc}")
-    if "식물검역증명서" in text or ("해외 직구 씨앗" in text and "검역" in text):
-        return "plant_quarantine"
-    if is_pest_fire_blight_farmer_risk_context(title, desc) or "과수화상병" in text or "화상병" in text:
-        return "fire_blight"
-    if "벼" in text and "병해충" in text:
-        return "rice_pest"
-    if any(term in text for term in ("병해충", "병해", "탄저병", "총채벌레", "진딧물", "흰비단병", "방제", "예찰")):
-        return "general_pest"
-    return ""
+    return classify_pest_theme(
+        title,
+        desc,
+        fire_blight_hint=is_pest_fire_blight_farmer_risk_context(title, desc),
+    )
 
 
 def _pest_diversity_replacement_rank(article: "Article", pest_conf: JsonDict) -> tuple[Any, ...] | None:
@@ -39814,10 +39882,20 @@ def _publish_pest_family_key(article: Article) -> str:
     return _pest_editorial_theme_key(article)
 
 
+# _publish_pest_family_key 가 직접 이름 붙이는 병해충 가족과 검역·벼 기사는
+# 다섯 칸 중 한 칸만 쓴다. 나머지(화상병, 품목·기상 단위 버킷, 그 밖의 병해명)는
+# 두 칸까지 허용 — 공용 분류기 도입 전 general_pest 로 묶여 있던 때와 같은 폭이다.
+_PUBLISH_PEST_SINGLE_SLOT_FAMILIES = frozenset({
+    "complex_pest", "root_crop_disease", "tomato_moth", "stink_bug", "thrips",
+    "aphid", "anthracnose", "phytophthora", "outbreak_pest", "leaf_spot",
+    "mite", "nursery_pest", "soil_disinfection", "locust",
+    "plant_quarantine", "rice_pest",
+})
+
+
 def _publish_pest_family_cap(family: str) -> int:
     # A hard-news fire-blight update and one field analysis can coexist.
-    # Other named pest families should consume only one of the five slots.
-    return 2 if family in {"fire_blight", "general_pest"} else 1
+    return 1 if family in _PUBLISH_PEST_SINGLE_SLOT_FAMILIES else 2
 
 
 def _publish_editorial_candidate_rank(section_key: str, article: Article) -> tuple[Any, ...]:
