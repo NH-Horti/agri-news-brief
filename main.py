@@ -352,7 +352,7 @@ _HF_SECTION_NOISE_PROFILES: dict[str, tuple[str, ...]] = {
     "supply": (
         "오피니언, 칼럼, 수필, 에세이, 회고, 감상형 기사. 품목명이 있어도 가격·수급·출하·작황보다 개인 서사와 해설이 중심인 기사.",
         "맛집, 디저트, 레스토랑, 메뉴, 라이프스타일, 관광, 축제, 홍보, 판촉 기사. 농산물 수급과 직접 연결되지 않는 소비자 체험 기사.",
-        "인물 프로필, NBS 하이라이트, 현장르포, 농가 탐방, 귀농 성공기, 재배 명인, 공생 이야기. 품목명과 재배 정보가 있어도 인물·서사 중심이며 시장 수급·가격·출하 동향과 무관한 기사.",
+        "인물 프로필, 방송 하이라이트 클립, 현장르포, 농가 탐방, 귀농 성공기, 재배 명인, 공생 이야기. 품목명과 재배 정보가 있어도 인물·서사 중심이며 시장 수급·가격·출하 동향과 무관한 기사.",
         "비료, 농자재, 유가, 나프타, 에너지 가격, 연료비, 전기요금 등 투입비용 매크로 기사. 특정 품목 수급 영향보다 범용 원가 압박만 다루는 기사.",
         "해외 축산 시세, 중국 돈육 가격, 수입 가축 동향 기사. 국내 원예 농산물 수급과 무관한 외국 축산시장 기사.",
         "프랜차이즈 브리핑, FC 브리핑, 외식업체 경영, 음식서비스 산업 라운드업 기사. 농산물 가격·출하·수급보다 업체 경영·마케팅이 중심인 기사.",
@@ -13096,6 +13096,8 @@ PRESS_HOST_MAP = {
 
     # 농업/전문지(중요)
     "nongmin.com": "농민신문",
+    "inbs.co.kr": "NBS한국농업방송",
+    "www.inbs.co.kr": "NBS한국농업방송",
     "farmnmarket.com": "팜&마켓",
     "youngnong.co.kr": "한국영농신문",
     "www.youngnong.co.kr": "한국영농신문",
@@ -13956,6 +13958,20 @@ def article_source_bucket_key(article: "Article") -> str:
 # 농업 전문/현장 매체(원예·유통 실무에서 참고 가치가 높음) — 너무 과도하게 밀어주진 않되, '하단 고착'을 방지
 AGRI_TRADE_PRESS = {"농민신문", "농수축산신문", "농업정보신문", "팜&마켓", "한국농어민신문", "원예산업신문"}
 AGRI_TRADE_HOSTS = {"afnews.co.kr", "agrinet.co.kr", "farmnmarket.com", "nongmin.com", "wonyesanup.co.kr"}
+# 농협 그룹의 신문·방송. 구독자가 농협 임직원이므로 이 두 매체의 보도는
+# 반드시 알아야 할 정보일 때가 많다. 농민신문은 이미 최상 언론 티어였고,
+# NBS(한국농업방송)는 어디에도 매핑돼 있지 않아 최하 티어로 떨어지고
+# '미상 약어' 감점까지 받고 있었다.
+NH_GROUP_PRESS = {"농민신문", "NBS", "NBS한국농업방송", "한국농업방송", "농민신문사"}
+NH_GROUP_HOSTS = {"nongmin.com", "inbs.co.kr"}  # NBS(inbs.co.kr)는 농민신문사가 운영한다
+
+
+def is_nh_group_media(press: str, domain: str) -> bool:
+    label = re.sub(r"\s+", "", str(press or "").strip())
+    if label and any(label == re.sub(r"\s+", "", name) for name in NH_GROUP_PRESS):
+        return True
+    host = normalize_host(str(domain or "")) or ""
+    return bool(host) and (host in NH_GROUP_HOSTS or any(host.endswith("." + h) for h in NH_GROUP_HOSTS))
 # 방송사: 영상 기사는 본문 스크립트가 빈약할 수 있으나, 보도 자체가 중요 이슈 시그널
 BROADCAST_PRESS = {"KBS", "MBC", "SBS", "YTN", "JTBC", "MBN", "TV조선", "채널A", "연합뉴스TV", "OBS"}
 # 중간: 농업 전문지/지방/중소/연구·지자체
@@ -13996,6 +14012,9 @@ def press_tier(press: str, domain: str) -> int:
     # 공식(정책/기관) 우선
     if d in OFFICIAL_HOSTS or any(d.endswith('.' + h) for h in OFFICIAL_HOSTS):
         return 4
+    # 농협 그룹 매체(농민신문·NBS)는 구독자에게 직접적인 정보원이다.
+    if is_nh_group_media(p, d):
+        return 3
     if p in ('농식품부', '정책브리핑', 'aT', '농관원', 'KREI'):
         return 4
 
@@ -14037,6 +14056,10 @@ def press_weight(press: str, domain: str) -> float:
     # 농업 전문 매체는 '현장 정보' 가치가 있어 소폭 가점(단, 로컬 단신 필터/임계치로 과대표집 방지)
     if p in AGRI_TRADE_PRESS or normalize_host(d) in AGRI_TRADE_HOSTS:
         w += 1.2
+    # 농협 그룹 매체는 그보다 조금 더. 가점일 뿐이며 관련성·품질 게이트를
+    # 건너뛰게 하지는 않는다(동정·행사 기사는 여전히 지역농협 감점 대상).
+    if is_nh_group_media(p, d):
+        w += 0.6
 
     # 통신/온라인 서비스는 기사량이 많아 상단을 잠식하기 쉬움: 약간 감점(이슈 점수로 승부)
     if p in WIRE_SERVICES:
@@ -14047,7 +14070,11 @@ def press_weight(press: str, domain: str) -> float:
     if any(h in d for h in _UGC_HOST_HINTS):
         w -= 3.0
     # 알 수 없는 짧은 약어(브랜드)로 추정되는 경우(지방/인터넷 재전송) 소폭 감점
-    if (p == "미상") or (p.isupper() and len(p) <= 6 and p not in ("KREI", "KBS", "MBC", "SBS", "YTN", "JTBC", "MBN")):
+    if (p == "미상") or (
+        p.isupper()
+        and len(p) <= 6
+        and p not in ("KREI", "KBS", "MBC", "SBS", "YTN", "JTBC", "MBN", "NBS")
+    ):
         w -= 1.0
     return w
 
@@ -29441,6 +29468,21 @@ def _build_sections_phase123(
     except Exception as e:
         log.warning("[WARN] publication invariant dedupe failed: %s", e)
 
+    try:
+        # 리필·dedupe 가 마지막으로 지면을 건드린 뒤 한 번 더 확인한다. 앞선
+        # 강제와 이 스윕 사이에 카드가 바뀌면 예산이 다시 깨지기 때문이다.
+        final_source_swept = _cap_final_low_tier_sources(
+            final_by_section,
+            raw_by_section,
+            allow_drop=False,
+        )
+        if final_source_swept:
+            log.info("[REBALANCE] publish-time source budget swept %d card(s)", final_source_swept)
+            _ensure_final_selection_fit(final_by_section)
+            _sync_debug_with_final_sections(final_by_section)
+    except Exception as e:
+        log.warning("[WARN] publish-time source budget sweep failed: %s", e)
+
     # The raw commodity pool is deliberately broader than the final briefing,
     # but cap/filter decisions must never make an eligible selected card vanish
     # from today's commodity board.
@@ -35738,8 +35780,13 @@ def _cap_final_low_tier_sources(
     *,
     max_per_section: int | None = None,
     max_total: int | None = None,
+    allow_drop: bool = True,
 ) -> int:
     """Replace excessive tier-1 sources with qualified tier-2+ alternatives.
+
+    allow_drop=False 는 교체만 하고 카드를 빼지 않는다. 선호 카드수가 모자라면
+    독자품질 점수가 95로 캡되므로, 빈 슬롯은 저티어 한 건보다 비싸다. 발행
+    직전 스윕처럼 더 이상 리필이 돌지 않는 지점에서 쓴다.
 
     Early selection has source caps, but late refill/repair passes intentionally use a
     wider pool and could reintroduce many low-tier cards. This is the final budget that
@@ -35977,7 +36024,7 @@ def _cap_final_low_tier_sources(
 
             # 후보풀이 정말 얕은 날에는 저티어 카드로 5칸을 억지로 채우기보다
             # 최소 3칸의 신뢰 가능한 브리핑을 우선한다.
-            if len(sec_list) > MIN_FALLBACK_PER_SECTION:
+            if allow_drop and len(sec_list) > MIN_FALLBACK_PER_SECTION:
                 sec_list.pop(victim_idx)
                 final_by_section[sec] = sec_list
                 changed += 1
@@ -46486,7 +46533,33 @@ def _recover_preferred_section_counts_from_raw(
                 ranked.append((rank, article))
         if not ranked:
             continue
-        ranked.sort(key=lambda item: item[0], reverse=True)
+        # 이 리필은 최하위 매체 예산을 강제한 뒤에 돌기 때문에, 예산을 모르면
+        # 방금 걷어낸 저티어 카드를 그대로 되돌려 놓는다(08-10~12 지면이 그랬다).
+        # 다만 빈 슬롯은 저티어 한 건보다 비싸므로(선호 카드수 미달은 독자품질
+        # 점수를 95로 캡한다) 차단이 아니라 후순위로만 민다.
+        low_tier_budget_spent = (
+            sum(
+                1
+                for items in final_by_section.values()
+                for existing in items or []
+                if isinstance(existing, Article) and _is_final_low_tier_source(existing)
+            )
+            >= FINAL_LOW_TIER_MAX_TOTAL
+        )
+        section_low_now = [
+            existing
+            for existing in current
+            if isinstance(existing, Article) and _is_final_low_tier_source(existing)
+        ]
+
+        def _source_budget_priority(candidate: Article) -> int:
+            if not _is_final_low_tier_source(candidate):
+                return 1
+            if low_tier_budget_spent:
+                return 0
+            return 1 if _low_tier_section_budget_allows(section_key, candidate, section_low_now) else 0
+
+        ranked.sort(key=lambda item: (_source_budget_priority(item[1]), item[0]), reverse=True)
         used_keys = {
             _article_selection_identity(article)
             for article in current
