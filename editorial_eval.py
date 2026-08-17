@@ -1064,6 +1064,10 @@ def evaluate_editorial_quality(
         "but they should not displace stronger national or operational candidates. "
         "For dist, prefer concrete distribution, logistics, export-disruption, market-operation, and sales-channel stories over local promotions. "
         "For pest, prefer fire-blight escalation/response and named crop pest risks over generic local notices. "
+        "The pest section covers growth risk and control by design, so weather-driven crop-damage stories "
+        "(heat scorch/일소, high-temperature or drought crop damage, hail) belong there: do not flag them as "
+        "wrong_section or off_topic merely for being weather stories, though you may still judge their "
+        "editorial value normally. "
         "For a weak_core issue, title the selected card whose core flag should change and state explicitly whether it should be promoted to core or demoted from core. "
         "Use only these issue types: "
         + ", ".join(EDITORIAL_ISSUE_TYPES)
@@ -1207,7 +1211,7 @@ def propose_editorial_repair(
         "For supply, prioritize horticultural production, shipment, price, weather, and supply-demand developments, including quantified short-term price spikes or shortages. "
         "For policy, prioritize enacted or consequential agricultural policy, legislation, budgets, trade, and price-stabilization measures; reject consumer shopping tips, local processing-plant announcements, local council speeches, and routine field visits when concrete national or provincial policy exists. "
         "For dist, prioritize wholesale markets, logistics, exports, APC operations, online wholesale markets, and sales-channel operations; prefer nationwide programs, quantified export shipments, and measured operations over ceremonies, routine APC visits, and unsigned future plans. A routine APC inspection may be a tail card but should not displace a quantified export story or become core. "
-        "For pest, prioritize named crop pests or diseases, outbreaks, damage, risk escalation, and actionable prevention or control. Treat a quantified national fire-blight increase as a strong core candidate even when its headline mentions a diagnostic product; keep it core unless two clearly stronger actual outbreak or damage-response reports are selected. "
+        "For pest, prioritize named crop pests or diseases, outbreaks, damage, risk escalation, and actionable prevention or control. Weather-driven crop-damage stories (heat scorch/일소, high-temperature or drought crop damage, hail) are in-section by design; do not remove them as wrong-section. Treat a quantified national fire-blight increase as a strong core candidate even when its headline mentions a diagnostic product; keep it core unless two clearly stronger actual outbreak or damage-response reports are selected. "
         "Mark the strongest two or three cards in each section as core. Return JSON only."
     )
     request_body = {
