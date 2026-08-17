@@ -101,55 +101,6 @@ _ADVISORY_ACTIONS: tuple[tuple[str, tuple[str, ...]], ...] = (
 )
 
 
-# 정부의 농산물 수급·물가 안정 발표. 브리핑 한 건을 여러 매체가 서로 다른
-# 각도로 쓰기 때문에(같은 날 '평년보다 낮아', '배추값 32%↓', '추석까지 안정
-# 공급'이 각각 카드가 됐다) 제목만으로는 같은 사안인지 알 수 없다. 편집 평가는
-# 이런 묶음을 duplicate_story/duplicate_theme 로 계속 지적했다.
-_GOV_STABILIZATION_ACTORS = ("정부", "농식품부", "농림축산식품부", "기재부", "기획재정부")
-# 수급·물가 안정이라는 성격이 분명할 때만 묶는다. '대책'·'지원' 같은 총칭은
-# 면세유·스마트팜처럼 전혀 다른 정책까지 합쳐버리므로 넣지 않는다.
-_GOV_STABILIZATION_MEASURES = (
-    "수급 안정", "수급안정", "가격 안정", "가격안정", "물가",
-    "할인 지원", "할인지원", "할인", "비축", "방출", "공급 확대", "공급확대",
-    "수급 대책", "수급대책",
-)
-# '평년'·'안정 공급'·'가격 점검'까지 넣어 같은 브리핑의 모든 변형을 잡아보려 했지만,
-# 그 어휘는 개별 정책 기사(할인 지원 사업, 전자송장 가격 대응 등)까지 한 사건으로
-# 합쳐 버렸다. 좁게 유지하고, 못 잡는 변형은 남겨둔다.
-_GOV_STABILIZATION_TARGETS = (
-    "농산물", "농축산물", "채소", "과일", "청과", "밥상물가", "장바구니", "성수품",
-)
-
-
-def _gov_stabilization_signature(title_n: str, spaced: str, compact: str) -> EventFingerprint:
-    """정부의 명절 수급·물가 대책 발표.
-
-    '정부 + 농산물 + 가격 조치'만으로는 사건을 특정하지 못한다. 하루치 지면에도
-    계란 할인, 가격안정제 토론회, 노지채소 도매가 설명처럼 서로 다른 정부
-    이야기가 함께 실리기 때문이다(그렇게 묶었더니 실제로 별개 정책이 하나로
-    합쳐졌다). 명절 대책처럼 시점이 특정되는 발표만 한 사건으로 본다.
-    """
-    occasion = ""
-    for token in ("추석", "설 명절", "설명절", "명절"):
-        if token in spaced:
-            occasion = "추석" if token == "추석" else "명절"
-            break
-    if not occasion:
-        return ()
-    if not any(_compact(term) in compact for term in _GOV_STABILIZATION_ACTORS):
-        return ()
-    # 조치어는 공백을 살린 텍스트로 찾는다. 공백을 지우면 '농산물 가격'이
-    # '농산물가격'이 되면서 '물가'가 그 안에서 잡혀, 전혀 다른 정책 기사까지
-    # 같은 사건으로 묶였다.
-    if not any(term in spaced for term in _GOV_STABILIZATION_MEASURES):
-        return ()
-    if not any(term in compact for term in _GOV_STABILIZATION_TARGETS):
-        return ()
-    # 품목이 제목에 특정되면 그 품목까지 키에 넣는다. 같은 명절 대책이라도 정부가
-    # 품목별로 따로 발표하면 별개 사안이기 때문이다.
-    return ("gov_supply_stabilization", occasion, crop_bucket(title_n))
-
-
 def _advisory_authority(compact: str) -> str:
     for key, terms in _ADVISORY_AUTHORITIES:
         if any(_compact(term) in compact for term in terms):
@@ -178,10 +129,6 @@ def canonical_event_fingerprint(title: str, description: str = "") -> EventFinge
     title_compact = _compact(title_n)
     if not compact:
         return ()
-
-    gov_signature = _gov_stabilization_signature(title_n, f"{title_n} {lead_n}", compact)
-    if gov_signature:
-        return gov_signature
 
     authority = _advisory_authority(compact)
     if authority:
@@ -281,5 +228,4 @@ def duplicate_event_reason(
         "food_industry_cost_relief": "same_food_industry_cost_relief",
         "named_policy_program": "same_named_policy_program",
         "agency_advisory": "same_agency_advisory",
-        "gov_supply_stabilization": "same_gov_supply_stabilization",
     }.get(left[0], "same_canonical_event")
