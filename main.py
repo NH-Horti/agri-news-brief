@@ -5975,6 +5975,18 @@ def managed_commodity_board_keys_for_article(
     return selected[:max_keys]
 
 
+# 품목명이 매체명·플랫폼·관용구와 겹치는 품목은 이미 있는 문맥 판정기로 한 번 더
+# 거른다. _topic_scores 는 진작 이렇게 하고 있었는데 이 경로만 빠져 있어서,
+# '뉴스 토마토' 바이라인이 토마토 품목으로 잡혔고 비농업 기사가 농업 정책 기사로
+# 통과했다(2026-08-13 정책 섹션 오염).
+# 토마토만 넣는다. 다른 동음이의 품목의 판정기(사과/감자/당근…)는 더 좁은 용도로
+# 만들어져서 여기에 그대로 쓰면 정상 기사까지 떨어진다("쌀과 사과의 공급을 조절"이
+# 그렇게 막혔다). 실제로 확인된 결함만 막는다.
+_AMBIGUOUS_COMMODITY_CONTEXT_GUARDS: dict[str, Callable[[str], bool]] = {
+    "tomato": lambda text: is_edible_tomato_context(text),
+}
+
+
 @lru_cache(maxsize=16384)
 def _managed_commodity_keys_for_text_cached(title: str, desc: str, topic: str = "") -> tuple[str, ...]:
     txt = f"{title or ''} {desc or ''}".lower()
@@ -5985,8 +5997,12 @@ def _managed_commodity_keys_for_text_cached(title: str, desc: str, topic: str = 
         key = str(item.get("key") or "").strip()
         if not key or key in matched:
             continue
-        if _managed_commodity_matches_text(item, txt, topic_name):
-            matched.append(key)
+        if not _managed_commodity_matches_text(item, txt, topic_name):
+            continue
+        guard = _AMBIGUOUS_COMMODITY_CONTEXT_GUARDS.get(key)
+        if guard is not None and not guard(txt):
+            continue
+        matched.append(key)
     return tuple(matched)
 
 
@@ -6384,6 +6400,14 @@ _TOMATO_EDIBLE_MARKERS = (
     "수확", "출하", "반입", "작황", "수급", "가격", "시세", "도매", "도매가격", "도매시장",
     "공판장", "경락", "경매", "방울토마토", "대추방울토마토", "토마토 가격", "토마토 수급",
     "토마토 작황", "토마토 출하", "토마토 재배", "토마토 농가", "토마토뿔나방",
+    # 산지유통·선별포장 어휘. 스마트 APC 자동화 기사처럼 시장·가격 낱말이 없어도
+    # 명백히 작물을 다루는 기사가 걸러지지 않도록 한다.
+    "선별", "포장", "apc", "산지유통센터", "육묘", "정식",
+)
+
+
+_TOMATO_BRAND_CONTEXT_RE = re.compile(
+    r"(?:뉴스|news|ib|아이비)\s*토마토|토마토\s*(?:tv|티비)|newstomato"
 )
 
 
@@ -6391,6 +6415,11 @@ def is_edible_tomato_context(text: str) -> bool:
     """Return True only when '토마토' clearly refers to the crop or pest context."""
     t = _nfkc_lower(text or "")
     if "토마토" not in t:
+        return False
+    # 매체명 표기(뉴스 토마토·IB 토마토·토마토TV)를 지우고도 '토마토'가 남아야 작물이다.
+    # 본문 어딘가의 '수급'·'가격' 같은 일반 낱말이 바이라인을 작물로 둔갑시키던 경로를
+    # 막는다("전력 수급"이 들어간 AI 국가전략 기사가 토마토 품목으로 잡혔다).
+    if "토마토" not in _TOMATO_BRAND_CONTEXT_RE.sub(" ", t):
         return False
     edible_hit = any(w.lower() in t for w in _TOMATO_EDIBLE_MARKERS)
     brand_noise_hit = any(w.lower() in t for w in _TOMATO_BRAND_NOISE_MARKERS)
@@ -33898,6 +33927,33 @@ def _policy_preferred_gap_rank(article: Article, section_conf: JsonDict) -> tupl
     )
 
 
+_POLICY_GAP_HORTI_TERMS = (
+    "농산물", "농축산물", "채소", "과일", "양파", "대파", "수박", "배추", "무", "참외", "토마토",
+)
+
+
+def _policy_gap_horti_hits(text: str) -> int:
+    """정책 갭 판정용 원예 품목 신호 수.
+
+    '토마토'는 매체명(뉴스 토마토)으로, '무'는 다른 낱말 안에서 잡히기 쉬워서
+    그대로 세면 비농업 기사가 농업 정책 기사로 통과한다. 두 낱말만 문맥·경계를
+    확인하고 나머지는 그대로 센다.
+    """
+    hits = 0
+    for term in _POLICY_GAP_HORTI_TERMS:
+        if term == "토마토":
+            if "토마토" in text and is_edible_tomato_context(text):
+                hits += 1
+            continue
+        if term == "무":
+            if re.search(r"(?<![가-힣])무(?![가-힣])", text):
+                hits += 1
+            continue
+        if term in text:
+            hits += 1
+    return hits
+
+
 def _is_policy_supply_response_gap_story(article: Article) -> bool:
     if not isinstance(article, Article):
         return False
@@ -33914,25 +33970,7 @@ def _is_policy_supply_response_gap_story(article: Article) -> bool:
     ):
         return False
     managed_count = int(_managed_commodity_match_summary(title, desc).get("count") or 0)
-    horti_hits = count_any(
-        text,
-        [
-            w.lower()
-            for w in (
-                "농산물",
-                "농축산물",
-                "채소",
-                "과일",
-                "양파",
-                "대파",
-                "수박",
-                "배추",
-                "무",
-                "참외",
-                "토마토",
-            )
-        ],
-    )
+    horti_hits = _policy_gap_horti_hits(text)
     if managed_count <= 0 and horti_hits <= 0:
         return False
     if (
@@ -35539,11 +35577,29 @@ def _demote_soft_news_final_cores(
             target = min(2, max(1, prev_core_count))
             current = sum(1 for a in items if bool(getattr(a, "is_core", False)))
             if current < target:
+                sec_conf = next((s for s in SECTIONS if str(s.get("key") or "") == sec), {})
+
                 def _core_repair_pool(relaxed: bool) -> list["Article"]:
                     pool: list[Article] = []
                     for a in items:
                         if bool(getattr(a, "is_core", False)):
                             continue
+                        # 그 섹션 관련성 게이트도 통과하지 못하는 카드는 코어가 될 수
+                        # 없다. 약한 코어를 내린 자리를 복지·동정 기사가 대신 차지하던
+                        # 경로다(2026-08-13 유통 코어의 농협 무더위쉼터 기사).
+                        if sec_conf:
+                            try:
+                                if not is_relevant(
+                                    a.title or "",
+                                    a.description or "",
+                                    a.domain or "",
+                                    a.link or "",
+                                    sec_conf,
+                                    a.press or "",
+                                ):
+                                    continue
+                            except Exception:
+                                pass
                         if _soft_news_core_demote_reason(a):
                             continue
                         if _editorial_safe_core_demote_reason(a, sec):
@@ -45767,6 +45823,40 @@ def _recover_preferred_section_counts_from_raw(
                     and len(current) < target
                     and _is_pest_direct_gap_story(article)
                 )
+                # 어떤 gap 근거도 없는 후보는 그 섹션 관련성 게이트를 다시 통과해야
+                # 한다. raw 풀에는 수집 쿼리로 들어왔을 뿐 관련성에서 탈락한 기사가
+                # 남아 있고, 빈칸을 채우는 이 경로가 그것을 그대로 지면에 올렸다
+                # (2026-08-13 정책 섹션의 송전탑 반발 기사). gap 술어로 들어오는
+                # 기사는 그 술어가 이미 근거를 판정했으므로 건드리지 않는다.
+                _has_gap_reason = bool(
+                    soft_dist_crossfill
+                    or supply_chain_crossfill
+                    or supply_field_support_gap
+                    or dist_preferred_gap
+                    or dist_ranked_gap
+                    or soft_policy_tail
+                    or policy_preferred_gap
+                    or policy_supply_response_gap
+                    or policy_fertilizer_support_gap
+                    or policy_agri_finance_support_gap
+                    or policy_agri_supplier_payment_gap
+                    or policy_climate_adaptation_gap
+                    or pest_national_gap
+                    or pest_direct_gap
+                )
+                if not _has_gap_reason and conf:
+                    try:
+                        if not is_relevant(
+                            article.title or "",
+                            article.description or "",
+                            article.domain or "",
+                            article.link or "",
+                            conf,
+                            article.press or "",
+                        ):
+                            continue
+                    except Exception:
+                        pass
                 tail_reason = _preferred_tail_block_reason(article, section_key, current_count=len(current), raw_count=raw_count)
                 if tail_reason and not (
                     soft_policy_tail
