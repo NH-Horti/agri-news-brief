@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-16T23:41:15+09:00",
+  "generated_at": "2026-08-17T23:46:13+09:00",
   "rows": [
     {
       "date": "2026-05-20",
@@ -91,6 +91,19 @@
       "users": 2,
       "archive_url": "/agri-news-brief/archive/2026-07-31.html#sec-supply",
       "source_url": "http://www.ikpnews.net/news/articleView.html?idxno=71078"
+    },
+    {
+      "date": "2026-08-17",
+      "article_id": "",
+      "title": "폭염에 화상 입고 가뭄에 못 크고… 추석 과일값 예고된 폭등",
+      "report_date": "2026-08-14",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.busan.com",
+      "clicks": 6,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
     },
     {
       "date": "2026-05-12",
@@ -12840,6 +12853,19 @@
       "section": "supply",
       "surface": "briefing_card",
       "target_domain": "www.fnnews.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-08-17",
+      "article_id": "",
+      "title": "폭염에 화상 입고 가뭄에 못 크고… 추석 과일값 예고된 폭등",
+      "report_date": "2026-08-14",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.busan.com",
       "clicks": 1,
       "users": 1,
       "archive_url": "",
