@@ -6585,10 +6585,21 @@ _RETAIL_SALES_TREND_MARKERS = [
 _RETAIL_SALES_TREND_EXCLUDE: list[str] = [
     # 거시 물가/통계는 policy에서 다루므로 제외하지 않음(아래 로직에서 따로 판단)
 ]
-def is_retail_sales_trend_context(text: str) -> bool:
+# 제목에 이 표현이 있으면 그 기사의 주제는 정부 정책 수단이다.
+# 본문에 '판매'가 한 번 스쳤다는 이유로 소매 트렌드 기사로 뒤집히면 안 된다.
+_POLICY_INSTRUMENT_TITLE_TERMS: tuple[str, ...] = (
+    "할당관세", "관세", "검역", "규제", "단속", "법안", "개정안",
+    "제도", "대책", "농식품부", "국회",
+)
+
+
+def is_retail_sales_trend_context(text: str, title: str = "") -> bool:
     """소매/리테일 판매 데이터 기반 트렌드 기사 판정.
     - 예: '매출/판매 데이터/분석/트렌드/랭킹' 중심의 소비 트렌드 기사
     - 목적: 이런 유형은 '정책 및 주요 이슈'으로 과흡수되지 않도록 supply 쪽으로 남기기
+
+    title 을 주면 '소매 트렌드가 이 기사의 주제인가'를 제목으로 판단한다.
+    (생략하면 기존처럼 본문 포함 전체 텍스트만 본다)
     """
     t = (text or "").lower()
     if not t:
@@ -6612,6 +6623,13 @@ def is_retail_sales_trend_context(text: str) -> bool:
 
     # 정책/제도 기사로 볼 만한 강신호가 있으면 소매 트렌드로 보지 않는다(오분류 방지)
     policy_hard = ["대책", "지원", "단속", "점검", "회의", "발표", "추진", "법", "제도", "개정", "관세", "검역", "규제"]
+    # 제목이 정책 수단을 말하고 있으면 그게 기사의 주제다. 본문에 '판매'·'매출'이
+    # 스쳐 지나간다고 소매 트렌드로 뒤집지 않는다.
+    # (예: "수입과일 할당관세 2년…물가는 못 잡고 농가·유통업계 부담만" 은 본문에
+    #  '판매'가 한 번 나온다는 이유만으로 policy tail 게이트에서 탈락하고 있었다.)
+    ttl = (title or "").lower()
+    if ttl and any(k in ttl for k in _POLICY_INSTRUMENT_TITLE_TERMS):
+        return False
     if any(k in t for k in policy_hard) and ("매출" not in t and "판매" not in t):
         return False
 
@@ -9465,7 +9483,7 @@ def is_policy_major_issue_context(title: str, desc: str, dom: str = "", press: s
 
     if is_remote_foreign_trade_brief_context(ttl, desc or "", dom_norm):
         return False
-    if is_retail_sales_trend_context(txt):
+    if is_retail_sales_trend_context(txt, ttl):
         return False
     if is_dist_export_shipping_context(ttl, desc or ""):
         return False
@@ -16029,7 +16047,7 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
 
         if not is_official:
             # 소매 매출/판매 데이터 기반 트렌드 기사는 policy가 아니라 supply로 보내는 것이 자연스럽다
-            if is_retail_sales_trend_context(text):
+            if is_retail_sales_trend_context(text, ttl):
                 return _reject("policy_retail_sales_trend")
             policy_signal_terms = ["가격 안정", "성수품", "할인지원", "할당관세", "검역", "원산지", "수입", "수출", "관세", "도매시장", "온라인 도매시장", "유통", "수급"]
             agri_base = count_any(text, [t.lower() for t in ("농식품", "농산물", "농업")])
@@ -18974,7 +18992,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 return None
             if _is_policy_weak_tail_story(a):
                 return None
-            if is_retail_sales_trend_context(txt_local):
+            if is_retail_sales_trend_context(txt_local, a.title or ""):
                 return None
             if not (market_brief or stabilization or announcement or macro or major_issue or export_support_brief or local_price_support or local_program):
                 return None
@@ -19021,7 +19039,7 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         pr_local = (a.press or "").strip()
         if _is_policy_weak_tail_story(a):
             return False
-        if is_retail_sales_trend_context(txt_local):
+        if is_retail_sales_trend_context(txt_local, a.title or ""):
             return False
         market_brief = is_policy_market_brief_context(txt_local, dom_local, pr_local)
         stabilization = is_supply_stabilization_policy_context(txt_local, dom_local, pr_local)
@@ -27983,7 +28001,7 @@ def build_sections_from_raw(raw_by_section: dict[str, list[Article]], start_kst:
                     except Exception:
                         pass
             # 소매 매출/판매 데이터 기반 트렌드(예: 무인 과일가게 판매 데이터)는 supply가 자연스러움
-            if is_retail_sales_trend_context(txt) and (not policy_domain_override(d, txt)):
+            if is_retail_sales_trend_context(txt, a.title or "") and (not policy_domain_override(d, txt)):
                 # supply로 재평가해서 통과할 때만 이동
                 try:
                     if is_relevant(a.title, a.description, d, a.canon_url or a.url, supply_conf, p):
@@ -33496,7 +33514,7 @@ def _policy_underfill_recovery_rank(article: Article, policy_conf: JsonDict) -> 
         return None
     if is_policy_livestock_dominant_context(title, desc, dom, press):
         return None
-    if is_retail_sales_trend_context(text):
+    if is_retail_sales_trend_context(text, title):
         return None
     if is_policy_event_tail_context(title, desc, dom, press):
         return None
@@ -33888,7 +33906,7 @@ def _is_policy_supply_response_gap_story(article: Article) -> bool:
     text = _nfkc_lower(f"{title} {desc}")
     if not text.strip():
         return False
-    if is_retail_sales_trend_context(text) or is_policy_event_tail_context(
+    if is_retail_sales_trend_context(text, title) or is_policy_event_tail_context(
         title,
         desc,
         normalize_host(article.domain or ""),
