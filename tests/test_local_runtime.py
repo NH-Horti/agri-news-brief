@@ -472,69 +472,6 @@ class LocalRuntimeTests(TestCase):
             at_export.press,
         ))
 
-    def test_editorial_shadow_restores_fruit_tariff_and_reference_price_policy(self) -> None:
-        reserve = self._make_article(
-            section="policy",
-            title="농식품부, 여름철 폭염·호우 대비 농산물 비축물량 확대",
-            description="정부가 폭염과 호우에 대비해 농산물 수급 안정 대책을 추진한다.",
-            link="https://example.com/reserve",
-            press="농식품부",
-        )
-        labor = self._make_article(
-            section="policy",
-            title="농식품부·법무부, 계절노동자 현장간담회 개최",
-            description="농업 인력난 대응을 위한 제도 개선 논의를 진행했다.",
-            link="https://example.com/labor",
-            press="농식품부",
-        )
-        fertilizer = self._make_article(
-            section="policy",
-            title="비료 가격 상승에도 지원 예산은 감소...농가 부담 가중",
-            description="비료 가격 상승과 지원 예산 감소로 농가 생산비 부담이 커지고 있다.",
-            link="https://example.com/fertilizer",
-        )
-        president_a = self._make_article(
-            section="policy",
-            title='李대통령 "첫째도 둘째도 물가…채소·육류 가격 안정 특단 방안"',
-            description="대통령이 민생 물가 안정과 채소·육류 가격 안정 방안을 지시했다.",
-            link="https://example.com/president-a",
-        )
-        president_b = self._make_article(
-            section="policy",
-            title='이 대통령 "중동전쟁 종전 문턱…민생·물가 대응, 이제 시작"',
-            description="대통령이 중동전쟁 이후 민생과 물가 대응을 주문했다.",
-            link="https://example.com/president-b",
-        )
-        tariff = self._make_article(
-            section="policy",
-            title="국산 과일 한창때 ‘할당관세’ 재 뿌리나",
-            description="바나나·파인애플·망고 할당관세 적용기간 연장으로 국산 여름과일 가격 하락 우려가 커졌다.",
-            link="https://www.nongmin.com/article/20260619500576",
-            press="농민신문",
-        )
-        reference_price = self._make_article(
-            section="policy",
-            title="농산물가격안정제, 핵심은 ‘기준가격’…“비용 보전 넘어 경영안정에 방점을”",
-            description="새 농안법 시행을 앞두고 기준가격, 경영비, 차액 지원 기준을 두고 전문가 제언이 나왔다.",
-            link="https://www.nongmin.com/article/20260619500594",
-            press="농민신문",
-        )
-        reserve.is_core = True
-        labor.is_core = True
-        final_by_section = {"policy": [reserve, labor, fertilizer, president_a, president_b]}
-
-        changed = main._repair_editorial_shadow_issues_from_raw(
-            final_by_section,
-            {"policy": [tariff, reference_price]},
-        )
-
-        titles = [article.title for article in final_by_section["policy"]]
-        self.assertGreaterEqual(changed, 2)
-        self.assertIn(tariff.title, titles)
-        self.assertIn(reference_price.title, titles)
-        self.assertNotIn(fertilizer.title, titles)
-        self.assertLessEqual(sum(1 for title in titles if "대통령" in title or "대통령" in title), 1)
-
     def test_dist_response_logistics_and_market_education_replace_local_promo_tail(self) -> None:
         response = self._make_article(
             section="policy",
@@ -4793,70 +4730,88 @@ class LocalRuntimeTests(TestCase):
         self.assertNotIn(supply_policy_story.link, supply_links)
         self.assertIn(supply_refill.link, supply_links)
 
-    def test_shadow_repair_avoids_same_local_commodity_repeat(self) -> None:
-        onion_core = self._make_article(
-            section="supply",
-            title="“캘수록 손해” 창녕 양파 수확농가의 눈물",
-            description="양파 산지 가격 하락과 인건비 상승으로 수확 농가 손실이 커지고 있다.",
-            link="https://example.com/shadow-onion-core",
+    def test_tariff_and_quarantine_titles_are_policy_anchors(self) -> None:
+        """할당관세·검역은 그 자체가 정부 정책 수단이므로 anchorless tail이 아니다.
+
+        기관/법령 표현이 제목에 없다는 이유로 강한 관세·검역 정책 기사가
+        'policy_anchorless_preferred_tail'로 걸려 떨어지던 문제를 막는다.
+        """
+        tariff = self._make_article(
+            section="policy",
+            title="수입과일 할당관세 2년…물가는 못 잡고 농가·유통업계 부담만",
+            description=(
+                "정부가 물가 안정을 위해 2년째 시행 중인 수입과일 할당관세가 농가와 유통업계 "
+                "모두에 부담을 키우고 있다는 지적이 나온다. 바나나·망고·파인애플 할당관세를 "
+                "30%에서 5%로 낮춘 조치가 연장됐다."
+            ),
+            link="https://www.m-i.kr/news/articleView.html?idxno=1399990",
+            press="매일산업뉴스",
+            topic="과일",
         )
-        machine_demo = self._make_article(
-            section="supply",
-            title="창녕서 마늘 전 과정 기계화 기술 공개…농촌 인력난 해법 제시",
-            description="마늘 파종부터 수확까지 기계화 기술을 공개하는 행사성 기사다.",
-            link="https://example.com/shadow-machine-demo",
+        quarantine = self._make_article(
+            section="policy",
+            title="토마토·포도 등 국산 농산물 수출검역 협상 계획대로 순조",
+            description="국산 농산물 수출검역 협상이 진행되면서 신규 수출길 확보가 추진된다.",
+            link="https://example.com/policy-quarantine",
+            topic="토마토",
         )
-        machine_efficiency = self._make_article(
-            section="supply",
-            title="경북 영천시, 마늘 수확 작업 기계화 및 농가 경영 효율화에 주력",
-            description="마늘 수확 작업 기계화와 농가 경영 효율화를 소개하는 기사다.",
-            link="https://example.com/shadow-machine-efficiency",
-        )
+
+        for article in (tariff, quarantine):
+            self.assertNotEqual(
+                main._preferred_tail_block_reason(
+                    article,
+                    "policy",
+                    current_count=main.SOFT_MIN_PER_SECTION,
+                    raw_count=main.PREFERRED_PER_SECTION,
+                ),
+                "policy_anchorless_preferred_tail",
+                msg=article.title,
+            )
+            self.assertFalse(main._is_policy_editorial_weak_tail(article), msg=article.title)
+
+    def test_same_local_commodity_repeat_is_blocked_by_general_story_dedupe(self) -> None:
+        """같은 산지·품목·이슈 기사의 반복 노출은 일반 사건 중복 게이트가 막는다.
+
+        예전에는 editorial-shadow 보수 루틴이 (광양, 매실) 같은 조합을 직접 나열해
+        걸렀지만, 지금은 _final_story_signature / _candidate_conflicts_with_final 이
+        품목·지역·이슈 조합으로 일반화해 처리한다.
+        """
         gwangyang_supply = self._make_article(
             section="supply",
             title="광양매실 생산량 급증...가격은 전년보다 하락 조짐",
             description="매실 생산량 급증과 소비 부진으로 산지 가격 하락 우려가 커지고 있다.",
-            link="https://example.com/shadow-gwangyang-supply",
+            link="https://example.com/dedupe-gwangyang-supply",
+            topic="매실",
         )
         gwangyang_repeat = self._make_article(
             section="supply",
             title="광양 매실 냉해 없어 '풍작'.. 가격은 걱정",
             description="광양 매실 생산량이 늘며 산지 가격 하락 걱정이 커지고 있다.",
-            link="https://example.com/shadow-gwangyang-repeat",
+            link="https://example.com/dedupe-gwangyang-repeat",
+            topic="매실",
         )
-        melon_origin = self._make_article(
+        other_commodity = self._make_article(
             section="supply",
-            title="타 지역 참외의 '성주참외' 둔갑 정황 포착",
-            description="타 지역 참외가 성주참외로 둔갑했다는 정황이 포착돼 농가 우려가 커졌다.",
-            link="https://example.com/shadow-seongju-origin",
-        )
-        tomato_competitiveness = self._make_article(
-            section="supply",
-            title="충남 대추형 방울 토마토 신품종 경쟁력 입증",
-            description="대추형 방울토마토 신품종의 생산성과 시장 경쟁력을 확인했다.",
-            link="https://example.com/shadow-tomato-competitiveness",
-        )
-        ugly_maesil = self._make_article(
-            section="dist",
-            title="진주문산농협, 못난이 매실 가공용 수매 지원 나선다",
-            description="규격외 매실을 가공용으로 수매해 산지 물량 부담을 줄이는 조치다.",
-            link="https://example.com/shadow-ugly-maesil",
-        )
-        onion_core.is_core = True
-        final_by_section = {"supply": [onion_core, machine_demo, machine_efficiency], "policy": [], "dist": []}
-
-        changed = main._repair_editorial_shadow_issues_from_raw(
-            final_by_section,
-            {"supply": [gwangyang_supply, gwangyang_repeat, melon_origin, tomato_competitiveness], "dist": [ugly_maesil]},
+            title="배추 도매가격 강세…출하량 감소 영향",
+            description="배추 출하량 감소로 도매가격 강세가 이어지고 있다.",
+            link="https://example.com/dedupe-napa-supply",
+            topic="배추",
         )
 
+        # 이미 앉아 있는 기사와 같은 사건이면 교체 후보로도 들어오지 못한다.
+        self.assertTrue(
+            main._candidate_conflicts_with_final(gwangyang_repeat, {"supply": [gwangyang_supply]}, "supply")
+        )
+
+        # 이미 둘 다 들어간 상태라면 최종 중복 제거가 한 건을 떨어뜨린다.
+        final_by_section = {"supply": [gwangyang_supply, gwangyang_repeat, other_commodity]}
+        self.assertEqual(main._drop_final_story_duplicates(final_by_section, min_items=1), 1)
         links = {article.link for article in final_by_section["supply"]}
-        self.assertGreaterEqual(changed, 2)
-        self.assertIn(gwangyang_supply.link, links)
-        self.assertIn(melon_origin.link, links)
-        self.assertIn(tomato_competitiveness.link, links)
-        self.assertNotIn(gwangyang_repeat.link, links)
-        self.assertNotIn(ugly_maesil.link, links)
+        self.assertIn(other_commodity.link, links)
+        self.assertEqual(
+            sum(1 for article in final_by_section["supply"] if "매실" in (article.title or "")),
+            1,
+        )
 
     def test_dist_editorial_guard_replaces_promotional_watermelon_tail(self) -> None:
         core = self._make_article(
