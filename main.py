@@ -57,6 +57,7 @@ import threading
 
 from crop_risk_vocab import (
     CROP_WEATHER_DAMAGE_SIGNALS,
+    CROP_WEATHER_HEADLINE_DAMAGE_TERMS,
     CROP_WEATHER_RISK_TERMS,
     classify_pest_theme,
     crop_bucket,
@@ -17601,8 +17602,12 @@ def _headline_gate(a: "Article", section_key: str) -> bool:
         # 제목이 기상 현상과 작물 피해를 함께 말하면 그 자체로 코어 자격이 있다.
         # (report_eval._is_priority_field_risk_core 의 기상재해 분기와 같은 기준)
         title_l = _nfkc_lower(a.title or "")
+        # 헤드라인은 "가뭄 피해 확산", "폭염에 농가 비상"처럼 총칭 피해어를 쓰는 쪽이
+        # 훨씬 흔하다. DAMAGE_SIGNALS(시들·낙과·급수 등 구체 양상)만 보면 그런 제목이
+        # 코어에서 빠지고, report_eval 의 기상재해 분기와도 기준이 어긋난다.
         weather_field_core = _pest_weather_event_hits(a.title or "", a.description or "") >= 1 and any(
-            term in title_l for term in CROP_WEATHER_DAMAGE_SIGNALS
+            term in title_l
+            for term in (CROP_WEATHER_DAMAGE_SIGNALS + CROP_WEATHER_HEADLINE_DAMAGE_TERMS)
         )
         return (
             (strict_hits >= 2)
