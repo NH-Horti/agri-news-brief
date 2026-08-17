@@ -3687,6 +3687,28 @@ class TestClassifierBehavior(unittest.TestCase):
         self.assertEqual(raw["dist"][0].link, url)
         self.assertEqual(raw["dist"][0].reassigned_from, "policy")
 
+    def test_global_reassign_requires_target_section_relevance(self):
+        """섹션 이동은 대상 섹션의 관련성 게이트를 통과해야 한다.
+
+        pest 이동과 fit 기반 이동은 원래 확인했고 prefer_move_*·점수 이득 이동만 빠져 있었다.
+        그 구멍으로 공판장 아이스크림 나눔 기사가 dist로 옮겨간 뒤 코어까지 올라갔다(08-11).
+        """
+        title = "새벽 유통현장에 아이스크림 1180개…폭염 식힌 농협대전공판장"
+        desc = "농협대전공판장이 새벽 경매에 나선 중도매인과 하역 종사자에게 아이스크림을 나눠줬다."
+        url = "https://example.com/icecream-share"
+        a = self._make_article("supply", title, desc, url)
+        raw = {"policy": [], "supply": [a], "dist": [], "pest": []}
+
+        main._global_section_reassign(raw, self.now, self.now)
+
+        moved_to_dist = [x for x in raw["dist"] if x.link == url]
+        if moved_to_dist:
+            self.assertTrue(
+                main.is_relevant(title, desc, main.domain_of(url), url, self.conf["dist"],
+                                 main.normalize_press_label(main.press_name_from_url(url), url)),
+                "dist 관련성을 통과하지 못한 기사가 dist로 이동했다",
+            )
+
     def test_global_reassign_preserves_strong_dist_market_disruption_story(self):
         title = "가락·구리시장 동시휴업…딸기 산지 폐기량 2배 늘고 경락값 ‘뚝’"
         desc = "수도권 도매시장 동시 휴업 여파로 딸기 산지 폐기량이 늘고 경락값이 급락한 시장 충격 기사다."

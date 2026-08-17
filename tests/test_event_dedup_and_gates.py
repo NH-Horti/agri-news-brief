@@ -754,6 +754,52 @@ class TestSummaryQualityGate(unittest.TestCase):
         self.assertEqual(reason, "model_token")
 
 
+class TestPublishCoreSectionGates(unittest.TestCase):
+    """발행 코어 픽커는 섹션 관련성과 tail 품질을 함께 요구한다(PR-B)."""
+
+    def test_tail_blocked_promo_card_cannot_clear_core_gates(self):
+        # 편집이 지적한 실제 카드들: tail 게이트가 막는데 코어 배지를 받고 있었다
+        event_promo = _mk("dist", "농협대전공판장, '말복 맞이 아이스크림 나눔 이벤트' 진행",
+                          "농협대전공판장이 폭염 속 유통 종사자 사기 진작을 위해 아이스크림 1180개를 전달했다")
+        local_promo = _mk("dist", "상주시 '사벌국면 경천대 포도 작목반' 캠벨얼리 포도 맛보세요",
+                          "상주시가 경천대 포도 작목반의 캠벨얼리 포도를 소비자에게 홍보한다")
+        self.assertFalse(main._publish_core_section_gates_clear(event_promo, "dist"))
+        self.assertFalse(main._publish_core_section_gates_clear(local_promo, "dist"))
+
+    def test_operational_card_clears_core_gates(self):
+        a = _mk("dist", "가락시장 하역 중단 장기화…출하 농민 피해 확산",
+                "가락시장 하역 차질로 반입과 경락 일정이 흔들리며 산지 농가 피해가 커지고 있다",
+                score=40.0)
+        self.assertTrue(main._publish_core_section_gates_clear(a, "dist"))
+
+    def test_core_badge_rebalance_prefers_gate_clear_card(self):
+        """게이트를 통과하는 카드가 있으면 그 카드가 코어를 받는다."""
+        promo = _mk("dist", "상주시 '사벌국면 경천대 포도 작목반' 캠벨얼리 포도 맛보세요",
+                    "상주시가 경천대 포도 작목반의 캠벨얼리 포도를 홍보한다", is_core=True)
+        ops = _mk("dist", "가락시장 하역 중단 장기화…출하 농민 피해 확산",
+                  "가락시장 하역 차질로 반입과 경락 일정이 흔들리며 산지 농가 피해가 커지고 있다", score=40.0)
+        final = {"supply": [], "policy": [], "dist": [promo, ops], "pest": []}
+        main._rebalance_publish_core_badges_for_editorial_target(final)
+        cores = [a.title for a in final["dist"] if a.is_core]
+        self.assertIn(ops.title, cores, f"운영 기사가 코어를 받지 못했다: {cores}")
+
+    def test_core_badge_rebalance_never_empties_cores(self):
+        """통과 후보가 전무하면 기존 목록을 그대로 써서 코어 0 섹션을 만들지 않는다.
+
+        core_fill 지표는 섹션당 코어 ≥1만 요구하므로 2→1은 무비용이지만 0은 감점이다.
+        """
+        promo = _mk("dist", "상주시 '사벌국면 경천대 포도 작목반' 캠벨얼리 포도 맛보세요",
+                    "상주시가 경천대 포도 작목반의 캠벨얼리 포도를 홍보한다", is_core=True)
+        event = _mk("dist", "농협대전공판장, '말복 맞이 아이스크림 나눔 이벤트' 진행",
+                    "아이스크림 1180개를 전달했다")
+        final = {"supply": [], "policy": [], "dist": [promo, event], "pest": []}
+        main._rebalance_publish_core_badges_for_editorial_target(final)
+        self.assertGreaterEqual(
+            sum(1 for a in final["dist"] if a.is_core), 1,
+            "대체 후보가 없는데 코어를 전부 벗겼다",
+        )
+
+
 class TestBoundedTermMatching(unittest.TestCase):
     """한글은 \\w라서 \\b가 성립하지 않는다. 짧은 노이즈 어휘가 다른 단어 안에
     우연히 들어앉아 정상 기사를 죽이던 오탐을 막는다."""
