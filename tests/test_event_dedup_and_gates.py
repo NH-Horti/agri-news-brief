@@ -822,6 +822,17 @@ class TestBoundedTermMatching(unittest.TestCase):
         self.assertEqual(main.count_any_bounded("도로 확장과 차로 조정", ("도로", "차로")), 2)
         self.assertEqual(main.count_any_bounded("", ("도로",)), 0)
 
+    def test_bounded_subset_leaves_other_terms_as_substrings(self):
+        # 한국어 복합어는 정상 표현이다: 경계는 충돌 어휘에만 걸어야
+        # '채용비리'·'연안여객선' 같은 수식어 결합이 누락되지 않는다 (Codex P1/P2).
+        self.assertEqual(
+            main.count_any_bounded("농협 채용비리 의혹", ("비리", "수사"), bounded={"수사"}), 1)
+        self.assertEqual(
+            main.count_any_bounded("연안여객선 안전관리", ("여객선", "도로"), bounded={"도로"}), 1)
+        # bounded에 든 어휘는 여전히 경계를 요구한다
+        self.assertEqual(
+            main.count_any_bounded("우수사무소 선정", ("수사",), bounded={"수사"}), 0)
+
 
 class TestNonAgriTransportPolicyGate(unittest.TestCase):
     def test_incidental_body_substring_does_not_make_it_a_transport_story(self):
@@ -836,6 +847,13 @@ class TestNonAgriTransportPolicyGate(unittest.TestCase):
             "여객선 조타실 cctv 의무화 추진", "해양사고 예방을 위한 안전 대책"))
         self.assertTrue(main.is_non_agri_transport_policy_context(
             "성남~서초 고속도로 민간투자사업 우선협상대상자 선정", "양재나들목 교통 정체 개선"))
+
+    def test_transport_terms_inside_korean_compounds_still_blocked(self):
+        # 앞에 수식어가 붙은 복합어도 교통 기사다 (Codex P2)
+        for title in ("연안여객선 안전관리 의무화 추진",
+                      "민자고속도로 통행료 지원사업 추진",
+                      "자율운항선박 안전 규제 도입"):
+            self.assertTrue(main.is_non_agri_transport_policy_context(title, ""), title)
 
     def test_far_body_transport_mention_alone_does_not_trigger(self):
         # 리드 밖(360자 이후) 우연 등장은 판정 근거가 되지 않는다
@@ -856,6 +874,13 @@ class TestNhInternalNegativeGate(unittest.TestCase):
         self.assertTrue(main.is_nh_internal_negative("농협 회장 비리 의혹 수사 착수"))
         self.assertTrue(main.is_nh_internal_negative(
             "농협중앙회 임원 횡령 혐의", "검찰이 배임 혐의로 구속영장을 청구했다"))
+
+    def test_negative_terms_inside_korean_compounds_still_blocked(self):
+        # 수식어가 붙은 복합어도 부정 기사다 (Codex P1)
+        for title in ("농협 채용비리 의혹",
+                      "농협 임직원 공금횡령 의혹",
+                      "농협 회장 업무상배임 혐의"):
+            self.assertTrue(main.is_nh_internal_negative(title), title)
 
     def test_non_nh_story_is_never_negative(self):
         self.assertFalse(main.is_nh_internal_negative("지자체 공무원 비리 수사"))

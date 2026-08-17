@@ -43,7 +43,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, date, timezone
 from email.utils import parsedate_to_datetime
 from functools import lru_cache
-from typing import Any, Callable, Sequence, TypedDict
+from typing import Any, Callable, Iterable, Sequence, TypedDict
 from urllib.parse import urlparse, urlunparse, parse_qsl, urlencode, quote
 import xml.etree.ElementTree as ET
 
@@ -6229,16 +6229,31 @@ def _bounded_term_rx(word: str) -> "re.Pattern[str] | None":
     return rx
 
 
-def count_any_bounded(text: str, words: list[str] | tuple[str, ...] | set[str]) -> int:
-    """count_any와 같은 계약(히트한 어휘 수)이지만 짧은 어휘의 부분문자열 오탐을 막는다.
+def count_any_bounded(
+    text: str,
+    words: list[str] | tuple[str, ...] | set[str],
+    *,
+    bounded: Iterable[str] | None = None,
+) -> int:
+    """count_any와 같은 계약(히트한 어휘 수)이지만 지정한 어휘만 경계를 요구한다.
 
-    한글 2~3음절 노이즈 어휘는 다른 단어 안에 우연히 들어앉는다('별도로'의 '도로',
+    한글 2~3음절 어휘는 다른 단어 안에 우연히 들어앉는다('별도로'의 '도로',
     '우수사무소'의 '수사'). 라틴 약어도 마찬가지다('public'의 'ic').
+
+    **경계는 충돌하는 어휘에만 적용해야 한다.** 한국어는 복합어가 정상이라서 모든 어휘에
+    앞경계를 걸면 '채용비리·공금횡령·업무상배임'이나 '연안여객선·민자고속도로·자율운항선박'처럼
+    앞에 수식어가 붙은 **정상 표현이 통째로 누락된다**. `bounded`를 주면 그 어휘만 경계를
+    요구하고 나머지는 부분문자열로 센다. 생략하면 전부 경계를 요구한다(라틴 약어 전용 목록 등).
     """
     if not text:
         return 0
+    bounded_set = None if bounded is None else {str(w or "").strip() for w in bounded}
     total = 0
     for w in words:
+        if bounded_set is not None and str(w or "").strip() not in bounded_set:
+            if w and w in text:
+                total += 1
+            continue
         rx = _bounded_term_rx(w)
         if rx is not None and rx.search(text):
             total += 1
@@ -7908,6 +7923,9 @@ def _has_title_agri_policy_anchor(title: str) -> bool:
     ) >= 1
 
 
+_TRANSPORT_BOUNDED_TERMS = frozenset({"도로", "차로", "ic"})
+
+
 def is_non_agri_transport_policy_context(title: str, desc: str) -> bool:
     """비농업 교통·수송 정책 기사 판별.
 
@@ -7926,8 +7944,11 @@ def is_non_agri_transport_policy_context(title: str, desc: str) -> bool:
         "고속도로", "도로", "나들목", "ic", "교통 정체", "차로", "민간투자사업",
         "우선협상대상자", "성남~서초", "양재나들목",
     )]
-    transport_hits = count_any_bounded(txt, transport_terms)
-    title_transport_hits = count_any_bounded(ttl, transport_terms)
+    # 경계는 실제로 충돌하는 짧은 어휘에만 건다('별도로'의 '도로', '절차로'의 '차로',
+    # 'public'의 'ic'). 전부에 걸면 '연안여객선'·'민자고속도로'·'자율운항선박'처럼 앞에
+    # 수식어가 붙은 정상 교통 기사가 이 게이트를 빠져나간다.
+    transport_hits = count_any_bounded(txt, transport_terms, bounded=_TRANSPORT_BOUNDED_TERMS)
+    title_transport_hits = count_any_bounded(ttl, transport_terms, bounded=_TRANSPORT_BOUNDED_TERMS)
     policy_hits = count_any(
         txt,
         [w.lower() for w in (
@@ -14250,6 +14271,9 @@ def low_quality_domain_penalty(domain: str) -> float:
 
 # 농협 내부 정치/부정적 기사 필터
 _NH_NEGATIVE_KWS = ("잔혹사", "비리", "횡령", "배임", "구속", "기소", "수사", "검찰", "부정", "비위", "징계", "해임", "파면", "감사원")
+# '우수사무소'(수상 이력)의 '수사'만 실제로 충돌한다. 다른 어휘까지 경계를 걸면
+# '채용비리'·'공금횡령'·'업무상배임' 같은 정상 헤드라인이 누락된다.
+_NH_NEGATIVE_BOUNDED_KWS = frozenset({"수사"})
 def is_nh_internal_negative(title: str, desc: str = "") -> bool:
     """농협 회장/임원 관련 부정적 기사 판별.
 
@@ -14260,7 +14284,9 @@ def is_nh_internal_negative(title: str, desc: str = "") -> bool:
     t = _nfkc_lower(f"{title or ''} {(desc or '')[:200]}")
     if "농협" not in t:
         return False
-    return count_any_bounded(t, _NH_NEGATIVE_KWS) >= 1
+    # 경계는 충돌하는 '수사'에만 건다. 나머지는 부분문자열로 세야 '채용비리·공금횡령·업무상배임'
+    # 처럼 앞에 수식어가 붙은 정상 부패 기사가 차단 게이트를 통과해버리지 않는다.
+    return count_any_bounded(t, _NH_NEGATIVE_KWS, bounded=_NH_NEGATIVE_BOUNDED_KWS) >= 1
 
 _LOCAL_COOP_RX = re.compile(r"[가-힣]{2,10}농협")
 
