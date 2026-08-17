@@ -24267,6 +24267,35 @@ def _low_tier_section_budget_allows(
     )
 
 
+_COMMUNITY_WELFARE_TERMS = (
+    "무더위쉼터", "무더위 쉼터", "폭염 쉼터", "쉼터 운영", "온열질환", "그늘막",
+    "봉사활동", "사회공헌", "위문", "생수 지원", "헌혈", "김장 나눔", "이웃돕기",
+)
+_COMMUNITY_WELFARE_OPS_ANCHORS = (
+    "도매시장", "공판장", "경매", "경락", "반입", "출하", "물류", "하역", "정산",
+    "납품대금", "판로", "수출", "선별", "apc", "산지유통",
+)
+
+
+def _is_community_welfare_service_story(title: str, desc: str) -> bool:
+    """주민 복지·봉사 기사인가.
+
+    농협이 주체여도 무더위쉼터·봉사·기부는 시장에서 바뀌는 것이 없다. 유통
+    지면에 이런 카드가 실리면 편집 평가가 off_topic 으로 막는다(2026-08-13).
+    유통 운영 앵커가 함께 있으면 판단을 보류한다.
+    """
+    # 스크랩된 본문에는 공유 버튼·관련기사 같은 군더더기가 붙어 있어서, 전문을
+    # 보면 '출하'·'판로' 같은 낱말이 우연히 섞여 유통 기사처럼 보인다. 제목과
+    # 리드만 본다.
+    title_l = _nfkc_lower(title or "")
+    lead = _nfkc_lower(f"{title or ''} {(desc or '')[:200]}")
+    if not title_l:
+        return False
+    if count_any(title_l, [w.lower() for w in _COMMUNITY_WELFARE_TERMS]) < 1:
+        return False
+    return count_any(lead, [w.lower() for w in _COMMUNITY_WELFARE_OPS_ANCHORS]) < 1
+
+
 def _postbuild_article_reject_reason(a: "Article", section_key: str, *, apply_selection_fit: bool = True) -> str:
     text = ((a.title or "") + " " + (a.description or "")).lower()
     if is_garbled_article_text(a.title or "", a.description or ""):
@@ -24288,6 +24317,8 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str, *, apply_se
         return ""
     if section_key == "dist" and is_local_apc_performance_meeting_context(a.title or "", a.description or ""):
         return "dist_local_apc_performance_meeting"
+    if section_key == "dist" and _is_community_welfare_service_story(a.title or "", a.description or ""):
+        return "dist_community_welfare_service"
     if section_key == "dist" and is_dist_wholesale_market_schedule_context(a.title or "", a.description or ""):
         return ""
     if section_key == "dist" and is_agri_digital_sales_channel_context(a.title or "", a.description or ""):
@@ -45927,6 +45958,17 @@ def _recover_preferred_section_counts_from_raw(
                         section_key == "policy"
                         and len(current) < SOFT_MIN_PER_SECTION
                         and _is_soft_fallback_policy_issue_tail(article)
+                    )
+                    # 같은 섹션 후보로 빈칸을 채우는 중이면 적합도 임계값을 살짝
+                    # 밑도는 것만으로 떨어뜨리지 않는다. 파이프라인의 다른 경로는
+                    # 이 두 사유를 이미 통과로 취급하는데 이 리필만 엄격해서,
+                    # 관련성·중복·tail 검사를 모두 통과한 기사가 남아 있는데도
+                    # 섹션이 미달로 발행됐다(2026-08-13 정책 3건).
+                    # 빈칸은 독자품질 점수를 95로 캡하므로 소프트 미스보다 비싸다.
+                    or (
+                        source_section == section_key
+                        and len(current) < target
+                        and reject_reason in {"selection_feedback_low_fit", "selection_feedback_core_fit"}
                     )
                     or (
                         policy_preferred_gap
