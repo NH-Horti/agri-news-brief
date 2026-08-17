@@ -6205,6 +6205,46 @@ def count_any(text: str, words: list[str] | tuple[str, ...] | set[str]) -> int:
     return sum(1 for w in words if w in text)
 
 
+_BOUNDED_TERM_RX_CACHE: dict[str, "re.Pattern[str]"] = {}
+
+
+def _bounded_term_rx(word: str) -> "re.Pattern[str] | None":
+    cached = _BOUNDED_TERM_RX_CACHE.get(word)
+    if cached is not None:
+        return cached
+    w = (word or "").strip()
+    if not w:
+        return None
+    escaped = re.escape(w)
+    if re.fullmatch(r"[A-Za-z0-9]+", w):
+        pattern = rf"(?<![A-Za-z0-9]){escaped}(?![A-Za-z0-9])"
+    elif re.fullmatch(r"[가-힣]+", w):
+        # 한글은 \w라서 \b가 성립하지 않는다. 뒤에는 조사가 붙으므로 앞경계만 요구한다
+        # ('도로를'은 매칭 유지, '별도로'는 차단).
+        pattern = rf"(?<![가-힣]){escaped}"
+    else:
+        pattern = escaped
+    rx = re.compile(pattern, flags=re.IGNORECASE)
+    _BOUNDED_TERM_RX_CACHE[word] = rx
+    return rx
+
+
+def count_any_bounded(text: str, words: list[str] | tuple[str, ...] | set[str]) -> int:
+    """count_any와 같은 계약(히트한 어휘 수)이지만 짧은 어휘의 부분문자열 오탐을 막는다.
+
+    한글 2~3음절 노이즈 어휘는 다른 단어 안에 우연히 들어앉는다('별도로'의 '도로',
+    '우수사무소'의 '수사'). 라틴 약어도 마찬가지다('public'의 'ic').
+    """
+    if not text:
+        return 0
+    total = 0
+    for w in words:
+        rx = _bounded_term_rx(w)
+        if rx is not None and rx.search(text):
+            total += 1
+    return total
+
+
 def has_apc_agri_context(text: str) -> bool:
     """APC 오탐(UPS/전원장비 등)을 막기 위해, '농업/산지유통' 문맥일 때만 APC로 인정."""
     t = (text or "").lower()
@@ -7869,19 +7909,25 @@ def _has_title_agri_policy_anchor(title: str) -> bool:
 
 
 def is_non_agri_transport_policy_context(title: str, desc: str) -> bool:
-    txt = _nfkc_lower(f"{title or ''} {desc or ''}".strip())
+    """비농업 교통·수송 정책 기사 판별.
+
+    스크랩 본문 전체를 보면 '별도로'의 '도로'처럼 우연한 부분문자열 하나가 정부 매입·수급
+    기사를 교통 기사로 만든다(2026-08-11 '과잉 보리 2만5000톤 특별 매입'). 판정은 제목+리드
+    까지만 보고, 짧은 어휘는 경계를 요구하며, 본문 1회 등장만으로는 발동하지 않는다.
+    """
+    ttl = _nfkc_lower(title or "")
+    txt = _nfkc_lower(f"{title or ''} {(desc or '')[:360]}".strip())
     if not txt:
         return False
     if _has_title_agri_policy_anchor(title):
         return False
-    transport_hits = count_any(
-        txt,
-        [w.lower() for w in (
-            "여객선", "조타실", "선박", "해양사고", "선원", "해운", "항해", "cctv",
-            "고속도로", "도로", "나들목", "ic", "교통 정체", "차로", "민간투자사업",
-            "우선협상대상자", "성남~서초", "양재나들목",
-        )],
-    )
+    transport_terms = [w.lower() for w in (
+        "여객선", "조타실", "선박", "해양사고", "선원", "해운", "항해", "cctv",
+        "고속도로", "도로", "나들목", "ic", "교통 정체", "차로", "민간투자사업",
+        "우선협상대상자", "성남~서초", "양재나들목",
+    )]
+    transport_hits = count_any_bounded(txt, transport_terms)
+    title_transport_hits = count_any_bounded(ttl, transport_terms)
     policy_hits = count_any(
         txt,
         [w.lower() for w in (
@@ -7889,7 +7935,9 @@ def is_non_agri_transport_policy_context(title: str, desc: str) -> bool:
             "민간투자", "우선협상", "정체 줄인다", "선정",
         )],
     )
-    return transport_hits >= 1 and policy_hits >= 1
+    if policy_hits < 1:
+        return False
+    return title_transport_hits >= 1 or transport_hits >= 2
 
 
 def is_non_agri_trade_policy_context(title: str, desc: str) -> bool:
@@ -14203,11 +14251,16 @@ def low_quality_domain_penalty(domain: str) -> float:
 # 농협 내부 정치/부정적 기사 필터
 _NH_NEGATIVE_KWS = ("잔혹사", "비리", "횡령", "배임", "구속", "기소", "수사", "검찰", "부정", "비위", "징계", "해임", "파면", "감사원")
 def is_nh_internal_negative(title: str, desc: str = "") -> bool:
-    """농협 회장/임원 관련 부정적 기사 판별"""
-    t = (title + " " + desc).lower()
+    """농협 회장/임원 관련 부정적 기사 판별.
+
+    본문 전체를 보면 '우수사무소'(수상 이력)의 '수사'처럼 우연한 부분문자열이 정상 산지유통
+    기사를 부정 기사로 만든다(2026-08-10 '여주 가지 경쟁력 제고'). 실제 비리·수사 기사는
+    제목이나 리드에 드러나므로 본문은 리드까지만 보고 짧은 어휘는 앞경계를 요구한다.
+    """
+    t = _nfkc_lower(f"{title or ''} {(desc or '')[:200]}")
     if "농협" not in t:
         return False
-    return any(kw in t for kw in _NH_NEGATIVE_KWS)
+    return count_any_bounded(t, _NH_NEGATIVE_KWS) >= 1
 
 _LOCAL_COOP_RX = re.compile(r"[가-힣]{2,10}농협")
 
@@ -19887,7 +19940,11 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
         max_feature_backfill = min(2, max_n - len(final))
         selected_topics = {(x.topic or "").strip() for x in final if (x.topic or "").strip()}
         relax_cut = max(BASE_MIN_SCORE.get("supply", 7.0) - 0.6, thr - 2.8, 0.0)
-        for prefer_unseen_topic in (True, False):
+        # 품질 우선·슬롯 유지 차선: tail 품질 게이트를 통과하는 후보로 먼저 채우고, 그런 후보가
+        # 없을 때만 기존 기준으로 슬롯을 메운다. 이 백필은 tail 게이트를 아예 묻지 않아서 편집이
+        # promotional_filler로 지적한 카드가 들어오고 있었다(2026-08-13 서장훈 수박 기사).
+        # 빈 슬롯은 독자품질 95 캡이라 약한 카드보다 비싸므로, 게이트를 차단이 아니라 순서로 쓴다.
+        for tail_strict, prefer_unseen_topic in ((True, True), (True, False), (False, True), (False, False)):
             if added >= max_feature_backfill or len(final) >= max_n:
                 break
             for a in candidates_sorted:
@@ -19933,6 +19990,13 @@ def select_top_articles(candidates: list[Article], section_key: str, max_n: int)
                 if not _headline_gate_relaxed(a, section_key):
                     continue
                 if not _source_ok_local(a):
+                    continue
+                if tail_strict and _preferred_tail_block_reason(
+                    a,
+                    section_key,
+                    current_count=len(final),
+                    raw_count=len(candidates_sorted),
+                ):
                     continue
 
                 a.is_core = False
@@ -23673,6 +23737,22 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
                 best_fit_key = cur
                 best_fit_score = cur_fit
 
+        def _target_section_accepts(target_key: str) -> bool:
+            """이동 대상 섹션의 관련성 게이트를 통과하는지 확인.
+
+            pest 이동과 fit 기반 이동은 원래 이 검사를 했고 prefer_move_*·점수 이득 이동만
+            빠져 있었다. 그 구멍으로 supply 풀의 비유통 기사가 dist로 옮겨간 뒤 발행 픽커에서
+            코어까지 올라갔다(2026-08-11 공판장 아이스크림, 2026-08-13 라면·빵값 물가 기사).
+            판정 자체가 실패하면 후보를 잃지 않도록 이동을 허용한다(빈 슬롯이 더 비싸다).
+            """
+            conf_target = conf_by_key.get(target_key)
+            if not conf_target:
+                return False
+            try:
+                return bool(is_relevant(a.title, a.description, dom, url, conf_target, press))
+            except Exception:
+                return True
+
         # 이동 기준: 점수 이득이 충분할 때만(오분류/진동 방지)
         if force_move_to_pest:
             try:
@@ -23685,22 +23765,26 @@ def _global_section_reassign(raw_by_section: dict[str, list["Article"]], start_k
                     moved += 1
             except Exception:
                 pass
-        elif prefer_move_to_dist:
+        elif prefer_move_to_dist and _target_section_accepts("dist"):
             _remember_reassign(a, cur)
             a.section = "dist"
             a.score = float(cand_scores["dist"])
             moved += 1
-        elif prefer_move_to_supply:
+        elif prefer_move_to_supply and _target_section_accepts("supply"):
             _remember_reassign(a, cur)
             a.section = "supply"
             a.score = float(cand_scores["supply"])
             moved += 1
-        elif prefer_move_to_policy:
+        elif prefer_move_to_policy and _target_section_accepts("policy"):
             _remember_reassign(a, cur)
             a.section = "policy"
             a.score = float(cand_scores["policy"])
             moved += 1
-        elif best_key != cur and (best_score - cur_score) >= GLOBAL_SECTION_REASSIGN_MIN_GAIN:
+        elif (
+            best_key != cur
+            and (best_score - cur_score) >= GLOBAL_SECTION_REASSIGN_MIN_GAIN
+            and _target_section_accepts(best_key)
+        ):
             _remember_reassign(a, cur)
             a.section = best_key
             a.score = best_score
@@ -33226,6 +33310,17 @@ def _foodservice_supply_chain_slot_rank(article: Article, section_conf: JsonDict
     )
 
 
+# 수급 시장 신호 어휘. 정부의 시장개입 행위(매입·수매·방출·비축)와 수요 진작 사업
+# (농식품 바우처·할인지원)도 가격·출하와 같은 등급의 수급 신호다. 이 계열이 빠져 있어
+# 정부 프로그램 기사가 제목 어휘 미달로 약한 tail 취급을 받았다
+# (2026-08-13 '농식품 바우처 꾸러미 전국 확대', supply 후보 풀 1위).
+_SUPPLY_MARKET_SIGNAL_TERMS = (
+    "가격", "수급", "출하", "반입", "경락", "도매", "작황", "생산량", "공급", "시장격리",
+    "매입", "수매", "방출", "비축", "농식품 바우처", "농식품바우처", "할인 지원", "할인지원",
+)
+_SUPPLY_MARKET_LEAD_TERMS = _SUPPLY_MARKET_SIGNAL_TERMS + ("폐기",)
+
+
 def _preferred_tail_block_reason(
     article: Article,
     section_key: str,
@@ -33277,20 +33372,14 @@ def _preferred_tail_block_reason(
             text,
             [w.lower() for w in ("화장품", "뷰티", "레시피", "요리", "맛집", "관광", "체험", "시식")],
         )
-        market_hits = count_any(
-            text,
-            [w.lower() for w in ("가격", "수급", "출하", "반입", "경락", "도매", "작황", "생산량", "공급", "시장격리")],
-        )
+        market_hits = count_any(text, [w.lower() for w in _SUPPLY_MARKET_SIGNAL_TERMS])
         if nonmarket_hits and market_hits <= 0 and not protected_thin_section:
             return "supply_nonmarket_tail"
         consumer_health_hits = count_any(
             title_l,
             [w.lower() for w in ("라면", "먹었더니", "혈당", "염증", "건강", "효능", "다이어트", "암 예방")],
         )
-        title_market_hits = count_any(
-            title_l,
-            [w.lower() for w in ("가격", "수급", "출하", "반입", "경락", "도매", "작황", "생산량", "공급", "시장격리")],
-        )
+        title_market_hits = count_any(title_l, [w.lower() for w in _SUPPLY_MARKET_SIGNAL_TERMS])
         if consumer_health_hits >= 1 and title_market_hits <= 0 and not protected_thin_section:
             return "supply_consumer_health_tail"
         if "비료" in title_l and title_market_hits <= 0 and not protected_thin_section:
@@ -33318,10 +33407,7 @@ def _preferred_tail_block_reason(
             return "supply_brand_promo_tail"
         if current_count >= MIN_FALLBACK_PER_SECTION and not protected_thin_section:
             managed_count = int(_managed_commodity_match_summary(title, desc).get("count") or 0)
-            lead_market_hits = count_any(
-                lead_l,
-                [w.lower() for w in ("가격", "수급", "출하", "반입", "경락", "도매", "작황", "생산량", "공급", "시장격리", "폐기", "비축")],
-            )
+            lead_market_hits = count_any(lead_l, [w.lower() for w in _SUPPLY_MARKET_LEAD_TERMS])
             if managed_count <= 0 or lead_market_hits <= 0:
                 return "supply_weak_preferred_tail"
             if (
@@ -33408,11 +33494,15 @@ def _preferred_tail_block_reason(
             # 이 둘이 빠져 있어 관세·검역 정책 기사가 'anchorless 약한 tail'로 걸렸고,
             # 예전에는 제목 토큰을 하나씩 지정하는 일회성 보수 규칙으로 되살리고 있었다.
             # 일반 어휘로 올려 같은 계열 기사를 모두 같은 기준으로 판단한다.
+            # 같은 이유로 시장개입 행위(매입·수매·방출·비축)와 도매 시장 행위자(청과·공판장)를
+            # 함께 올린다. 정부의 과잉물량 특별매입과 도매법인의 출하비 지원이 기관명 없는
+            # 제목 때문에 anchorless로 걸리고 있었다(2026-08-11 보리 특별매입·서울청과 출하비).
             title_policy_anchor_hits = count_any(
                 title_l,
                 [w.lower() for w in (
                     "정부", "농식품부", "농협", "국회", "입법", "법안", "법률", "제도",
                     "지원", "대책", "개정", "직선제", "가격안정", "할당관세", "검역",
+                    "매입", "수매", "방출", "비축", "청과", "공판장",
                 )],
             )
             if title_policy_anchor_hits <= 0:
@@ -35440,6 +35530,16 @@ def _final_global_story_dedupe(
                         if (not allow_soft) and _soft_news_core_demote_reason(cand):
                             continue
                         if (not allow_soft) and _is_stale_swap_candidate(cand, all_final):
+                            continue
+                        # 중복을 뺀 자리를 tail 기준 미달 카드가 채우던 비대칭을 없앤다.
+                        # (제거 계열 개선이 점수를 떨어뜨린 기계적 원인 중 하나였다.)
+                        # allow_soft 2차 패스에서는 슬롯을 비우지 않기 위해 완화한다.
+                        if (not allow_soft) and _preferred_tail_block_reason(
+                            cand,
+                            sec,
+                            current_count=len(final_by_section.get(sec) or []),
+                            raw_count=len(raw_by_section.get(sec) or []),
+                        ):
                             continue
                         # refill은 보수적으로: 농업 신호가 없거나 외래 미관리 품목 중심이면 제외
                         cand_text = _nfkc_lower(f"{cand.title or ''} {cand.description or ''}")
@@ -38250,6 +38350,29 @@ def _refill_dist_editorial_ops_gap_from_raw(
     return inserted
 
 
+def _publish_core_section_gates_clear(article: "Article", section_key: str) -> bool:
+    """발행 직전 코어 배지 자격: 그 섹션의 tail 품질 게이트를 통과해야 한다.
+
+    코어 배정기들이 약체 술어와 배지 감점만 확인해서, tail 게이트가 행사·홍보로 막는 카드가
+    코어까지 올라가고 있었다(2026-08-13 상주시 포도 작목반 = promotional_or_event_filler,
+    2026-08-10 강원도 간담회 = dist_event_or_development_without_ops).
+
+    **is_relevant는 의도적으로 쓰지 않는다.** 그 함수는 수집 단계에서 raw 후보를 걸러내는
+    용도로 조정돼 있어서, 이미 선정된 카드의 발행 단계 판단에 넣으면 정상 카드를 떨어뜨린다
+    (검증: "[Issue+] 가락시장 시범휴업 추진 상황과 과제는"은 is_relevant(dist)=False이지만
+    `_is_dist_publish_core_anchor`가 인정하는 운영 기사다 — tests/test_local_runtime.py의
+    test_dist_core_rebalance_prefers_operational_anchors_over_structural_tails가 이를 지킨다).
+
+    호출부는 통과 후보가 전멸하면 기존 목록으로 되돌려 섹션 코어를 0개로 만들지 않는다.
+    """
+    return not _preferred_tail_block_reason(
+        article,
+        section_key,
+        current_count=SOFT_MIN_PER_SECTION,
+        raw_count=PREFERRED_PER_SECTION,
+    )
+
+
 def _promote_publish_dist_operational_cores(final_by_section: dict[str, list[Article]]) -> int:
     """Restore core badges after late editorial replacements demote weak cores."""
     if not isinstance(final_by_section, dict):
@@ -38258,7 +38381,7 @@ def _promote_publish_dist_operational_cores(final_by_section: dict[str, list[Art
     if not items:
         return 0
     conf = next((s for s in SECTIONS if s.get("key") == "dist"), {})
-    eligible = [
+    base_eligible = [
         article
         for article in items
         if not _is_dist_editorial_promo_tail(article)
@@ -38271,6 +38394,10 @@ def _promote_publish_dist_operational_cores(final_by_section: dict[str, list[Art
             or _is_dist_supplier_payment_risk_story(article)
         )
     ]
+    eligible = [
+        article for article in base_eligible
+        if _publish_core_section_gates_clear(article, "dist")
+    ] or base_eligible
     eligible.sort(
         key=lambda article: (
             1 if _is_dist_supplier_payment_risk_story(article) else 0,
@@ -38315,7 +38442,7 @@ def _promote_publish_supply_market_cores(final_by_section: dict[str, list[Articl
     if not items:
         return 0
     conf = next((s for s in SECTIONS if s.get("key") == "supply"), {})
-    eligible = [
+    base_eligible = [
         article
         for article in items
         if _is_supply_editorial_market_replacement(article)
@@ -38324,6 +38451,10 @@ def _promote_publish_supply_market_cores(final_by_section: dict[str, list[Articl
         and not _postbuild_article_reject_reason(article, "supply", apply_selection_fit=False)
         and not _is_supply_editorial_weak_core(article)
     ]
+    eligible = [
+        article for article in base_eligible
+        if _publish_core_section_gates_clear(article, "supply")
+    ] or base_eligible
     eligible.sort(key=lambda article: _supply_editorial_market_rank(article, conf), reverse=True)
     desired_ids = {id(article) for article in eligible[: min(2, len(eligible))]}
     if len(desired_ids) < 2:
@@ -42650,6 +42781,16 @@ def _rebalance_publish_core_badges_for_editorial_target(final_by_section: dict[s
             if len(operational_anchors) >= 2:
                 eligible = operational_anchors
                 core_limit = 2
+        # 코어 배지는 섹션 관련성·tail 품질을 통과한 카드에 먼저 준다. 이 배정기는 약체
+        # 술어와 배지 감점만 봐서, tail 게이트가 막는 행사·홍보 카드가 코어까지 올라갔다
+        # (2026-08-13 상주시 포도 작목반, 2026-08-10 강원도 간담회). 통과 후보가 전멸하면
+        # 기존 목록을 그대로 써서 코어 0 섹션을 만들지 않는다.
+        gate_clear = [
+            article for article in eligible
+            if _publish_core_section_gates_clear(article, section_key)
+        ]
+        if gate_clear:
+            eligible = gate_clear
         ranked = sorted(eligible, key=lambda article: _publish_core_badge_rank(section_key, article), reverse=True)
         core_ids = _publish_editorial_diverse_core_ids(section_key, ranked, limit=core_limit)
         for article in items:
