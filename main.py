@@ -36063,6 +36063,24 @@ def _cap_final_low_tier_sources(
                     continue
                 if _postbuild_article_reject_reason(candidate, sec):
                     continue
+                # 매체 티어만 보고 바꾸면 섹션과 무관한 기사가 들어온다. 실제로
+                # 가락시장 현장 기사(tier1)가 농협 무더위쉼터 기사(tier3)로 교체돼
+                # 편집이 off_topic 으로 막았다(2026-08-13). 관련성 게이트를 통과하는
+                # 후보만 대체재가 될 수 있다.
+                _sec_conf = next((s for s in SECTIONS if str(s.get("key") or "") == sec), {})
+                if _sec_conf:
+                    try:
+                        if not is_relevant(
+                            candidate.title or "",
+                            candidate.description or "",
+                            candidate.domain or "",
+                            candidate.link or "",
+                            _sec_conf,
+                            candidate.press or "",
+                        ):
+                            continue
+                    except Exception:
+                        pass
                 # Source-tier substitutions happen after the editorial repair
                 # passes.  They must not reintroduce a role leak or a second
                 # version of an event that those passes already removed.
