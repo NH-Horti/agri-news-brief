@@ -754,5 +754,115 @@ class TestSummaryQualityGate(unittest.TestCase):
         self.assertEqual(reason, "model_token")
 
 
+class TestBoundedTermMatching(unittest.TestCase):
+    """한글은 \\w라서 \\b가 성립하지 않는다. 짧은 노이즈 어휘가 다른 단어 안에
+    우연히 들어앉아 정상 기사를 죽이던 오탐을 막는다."""
+
+    def test_korean_term_inside_other_word_is_not_matched(self):
+        self.assertEqual(main.count_any_bounded("별도로 계약재배 물량을 매입", ("도로",)), 0)
+        self.assertEqual(main.count_any_bounded("우수사무소에 선정됐다", ("수사",)), 0)
+        self.assertEqual(main.count_any_bounded("행정 절차로 진행한다", ("차로",)), 0)
+
+    def test_korean_term_with_particle_still_matches(self):
+        # 뒤에는 조사가 붙으므로 뒤경계는 요구하지 않는다
+        self.assertEqual(main.count_any_bounded("도로를 넓히고", ("도로",)), 1)
+        self.assertEqual(main.count_any_bounded("검찰 수사가 시작됐다", ("수사",)), 1)
+
+    def test_latin_abbreviation_requires_word_boundary(self):
+        self.assertEqual(main.count_any_bounded("public logistics", ("ic",)), 0)
+        self.assertEqual(main.count_any_bounded("양재ic 교통 정체", ("ic",)), 1)
+
+    def test_counts_distinct_terms_like_count_any(self):
+        self.assertEqual(main.count_any_bounded("도로 확장과 차로 조정", ("도로", "차로")), 2)
+        self.assertEqual(main.count_any_bounded("", ("도로",)), 0)
+
+
+class TestNonAgriTransportPolicyGate(unittest.TestCase):
+    def test_incidental_body_substring_does_not_make_it_a_transport_story(self):
+        # 2026-08-11: 본문 '별도로'의 '도로' 한 번으로 정부 특별매입 기사가 교통 기사로 분류됐다
+        self.assertFalse(main.is_non_agri_transport_policy_context(
+            "과잉 보리 2만5000톤 특별 매입",
+            "정부와 주정업계가 기존 계약재배 물량과 별도로 추가 매입을 추진하기로 합의했다",
+        ))
+
+    def test_real_transport_policy_still_blocked(self):
+        self.assertTrue(main.is_non_agri_transport_policy_context(
+            "여객선 조타실 cctv 의무화 추진", "해양사고 예방을 위한 안전 대책"))
+        self.assertTrue(main.is_non_agri_transport_policy_context(
+            "성남~서초 고속도로 민간투자사업 우선협상대상자 선정", "양재나들목 교통 정체 개선"))
+
+    def test_far_body_transport_mention_alone_does_not_trigger(self):
+        # 리드 밖(360자 이후) 우연 등장은 판정 근거가 되지 않는다
+        filler = "농산물 수급 안정을 위한 협의가 이어졌다. " * 20
+        self.assertFalse(main.is_non_agri_transport_policy_context(
+            "특별매입 물량 확대", filler + "고속도로 사업도 추진된다"))
+
+
+class TestNhInternalNegativeGate(unittest.TestCase):
+    def test_award_history_in_body_is_not_negative(self):
+        # 2026-08-10: 본문 '우수사무소'의 '수사'로 산지유통 우수사례 기사가 차단됐다
+        self.assertFalse(main.is_nh_internal_negative(
+            "여주 ‘가지’ 경쟁력 제고 팔걷어",
+            "가남농협이 공동선별·출하와 수급조절을 도맡았다. 농산물우수관리 인증도 받았다",
+        ))
+
+    def test_genuine_corruption_story_still_blocked(self):
+        self.assertTrue(main.is_nh_internal_negative("농협 회장 비리 의혹 수사 착수"))
+        self.assertTrue(main.is_nh_internal_negative(
+            "농협중앙회 임원 횡령 혐의", "검찰이 배임 혐의로 구속영장을 청구했다"))
+
+    def test_non_nh_story_is_never_negative(self):
+        self.assertFalse(main.is_nh_internal_negative("지자체 공무원 비리 수사"))
+
+
+class TestPreferredTailMarketActionVocabulary(unittest.TestCase):
+    """정부 시장개입(매입·수매·방출·비축)과 수요 진작(농식품 바우처)도 수급 신호다."""
+
+    def test_government_voucher_program_is_not_a_weak_supply_tail(self):
+        a = _mk("supply", "'농식품 바우처 꾸러미' 전국 확대…온라인 주문, 집 앞까지 배송",
+                "농식품바우처는 생계급여 수급 가구의 식품 접근성을 높이는 사업이다. "
+                "농식품부는 고기·채소와 멜론·복숭아 등 제철과일로 구성된 농산물 꾸러미를 공급한다",
+                press="대한민국정책브리핑", domain="korea.kr", score=59.5)
+        self.assertEqual(
+            main._preferred_tail_block_reason(a, "supply", current_count=4, raw_count=300), "")
+
+    def test_special_purchase_title_is_not_policy_anchorless(self):
+        a = _mk("policy", "과잉 보리 2만5000톤 특별 매입",
+                "정부와 주정업계가 과잉 생산된 보리를 특별 매입해 산지가격 하락을 막는다",
+                score=47.9)
+        self.assertEqual(
+            main._preferred_tail_block_reason(a, "policy", current_count=4, raw_count=84), "")
+
+    def test_wholesale_actor_title_is_not_treated_as_anchorless(self):
+        # 원천 API가 제목을 42자 부근에서 자르므로 꼬리의 '지원'을 신뢰할 수 없다.
+        # 도매 시장 행위자(청과·공판장)가 앵커 역할을 해야 한다.
+        # (다른 정책 게이트는 이 테스트의 관심사가 아니므로 anchorless 사유만 본다.)
+        for title in (
+            "“농가에 힘이 되겠습니다”…서울청과, 6개월간 2억4200만원 출하비 지...",
+            "대아청과, 폭염 속 농산물 신선도 유지 총력",
+            "농협 공판장 출하 물량 확대",
+        ):
+            a = _mk("policy", title, "가락시장 도매시장법인이 출하 기반을 뒷받침한다", score=40.4)
+            self.assertNotEqual(
+                main._preferred_tail_block_reason(a, "policy", current_count=4, raw_count=84),
+                "policy_anchorless_preferred_tail",
+                f"도매 행위자 제목이 앵커 없음으로 차단됨: {title}",
+            )
+
+    def test_market_intervention_title_is_not_treated_as_anchorless(self):
+        for title in ("과잉 보리 2만5000톤 특별 매입", "채소 비축물량 2만t 방출", "쌀 공공비축 수매 확대"):
+            a = _mk("policy", title, "산지가격 하락을 막기 위한 조치다", score=47.9)
+            self.assertNotEqual(
+                main._preferred_tail_block_reason(a, "policy", current_count=4, raw_count=84),
+                "policy_anchorless_preferred_tail",
+                f"시장개입 제목이 앵커 없음으로 차단됨: {title}",
+            )
+
+    def test_market_signal_vocabulary_has_no_scattered_copy(self):
+        # 어휘 사본이 흩어지면 드리프트가 생긴다(기상 어휘 3사본 전례). lead는 base의 확장이어야 한다.
+        for term in main._SUPPLY_MARKET_SIGNAL_TERMS:
+            self.assertIn(term, main._SUPPLY_MARKET_LEAD_TERMS)
+
+
 if __name__ == "__main__":
     unittest.main()
