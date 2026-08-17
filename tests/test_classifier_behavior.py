@@ -6003,5 +6003,35 @@ class TestRecentItemsRebuild(unittest.TestCase):
         self.assertIn("사과 갈색무늬병", normalized)
         self.assertNotIn("고랭지 배추", normalized)
 
+    def test_policy_instrument_title_is_not_a_retail_sales_trend(self):
+        """제목이 정책 수단을 말하면 본문에 '판매'가 스쳐도 소매 트렌드가 아니다.
+
+        2026-08-10 "수입과일 할당관세 2년…" 기사(policy fit 7.30, score 61.48)가
+        본문에 '판매'가 한 번 나온다는 이유로 소매 트렌드로 분류돼
+        policy_tail_gate 에서 탈락하고 지면에서 사라졌다.
+        """
+        title = "수입과일 할당관세 2년…물가는 못 잡고 농가·유통업계 부담만"
+        desc = (
+            "정부가 물가 안정을 위해 2년째 시행 중인 수입과일 할당관세가 농가와 유통업계 "
+            "모두에 부담을 키우고 있다. 바나나·파인애플·망고 할당관세를 30%에서 5%로 낮춘 "
+            "조치를 연장했고, 소비지 판매 가격은 크게 내리지 않았다는 분석이 나온다."
+        )
+        text = f"{title} {desc}".lower()
+
+        self.assertTrue(main.is_retail_sales_trend_context(text))  # 제목 없이는 종전 동작
+        self.assertFalse(main.is_retail_sales_trend_context(text, title))
+
+    def test_genuine_retail_sales_trend_still_detected(self):
+        """매출·판매 데이터가 주제인 기사는 그대로 소매 트렌드로 잡힌다."""
+        for title, desc in (
+            ("사과 매출 30% 급증…대형마트 판매 데이터 분석",
+             "대형마트 사과 매출과 판매량 데이터를 분석한 소비 트렌드 기사다."),
+            ("올여름 과일 판매 랭킹 top5…수박이 1위",
+             "이커머스 과일 판매 순위와 소비 트렌드를 분석했다."),
+        ):
+            text = f"{title} {desc}".lower()
+            self.assertTrue(main.is_retail_sales_trend_context(text, title), msg=title)
+
+
 if __name__ == "__main__":
     unittest.main()
