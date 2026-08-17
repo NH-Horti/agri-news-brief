@@ -32,6 +32,25 @@ LAST_WEEK_PEST_CARDS = (
 )
 
 
+def _make_pest_article(title: str, desc: str) -> "main.Article":
+    link = "https://example.com/pest-card"
+    return main.Article(
+        section="pest",
+        title=title,
+        description=desc,
+        link=link,
+        originallink=link,
+        pub_dt_kst=datetime.now(main.KST),
+        domain="example.com",
+        press="경남신문",
+        norm_key="",
+        title_key=main.norm_title_key(title),
+        canon_url=link,
+        topic="",
+        score=30.0,
+    )
+
+
 class SharedPestThemeTests(unittest.TestCase):
     """가드(main)와 심판(report_eval)이 같은 버킷을 내야 한다."""
 
@@ -258,6 +277,79 @@ class WeatherRiskVocabTests(unittest.TestCase):
         )
         body = "가뭄으로 밭작물이 고사하면서 농가 피해가 커져 급수 지원과 관수 대책을 추진한다."
         self.assertTrue(report_eval._is_priority_field_risk_core(article, body))
+
+    def test_selection_gate_accepts_generic_headline_damage_wording(self) -> None:
+        """헤드라인이 총칭 피해어만 써도 선발 게이트가 코어로 인정한다.
+
+        실제 기상재해 헤드라인은 '가뭄 피해 확산', '폭염에 농가 비상'처럼 총칭을
+        쓰는데, 구체 피해 양상(시들·낙과·급수) 어휘만 보면 이런 제목이 코어에서
+        빠지고 report_eval 의 기상재해 분기와 기준이 어긋난다.
+        """
+        title = "경남 가뭄 피해 확산…농가 비상"
+        desc = "가뭄이 이어지며 밭작물이 시들고 농가가 급수 대책에 나섰다. 재배지 피해가 커지고 있다."
+        article = _make_pest_article(title, desc)
+
+        self.assertTrue(main._headline_gate(article, "pest"), msg=title)
+
+        surface = report_eval.SurfaceArticle(
+            tag="div",
+            surface=report_eval.BRIEFING_SURFACE,
+            section="pest",
+            title=title,
+            href="https://example.com/generic-damage",
+            article_id="generic-damage",
+            domain="example.com",
+            is_core=True,
+        )
+        self.assertTrue(report_eval._is_priority_field_risk_core(surface, desc))
+
+    def test_every_managed_commodity_term_gets_a_crop_bucket(self) -> None:
+        """COMMODITY_REGISTRY 의 품목 어휘는 모두 테마 버킷을 받아야 한다.
+
+        crop_risk_vocab 는 report_eval 에서도 import 하므로 main 에 의존할 수 없어
+        품목 어휘를 따로 들고 있다. 그래서 레지스트리에 품목/별칭이 추가돼도 이쪽이
+        따라가지 못하면 서로 다른 품목 기사가 전부 general_pest 로 뭉쳐 중복 테마
+        가드에 걸린다. 어휘가 어긋나면 여기서 바로 실패하게 한다.
+        """
+        unbucketed: list[tuple[str, str]] = []
+        for item in main.COMMODITY_REGISTRY:
+            topic = str(item.get("topic") or "")
+            terms = {str(item.get("rep_term") or ""), topic}
+            terms |= {str(term) for term in (item.get("aliases") or [])}
+            terms |= {str(term) for term in (item.get("focus_terms") or [])}
+            for term in sorted(t.strip() for t in terms if str(t).strip()):
+                if " " in term or "(" in term:
+                    continue  # 서술형 별칭('배 과일')은 버킷 토큰 대상이 아니다
+                if not crop_risk_vocab.crop_bucket(crop_risk_vocab.normalize(f"{term} 병해충 확산")):
+                    unbucketed.append((topic, term))
+        self.assertEqual(unbucketed, [], msg=f"crop bucket 어휘 누락: {unbucketed}")
+
+    def test_distinct_commodities_do_not_share_a_pest_theme(self) -> None:
+        """서로 다른 관리품목 기사는 서로 다른 테마를 받아야 중복 가드에 안 걸린다."""
+        themes = {
+            title: crop_risk_vocab.classify_pest_theme(title)
+            for title in ("피망 병해충 확산", "신고배 병해충 확산", "알밤 병해충 확산")
+        }
+        self.assertNotIn("general_pest", themes.values(), msg=str(themes))
+        self.assertEqual(len(set(themes.values())), 3, msg=str(themes))
+
+    def test_commodity_spelling_variants_share_one_theme(self) -> None:
+        """같은 품목의 표기 변형은 한 버킷으로 모여 중복으로 잡혀야 한다."""
+        for left, right in (
+            ("신고배 병해충 확산", "나주배 병해충 확산"),
+            ("샤인머스캣 병해충 확산", "샤인머스켓 병해충 확산"),
+            ("주키니 병해충 확산", "쥬키니 병해충 확산"),
+        ):
+            self.assertEqual(
+                crop_risk_vocab.classify_pest_theme(left),
+                crop_risk_vocab.classify_pest_theme(right),
+                msg=f"{left} vs {right}",
+            )
+
+    def test_boundary_protected_tokens_do_not_false_match(self) -> None:
+        """다른 낱말에 들어간 품목 글자를 품목으로 오인하지 않는다."""
+        for title in ("만감이 교차하는 수확철", "생화학 무기 협약 논의", "배수로 정비 사업"):
+            self.assertEqual(crop_risk_vocab.crop_bucket(crop_risk_vocab.normalize(title)), "", msg=title)
 
 
 if __name__ == "__main__":

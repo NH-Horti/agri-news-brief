@@ -11,7 +11,12 @@ import re
 from typing import Any
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
-from crop_risk_vocab import CROP_WEATHER_EVENT_TERMS, CROP_WEATHER_RISK_TERMS, classify_pest_theme
+from crop_risk_vocab import (
+    CROP_WEATHER_EVENT_TERMS,
+    CROP_WEATHER_HEADLINE_DAMAGE_TERMS,
+    CROP_WEATHER_RISK_TERMS,
+    classify_pest_theme,
+)
 from story_dedup import duplicate_event_reason
 
 
@@ -823,7 +828,7 @@ def _is_priority_field_risk_core(article: SurfaceArticle, snapshot_body: str) ->
     # 행정 대비계획이 아니라 실제 피해·대응 기사만 인정한다.
     weather_field_damage = bool(
         any(term in title for term in CROP_WEATHER_RISK_TERMS + CROP_WEATHER_EVENT_TERMS)
-        and any(term in title for term in ("피해", "비상", "확산", "경보", "주의보", "특보", "고사", "시들"))
+        and any(term in title for term in CROP_WEATHER_HEADLINE_DAMAGE_TERMS)
         and any(term in text for term in ("농작물", "농가", "재배", "과수", "과원", "밭작물", "출하", "생육"))
         and any(term in text for term in ("급수", "관수", "방제", "대책", "지원", "복구", "예방", "피해"))
     )
