@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-18T23:53:48+09:00",
+  "generated_at": "2026-08-19T23:54:04+09:00",
   "section_jump": [
     {
       "date": "2026-04-24",
@@ -9,6 +9,12 @@
     },
     {
       "date": "2026-07-01",
+      "count": 3,
+      "section": "pest",
+      "surface": "briefing_chip"
+    },
+    {
+      "date": "2026-08-19",
       "count": 3,
       "section": "pest",
       "surface": "briefing_chip"
@@ -258,6 +264,30 @@
       "count": 1,
       "section": "root_leaf",
       "surface": "commodity_group_chip"
+    },
+    {
+      "date": "2026-08-19",
+      "count": 1,
+      "section": "policy",
+      "surface": "briefing_chip"
+    },
+    {
+      "date": "2026-08-19",
+      "count": 1,
+      "section": "supply",
+      "surface": "briefing_chip"
+    },
+    {
+      "date": "2026-08-19",
+      "count": 1,
+      "section": "배추",
+      "surface": "topic_badge"
+    },
+    {
+      "date": "2026-08-19",
+      "count": 1,
+      "section": "토마토",
+      "surface": "topic_badge"
     }
   ],
   "view_switch": [
@@ -311,6 +341,12 @@
     },
     {
       "date": "2026-06-14",
+      "count": 4,
+      "from_view": "briefing",
+      "to_view": "commodity"
+    },
+    {
+      "date": "2026-08-19",
       "count": 4,
       "from_view": "briefing",
       "to_view": "commodity"
@@ -528,12 +564,6 @@
     {
       "date": "2026-08-18",
       "count": 2,
-      "from_view": "briefing",
-      "to_view": "commodity"
-    },
-    {
-      "date": "2026-04-21",
-      "count": 1,
       "from_view": "briefing",
       "to_view": "commodity"
     },
@@ -794,6 +824,12 @@
       "count": 1,
       "from_view": "commodity",
       "to_view": "briefing"
+    },
+    {
+      "date": "2026-08-19",
+      "count": 1,
+      "from_view": "commodity",
+      "to_view": "briefing"
     }
   ],
   "archive_nav": [
@@ -936,13 +972,6 @@
       "nav_type": "next_date",
       "from_date": "2026-08-05",
       "to_date": "2026-08-06"
-    },
-    {
-      "date": "2026-04-21",
-      "count": 1,
-      "nav_type": "latest_brief",
-      "from_date": "(not set)",
-      "to_date": "2026-04-21"
     },
     {
       "date": "2026-04-23",
