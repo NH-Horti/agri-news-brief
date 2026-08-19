@@ -1,60 +1,63 @@
 {
-  "report_date": "2026-08-19",
-  "generated_at_kst": "2026-08-19T06:05:31+09:00",
+  "report_date": "2026-08-20",
+  "generated_at_kst": "2026-08-20T06:22:51+09:00",
   "scores": {
-    "section_alignment": 91.14,
-    "core_quality": 81.78,
-    "commodity_board_quality": 92.0
+    "section_alignment": 91.67,
+    "core_quality": 100.0,
+    "commodity_board_quality": 94.86
   },
   "metrics": {
-    "section_alignment_low_fit_rate": 0.1,
-    "section_alignment_cross_gap_rate": 0.1,
-    "content_false_positive_rate": 0.0,
+    "section_alignment_low_fit_rate": 0.05,
+    "section_alignment_cross_gap_rate": 0.0,
+    "content_false_positive_rate": 0.05,
     "reader_hard_issue_count": 0,
     "reader_hard_issue_rate": 0.0,
-    "reader_quality_penalty": 11.24,
-    "reader_quality_cap": 90.0,
-    "weak_core_rate": 0.1111,
-    "policy_wrong_section_rate": 0.05,
-    "promotional_filler_rate": 0.1,
+    "reader_quality_penalty": 8.6,
+    "reader_quality_cap": 100.0,
+    "weak_core_rate": 0.0,
+    "policy_wrong_section_rate": 0.0,
+    "promotional_filler_rate": 0.0,
     "promotional_core_rate": 0.0,
     "weak_core_editorial_rate": 0.0,
-    "pest_theme_duplicate_rate": 0.1,
+    "pest_theme_duplicate_rate": 0.0,
     "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 1.8,
+    "editorial_quality_penalty": 0.0,
     "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0,
     "commodity_primary_title_item_focus_rate": 1.0,
-    "commodity_primary_title_issue_signal_rate": 0.8889,
-    "commodity_primary_strict_link_rate": 0.8889,
+    "commodity_primary_title_issue_signal_rate": 1.0,
+    "commodity_primary_strict_link_rate": 1.0,
     "commodity_primary_low_rank_rate": 0.0,
-    "commodity_primary_count": 9,
-    "commodity_active_today_total": 16,
+    "commodity_primary_count": 10,
+    "commodity_active_today_total": 17,
     "commodity_active_today_unlinked_total": 7,
-    "commodity_managed_unlinked_total": 24,
+    "commodity_managed_unlinked_total": 23,
     "commodity_board_daily_min_primary_count": 6,
     "commodity_board_low_coverage": false,
-    "commodity_board_coverage_rate": 0.2727,
+    "commodity_board_coverage_rate": 0.303,
     "commodity_primary_title_item_missing_rate": 0.0,
     "commodity_primary_body_only_rate": 0.0,
     "commodity_primary_false_link_rate": 0.0,
-    "commodity_pool_count": 17,
+    "commodity_pool_count": 12,
     "commodity_pool_false_link_rate": 0.0,
-    "commodity_primary_dominant_section_rate": 0.6667
+    "commodity_primary_dominant_section_rate": 0.6
   },
   "selection_guardrails": {
-    "driver_tags": [],
+    "driver_tags": [
+      "low_tier_source_concentration",
+      "semantic_false_positive"
+    ],
     "section_card_min_fit": {
       "default": 0.8,
-      "supply": 0.82,
-      "policy": 0.82,
-      "dist": 0.95,
+      "supply": 0.9,
+      "policy": 0.88,
+      "dist": 1.05,
       "pest": 0.78
     },
-    "section_low_fit_rescue_min": 0.15,
-    "high_score_low_fit_rescue_margin": 3.0,
-    "tail_score_floor_delta": 0.0,
+    "section_low_fit_rescue_min": 0.35,
+    "high_score_low_fit_rescue_margin": 4.4,
+    "tail_score_floor_delta": 0.5,
     "core_fit_min": {
       "default": 1.2,
       "supply": 1.4,
@@ -79,53 +82,7 @@
     "commodity_strict_primary_only": true,
     "commodity_disable_primary_fallback": true
   },
-  "editorial_quality_samples": [
-    {
-      "title": "판로 막힌 농가에 숨통...용인 ' 화훼 유통복합센터' 짓는다",
-      "href": "https://www.ytn.co.kr/_ln/0115_202608190433450802",
-      "section": "supply",
-      "is_core": false,
-      "reasons": [
-        "promotional_or_event_filler"
-      ]
-    },
-    {
-      "title": "철원 김화농협, 철원군과 가락시장 찾아 농산물 수취 가격 지지 ‘총력’",
-      "href": "https://www.nongmin.com/article/20260817500038",
-      "section": "policy",
-      "is_core": false,
-      "reasons": [
-        "policy_price_report_without_policy_action"
-      ]
-    },
-    {
-      "title": "이랜드 킴스클럽, 정부 '농할' 온라인 확대…산지 직거래로 장바구니 물...",
-      "href": "https://www.koreaittimes.com/news/articleView.html?idxno=156201",
-      "section": "policy",
-      "is_core": false,
-      "reasons": [
-        "promotional_or_event_filler"
-      ]
-    },
-    {
-      "title": "[제43회 영농·생활수기 가작-일반부문] 초록으로 잇는 행복, 도시텃밭...",
-      "href": "https://www.nongmin.com/article/20260814500520",
-      "section": "pest",
-      "is_core": false,
-      "reasons": [
-        "pest_theme_duplicate:fire_blight"
-      ]
-    },
-    {
-      "title": "공주시, 2027년 과수화상병·돌발해충 방제 약제 신청 접수",
-      "href": "http://www.chungnamilbo.co.kr/news/articleView.html?idxno=904505",
-      "section": "pest",
-      "is_core": false,
-      "reasons": [
-        "pest_theme_duplicate:fire_blight"
-      ]
-    }
-  ],
+  "editorial_quality_samples": [],
   "reader_hard_issue_samples": [],
   "editorial_improvement_plan": {}
 }
