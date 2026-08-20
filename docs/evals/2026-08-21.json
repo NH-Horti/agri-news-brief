@@ -1,14 +1,14 @@
 {
   "report_date": "2026-08-21",
-  "generated_at_kst": "2026-08-21T06:11:59+09:00",
+  "generated_at_kst": "2026-08-21T06:23:11+09:00",
   "status": "pass",
-  "overall_score": 96.32,
-  "operational_score": 96.32,
-  "reader_quality_score": 96.32,
+  "overall_score": 96.3,
+  "operational_score": 96.3,
+  "reader_quality_score": 96.3,
   "reader_quality_gate": {
     "status": "clear",
-    "headline_score": 96.32,
-    "operational_score": 96.32,
+    "headline_score": 96.3,
+    "operational_score": 96.3,
     "penalty": 0.0,
     "cap": 100.0,
     "reasons": []
@@ -21,9 +21,9 @@
     "freshness": 100.0,
     "retrieval_support": 86.72,
     "section_alignment": 100.0,
-    "core_quality": 72.9,
+    "core_quality": 72.57,
     "commodity_board_quality": 100.0,
-    "reader_quality": 96.32
+    "reader_quality": 96.3
   },
   "counts": {
     "briefing_total": 20,
@@ -53,7 +53,7 @@
     },
     "raw_by_section": {
       "supply": 233,
-      "policy": 65,
+      "policy": 66,
       "dist": 72,
       "pest": 28
     },
@@ -134,7 +134,7 @@
     "preferred_slot_gap_total": 0,
     "preferred_slot_penalty": 0.0,
     "core_fit_avg": 4.915,
-    "core_rank_percentile_avg": 0.7305,
+    "core_rank_percentile_avg": 0.726,
     "core_stage_core_rate": 1.0,
     "weak_core_rate": 0.375,
     "commodity_primary_item_focus_rate": 1.0,
@@ -194,7 +194,7 @@
     },
     "core_quality": {
       "supply": 1.0,
-      "policy": 0.5527,
+      "policy": 0.55,
       "dist": 1.0,
       "pest": 0.55
     }
@@ -293,54 +293,42 @@
   ],
   "adaptive_evaluation": {
     "full_editorial_eval": false,
-    "reason": "deterministic_clean_sampling_period",
+    "reason": "forced_sla_recovery",
     "stable_days_required": 20
   },
   "editorial": {
     "status": "skipped",
-    "reason": "deterministic_clean_sampling_period",
+    "reason": "forced_sla_recovery",
     "model": "gpt-5.6-sol"
   },
   "prepublish_quality_gate": {
-    "status": "passed",
+    "status": "forced_sla_fallback_passed",
     "publishable": true,
-    "publication_mode": "normal",
+    "publication_mode": "forced_sla_recovery",
     "repair_count": 0,
     "applied_repair_count": 0,
-    "repair_proposal_limit": 2,
+    "repair_proposal_limit": 10,
     "repair_attempts": [],
-    "deadline_kst": "06:50",
+    "deadline_kst": "23:59",
     "deadline_reached": false,
     "minimum_operational_score": 85.0,
     "sla_fallback_enabled": true,
     "sla_fallback_allowed_for_run": true,
     "editorial_forced_for_run": false,
     "editorial_required_satisfied": true,
-    "sla_fallback_forced": false,
+    "sla_fallback_forced": true,
     "sla_fallback_minimum_score": 78.0,
-    "sla_fallback_score_enforced": true,
-    "sla_fallback_minimum_per_section": 4,
+    "sla_fallback_score_enforced": false,
+    "sla_fallback_minimum_per_section": 3,
     "sla_fallback_blockers": [],
     "hard_editorial_issue_count": 0,
     "model": "gpt-5.6-sol",
-    "usage_events": [
-      {
-        "stage": "summary",
-        "model": "gpt-5.6-sol",
-        "input_tokens": 5161,
-        "cached_input_tokens": 0,
-        "cache_write_input_tokens": 5158,
-        "output_tokens": 1859,
-        "total_tokens": 7020,
-        "estimated_cost_usd": 0.088023,
-        "pricing_basis": "gpt-5.6-sol-standard-under-272k-2026-07"
-      }
-    ],
+    "usage_events": [],
     "editorial_usage_calls": 0,
     "editorial_usage_tokens": 0,
-    "editorial_max_calls": 3,
-    "editorial_token_budget": 60000,
+    "editorial_max_calls": 6,
+    "editorial_token_budget": 120000,
     "editorial_budget_available": true,
-    "estimated_cost_usd": 0.088023
+    "estimated_cost_usd": 0
   }
 }
