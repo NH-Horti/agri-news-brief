@@ -15175,13 +15175,45 @@ _SEARCH_SINGLE_CHAR_TOPIC_ALIASES: dict[str, list[str]] = {
     "파": ["대파"],
 }
 
+# 검색 전용 추가 별칭 (파이프라인 레지스트리는 불변)
+_SEARCH_EXTRA_TOPIC_ALIASES: dict[str, list[str]] = {
+    "배": ["천안배", "안성배", "울산배", "황금배", "원황배"],
+}
+
+# 나열형 제목("사과·배 작황", "배추·무 비축")과 띄어쓰기 변형("배 작황")은 본문
+# 파이프라인의 bigram 문맥 게이트(_managed_commodity_focus_metrics)가 놓친다.
+# 한 글자 토픽은 태그가 없으면 검색에서 아예 보이지 않으므로, 검색 태깅에만 쓰는
+# 완화 패턴으로 보강한다(_topic_scores 자체는 불변 — 브리핑 선정에 영향 없음).
+_SEARCH_TOPIC_CTX_RE = re.compile(r"작황|수급|가격|값|시세|출하|물량|피해|재배|방제|저장|생산|비축")
+_SEARCH_TOPIC_SUPPLEMENT_PATTERNS: dict[str, list[re.Pattern[str]]] = {
+    "배": [
+        re.compile(r"(?:^|[\s\W])배\s*(?:값|가격|시세|수급|출하|저장|작황|재배|농가|과원|생육|산업|피해)"),
+        # 품목 나열: 구분자 바로 뒤의 '배'(+조사)만. 숫자 배수(2배)는 구분자 조건이 걸러낸다.
+        re.compile(r"[·ㆍ,，/]\s*배(?:는|가|도|를|와|과|의)?(?=$|[\s\W])"),
+        re.compile(r"신고배|나주배|천안배|안성배|울산배|황금배|원황배"),
+    ],
+    "무": [
+        re.compile(r"(?:^|[\s\W])무\s*(?:값|가격|시세|수급|출하|작황|재배|농가|도매가격|물량|비축)"),
+        re.compile(r"[·ㆍ,，/]\s*무(?:는|가|도|를|와|과|의)?(?=$|[\s\W])"),
+    ],
+    "밤": [
+        re.compile(r"(?:^|[\s\W])밤\s*(?:값|가격|시세|수급|출하|작황|재배|농가|나무)"),
+    ],
+}
+
 
 def _search_topics_for_text(title: str, desc: str) -> list[str]:
     try:
         scores = _topic_scores(title or "", desc or "")
     except Exception:
         return []
-    return sorted(t for t, sc in scores.items() if sc > 0 and t in _HORTI_TOPICS_SET)
+    topics = {t for t, sc in scores.items() if sc > 0 and t in _HORTI_TOPICS_SET}
+    text = f"{title or ''} {desc or ''}"
+    if _SEARCH_TOPIC_CTX_RE.search(text):
+        for tp, pats in _SEARCH_TOPIC_SUPPLEMENT_PATTERNS.items():
+            if tp not in topics and any(p.search(text) for p in pats):
+                topics.add(tp)
+    return sorted(topics)
 
 
 def _search_topic_catalog() -> list[JsonDict]:
@@ -15189,6 +15221,7 @@ def _search_topic_catalog() -> list[JsonDict]:
     for topic, terms in ALL_ITEM_COMMODITY_TOPICS:
         # 공백 포함 별칭("배 과일")은 토큰 단위 매칭에서 죽은 항목이라 제외
         aliases = [topic] + [t for t in terms if t and " " not in str(t)]
+        aliases += _SEARCH_EXTRA_TOPIC_ALIASES.get(topic, [])
         aliases += [ch for ch, topics_ in _SEARCH_SINGLE_CHAR_TOPIC_ALIASES.items() if topic in topics_]
         seen: set[str] = set()
         uniq: list[str] = []

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-08-21T09:17:42.861338+09:00",
+  "updated_at": "2026-08-21T09:40:14.289725+09:00",
   "items": [
     {
       "id": "b3d32604c94c",
@@ -64,7 +64,9 @@
       "archive": "/agri-news-brief/archive/2026-08-21.html#sec-supply",
       "score": 55.18,
       "press_tier": 3,
-      "topics": []
+      "topics": [
+        "배"
+      ]
     },
     {
       "id": "7dccca7253a0",
@@ -573,7 +575,9 @@
       "archive": "/agri-news-brief/archive/2026-08-20.html#sec-dist",
       "score": 35.27,
       "press_tier": 1,
-      "topics": []
+      "topics": [
+        "배"
+      ]
     },
     {
       "id": "d96f9913faff",
@@ -829,7 +833,9 @@
       "archive": "/agri-news-brief/archive/2026-08-19.html#sec-pest",
       "score": 47.29,
       "press_tier": 2,
-      "topics": []
+      "topics": [
+        "배"
+      ]
     },
     {
       "id": "84b25213b516",
@@ -844,7 +850,9 @@
       "archive": "/agri-news-brief/archive/2026-08-19.html#sec-pest",
       "score": 44.74,
       "press_tier": 2,
-      "topics": []
+      "topics": [
+        "배"
+      ]
     },
     {
       "id": "bbb27720c52c",
@@ -877,6 +885,7 @@
       "score": 33.87,
       "press_tier": 2,
       "topics": [
+        "무",
         "배추"
       ]
     },
@@ -945,7 +954,9 @@
       "archive": "/agri-news-brief/archive/2026-08-19.html#sec-dist",
       "score": 38.07,
       "press_tier": 1,
-      "topics": []
+      "topics": [
+        "배"
+      ]
     },
     {
       "id": "9b4f91935917",
@@ -1557,6 +1568,7 @@
       "score": 9.81,
       "press_tier": 2,
       "topics": [
+        "무",
         "배추"
       ]
     },
@@ -1995,6 +2007,7 @@
       "score": 39.32,
       "press_tier": 3,
       "topics": [
+        "무",
         "배추",
         "상추"
       ]
@@ -2030,6 +2043,7 @@
       "score": 29.27,
       "press_tier": 3,
       "topics": [
+        "무",
         "배추"
       ]
     },
@@ -3010,6 +3024,7 @@
       "press_tier": 3,
       "topics": [
         "감자",
+        "무",
         "배추",
         "양배추"
       ]
@@ -3028,6 +3043,7 @@
       "score": 38.2,
       "press_tier": 3,
       "topics": [
+        "배",
         "사과",
         "포도"
       ]
@@ -3112,6 +3128,7 @@
       "press_tier": 2,
       "topics": [
         "당근",
+        "무",
         "배추",
         "양배추",
         "토마토"
@@ -3500,6 +3517,7 @@
       "score": 23.51,
       "press_tier": 2,
       "topics": [
+        "밤",
         "복숭아"
       ]
     },
@@ -3581,6 +3599,7 @@
       "score": 19.16,
       "press_tier": 1,
       "topics": [
+        "밤",
         "복숭아"
       ]
     },
@@ -5774,6 +5793,7 @@
       "score": 0.0,
       "press_tier": 2,
       "topics": [
+        "밤",
         "복숭아"
       ]
     },
@@ -6231,6 +6251,7 @@
       "press_tier": 2,
       "topics": [
         "고추",
+        "배",
         "사과"
       ]
     },
@@ -8323,6 +8344,7 @@
       "score": 41.67,
       "press_tier": 2,
       "topics": [
+        "무",
         "배",
         "상추",
         "수박",
@@ -8439,7 +8461,8 @@
       "score": 22.71,
       "press_tier": 2,
       "topics": [
-        "무"
+        "무",
+        "밤"
       ]
     },
     {
@@ -8457,6 +8480,7 @@
       "press_tier": 2,
       "topics": [
         "무",
+        "밤",
         "복숭아"
       ]
     },
@@ -9165,6 +9189,7 @@
       "score": 63.13,
       "press_tier": 2,
       "topics": [
+        "배",
         "사과"
       ]
     },
@@ -9578,6 +9603,7 @@
       "score": 47.34,
       "press_tier": 3,
       "topics": [
+        "무",
         "수박",
         "양파"
       ]
@@ -10270,7 +10296,9 @@
       "archive": "/agri-news-brief/archive/2026-07-06.html#sec-pest",
       "score": 52.32,
       "press_tier": 2,
-      "topics": []
+      "topics": [
+        "배"
+      ]
     },
     {
       "id": "b432be824245",
@@ -10301,6 +10329,7 @@
       "score": 46.4,
       "press_tier": 2,
       "topics": [
+        "배",
         "사과",
         "화훼"
       ]
@@ -10994,6 +11023,7 @@
       "score": 37.0,
       "press_tier": 1,
       "topics": [
+        "배",
         "사과"
       ]
     },
@@ -11026,6 +11056,7 @@
       "score": 24.72,
       "press_tier": 1,
       "topics": [
+        "배",
         "사과"
       ]
     },
@@ -11073,6 +11104,7 @@
       "score": 12.84,
       "press_tier": 1,
       "topics": [
+        "배",
         "복숭아",
         "사과",
         "자두",
@@ -11272,7 +11304,9 @@
       "archive": "/agri-news-brief/archive/2026-07-01.html#sec-pest",
       "score": 26.16,
       "press_tier": 2,
-      "topics": []
+      "topics": [
+        "밤"
+      ]
     },
     {
       "id": "3eb894651274",
@@ -13740,6 +13774,7 @@
       "score": 56.05,
       "press_tier": 3,
       "topics": [
+        "배",
         "사과"
       ]
     },
@@ -13992,6 +14027,7 @@
       "score": 79.47,
       "press_tier": 2,
       "topics": [
+        "무",
         "배추"
       ]
     },
@@ -14120,6 +14156,7 @@
       "score": 63.14,
       "press_tier": 1,
       "topics": [
+        "배",
         "사과"
       ]
     },
@@ -14349,7 +14386,9 @@
       "archive": "/agri-news-brief/archive/2026-06-17.html#sec-pest",
       "score": 49.61,
       "press_tier": 2,
-      "topics": []
+      "topics": [
+        "배"
+      ]
     },
     {
       "id": "be7a99d459a2",
@@ -14675,6 +14714,7 @@
       "score": 26.57,
       "press_tier": 2,
       "topics": [
+        "배",
         "사과",
         "수박"
       ]
@@ -15506,7 +15546,9 @@
       "archive": "/agri-news-brief/archive/2026-06-11.html#sec-policy",
       "score": 79.12,
       "press_tier": 2,
-      "topics": []
+      "topics": [
+        "무"
+      ]
     },
     {
       "id": "854246181ca7",
@@ -15800,6 +15842,7 @@
       "score": 62.88,
       "press_tier": 2,
       "topics": [
+        "배",
         "사과"
       ]
     },
@@ -15944,6 +15987,7 @@
       "press_tier": 1,
       "topics": [
         "대파",
+        "무",
         "배추",
         "양파"
       ]
@@ -16203,6 +16247,7 @@
       "score": 62.48,
       "press_tier": 1,
       "topics": [
+        "무",
         "배추"
       ]
     },
@@ -16425,6 +16470,7 @@
       "score": 70.86,
       "press_tier": 2,
       "topics": [
+        "배",
         "사과"
       ]
     },
@@ -16767,6 +16813,7 @@
       "score": 0.0,
       "press_tier": 2,
       "topics": [
+        "배",
         "사과"
       ]
     },
@@ -16819,6 +16866,7 @@
       "score": 0.0,
       "press_tier": 2,
       "topics": [
+        "무",
         "배추"
       ]
     },
@@ -17394,6 +17442,7 @@
       "score": 0.0,
       "press_tier": 2,
       "topics": [
+        "배",
         "사과"
       ]
     },
@@ -18068,6 +18117,7 @@
       "score": 0.0,
       "press_tier": 2,
       "topics": [
+        "무",
         "배추",
         "양파"
       ]
@@ -18728,6 +18778,7 @@
       "score": 0.0,
       "press_tier": 2,
       "topics": [
+        "배",
         "사과"
       ]
     },
@@ -20193,6 +20244,7 @@
       "score": 0.0,
       "press_tier": 1,
       "topics": [
+        "배",
         "사과"
       ]
     },
@@ -20589,6 +20641,7 @@
       "score": 0.0,
       "press_tier": 2,
       "topics": [
+        "무",
         "배추",
         "양파"
       ]
@@ -20673,7 +20726,9 @@
       "archive": "/agri-news-brief/archive/2026-05-15.html#sec-pest",
       "score": 0.0,
       "press_tier": 1,
-      "topics": []
+      "topics": [
+        "배"
+      ]
     },
     {
       "id": "db736120c113",
@@ -20809,6 +20864,7 @@
       "score": 0.0,
       "press_tier": 2,
       "topics": [
+        "무",
         "배추",
         "양파"
       ]
@@ -20970,6 +21026,7 @@
       "score": 0.0,
       "press_tier": 1,
       "topics": [
+        "배",
         "사과"
       ]
     },
@@ -21052,6 +21109,7 @@
       "score": 0.0,
       "press_tier": 3,
       "topics": [
+        "무",
         "배추",
         "양파"
       ]
@@ -21186,6 +21244,7 @@
       "score": 0.0,
       "press_tier": 2,
       "topics": [
+        "무",
         "배추",
         "양파"
       ]
@@ -21518,6 +21577,7 @@
       "score": 0.0,
       "press_tier": 3,
       "topics": [
+        "배",
         "사과"
       ]
     },
@@ -21536,6 +21596,7 @@
       "press_tier": 3,
       "topics": [
         "대파",
+        "무",
         "배추",
         "수박",
         "참외"
@@ -21668,6 +21729,7 @@
       "score": 0.0,
       "press_tier": 2,
       "topics": [
+        "배",
         "사과"
       ]
     },
@@ -21970,6 +22032,7 @@
       "score": 0.0,
       "press_tier": 1,
       "topics": [
+        "무",
         "배추",
         "수박",
         "참외"
@@ -22311,6 +22374,7 @@
       "score": 0.0,
       "press_tier": 3,
       "topics": [
+        "배",
         "사과"
       ]
     },
@@ -22522,6 +22586,7 @@
       "score": 0.0,
       "press_tier": 1,
       "topics": [
+        "배",
         "사과"
       ]
     },
@@ -22669,6 +22734,7 @@
       "score": 0.0,
       "press_tier": 2,
       "topics": [
+        "배",
         "사과"
       ]
     },
@@ -23118,6 +23184,7 @@
       "score": 0.0,
       "press_tier": 2,
       "topics": [
+        "배",
         "사과"
       ]
     },
@@ -24334,6 +24401,7 @@
       "score": 0.0,
       "press_tier": 2,
       "topics": [
+        "무",
         "배추"
       ]
     },
@@ -25717,6 +25785,7 @@
       "score": 0.0,
       "press_tier": 1,
       "topics": [
+        "배",
         "사과"
       ]
     },
@@ -26125,6 +26194,7 @@
       "score": 0.0,
       "press_tier": 2,
       "topics": [
+        "배",
         "사과"
       ]
     },
@@ -26492,6 +26562,7 @@
       "score": 0.0,
       "press_tier": 1,
       "topics": [
+        "배",
         "사과"
       ]
     },
@@ -26627,6 +26698,7 @@
       "score": 0.0,
       "press_tier": 3,
       "topics": [
+        "배",
         "사과"
       ]
     },
@@ -27689,6 +27761,7 @@
       "score": 0.0,
       "press_tier": 2,
       "topics": [
+        "배",
         "사과"
       ]
     },
@@ -27754,6 +27827,7 @@
       "score": 0.0,
       "press_tier": 1,
       "topics": [
+        "배",
         "사과"
       ]
     },
@@ -28194,6 +28268,7 @@
       "score": 0.0,
       "press_tier": 1,
       "topics": [
+        "배",
         "사과",
         "화훼"
       ]
@@ -28262,6 +28337,7 @@
       "press_tier": 3,
       "topics": [
         "마늘",
+        "무",
         "배추",
         "양파"
       ]
@@ -28506,6 +28582,7 @@
       "score": 0.0,
       "press_tier": 1,
       "topics": [
+        "배",
         "사과"
       ]
     },
@@ -29357,6 +29434,7 @@
       "score": 0.0,
       "press_tier": 2,
       "topics": [
+        "배",
         "사과"
       ]
     },
@@ -29649,6 +29727,7 @@
         "고추",
         "단감",
         "멜론",
+        "배",
         "풋고추",
         "호박"
       ]
@@ -29775,6 +29854,7 @@
       "score": 0.0,
       "press_tier": 2,
       "topics": [
+        "배",
         "사과",
         "화훼"
       ]
@@ -29829,6 +29909,7 @@
       "score": 0.0,
       "press_tier": 2,
       "topics": [
+        "배",
         "사과",
         "화훼"
       ]
@@ -30053,6 +30134,7 @@
       "score": 0.0,
       "press_tier": 2,
       "topics": [
+        "배",
         "사과",
         "화훼"
       ]
@@ -30184,6 +30266,7 @@
       "score": 0.0,
       "press_tier": 1,
       "topics": [
+        "배",
         "사과",
         "화훼"
       ]
@@ -30433,6 +30516,7 @@
       "score": 0.0,
       "press_tier": 2,
       "topics": [
+        "배",
         "사과"
       ]
     },
@@ -30762,6 +30846,7 @@
       "score": 0.0,
       "press_tier": 1,
       "topics": [
+        "배",
         "사과"
       ]
     },
@@ -31023,6 +31108,7 @@
       "press_tier": 1,
       "topics": [
         "가지",
+        "배",
         "사과"
       ]
     },
@@ -31367,7 +31453,8 @@
       "score": 0.0,
       "press_tier": 1,
       "topics": [
-        "가지"
+        "가지",
+        "배"
       ]
     },
     {
@@ -31694,7 +31781,9 @@
       "archive": "/agri-news-brief/archive/2026-03-16.html#sec-pest",
       "score": 0.0,
       "press_tier": 2,
-      "topics": []
+      "topics": [
+        "배"
+      ]
     },
     {
       "id": "6147e9ff5fb1",
@@ -32563,6 +32652,7 @@
       "score": 0.0,
       "press_tier": 2,
       "topics": [
+        "배",
         "사과"
       ]
     },
@@ -32849,6 +32939,7 @@
       "score": 0.0,
       "press_tier": 3,
       "topics": [
+        "배",
         "사과"
       ]
     },
@@ -32913,6 +33004,7 @@
       "score": 0.0,
       "press_tier": 2,
       "topics": [
+        "배",
         "사과"
       ]
     },
@@ -33419,7 +33511,9 @@
       "archive": "/agri-news-brief/archive/2026-03-04.html#sec-pest",
       "score": 0.0,
       "press_tier": 2,
-      "topics": []
+      "topics": [
+        "배"
+      ]
     },
     {
       "id": "8a60f4382771",
@@ -33879,6 +33973,7 @@
       "score": 0.0,
       "press_tier": 2,
       "topics": [
+        "무",
         "복숭아",
         "토마토"
       ]
@@ -34247,6 +34342,7 @@
       "score": 0.0,
       "press_tier": 3,
       "topics": [
+        "배",
         "사과"
       ]
     },
@@ -34601,6 +34697,7 @@
       "press_tier": 2,
       "topics": [
         "감귤/만감",
+        "배",
         "사과"
       ]
     },
@@ -34716,6 +34813,7 @@
       "score": 0.0,
       "press_tier": 2,
       "topics": [
+        "배",
         "사과"
       ]
     },
@@ -34810,6 +34908,7 @@
       "score": 0.0,
       "press_tier": 3,
       "topics": [
+        "배",
         "사과"
       ]
     },
@@ -34907,7 +35006,9 @@
       "archive": "/agri-news-brief/archive/2026-02-19.html#sec-policy",
       "score": 0.0,
       "press_tier": 2,
-      "topics": []
+      "topics": [
+        "배"
+      ]
     },
     {
       "id": "c9f27786ea3e",
@@ -35959,6 +36060,7 @@
       "press_tier": 2,
       "topics": [
         "감귤/만감",
+        "배",
         "사과"
       ]
     },
@@ -36091,6 +36193,7 @@
       "topics": [
         "감귤/만감",
         "단감",
+        "배",
         "포도"
       ]
     },
@@ -38295,7 +38398,12 @@
         "배",
         "신고배",
         "나주배",
-        "배(과일)"
+        "배(과일)",
+        "천안배",
+        "안성배",
+        "울산배",
+        "황금배",
+        "원황배"
       ]
     },
     {

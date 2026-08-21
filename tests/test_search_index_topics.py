@@ -44,6 +44,46 @@ class TestSearchTopicsForText(unittest.TestCase):
     def test_apple_price_is_apple(self):
         self.assertIn("사과", main._search_topics_for_text("올 추석 金사과 걱정 줄었다", "사과 가격 하락"))
 
+    def test_enumeration_headline_supplements_pear(self):
+        # 나열형("사과·배")은 bigram 문맥 게이트가 놓치는 계열 — 검색 태깅에서 보강
+        topics = main._search_topics_for_text(
+            '농식품부 "폭염에도 사과·배 작황 양호… 수급 안정적"',
+            "전국 사과·배는 폭염과 가뭄에도 작황이 양호해 수급이 안정적일 것으로 전망됐다.",
+        )
+        self.assertIn("배", topics)
+
+    def test_fire_blight_summary_supplements_pear(self):
+        topics = main._search_topics_for_text(
+            "공주시 '과수화상병·돌발해충 방제 약제' 무상 지원",
+            "충남 공주시가 사과·배 과수화상병과 돌발해충 방제 약제를 지원한다.",
+        )
+        self.assertIn("배", topics)
+
+    def test_numeric_multiplier_is_not_pear(self):
+        self.assertNotIn("배", main._search_topics_for_text(
+            "폭염에 시금치 2배, 오이·깻잎도 60%대 급등", "가격이 2배로 뛰었다."))
+        self.assertNotIn("배", main._search_topics_for_text(
+            "예산 밤나무 43.49㏊(축구장 61배 크기) 드론 방제", "밤나무 재배지 방제를 실시한다."))
+
+    def test_cultivation_compound_is_not_pear(self):
+        self.assertNotIn("배", main._search_topics_for_text(
+            "스마트팜 계약재배 확대 추진", "계약재배 물량이 늘었다."))
+
+    def test_napa_radish_enumeration_supplements_radish_not_pear(self):
+        topics = main._search_topics_for_text(
+            "폭염에 추석 채솟값 뛸라…정부, 배추·무 비축 물량 푼다",
+            "정부가 배추·무 비축물량을 공급한다.",
+        )
+        self.assertIn("무", topics)
+        self.assertIn("배추", topics)
+        self.assertNotIn("배", topics)
+
+    def test_chestnut_tree_supplements_chestnut(self):
+        self.assertIn("밤", main._search_topics_for_text(
+            "예산군, 드론 활용 밤나무 병해충 방제 추진", ""))
+        self.assertNotIn("밤", main._search_topics_for_text(
+            "밤사이 폭우로 농경지 침수 피해", "간밤에 내린 비로 침수됐다."))
+
 
 class TestSearchTopicCatalog(unittest.TestCase):
     def setUp(self):
