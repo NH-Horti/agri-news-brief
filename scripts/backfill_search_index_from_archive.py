@@ -110,13 +110,16 @@ def run() -> None:
     site_base = _site_base(items)
     section_titles = {s["key"]: s["title"] for s in main.SECTIONS}
 
-    # 1) 기존 아이템 topics 보강 (없거나 비어있는 것만 채움)
+    # 1) 기존 아이템 topics 보강: 항상 재계산해 기존 태그와 합집합
+    #    (백필분의 카드 topic 배지, 과거 분류 결과를 보존하면서 태거 개선분을 반영)
     enriched = 0
     for it in items:
-        if it.get("topics"):
-            continue
-        it["topics"] = main._search_topics_for_text(it.get("title") or "", it.get("summary") or "")
-        enriched += 1
+        old = set(it.get("topics") or [])
+        new = set(main._search_topics_for_text(it.get("title") or "", it.get("summary") or ""))
+        merged = sorted(old | new)
+        if merged != sorted(old):
+            enriched += 1
+        it["topics"] = merged
 
     # 2) 인덱스에 없는 아카이브 날짜 백필
     added_days = 0
