@@ -115,7 +115,15 @@ class TestSearchTopicCatalog(unittest.TestCase):
         # "배추"⊂"양배추", "오이"⊂"오이고추" — 부분문자열 경로의 교차 오염 방지
         self.assertIn("양배추", self.by_entry["배추"].get("exclude_substr", []))
         self.assertIn("오이고추", self.by_entry["오이"].get("exclude_substr", []))
+        self.assertIn("오이맛고추", self.by_entry["오이"].get("exclude_substr", []))
+        self.assertIn("사과대추", self.by_entry["사과"].get("exclude_substr", []))
+        self.assertIn("뉴스토마토", self.by_entry["토마토"].get("exclude_substr", []))
         self.assertNotIn("exclude_substr", self.by_entry["양배추"])
+
+    def test_homonym_dominant_alias_is_tag_only(self):
+        # "가지"는 여러 가지/나뭇가지/가지검은마름병 오탐이 94% — 태그 전용
+        self.assertTrue(self.by_entry["가지"].get("tag_only"))
+        self.assertNotIn("tag_only", self.by_entry["오이"])
 
     def test_specific_pepper_aliases_owned_by_specific_topic(self):
         # 우산 토픽(고추/호박)이 하위 품목명을 겸유하면 "풋고추" 검색이 고추 전체를 부른다
@@ -181,8 +189,8 @@ class TestSearchItemSchema(unittest.TestCase):
 class TestIndexPageWiring(unittest.TestCase):
     def test_render_index_page_wires_commodity_search(self):
         html = main.render_index_page({"dates": ["2026-08-21"]}, "/agri-news-brief/")
-        for needle in ("ALIAS2TOPICS", "ALIAS2EXCLUDES", "exclude_substr",
-                       "classifyTokens", "topic_catalog",
+        for needle in ("ALIAS2TOPICS", "ALIAS2EXCLUDES", "ALIAS2TAGONLY",
+                       "exclude_substr", "classifyTokens", "topic_catalog",
                        "topicChip", "tokenHit", "검색 가능:"):
             self.assertIn(needle, html)
         # 한 글자 일반어 안내 + 기본 기간 전체(로드시 30일 자동 축소 제거)
@@ -243,6 +251,44 @@ class TestBackfillParser(unittest.TestCase):
         self.assertEqual(cabbage["rank"], 2)
         self.assertIn("배추", cabbage["topics"])
         self.assertNotIn("배", cabbage["topics"])
+
+    HOMONYM_SAMPLE = """
+    <section id="sec-pest" class="sec">
+      <div class="secBody">
+        <div class="card">
+          <div class="cardTop">
+            <div class="meta"><span class="press">언론사</span><span class="topic">가지</span></div>
+            <a class="btnOpen" href="https://news.example.com/blight" target="_blank">원문 열기</a>
+          </div>
+          <div class="ttl">과수화상병 예방 철저 당부</div>
+          <div class="sum">배 재배 농가 대상 예방 교육을 실시한다.</div>
+        </div>
+        <div class="card">
+          <div class="cardTop">
+            <div class="meta"><span class="press">언론사</span><span class="topic">가지</span></div>
+            <a class="btnOpen" href="https://news.example.com/eggplant" target="_blank">원문 열기</a>
+          </div>
+          <div class="ttl">가지 출하량 증가로 가격 하락</div>
+          <div class="sum">여름 가지 출하가 늘었다.</div>
+        </div>
+      </div>
+    </section>
+    """
+
+    def test_homonym_badge_trusted_only_with_text_evidence(self):
+        # 과거 배지 오분류('가지'=나뭇가지 문맥) 유입 차단 — 텍스트에 품목명이 있을 때만 신뢰
+        mod = _load_backfill_module()
+        import tempfile
+        with tempfile.TemporaryDirectory() as td:
+            p = Path(td) / "2026-03-18.html"
+            p.write_text(self.HOMONYM_SAMPLE, encoding="utf-8")
+            items = mod.parse_archive_day(
+                str(p), "2026-03-18", "/agri-news-brief/",
+                {s["key"]: s["title"] for s in main.SECTIONS},
+            )
+        blight, eggplant = items
+        self.assertNotIn("가지", blight["topics"])
+        self.assertIn("가지", eggplant["topics"])
 
 
 if __name__ == "__main__":

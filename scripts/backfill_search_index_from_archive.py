@@ -79,7 +79,11 @@ def parse_archive_day(path: str, report_date: str, site_base: str, section_title
 
             topics = set(main._search_topics_for_text(title, summary))
             if card_topic in main._HORTI_TOPICS_SET:
-                topics.add(card_topic)
+                # 동음이의어 지배 품목(가지 등)의 배지는 과거 오분류가 섞여 있어,
+                # 절단 텍스트에 품목명이 실제로 있을 때만 신뢰한다.
+                trusted = (card_topic not in main._SEARCH_TAG_ONLY_QUERY_TOPICS) or (card_topic in f"{title} {summary}")
+                if trusted:
+                    topics.add(card_topic)
 
             dom = urlparse(url).netloc if url else ""
             tier = int(main.press_tier(press, dom))
@@ -116,7 +120,14 @@ def run() -> None:
     for it in items:
         old = set(it.get("topics") or [])
         new = set(main._search_topics_for_text(it.get("title") or "", it.get("summary") or ""))
-        merged = sorted(old | new)
+        merged = old | new
+        # 동음이의어 지배 품목: 텍스트에 품목명이 없고 분류기도 안 주는 태그는
+        # 과거 배지 오분류 유입이므로 제거한다
+        text = f"{it.get('title') or ''} {it.get('summary') or ''}"
+        for tp in main._SEARCH_TAG_ONLY_QUERY_TOPICS:
+            if tp in merged and tp not in new and tp not in text:
+                merged.discard(tp)
+        merged = sorted(merged)
         if merged != sorted(old):
             enriched += 1
         it["topics"] = merged
