@@ -15186,8 +15186,15 @@ _SEARCH_EXTRA_TOPIC_ALIASES: dict[str, list[str]] = {
 # 같은 토픽의 상위어(방울토마토⊃토마토, 애플수박⊃수박)는 포함이 의도라 제외하지 않는다.
 _SEARCH_TOPIC_SUBSTR_EXCLUDES: dict[str, list[str]] = {
     "배추": ["양배추"],
-    "오이": ["오이고추"],
+    "오이": ["오이고추", "오이맛고추"],
+    "사과": ["사과대추"],
+    "토마토": ["뉴스토마토"],  # 언론사명 — press 필드 경유 유입 차단
 }
+
+# 동음이의어가 지배적인 별칭은 부분문자열을 끄고 태그로만 검색한다.
+# 전수 감사(2026-08-21) 결과 '가지'는 36건 중 34건이 "여러 가지"·나뭇가지·
+# 가지검은마름병(감자 병명) 등 오탐 — 한 글자 품목과 같은 취급이 정확하다.
+_SEARCH_TAG_ONLY_QUERY_TOPICS: set[str] = {"가지"}
 
 # 별칭 소유권: 레지스트리에서 우산 토픽(고추/호박)이 하위 품목명을 별칭으로 겸유해
 # "풋고추" 검색이 고추 태그군 전체를 부르는 문제. 검색 카탈로그에서는 구체 토픽이
@@ -15257,6 +15264,8 @@ def _search_topic_catalog() -> list[JsonDict]:
         excludes = _SEARCH_TOPIC_SUBSTR_EXCLUDES.get(topic)
         if excludes:
             entry["exclude_substr"] = [str(x).strip().lower() for x in excludes]
+        if topic in _SEARCH_TAG_ONLY_QUERY_TOPICS:
+            entry["tag_only"] = True
         catalog.append(entry)
     return catalog
 
@@ -49679,6 +49688,8 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
       var ALIAS2TOPICS = {{}};
       // 별칭 -> 부분문자열 제외어("배추" 검색 시 "양배추" 내부 일치 제거)
       var ALIAS2EXCLUDES = {{}};
+      // 태그 전용 별칭(동음이의어 지배: "가지" 등) — 부분문자열 검색 안 함
+      var ALIAS2TAGONLY = {{}};
       var LAST_CLS = null;
 
       function escHtml(s) {{
@@ -49704,7 +49715,8 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
           if (!tok) continue;
           var topics = ALIAS2TOPICS[tok] || null;
           if (isSingleHangul(tok) && !topics) {{ out.dropped.push(tok); continue; }}
-          out.match.push({{ tok: tok, topics: topics, tagOnly: isSingleHangul(tok) && !!topics, excludes: ALIAS2EXCLUDES[tok] || null }});
+          var tagOnly = !!topics && (isSingleHangul(tok) || !!ALIAS2TAGONLY[tok]);
+          out.match.push({{ tok: tok, topics: topics, tagOnly: tagOnly, excludes: ALIAS2EXCLUDES[tok] || null }});
         }}
         return out;
       }}
@@ -50154,17 +50166,20 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
           // 품목 별칭 카탈로그 -> 검색어 매핑
           ALIAS2TOPICS = {{}};
           ALIAS2EXCLUDES = {{}};
+          ALIAS2TAGONLY = {{}};
           var cat = DATA.topic_catalog || [];
           for (var i=0; i<cat.length; i++) {{
             var tp = cat[i] && cat[i].topic;
             var als = (cat[i] && cat[i].aliases) || [];
             var exc = (cat[i] && cat[i].exclude_substr) || [];
+            var tagOnlyEntry = !!(cat[i] && cat[i].tag_only);
             if (!tp) continue;
             for (var j=0; j<als.length; j++) {{
               var al = norm(als[j]);
               if (!al) continue;
               if (!ALIAS2TOPICS[al]) ALIAS2TOPICS[al] = [];
               if (ALIAS2TOPICS[al].indexOf(tp) === -1) ALIAS2TOPICS[al].push(tp);
+              if (tagOnlyEntry) ALIAS2TAGONLY[al] = true;
               for (var k=0; k<exc.length; k++) {{
                 var ex = norm(exc[k]);
                 if (!ex || ex.indexOf(al) === -1) continue; // 별칭을 포함하는 상위어만 의미 있음
