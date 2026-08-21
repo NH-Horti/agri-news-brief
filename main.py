@@ -961,8 +961,8 @@ DOCS_INDEX_PATH = "docs/index.html"
 DOCS_ARCHIVE_DIR = "docs/archive"
 DOCS_SEARCH_INDEX_PATH = "docs/search_index.json"
 DOCS_ARCHIVE_MANIFEST_JSON_PATH = "docs/archive_manifest.json"
-MAX_SEARCH_DATES = int(os.getenv("MAX_SEARCH_DATES", "180"))
-MAX_SEARCH_ITEMS = int(os.getenv("MAX_SEARCH_ITEMS", "6000"))
+MAX_SEARCH_DATES = int(os.getenv("MAX_SEARCH_DATES", "400"))
+MAX_SEARCH_ITEMS = int(os.getenv("MAX_SEARCH_ITEMS", "9000"))
 
 # Build marker (for verifying deployed code)
 def _compute_build_tag() -> str:
@@ -15164,6 +15164,43 @@ def save_search_index(repo: str, token: str, idx: JsonDict, sha: str | None) -> 
                     "Update search index", sha=sha, branch="main")
 
 
+# 검색 인덱스 품목 태깅: '배' 같은 한 글자 품목은 부분문자열 검색이 오탐(배추/재배/배송…)에
+# 묻히므로, 본문 파이프라인과 동일한 분류기(_topic_scores)로 아이템에 원예 품목 태그를 싣고
+# index.html 검색 JS가 별칭 카탈로그로 품목 검색을 수행한다.
+_SEARCH_SINGLE_CHAR_TOPIC_ALIASES: dict[str, list[str]] = {
+    # 한 글자 검색어 -> 대응 토픽 (토픽명이 이미 한 글자인 배/무/밤은 자동 포함)
+    "감": ["단감", "감/곶감"],
+    "귤": ["감귤/만감"],
+    "꽃": ["화훼"],
+    "파": ["대파"],
+}
+
+
+def _search_topics_for_text(title: str, desc: str) -> list[str]:
+    try:
+        scores = _topic_scores(title or "", desc or "")
+    except Exception:
+        return []
+    return sorted(t for t, sc in scores.items() if sc > 0 and t in _HORTI_TOPICS_SET)
+
+
+def _search_topic_catalog() -> list[JsonDict]:
+    catalog: list[JsonDict] = []
+    for topic, terms in ALL_ITEM_COMMODITY_TOPICS:
+        # 공백 포함 별칭("배 과일")은 토큰 단위 매칭에서 죽은 항목이라 제외
+        aliases = [topic] + [t for t in terms if t and " " not in str(t)]
+        aliases += [ch for ch, topics_ in _SEARCH_SINGLE_CHAR_TOPIC_ALIASES.items() if topic in topics_]
+        seen: set[str] = set()
+        uniq: list[str] = []
+        for a in aliases:
+            al = str(a).strip().lower()
+            if al and al not in seen:
+                seen.add(al)
+                uniq.append(al)
+        catalog.append({"topic": topic, "aliases": uniq})
+    return catalog
+
+
 def _make_search_items_for_day(report_date: str, by_section: dict[str, list[Any]], site_path: str) -> list[JsonDict]:
     """Build search-index items for a single report day.
 
@@ -15211,6 +15248,7 @@ def _make_search_items_for_day(report_date: str, by_section: dict[str, list[Any]
                 "archive": archive_href,
                 "score": score,
                 "press_tier": tier,
+                "topics": _search_topics_for_text(title, summary),
             })
     return items
 
@@ -15419,6 +15457,7 @@ def update_search_index(existing: JsonDict, report_date: str, by_section: dict[s
         items = items[:MAX_SEARCH_ITEMS]
 
     existing["items"] = items
+    existing["topic_catalog"] = _search_topic_catalog()
     return existing
 
 
@@ -49397,6 +49436,7 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
     .chip{{display:inline-flex;align-items:center;gap:6px;background:var(--chip);border:1px solid var(--line);
           padding:3px 8px;border-radius:999px;font-size:11px;color:#374151}}
     .chip b{{font-weight:900}}
+    .chip.topicChip{{background:#ecfdf5;border-color:#6ee7b7;color:#065f46}}
     .hint{{margin-top:8px;color:var(--muted);font-size:12px;line-height:1.4}}
     .metaLine{{margin-top:10px;color:var(--muted);font-size:12px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}}
     .metaLeft{{display:flex;gap:8px;flex-wrap:wrap;align-items:center}}
@@ -49436,6 +49476,7 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
       .sel,.date{{background:#1e293b;color:#e2e8f0;border-color:var(--line)}}
       .sel:focus,.date:focus{{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,.2)}}
       .chip{{background:#334155;border-color:#475569;color:#e2e8f0}}
+      .chip.topicChip{{background:#064e3b;border-color:#059669;color:#a7f3d0}}
       .result{{background:#1e293b;border-color:var(--line)}}
       .rTitle{{color:#f1f5f9}}
       .rSum{{color:#94a3b8}}
@@ -49499,7 +49540,7 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
         </label>
       </div>
 
-      <div class="hint">검색 대상: 제목/요약/언론사/섹션/날짜.  (예: "사과 가격" 처럼 띄어쓰기를 하면 모든 단어가 포함된 기사만 표시됩니다.)</div>
+      <div class="hint">검색 대상: 제목/요약/언론사/섹션/날짜. 품목명은 한 글자(배·무·감·파 등)도 품목 태그로 정확히 검색됩니다. (예: "사과 가격" 처럼 띄어쓰기를 하면 모든 단어가 포함된 기사만 표시됩니다.)</div>
 
       <div class="metaLine">
         <div id="metaLeft" class="metaLeft"></div>
@@ -49574,6 +49615,9 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
       var PAGE_SIZE = 20;
       var PAGE = 1;
       var lastSearchEventKey = "";
+      // 품목 별칭(소문자) -> 토픽 목록. search_index.json의 topic_catalog에서 채운다.
+      var ALIAS2TOPICS = {{}};
+      var LAST_CLS = null;
 
       function escHtml(s) {{
         return (s || "").replace(/[&<>"']/g, function(c) {{
@@ -49582,6 +49626,37 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
       }}
       function norm(s) {{ return (s || "").toLowerCase(); }}
       function hasSearchText(q) {{ return !!(q && String(q).trim()); }}
+      function itemTopics(it) {{
+        var tp = it && it.topics;
+        return (tp && tp.length) ? tp : [];
+      }}
+      function isSingleHangul(tok) {{
+        return tok.length === 1 && /[가-힣]/.test(tok);
+      }}
+      // 토큰 분류: 품목 별칭 토큰은 태그 매칭(한 글자는 태그 전용),
+      // 한 글자 일반어는 부분문자열 오탐(배추/재배/배송…)이 과다해 제외한다.
+      function classifyTokens(tokens) {{
+        var out = {{ match: [], dropped: [] }};
+        for (var i=0; i<tokens.length; i++) {{
+          var tok = tokens[i];
+          if (!tok) continue;
+          var topics = ALIAS2TOPICS[tok] || null;
+          if (isSingleHangul(tok) && !topics) {{ out.dropped.push(tok); continue; }}
+          out.match.push({{ tok: tok, topics: topics, tagOnly: isSingleHangul(tok) && !!topics }});
+        }}
+        return out;
+      }}
+      function tokenHit(it, hay, m) {{
+        var tagHit = false;
+        if (m.topics) {{
+          var its = itemTopics(it);
+          for (var i=0; i<its.length; i++) {{
+            if (m.topics.indexOf(its[i]) !== -1) {{ tagHit = true; break; }}
+          }}
+        }}
+        if (m.tagOnly) return {{ ok: tagHit, tag: tagHit }};
+        return {{ ok: tagHit || hay.indexOf(m.tok) !== -1, tag: tagHit }};
+      }}
       function buildArticleTrackingAttrs(item, surface) {{
         if (!item) return "";
         var attrs = [];
@@ -49691,6 +49766,13 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
         }}
         // chips
         metaLeft.innerHTML += "<span class='chip'><b>검색</b> " + escHtml(q) + "</span>";
+        if (LAST_CLS) {{
+          for (var ci=0; ci<LAST_CLS.match.length; ci++) {{
+            var cm = LAST_CLS.match[ci];
+            if (cm.topics) metaLeft.innerHTML += "<span class='chip topicChip'><b>품목</b> " + escHtml(cm.tok) + " → " + escHtml(cm.topics.join("·")) + "</span>";
+          }}
+          if (LAST_CLS.dropped.length) metaLeft.innerHTML += "<span class='chip'><b>제외</b> " + escHtml(LAST_CLS.dropped.join(" ")) + " (한 글자 일반어)</span>";
+        }}
         var secV = secSel.value || "";
         if (secV) metaLeft.innerHTML += "<span class='chip'><b>섹션</b> " + escHtml(secSel.options[secSel.selectedIndex].text) + "</span>";
         var fr = fromDate.value || "";
@@ -49701,7 +49783,7 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
         metaRight.textContent = "총 " + resCount + "건 · " + showCount + "건 표시";
       }}
 
-      function computeRelevance(it, tokens) {{
+      function computeRelevance(it, matchers, tagHits) {{
         var t = norm(it.title || "");
         var s = norm(it.summary || "");
         var p = norm(it.press || "");
@@ -49710,8 +49792,8 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
 
         // token match (AND)
         var match = 0;
-        for (var i=0; i<tokens.length; i++) {{
-          var tok = tokens[i];
+        for (var i=0; i<matchers.length; i++) {{
+          var tok = matchers[i].tok;
           if (!tok) continue;
           var inTitle = t.indexOf(tok) !== -1;
           var inSum = s.indexOf(tok) !== -1;
@@ -49728,23 +49810,27 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
         base += pt * 18;
         base += Math.min(30, sc); // score cap
         base += match * 10;
+        base += (tagHits || 0) * 80; // 품목 태그 일치는 부분문자열보다 강한 신호
         return base;
       }}
 
-      function filterItems(tokens) {{
+      function filterItems(matchers) {{
         var items = (DATA && DATA.items) ? DATA.items : [];
         var res = [];
 
         var q = (input.value || "").trim();
         if (!hasSearchText(q)) return res;
 
-        // AND search
+        // AND search (품목 별칭 토큰은 태그, 나머지는 부분문자열)
         for (var i=0; i<items.length; i++) {{
           var it = items[i] || {{}};
           var hay = norm((it.title||"") + " " + (it.summary||"") + " " + (it.press||"") + " " + (it.section_title||"") + " " + (it.date||""));
           var ok = true;
-          for (var j=0; j<tokens.length; j++) {{
-            if (hay.indexOf(tokens[j]) === -1) {{ ok = false; break; }}
+          var tagHits = 0;
+          for (var j=0; j<matchers.length; j++) {{
+            var h = tokenHit(it, hay, matchers[j]);
+            if (!h.ok) {{ ok = false; break; }}
+            if (h.tag) tagHits += 1;
           }}
           if (!ok) continue;
 
@@ -49760,7 +49846,7 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
           if (to && di > to) continue;
 
           // precompute relevance
-          it._rel = computeRelevance(it, tokens);
+          it._rel = computeRelevance(it, matchers, tagHits);
           res.push(it);
         }}
         return res;
@@ -49848,12 +49934,16 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
 
           var tier = parseInt(r.press_tier||0,10)||0;
           var tierLabel = tier>=4 ? "공식" : (tier>=3 ? "주요" : (tier>=2 ? "지역/전문" : "기타"));
+          var tps = itemTopics(r);
+          var topicChips = "";
+          for (var ti=0; ti<tps.length && ti<3; ti++) topicChips += "<span class='chip topicChip'>" + escHtml(tps[ti]) + "</span>";
           html += "<div class='result'>"
                +  "<div class='rTop'>"
                +    "<span class='chip'>" + date + "</span>"
                +    "<span class='chip'>" + sec + "</span>"
                +    (press ? "<span class='chip'>" + press + "</span>" : "")
                +    "<span class='chip'><b>" + tierLabel + "</b></span>"
+               +    topicChips
                +  "</div>"
                +  "<div class='rTitle'>" + title + "</div>"
                +  (sum ? "<div class='rSum'>" + sum + "</div>" : "")
@@ -49900,12 +49990,16 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
             var articleAttrs = buildArticleTrackingAttrs(r, "search_result");
             var tier = parseInt(r.press_tier||0,10)||0;
             var tierLabel = tier>=4 ? "공식" : (tier>=3 ? "주요" : (tier>=2 ? "지역/전문" : "기타"));
+            var tps = itemTopics(r);
+            var topicChips = "";
+            for (var ti=0; ti<tps.length && ti<3; ti++) topicChips += "<span class='chip topicChip'>" + escHtml(tps[ti]) + "</span>";
 
             html += "<div class='result'>"
                  +  "<div class='rTop'>"
                  +    "<span class='chip'>" + sec + "</span>"
                  +    (press ? "<span class='chip'>" + press + "</span>" : "")
                  +    "<span class='chip'><b>" + tierLabel + "</b></span>"
+                 +    topicChips
                  +  "</div>"
                  +  "<div class='rTitle'>" + title + "</div>"
                  +  (sum ? "<div class='rSum'>" + sum + "</div>" : "")
@@ -49937,15 +50031,25 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
         }}
 
         var tokens = q.split(/\\s+/).map(function(x){{return norm(x);}}).filter(Boolean);
-        var res = filterItems(tokens);
+        var cls = classifyTokens(tokens);
+        LAST_CLS = cls;
+        if (!cls.match.length) {{
+          box.innerHTML = "<div class='empty'>한 글자 일반 단어는 오탐이 많아 검색하지 않습니다.<br/>품목명(배·무·감·파·밤·귤·꽃 등)은 한 글자로도 검색되며, 그 외에는 두 글자 이상 입력해 주세요.</div>";
+          setMeta(tokens, 0, 0);
+          pager.style.display = "none";
+          return;
+        }}
+        var hlTokens = [];
+        for (var hi=0; hi<cls.match.length; hi++) hlTokens.push(cls.match[hi].tok);
+        var res = filterItems(cls.match);
         sortItems(res);
 
         if (PAGE < 1) PAGE = 1;
         var totalPages = Math.max(1, Math.ceil(res.length / PAGE_SIZE));
         if (PAGE > totalPages) PAGE = totalPages;
 
-        if (groupToggle && groupToggle.checked) renderGrouped(res, tokens);
-        else renderList(res, tokens);
+        if (groupToggle && groupToggle.checked) renderGrouped(res, hlTokens);
+        else renderList(res, hlTokens);
         if (triggerSource && triggerSource !== "typing") {{
           trackSearchSubmit(res.length, triggerSource);
         }}
@@ -49981,6 +50085,21 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
           if (!r.ok) throw new Error("HTTP " + r.status);
           DATA = await r.json();
 
+          // 품목 별칭 카탈로그 -> 검색어 매핑
+          ALIAS2TOPICS = {{}};
+          var cat = DATA.topic_catalog || [];
+          for (var i=0; i<cat.length; i++) {{
+            var tp = cat[i] && cat[i].topic;
+            var als = (cat[i] && cat[i].aliases) || [];
+            if (!tp) continue;
+            for (var j=0; j<als.length; j++) {{
+              var al = norm(als[j]);
+              if (!al) continue;
+              if (!ALIAS2TOPICS[al]) ALIAS2TOPICS[al] = [];
+              if (ALIAS2TOPICS[al].indexOf(tp) === -1) ALIAS2TOPICS[al].push(tp);
+            }}
+          }}
+
           // compute min/max date
           var items = DATA.items || [];
           var minD = "", maxD = "";
@@ -50009,15 +50128,17 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
             secSel.appendChild(opt);
           }}
 
-          // default date: last 30 days
+          // default date: 전체 기간 (기간이 조용히 잘리면 검색이 안 되는 것처럼 보인다)
           if (minD && maxD) {{
             fromDate.value = minD;
             toDate.value = maxD;
-            setQuickRange(30);
           }}
 
-          metaLeft.innerHTML = "<span class='chip'><b>준비 완료</b> 키워드를 입력하세요</span>";
+          metaLeft.innerHTML = "<span class='chip'><b>준비 완료</b> 검색 가능: " + escHtml(minD || "?") + " ~ " + escHtml(maxD || "?") + "</span>";
           metaRight.textContent = "인덱스 " + items.length + "건";
+
+          // 로드 전에 입력을 마친 검색어가 있으면 즉시 실행 (로드 완료를 기다리다 침묵하는 문제 방지)
+          if (hasSearchText(input.value)) {{ PAGE = 1; runSearch("index_loaded"); }}
 
           // annotate archive cards with article counts
           try {{
