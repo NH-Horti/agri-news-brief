@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <meta name="agri-build" content="22bb3a3" />
+  <meta name="agri-build" content="f2597cc" />
   
   <meta name="application-name" content="농산물 뉴스 브리프" />
   <meta name="apple-mobile-web-app-title" content="농산물 뉴스 브리프" />
@@ -774,7 +774,7 @@
       var agriAnalyticsCtx = {
         enabled: true,
         measurementId: "G-M5Y1GRYB0J",
-        buildId: "22bb3a3",
+        buildId: "f2597cc",
         pageType: "home",
         reportDate: "",
         viewMode: ""
@@ -913,6 +913,8 @@
       var lastSearchEventKey = "";
       // 품목 별칭(소문자) -> 토픽 목록. search_index.json의 topic_catalog에서 채운다.
       var ALIAS2TOPICS = {};
+      // 별칭 -> 부분문자열 제외어("배추" 검색 시 "양배추" 내부 일치 제거)
+      var ALIAS2EXCLUDES = {};
       var LAST_CLS = null;
 
       function escHtml(s) {
@@ -938,7 +940,7 @@
           if (!tok) continue;
           var topics = ALIAS2TOPICS[tok] || null;
           if (isSingleHangul(tok) && !topics) { out.dropped.push(tok); continue; }
-          out.match.push({ tok: tok, topics: topics, tagOnly: isSingleHangul(tok) && !!topics });
+          out.match.push({ tok: tok, topics: topics, tagOnly: isSingleHangul(tok) && !!topics, excludes: ALIAS2EXCLUDES[tok] || null });
         }
         return out;
       }
@@ -951,7 +953,11 @@
           }
         }
         if (m.tagOnly) return { ok: tagHit, tag: tagHit };
-        return { ok: tagHit || hay.indexOf(m.tok) !== -1, tag: tagHit };
+        var h = hay;
+        if (m.excludes) {
+          for (var j=0; j<m.excludes.length; j++) h = h.split(m.excludes[j]).join(" ");
+        }
+        return { ok: tagHit || h.indexOf(m.tok) !== -1, tag: tagHit };
       }
       function buildArticleTrackingAttrs(item, surface) {
         if (!item) return "";
@@ -1383,16 +1389,24 @@
 
           // 품목 별칭 카탈로그 -> 검색어 매핑
           ALIAS2TOPICS = {};
+          ALIAS2EXCLUDES = {};
           var cat = DATA.topic_catalog || [];
           for (var i=0; i<cat.length; i++) {
             var tp = cat[i] && cat[i].topic;
             var als = (cat[i] && cat[i].aliases) || [];
+            var exc = (cat[i] && cat[i].exclude_substr) || [];
             if (!tp) continue;
             for (var j=0; j<als.length; j++) {
               var al = norm(als[j]);
               if (!al) continue;
               if (!ALIAS2TOPICS[al]) ALIAS2TOPICS[al] = [];
               if (ALIAS2TOPICS[al].indexOf(tp) === -1) ALIAS2TOPICS[al].push(tp);
+              for (var k=0; k<exc.length; k++) {
+                var ex = norm(exc[k]);
+                if (!ex || ex.indexOf(al) === -1) continue; // 별칭을 포함하는 상위어만 의미 있음
+                if (!ALIAS2EXCLUDES[al]) ALIAS2EXCLUDES[al] = [];
+                if (ALIAS2EXCLUDES[al].indexOf(ex) === -1) ALIAS2EXCLUDES[al].push(ex);
+              }
             }
           }
 

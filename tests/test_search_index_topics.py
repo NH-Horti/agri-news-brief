@@ -89,6 +89,7 @@ class TestSearchTopicCatalog(unittest.TestCase):
     def setUp(self):
         self.catalog = main._search_topic_catalog()
         self.by_topic = {c["topic"]: c["aliases"] for c in self.catalog}
+        self.by_entry = {c["topic"]: c for c in self.catalog}
 
     def test_covers_all_horti_topics(self):
         self.assertEqual(set(self.by_topic), set(main._HORTI_TOPICS_SET))
@@ -109,6 +110,17 @@ class TestSearchTopicCatalog(unittest.TestCase):
             for a in c["aliases"]:
                 self.assertEqual(a, a.lower())
                 self.assertNotIn(" ", a)
+
+    def test_nested_commodity_excludes(self):
+        # "배추"⊂"양배추", "오이"⊂"오이고추" — 부분문자열 경로의 교차 오염 방지
+        self.assertIn("양배추", self.by_entry["배추"].get("exclude_substr", []))
+        self.assertIn("오이고추", self.by_entry["오이"].get("exclude_substr", []))
+        self.assertNotIn("exclude_substr", self.by_entry["양배추"])
+
+    def test_cabbage_article_not_tagged_napa(self):
+        topics = main._search_topics_for_text("양배추 가격 급등에 소비자 부담", "양배추 출하량이 줄었다.")
+        self.assertIn("양배추", topics)
+        self.assertNotIn("배추", topics)
 
 
 class TestSearchItemSchema(unittest.TestCase):
@@ -158,7 +170,8 @@ class TestSearchItemSchema(unittest.TestCase):
 class TestIndexPageWiring(unittest.TestCase):
     def test_render_index_page_wires_commodity_search(self):
         html = main.render_index_page({"dates": ["2026-08-21"]}, "/agri-news-brief/")
-        for needle in ("ALIAS2TOPICS", "classifyTokens", "topic_catalog",
+        for needle in ("ALIAS2TOPICS", "ALIAS2EXCLUDES", "exclude_substr",
+                       "classifyTokens", "topic_catalog",
                        "topicChip", "tokenHit", "검색 가능:"):
             self.assertIn(needle, html)
         # 한 글자 일반어 안내 + 기본 기간 전체(로드시 30일 자동 축소 제거)

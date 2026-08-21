@@ -15180,6 +15180,15 @@ _SEARCH_EXTRA_TOPIC_ALIASES: dict[str, list[str]] = {
     "배": ["천안배", "안성배", "울산배", "황금배", "원황배"],
 }
 
+# 부분문자열 내포 품목쌍: 이 토픽의 별칭으로 검색할 때, 더 긴 다른 품목명 안의
+# 우연 일치를 제외한다("배추"⊂"양배추", "오이"⊂"오이고추"). 태그 경로는 분류기가
+# 이미 최장 일치를 지키므로 깨끗하고, JS 부분문자열 경로만 이 목록으로 거른다.
+# 같은 토픽의 상위어(방울토마토⊃토마토, 애플수박⊃수박)는 포함이 의도라 제외하지 않는다.
+_SEARCH_TOPIC_SUBSTR_EXCLUDES: dict[str, list[str]] = {
+    "배추": ["양배추"],
+    "오이": ["오이고추"],
+}
+
 # 나열형 제목("사과·배 작황", "배추·무 비축")과 띄어쓰기 변형("배 작황")은 본문
 # 파이프라인의 bigram 문맥 게이트(_managed_commodity_focus_metrics)가 놓친다.
 # 한 글자 토픽은 태그가 없으면 검색에서 아예 보이지 않으므로, 검색 태깅에만 쓰는
@@ -15230,7 +15239,11 @@ def _search_topic_catalog() -> list[JsonDict]:
             if al and al not in seen:
                 seen.add(al)
                 uniq.append(al)
-        catalog.append({"topic": topic, "aliases": uniq})
+        entry: JsonDict = {"topic": topic, "aliases": uniq}
+        excludes = _SEARCH_TOPIC_SUBSTR_EXCLUDES.get(topic)
+        if excludes:
+            entry["exclude_substr"] = [str(x).strip().lower() for x in excludes]
+        catalog.append(entry)
     return catalog
 
 
@@ -49650,6 +49663,8 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
       var lastSearchEventKey = "";
       // 품목 별칭(소문자) -> 토픽 목록. search_index.json의 topic_catalog에서 채운다.
       var ALIAS2TOPICS = {{}};
+      // 별칭 -> 부분문자열 제외어("배추" 검색 시 "양배추" 내부 일치 제거)
+      var ALIAS2EXCLUDES = {{}};
       var LAST_CLS = null;
 
       function escHtml(s) {{
@@ -49675,7 +49690,7 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
           if (!tok) continue;
           var topics = ALIAS2TOPICS[tok] || null;
           if (isSingleHangul(tok) && !topics) {{ out.dropped.push(tok); continue; }}
-          out.match.push({{ tok: tok, topics: topics, tagOnly: isSingleHangul(tok) && !!topics }});
+          out.match.push({{ tok: tok, topics: topics, tagOnly: isSingleHangul(tok) && !!topics, excludes: ALIAS2EXCLUDES[tok] || null }});
         }}
         return out;
       }}
@@ -49688,7 +49703,11 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
           }}
         }}
         if (m.tagOnly) return {{ ok: tagHit, tag: tagHit }};
-        return {{ ok: tagHit || hay.indexOf(m.tok) !== -1, tag: tagHit }};
+        var h = hay;
+        if (m.excludes) {{
+          for (var j=0; j<m.excludes.length; j++) h = h.split(m.excludes[j]).join(" ");
+        }}
+        return {{ ok: tagHit || h.indexOf(m.tok) !== -1, tag: tagHit }};
       }}
       function buildArticleTrackingAttrs(item, surface) {{
         if (!item) return "";
@@ -50120,16 +50139,24 @@ def render_index_page(manifest: JsonDict, site_path: str) -> str:
 
           // 품목 별칭 카탈로그 -> 검색어 매핑
           ALIAS2TOPICS = {{}};
+          ALIAS2EXCLUDES = {{}};
           var cat = DATA.topic_catalog || [];
           for (var i=0; i<cat.length; i++) {{
             var tp = cat[i] && cat[i].topic;
             var als = (cat[i] && cat[i].aliases) || [];
+            var exc = (cat[i] && cat[i].exclude_substr) || [];
             if (!tp) continue;
             for (var j=0; j<als.length; j++) {{
               var al = norm(als[j]);
               if (!al) continue;
               if (!ALIAS2TOPICS[al]) ALIAS2TOPICS[al] = [];
               if (ALIAS2TOPICS[al].indexOf(tp) === -1) ALIAS2TOPICS[al].push(tp);
+              for (var k=0; k<exc.length; k++) {{
+                var ex = norm(exc[k]);
+                if (!ex || ex.indexOf(al) === -1) continue; // 별칭을 포함하는 상위어만 의미 있음
+                if (!ALIAS2EXCLUDES[al]) ALIAS2EXCLUDES[al] = [];
+                if (ALIAS2EXCLUDES[al].indexOf(ex) === -1) ALIAS2EXCLUDES[al].push(ex);
+              }}
             }}
           }}
 
