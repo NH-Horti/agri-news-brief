@@ -117,6 +117,17 @@ class TestSearchTopicCatalog(unittest.TestCase):
         self.assertIn("오이고추", self.by_entry["오이"].get("exclude_substr", []))
         self.assertNotIn("exclude_substr", self.by_entry["양배추"])
 
+    def test_specific_pepper_aliases_owned_by_specific_topic(self):
+        # 우산 토픽(고추/호박)이 하위 품목명을 겸유하면 "풋고추" 검색이 고추 전체를 부른다
+        self.assertNotIn("풋고추", self.by_topic["고추"])
+        self.assertNotIn("청양고추", self.by_topic["고추"])
+        self.assertIn("풋고추", self.by_topic["풋고추"])
+        self.assertIn("청양고추", self.by_topic["풋고추"])
+        self.assertIn("고추", self.by_topic["고추"])  # 우산어는 유지
+        self.assertNotIn("애호박", self.by_topic["호박"])
+        self.assertIn("애호박", self.by_topic["애호박(쥬키니)"])
+        self.assertIn("호박", self.by_topic["호박"])
+
     def test_cabbage_article_not_tagged_napa(self):
         topics = main._search_topics_for_text("양배추 가격 급등에 소비자 부담", "양배추 출하량이 줄었다.")
         self.assertIn("양배추", topics)

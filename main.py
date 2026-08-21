@@ -15189,6 +15189,17 @@ _SEARCH_TOPIC_SUBSTR_EXCLUDES: dict[str, list[str]] = {
     "오이": ["오이고추"],
 }
 
+# 별칭 소유권: 레지스트리에서 우산 토픽(고추/호박)이 하위 품목명을 별칭으로 겸유해
+# "풋고추" 검색이 고추 태그군 전체를 부르는 문제. 검색 카탈로그에서는 구체 토픽이
+# 별칭을 독점한다. 우산어("고추", "호박") 자체는 그대로 두어 상위 검색은 하위를 포함한다.
+_SEARCH_ALIAS_TOPIC_OVERRIDES: dict[str, str] = {
+    "풋고추": "풋고추",
+    "청양고추": "풋고추",
+    "애호박": "애호박(쥬키니)",
+    "쥬키니": "애호박(쥬키니)",
+    "주키니": "애호박(쥬키니)",
+}
+
 # 나열형 제목("사과·배 작황", "배추·무 비축")과 띄어쓰기 변형("배 작황")은 본문
 # 파이프라인의 bigram 문맥 게이트(_managed_commodity_focus_metrics)가 놓친다.
 # 한 글자 토픽은 태그가 없으면 검색에서 아예 보이지 않으므로, 검색 태깅에만 쓰는
@@ -15236,9 +15247,12 @@ def _search_topic_catalog() -> list[JsonDict]:
         uniq: list[str] = []
         for a in aliases:
             al = str(a).strip().lower()
-            if al and al not in seen:
-                seen.add(al)
-                uniq.append(al)
+            if not al or al in seen:
+                continue
+            if _SEARCH_ALIAS_TOPIC_OVERRIDES.get(al, topic) != topic:
+                continue
+            seen.add(al)
+            uniq.append(al)
         entry: JsonDict = {"topic": topic, "aliases": uniq}
         excludes = _SEARCH_TOPIC_SUBSTR_EXCLUDES.get(topic)
         if excludes:
