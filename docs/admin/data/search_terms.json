@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-21T23:54:52+09:00",
+  "generated_at": "2026-08-22T23:40:23+09:00",
   "rows": [
     {
       "date": "2026-04-30",
@@ -74,14 +74,14 @@
     {
       "date": "2026-08-21",
       "query": "가지",
-      "section_filter": "",
+      "section_filter": "(not set)",
       "result_count": 0,
       "count": 1
     },
     {
       "date": "2026-08-21",
       "query": "배추",
-      "section_filter": "",
+      "section_filter": "(not set)",
       "result_count": 150,
       "count": 1
     }

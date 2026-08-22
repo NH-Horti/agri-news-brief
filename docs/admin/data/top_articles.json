@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-21T23:54:52+09:00",
+  "generated_at": "2026-08-22T23:40:23+09:00",
   "rows": [
     {
       "date": "2026-05-20",
@@ -205,19 +205,6 @@
       "surface": "briefing_open",
       "target_domain": "www.korea.kr",
       "clicks": 5,
-      "users": 3,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-04-24",
-      "article_id": "42bd7e9fd4d0",
-      "title": "[산지 확대경] 시설봄 배추 , 작황 대체로 양호…재배면적은 줄어",
-      "report_date": "2026-04-24",
-      "section": "supply",
-      "surface": "briefing_card",
-      "target_domain": "www.nongmin.com",
-      "clicks": 4,
       "users": 3,
       "archive_url": "",
       "source_url": ""
@@ -544,32 +531,6 @@
       "target_domain": "www.mt.co.kr",
       "clicks": 4,
       "users": 1,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-04-24",
-      "article_id": "5c33e894ead7",
-      "title": "‘롤러코스터 날씨’ 탓…과수농가 저온피해 확산",
-      "report_date": "2026-04-24",
-      "section": "pest",
-      "surface": "commodity_primary",
-      "target_domain": "www.nongmin.com",
-      "clicks": 3,
-      "users": 3,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-04-24",
-      "article_id": "e99ce4f36753",
-      "title": "\"농산물 시세 바닥인데\"… 정부, '할인지원' 강화",
-      "report_date": "2026-04-24",
-      "section": "policy",
-      "surface": "briefing_open",
-      "target_domain": "www.ikpnews.net",
-      "clicks": 3,
-      "users": 2,
       "archive_url": "",
       "source_url": ""
     },
@@ -1378,32 +1339,6 @@
       "users": 3,
       "archive_url": "/agri-news-brief/archive/2026-08-20.html#sec-supply",
       "source_url": "https://www.aflnews.co.kr/news/articleView.html?idxno=326541"
-    },
-    {
-      "date": "2026-04-24",
-      "article_id": "90646d05cd3b",
-      "title": "닭고기·계란· 토마토 ·참외·애호박 등 9개 품목 더 싸진다",
-      "report_date": "2026-04-24",
-      "section": "supply",
-      "surface": "commodity_primary",
-      "target_domain": "www.ohmynews.com",
-      "clicks": 2,
-      "users": 1,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-04-24",
-      "article_id": "90f6897d04b8",
-      "title": "경기도 화훼 업계, 농수산물 할인쿠폰 지원통해 화훼 소비 활성화 '꿀맛...",
-      "report_date": "2026-04-24",
-      "section": "policy",
-      "surface": "commodity_primary",
-      "target_domain": "www.m-i.kr",
-      "clicks": 2,
-      "users": 2,
-      "archive_url": "",
-      "source_url": ""
     },
     {
       "date": "2026-04-27",
@@ -3967,66 +3902,14 @@
       "source_url": ""
     },
     {
-      "date": "2026-04-24",
-      "article_id": "229431271fa2",
-      "title": "[요즘 이기술] 예방 약제 살포 후 봉지 씌워 감염 차단을",
-      "report_date": "2026-04-24",
-      "section": "pest",
-      "surface": "briefing_card",
-      "target_domain": "www.nongmin.com",
-      "clicks": 1,
-      "users": 1,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-04-24",
-      "article_id": "42bd7e9fd4d0",
-      "title": "[산지 확대경] 시설봄 배추 , 작황 대체로 양호…재배면적은 줄어",
-      "report_date": "2026-04-24",
-      "section": "supply",
-      "surface": "briefing_open",
-      "target_domain": "www.nongmin.com",
-      "clicks": 1,
-      "users": 1,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-04-24",
-      "article_id": "4d3052c951e4",
-      "title": "[독립문에서] 선택적 적극행정",
-      "report_date": "2026-04-24",
+      "date": "2026-08-21",
+      "article_id": "fc7dd372d7b4",
+      "title": "“이틀간 출하 못하면 품위 저하”…가락·구리시장 ‘겹치기 휴장’에...",
+      "report_date": "2026-08-21",
       "section": "dist",
       "surface": "briefing_open",
       "target_domain": "www.nongmin.com",
-      "clicks": 1,
-      "users": 1,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-04-24",
-      "article_id": "4f0c8910f6f8",
-      "title": "미래유산 지켜야 하는데 ‘ 뿔나방 ’에 화들짝···‘짭짤이 토마토 ’ ...",
-      "report_date": "2026-04-24",
-      "section": "pest",
-      "surface": "briefing_open",
-      "target_domain": "www.khan.co.kr",
-      "clicks": 1,
-      "users": 1,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-04-24",
-      "article_id": "e99ce4f36753",
-      "title": "\"농산물 시세 바닥인데\"… 정부, '할인지원' 강화",
-      "report_date": "2026-04-24",
-      "section": "policy",
-      "surface": "briefing_card",
-      "target_domain": "www.ikpnews.net",
-      "clicks": 1,
+      "clicks": 2,
       "users": 1,
       "archive_url": "",
       "source_url": ""
@@ -13559,19 +13442,6 @@
       "users": 1,
       "archive_url": "/agri-news-brief/archive/2026-08-21.html#sec-dist",
       "source_url": "https://www.koreaittimes.com/news/articleView.html?idxno=156305"
-    },
-    {
-      "date": "2026-08-21",
-      "article_id": "fc7dd372d7b4",
-      "title": "“이틀간 출하 못하면 품위 저하”…가락·구리시장 ‘겹치기 휴장’에...",
-      "report_date": "2026-08-21",
-      "section": "dist",
-      "surface": "briefing_open",
-      "target_domain": "www.nongmin.com",
-      "clicks": 1,
-      "users": 1,
-      "archive_url": "",
-      "source_url": ""
     },
     {
       "date": "2026-08-21",
