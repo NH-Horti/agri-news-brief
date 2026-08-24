@@ -40,6 +40,15 @@ _TTL_RE = re.compile(r'<div class="ttl">(.*?)</div>', re.S)
 _SUM_RE = re.compile(r'<div class="sum">(.*?)</div>', re.S)
 _TOPIC_RE = re.compile(r'<span class="topic">(.*?)</span>', re.S)
 
+# 품목 보드 타일(<article id="commodity-키">) 안의 기사 링크 — 대표/추가/관련/풀 전부.
+# 이 기사들은 섹션 카드가 아니라 by_section에 없고, 그래서 검색 인덱스에도 없었다.
+_BOARD_TILE_RE = re.compile(r'<article id="commodity-([^"]+)"[^>]*>(.*?)</article>', re.S)
+_BOARD_LINK_RE = re.compile(
+    r'<a class="commodity(?:PrimaryStory|SupportStory|MoreStory)"([^>]*?)href="([^"]+)"',
+    re.S,
+)
+_BOARD_ATTR_RE = re.compile(r'data-(article-title|section)="([^"]*)"')
+
 
 def _clean(s: str) -> str:
     s = re.sub(r"<[^>]+>", "", s or "")
@@ -106,6 +115,47 @@ def parse_archive_day(path: str, report_date: str, site_base: str, section_title
     return items
 
 
+def parse_archive_board_day(path: str, report_date: str, site_base: str, section_titles: dict) -> list:
+    """품목 보드 타일에 실린 기사(대표/추가/관련/풀)를 복원한다.
+
+    보드 링크는 지면에 요약이 없으므로 summary는 비운다. 제목은 data-article-title에
+    원문 그대로 실려 있어 카드 제목과 달리 절단되지 않는다.
+    """
+    raw = io.open(path, encoding="utf-8").read()
+    items = []
+    seen_urls = set()
+    for tile_m in _BOARD_TILE_RE.finditer(raw):
+        item_key = html_mod.unescape(tile_m.group(1)).strip()
+        for link_m in _BOARD_LINK_RE.finditer(tile_m.group(2)):
+            attrs = {k: html_mod.unescape(v).strip() for k, v in _BOARD_ATTR_RE.findall(link_m.group(1))}
+            url = html_mod.unescape(link_m.group(2)).strip()
+            title = attrs.get("article-title", "")
+            if not url or not title or url in seen_urls:
+                continue
+            seen_urls.add(url)
+            key = attrs.get("section", "")
+            press = main.press_name_from_url(url)
+            dom = urlparse(url).netloc if url else ""
+            _id = hashlib.md5(f"{report_date}|{key}|{url}|{title}".encode("utf-8")).hexdigest()[:12]
+            anchor = f"#commodity-{item_key}" if item_key else "#commodity-board"
+            items.append({
+                "id": _id,
+                "date": report_date,
+                "section": key,
+                "section_title": section_titles.get(key, key),
+                "rank": len(items) + 1,
+                "title": title,
+                "press": press,
+                "summary": "",
+                "url": url,
+                "archive": f"{site_base}archive/{report_date}.html{anchor}",
+                "score": 0.0,
+                "press_tier": int(main.press_tier(press, dom)),
+                "topics": sorted(set(main._search_topics_for_text(title, ""))),
+            })
+    return items
+
+
 def run() -> None:
     with io.open(INDEX_PATH, encoding="utf-8") as f:
         idx = json.load(f)
@@ -147,6 +197,40 @@ def run() -> None:
         added_days += 1
         added_items += len(day_items)
 
+    # 2-1) 품목 보드에만 실린 기사 백필 — 모든 날짜 대상(이미 인덱스가 있는 날도 보완)
+    #      같은 기사라도 카드는 네이버 링크, 보드는 원매체 링크라 제목 키까지 봐야 중복이 걸러진다.
+    urls_by_date: dict = {}
+    titles_by_date: dict = {}
+    for it in items:
+        d0 = str(it.get("date"))
+        urls_by_date.setdefault(d0, set()).add(str(it.get("url") or "").strip())
+        tkey = main.norm_title_key(str(it.get("title") or ""))
+        if tkey:
+            titles_by_date.setdefault(d0, set()).add(tkey)
+    board_days = 0
+    board_items_added = 0
+    for path in sorted(glob.glob(ARCHIVE_GLOB)):
+        d = os.path.basename(path)[:-5]
+        if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", d):
+            continue
+        known_urls = urls_by_date.setdefault(d, set())
+        known_titles = titles_by_date.setdefault(d, set())
+        fresh = []
+        for it in parse_archive_board_day(path, d, site_base, section_titles):
+            url = str(it.get("url") or "").strip()
+            tkey = main.norm_title_key(str(it.get("title") or ""))
+            if url in known_urls or (tkey and tkey in known_titles):
+                continue
+            known_urls.add(url)
+            if tkey:
+                known_titles.add(tkey)
+            fresh.append(it)
+        if not fresh:
+            continue
+        items.extend(fresh)
+        board_days += 1
+        board_items_added += len(fresh)
+
     # 3) update_search_index와 동일한 정렬/보존 규칙 적용
     def _sort(x):
         d = x.get("date") or ""
@@ -173,6 +257,7 @@ def run() -> None:
 
     all_dates = sorted({str(x.get("date")) for x in items})
     print(f"enriched(topics): {enriched} | backfilled: {added_days} days / {added_items} items")
+    print(f"commodity board backfill: {board_days} days / {board_items_added} items")
     print(f"index now: {len(items)} items, {len(all_dates)} days ({all_dates[0]} ~ {all_dates[-1]})")
 
 

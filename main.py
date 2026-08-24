@@ -962,7 +962,9 @@ DOCS_ARCHIVE_DIR = "docs/archive"
 DOCS_SEARCH_INDEX_PATH = "docs/search_index.json"
 DOCS_ARCHIVE_MANIFEST_JSON_PATH = "docs/archive_manifest.json"
 MAX_SEARCH_DATES = int(os.getenv("MAX_SEARCH_DATES", "400"))
-MAX_SEARCH_ITEMS = int(os.getenv("MAX_SEARCH_ITEMS", "9000"))
+# 섹션 카드(하루 ~20건) + 품목 보드 기사(하루 ~25건) 기준. 상한에 걸리면 오래된 날짜가
+# 조용히 검색에서 사라지므로 날짜 상한(MAX_SEARCH_DATES)이 먼저 걸리도록 넉넉히 잡는다.
+MAX_SEARCH_ITEMS = int(os.getenv("MAX_SEARCH_ITEMS", "20000"))
 
 # Build marker (for verifying deployed code)
 def _compute_build_tag() -> str:
@@ -15317,6 +15319,27 @@ def _search_topic_catalog() -> list[JsonDict]:
     return catalog
 
 
+# 품목 보드에만 실린 기사(대표/추가/관련/풀)는 by_section에 없어 검색에서 빠졌다.
+# 렌더 단계에서 실제로 지면에 나간 보드 기사를 날짜별로 담아 두고 인덱스 생성 때 합친다.
+_RENDERED_BOARD_ARTICLES: dict[str, list[tuple[str, Any]]] = {}
+_RENDERED_BOARD_ARTICLES_MAX_DATES = 8
+
+
+def _set_rendered_board_articles(report_date: str, pairs: list[tuple[str, Any]]) -> None:
+    key = str(report_date or "").strip()
+    if not key:
+        return
+    _RENDERED_BOARD_ARTICLES[key] = list(pairs)
+    # 백필 루프가 여러 날짜를 도는 동안 무한정 쌓이지 않게 최근 날짜만 남긴다.
+    if len(_RENDERED_BOARD_ARTICLES) > _RENDERED_BOARD_ARTICLES_MAX_DATES:
+        for stale in sorted(_RENDERED_BOARD_ARTICLES)[:-_RENDERED_BOARD_ARTICLES_MAX_DATES]:
+            _RENDERED_BOARD_ARTICLES.pop(stale, None)
+
+
+def _get_rendered_board_articles(report_date: str) -> list[tuple[str, Any]]:
+    return list(_RENDERED_BOARD_ARTICLES.get(str(report_date or "").strip()) or [])
+
+
 def _make_search_items_for_day(report_date: str, by_section: dict[str, list[Any]], site_path: str) -> list[JsonDict]:
     """Build search-index items for a single report day.
 
@@ -15366,6 +15389,56 @@ def _make_search_items_for_day(report_date: str, by_section: dict[str, list[Any]
                 "press_tier": tier,
                 "topics": _search_topics_for_text(title, summary),
             })
+
+    # 품목 보드에만 실린 기사도 검색 대상에 넣는다(섹션 카드와 중복되면 건너뛴다).
+    # 같은 기사라도 카드는 link(네이버), 보드는 originallink(원매체)를 쓰므로 URL 변형과
+    # 제목 키를 함께 봐야 중복이 걸러진다.
+    seen_urls: set[str] = set()
+    seen_titles: set[str] = set()
+    for sec in SECTIONS:
+        for a in by_section.get(sec["key"], []) or []:
+            for field in ("link", "url", "originallink", "canon_url"):
+                variant = str(_get(a, field) or "").strip()
+                if variant:
+                    seen_urls.add(variant)
+            tkey = norm_title_key(str(_get(a, "title") or ""))
+            if tkey:
+                seen_titles.add(tkey)
+    section_titles = {str(sec["key"]): str(sec["title"]) for sec in SECTIONS}
+    board_rank = 0
+    for item_key, a in _get_rendered_board_articles(report_date):
+        url = str(_get(a, "url") or _get(a, "link") or "").strip()
+        title = str(_get(a, "title") or "").strip()
+        title_key = norm_title_key(title)
+        if not url or not title or url in seen_urls or (title_key and title_key in seen_titles):
+            continue
+        seen_urls.add(url)
+        if title_key:
+            seen_titles.add(title_key)
+        board_rank += 1
+        sec_key = str(_get(a, "section") or "").strip()
+        press = str(_get(a, "press") or "").strip()
+        try:
+            score = float(_get(a, "score", 0.0) or 0.0)
+        except Exception:
+            score = 0.0
+        anchor = f"#commodity-{item_key}" if item_key else "#commodity-board"
+        items.append({
+            "id": hashlib.md5(f"{report_date}|{sec_key}|{url}|{title}".encode("utf-8")).hexdigest()[:12],
+            "date": report_date,
+            "section": sec_key,
+            "section_title": section_titles.get(sec_key, sec_key),
+            "rank": board_rank,
+            "title": title,
+            "press": press,
+            # 보드 링크는 지면에 요약이 없다. 인덱스 크기를 위해 제목·품목 태그로만 찾게 한다.
+            "summary": "",
+            "url": url,
+            "archive": build_site_url(site_path, f"archive/{report_date}.html") + anchor,
+            "score": score,
+            "press_tier": int(press_tier(press, urlparse(url).netloc if url else "")),
+            "topics": _search_topics_for_text(title, ""),
+        })
     return items
 
 
@@ -47224,6 +47297,8 @@ def render_managed_commodity_board_nav_html(board_ctx: dict[str, Any]) -> str:
 def render_managed_commodity_board_html(board_ctx: dict[str, Any], report_date: str) -> str:
     groups = list(board_ctx.get("groups") or [])
     group_blocks: list[str] = []
+    # 지면에 실제로 나가는 보드 기사(품목 키 기준) — 검색 인덱스가 이걸 그대로 쓴다.
+    rendered_board_articles: list[tuple[str, Any]] = []
 
     def _commodity_semantic_badge(item_payload: dict[str, Any], article: Article | None) -> str:
         if (not DEV_SINGLE_PAGE_MODE) or (not DEBUG_REPORT) or (not isinstance(article, Article)):
@@ -47411,6 +47486,9 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any], report_date: 
             primary_article = _display_articles[0] if _display_articles else None
             secondary_articles = _display_articles[1 : 1 + 2]
             extra_articles = _display_articles[1 + 2 :]
+            rendered_board_articles.extend(
+                (str(item.get("key") or ""), article) for article in _display_articles
+            )
             story_html = _commodity_story_cluster_html(
                 item,
                 primary_article,
@@ -47466,6 +47544,9 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any], report_date: 
             pool_primary = pool_articles[0] if pool_articles else None
             pool_secondary = pool_articles[1 : 1 + secondary_preview_limit]
             pool_extra = pool_articles[1 + secondary_preview_limit :]
+            rendered_board_articles.extend(
+                (str(item.get("key") or ""), article) for article in pool_articles
+            )
             # 브리핑 대표 기준 미달 품목은 시각적으로는 대표/추가/관련 기사로 보여주되,
             # eval의 '대표 링크 품질' 지표에는 잡히지 않도록 commodity_pool surface로 태깅한다.
             story_html = _commodity_story_cluster_html(
@@ -47532,6 +47613,8 @@ def render_managed_commodity_board_html(board_ctx: dict[str, Any], report_date: 
             </section>
             """
         )
+
+    _set_rendered_board_articles(report_date, rendered_board_articles)
 
     return f"""
     <section id="commodity-board" class="commodityBoard" aria-labelledby="commodityBoardTitle"

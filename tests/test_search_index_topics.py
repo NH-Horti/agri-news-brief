@@ -9,6 +9,7 @@ import importlib.util
 import json
 import os
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -186,6 +187,77 @@ class TestSearchItemSchema(unittest.TestCase):
         self.assertTrue(idx.get("topic_catalog"))
         aliases = {a for c in idx["topic_catalog"] for a in c["aliases"]}
         self.assertIn("배", aliases)
+
+
+class TestCommodityBoardSearchItems(unittest.TestCase):
+    """품목 보드에만 실린 기사가 검색되지 않던 문제(2026-08-24 신고) 재발 방지."""
+
+    DATE = "2026-08-21"
+
+    def setUp(self):
+        main._RENDERED_BOARD_ARTICLES.clear()
+
+    def tearDown(self):
+        main._RENDERED_BOARD_ARTICLES.clear()
+
+    def test_board_only_article_becomes_searchable(self):
+        by_section = {"supply": [{
+            "title": "강진군, 가격 폭락 샤인머스켓 신뢰 회복 나선다",
+            "link": "https://news.example.com/grape-primary",
+            "press": "남도일보", "summary": "고품질 포도 출하를 당부했다.", "score": 26.45,
+        }]}
+        main._set_rendered_board_articles(self.DATE, [
+            # 섹션 카드와 같은 기사(중복) — 인덱스에 두 번 들어가면 안 된다
+            ("grape", {"url": "https://news.example.com/grape-primary",
+                       "title": "강진군, 가격 폭락 샤인머스켓 신뢰 회복 나선다",
+                       "section": "supply", "press": "남도일보", "score": 26.45}),
+            # 보드에만 있는 기사
+            ("grape", {"url": "https://www.kyongbuk.co.kr/news/articleView.html?idxno=4081677",
+                       "title": '"잘 키운 포도 제값 받아야"…김천서 포도 산업 위기 해법 찾는다',
+                       "section": "supply", "press": "경북일보", "score": 11.0}),
+        ])
+        items = main._make_search_items_for_day(self.DATE, by_section, "/agri-news-brief/")
+        urls = [x["url"] for x in items]
+        self.assertEqual(len(urls), len(set(urls)))
+        board = [x for x in items if "kyongbuk" in x["url"]]
+        self.assertEqual(len(board), 1)
+        self.assertIn("포도", board[0]["topics"])
+        self.assertEqual(board[0]["section"], "supply")
+        self.assertTrue(board[0]["archive"].endswith(f"archive/{self.DATE}.html#commodity-grape"))
+
+    def test_board_articles_are_scoped_to_their_report_date(self):
+        main._set_rendered_board_articles(self.DATE, [
+            ("grape", {"url": "https://news.example.com/x", "title": "포도 출하 시작",
+                       "section": "supply", "press": "언론사", "score": 1.0}),
+        ])
+        items = main._make_search_items_for_day("2026-08-20", {}, "/agri-news-brief/")
+        self.assertEqual(items, [])
+
+    def test_backfill_parses_board_tiles(self):
+        mod = _load_backfill_module()
+        sample = """
+        <article id="commodity-grape" class="commodityTile isActive">
+          <div class="commodityStoryCluster">
+            <a class="commodityPrimaryStory" data-article-title="&quot;잘 키운 포도 제값 받아야&quot;…김천서 포도 산업 위기 해법 찾는다" data-report-date="2026-08-21" data-section="supply" href="https://www.kyongbuk.co.kr/news/articleView.html?idxno=4081677" target="_top">제목</a>
+            <a class="commoditySupportStory" data-article-title="샤인머스캣 값 하락" data-section="dist" href="https://news.example.com/b">추가</a>
+            <a class="commodityMoreStory" data-article-title="샤인머스캣 값 하락" data-section="dist" href="https://news.example.com/b">중복</a>
+          </div>
+        </article>
+        """
+        with tempfile.TemporaryDirectory() as td:
+            p = Path(td) / "2026-08-21.html"
+            p.write_text(sample, encoding="utf-8")
+            items = mod.parse_archive_board_day(
+                str(p), "2026-08-21", "/agri-news-brief/",
+                {s["key"]: s["title"] for s in main.SECTIONS},
+            )
+        self.assertEqual(len(items), 2)  # 같은 URL은 한 번만
+        first = items[0]
+        self.assertEqual(first["title"], '"잘 키운 포도 제값 받아야"…김천서 포도 산업 위기 해법 찾는다')
+        self.assertEqual(first["press"], "경북일보")
+        self.assertIn("포도", first["topics"])
+        self.assertEqual(first["summary"], "")
+        self.assertTrue(first["archive"].endswith("archive/2026-08-21.html#commodity-grape"))
 
 
 class TestSearchIndexPersistence(unittest.TestCase):
