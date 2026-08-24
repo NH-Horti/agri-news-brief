@@ -6,6 +6,8 @@
 index.html JS 배선, 백필 파서의 필드 복원을 검증한다.
 """
 import importlib.util
+import json
+import os
 import sys
 import unittest
 from pathlib import Path
@@ -184,6 +186,83 @@ class TestSearchItemSchema(unittest.TestCase):
         self.assertTrue(idx.get("topic_catalog"))
         aliases = {a for c in idx["topic_catalog"] for a in c["aliases"]}
         self.assertIn("배", aliases)
+
+
+class TestSearchIndexPersistence(unittest.TestCase):
+    """원격 인덱스를 못 읽은 채로 덮어써 과거 전체가 날아간 2026-08-24 사고 재발 방지."""
+
+    def setUp(self):
+        self._get = main.github_get_file
+        self._put = main.github_put_file
+        self.puts = []
+        main.github_put_file = lambda *a, **k: self.puts.append({"content": a[2], "kwargs": k})
+        os.environ.pop("SEARCH_INDEX_FORCE_REBUILD", None)
+
+    def tearDown(self):
+        main.github_get_file = self._get
+        main.github_put_file = self._put
+        os.environ.pop("SEARCH_INDEX_FORCE_REBUILD", None)
+
+    @staticmethod
+    def _index(dates):
+        return {
+            "version": 1,
+            "updated_at": "",
+            "items": [{
+                "id": f"id{i}", "date": d, "section": "supply",
+                "section_title": "품목 및 수급 동향", "rank": 1, "title": "제목",
+                "press": "언론사", "summary": "", "url": "https://news.example.com/a",
+                "archive": f"/agri-news-brief/archive/{d}.html#sec-supply",
+                "score": 1.0, "press_tier": 2, "topics": ["포도"],
+            } for i, d in enumerate(dates)],
+        }
+
+    def test_unreadable_remote_index_is_not_overwritten(self):
+        # 1MB 초과 등으로 본문이 빈 응답 → 빈 인덱스로 저장하면 과거 전체 유실
+        main.github_get_file = lambda *a, **k: ("", "remote-sha")
+        idx, sha = main.load_search_index("org/repo", "token")
+        self.assertEqual(idx["items"], [])
+        with self.assertRaises(RuntimeError):
+            main.save_search_index("org/repo", "token", idx, sha)
+        self.assertEqual(self.puts, [])
+
+    def test_missing_remote_index_can_be_created(self):
+        main.github_get_file = lambda *a, **k: (None, None)
+        idx, sha = main.load_search_index("org/repo", "token")
+        main.save_search_index("org/repo", "token", idx, sha)
+        self.assertEqual(len(self.puts), 1)
+
+    def test_catastrophic_shrink_is_blocked(self):
+        remote = self._index([f"2026-08-{d:02d}" for d in range(1, 21)])
+        main.github_get_file = lambda *a, **k: (json.dumps(remote, ensure_ascii=False), "remote-sha")
+        idx, sha = main.load_search_index("org/repo", "token")
+        idx["items"] = idx["items"][:2]  # 날짜 20 → 2
+        with self.assertRaises(RuntimeError):
+            main.save_search_index("org/repo", "token", idx, sha)
+        self.assertEqual(self.puts, [])
+
+    def test_normal_daily_update_saves_without_private_keys(self):
+        remote = self._index([f"2026-08-{d:02d}" for d in range(1, 21)])
+        main.github_get_file = lambda *a, **k: (json.dumps(remote, ensure_ascii=False), "remote-sha")
+        idx, sha = main.load_search_index("org/repo", "token")
+        by_section = {"supply": [{
+            "title": "샤인머스캣 출하 본격화", "link": "https://news.example.com/grape",
+            "press": "언론사", "summary": "포도 출하가 늘었다.", "score": 5.0,
+        }]}
+        idx = main.update_search_index(idx, "2026-08-24", by_section, "/agri-news-brief/")
+        main.save_search_index("org/repo", "token", idx, sha)
+        self.assertEqual(len(self.puts), 1)
+        saved = json.loads(self.puts[0]["content"])
+        self.assertNotIn("_load_failed", saved)
+        self.assertNotIn("_loaded_dates", saved)
+        self.assertEqual(len({x["date"] for x in saved["items"]}), 21)
+
+    def test_force_rebuild_env_allows_overwrite(self):
+        os.environ["SEARCH_INDEX_FORCE_REBUILD"] = "1"
+        main.github_get_file = lambda *a, **k: ("", "remote-sha")
+        idx, sha = main.load_search_index("org/repo", "token")
+        main.save_search_index("org/repo", "token", idx, sha)
+        self.assertEqual(len(self.puts), 1)
 
 
 class TestIndexPageWiring(unittest.TestCase):

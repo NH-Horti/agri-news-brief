@@ -15126,10 +15126,38 @@ def save_docs_archive_manifest(repo: str, token: str, dates: list[str]) -> bool:
         return False
 
 
+# 원격 인덱스를 읽지 못한 채로 저장하면 과거 전체가 날아간다(2026-08-24 사고).
+# load 단계에서 이 표식을 달아두고 save 단계에서 덮어쓰기를 막는다(저장 직전 pop).
+_SEARCH_INDEX_LOAD_FAILED_KEY = "_load_failed"
+_SEARCH_INDEX_LOADED_DATES_KEY = "_loaded_dates"
+# 정상 운영에서 날짜가 줄어드는 경우는 MAX_SEARCH_DATES 상한 정리(하루 1일)뿐이다.
+_SEARCH_INDEX_MAX_DATE_DROP = 5
+
+
+def _search_index_date_count(idx: JsonDict) -> int:
+    items = idx.get("items") if isinstance(idx, dict) else None
+    if not isinstance(items, list):
+        return 0
+    return len({str(x.get("date")) for x in items if isinstance(x, dict) and x.get("date")})
+
+
 def load_search_index(repo: str, token: str) -> tuple[JsonDict, str | None]:
+    def _empty(load_failed: bool) -> JsonDict:
+        obj: JsonDict = {"version": 1, "updated_at": "", "items": []}
+        if load_failed:
+            obj[_SEARCH_INDEX_LOAD_FAILED_KEY] = True
+        return obj
+
     raw, sha = github_get_file(repo, DOCS_SEARCH_INDEX_PATH, token, ref="main")
     if not raw:
-        return {"version": 1, "updated_at": "", "items": []}, sha
+        # sha가 있으면 원격 파일은 존재하는데 본문을 못 읽은 것 → 빈 인덱스로 덮어쓰면 안 된다.
+        if sha:
+            log.error(
+                "[SEARCH INDEX] remote index exists but content was unreadable (sha=%s); "
+                "skipping index update to avoid wiping the archive index",
+                sha,
+            )
+        return _empty(bool(sha)), sha
     try:
         obj = json.loads(raw)
         if isinstance(obj, list):
@@ -15142,14 +15170,33 @@ def load_search_index(repo: str, token: str) -> tuple[JsonDict, str | None]:
         obj["items"] = items
         obj.setdefault("version", 1)
         obj.setdefault("updated_at", "")
+        obj[_SEARCH_INDEX_LOADED_DATES_KEY] = _search_index_date_count(obj)
         return obj, sha
-    except Exception:
-        return {"version": 1, "updated_at": "", "items": []}, sha
+    except Exception as e:
+        log.error("[SEARCH INDEX] remote index is not parseable (sha=%s): %s", sha, e)
+        return _empty(bool(sha)), sha
 
 
 def save_search_index(repo: str, token: str, idx: JsonDict, sha: str | None) -> None:
     if not isinstance(idx, dict):
         idx = {"version": 1, "updated_at": "", "items": []}
+    load_failed = bool(idx.pop(_SEARCH_INDEX_LOAD_FAILED_KEY, False))
+    try:
+        loaded_dates = int(idx.pop(_SEARCH_INDEX_LOADED_DATES_KEY, 0) or 0)
+    except (TypeError, ValueError):
+        loaded_dates = 0
+    forced = _env_flag("SEARCH_INDEX_FORCE_REBUILD")
+    if load_failed and not forced:
+        raise RuntimeError(
+            "search index was not loaded (remote content unreadable); refusing to overwrite "
+            "docs/search_index.json — set SEARCH_INDEX_FORCE_REBUILD=1 to rebuild from scratch"
+        )
+    new_dates = _search_index_date_count(idx)
+    if not forced and loaded_dates and new_dates < loaded_dates - _SEARCH_INDEX_MAX_DATE_DROP:
+        raise RuntimeError(
+            f"search index would shrink from {loaded_dates} to {new_dates} dates; refusing to overwrite "
+            "docs/search_index.json — set SEARCH_INDEX_FORCE_REBUILD=1 to override"
+        )
     idx["version"] = 1
     idx["updated_at"] = datetime.now(tz=KST).isoformat()
     items = idx.get("items", [])
