@@ -1,10 +1,10 @@
 {
-  "report_date": "2026-08-24",
-  "generated_at_kst": "2026-08-24T06:05:21+09:00",
+  "report_date": "2026-08-25",
+  "generated_at_kst": "2026-08-25T06:23:22+09:00",
   "scores": {
-    "section_alignment": 97.19,
-    "core_quality": 85.0,
-    "commodity_board_quality": 88.0
+    "section_alignment": 88.85,
+    "core_quality": 100.0,
+    "commodity_board_quality": 92.0
   },
   "metrics": {
     "section_alignment_low_fit_rate": 0.0,
@@ -12,40 +12,40 @@
     "content_false_positive_rate": 0.0,
     "reader_hard_issue_count": 0,
     "reader_hard_issue_rate": 0.0,
-    "reader_quality_penalty": 0.18,
+    "reader_quality_penalty": 2.94,
     "reader_quality_cap": 100.0,
     "weak_core_rate": 0.0,
-    "policy_wrong_section_rate": 0.0,
-    "promotional_filler_rate": 0.05,
+    "policy_wrong_section_rate": 0.05,
+    "promotional_filler_rate": 0.0,
     "promotional_core_rate": 0.0,
     "weak_core_editorial_rate": 0.0,
     "pest_theme_duplicate_rate": 0.0,
     "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 0.1,
+    "editorial_quality_penalty": 0.8,
     "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0,
     "commodity_primary_title_item_focus_rate": 1.0,
-    "commodity_primary_title_issue_signal_rate": 1.0,
-    "commodity_primary_strict_link_rate": 1.0,
+    "commodity_primary_title_issue_signal_rate": 0.8889,
+    "commodity_primary_strict_link_rate": 0.8889,
     "commodity_primary_low_rank_rate": 0.0,
-    "commodity_primary_count": 13,
+    "commodity_primary_count": 9,
     "commodity_active_today_total": 19,
-    "commodity_active_today_unlinked_total": 6,
-    "commodity_managed_unlinked_total": 20,
+    "commodity_active_today_unlinked_total": 10,
+    "commodity_managed_unlinked_total": 24,
     "commodity_board_daily_min_primary_count": 6,
     "commodity_board_low_coverage": false,
-    "commodity_board_coverage_rate": 0.3939,
+    "commodity_board_coverage_rate": 0.2727,
     "commodity_primary_title_item_missing_rate": 0.0,
     "commodity_primary_body_only_rate": 0.0,
     "commodity_primary_false_link_rate": 0.0,
     "commodity_pool_count": 18,
     "commodity_pool_false_link_rate": 0.0,
-    "commodity_primary_dominant_section_rate": 0.7692
+    "commodity_primary_dominant_section_rate": 0.6667
   },
   "selection_guardrails": {
     "driver_tags": [
-      "commodity_board"
+      "low_tier_source_concentration"
     ],
     "section_card_min_fit": {
       "default": 0.8,
@@ -74,8 +74,8 @@
     "disable_relaxed_core_fill": false,
     "final_low_tier_max_per_section": 1,
     "final_low_tier_max_total": 4,
-    "commodity_active_min_rank": 2,
-    "commodity_program_core_min_rank": 3,
+    "commodity_active_min_rank": 1,
+    "commodity_program_core_min_rank": 1,
     "commodity_require_issue_signal": false,
     "commodity_require_direct_item_focus": false,
     "commodity_strict_primary_only": true,
@@ -83,12 +83,12 @@
   },
   "editorial_quality_samples": [
     {
-      "title": "추석 차례상 올리기 전 꼭 확인… 사과·배 잔류농약 ‘비상’",
-      "href": "https://biz.heraldcorp.com/article/10848794",
-      "section": "supply",
+      "title": "제철 '참나물', 다이어트는 기본, 노화방지·치매예방까지 숨은 효능",
+      "href": "https://www.ytn.co.kr/_ln/0102_202608241039156430",
+      "section": "policy",
       "is_core": false,
       "reasons": [
-        "promotional_or_event_filler"
+        "policy_price_report_without_policy_action"
       ]
     }
   ],
