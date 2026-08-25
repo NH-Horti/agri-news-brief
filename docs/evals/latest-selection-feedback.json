@@ -1,52 +1,50 @@
 {
-  "report_date": "2026-08-25",
-  "generated_at_kst": "2026-08-25T06:23:22+09:00",
+  "report_date": "2026-08-26",
+  "generated_at_kst": "2026-08-26T06:22:35+09:00",
   "scores": {
-    "section_alignment": 88.85,
+    "section_alignment": 100.0,
     "core_quality": 100.0,
-    "commodity_board_quality": 92.0
+    "commodity_board_quality": 91.0
   },
   "metrics": {
-    "section_alignment_low_fit_rate": 0.0,
-    "section_alignment_cross_gap_rate": 0.05,
+    "section_alignment_low_fit_rate": 0.05,
+    "section_alignment_cross_gap_rate": 0.0,
     "content_false_positive_rate": 0.0,
     "reader_hard_issue_count": 0,
     "reader_hard_issue_rate": 0.0,
-    "reader_quality_penalty": 2.94,
+    "reader_quality_penalty": 7.02,
     "reader_quality_cap": 100.0,
     "weak_core_rate": 0.0,
     "policy_wrong_section_rate": 0.05,
-    "promotional_filler_rate": 0.0,
-    "promotional_core_rate": 0.0,
-    "weak_core_editorial_rate": 0.0,
+    "promotional_filler_rate": 0.05,
+    "promotional_core_rate": 0.1667,
+    "weak_core_editorial_rate": 0.1667,
     "pest_theme_duplicate_rate": 0.0,
     "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 0.8,
+    "editorial_quality_penalty": 3.9,
     "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0,
     "commodity_primary_title_item_focus_rate": 1.0,
-    "commodity_primary_title_issue_signal_rate": 0.8889,
-    "commodity_primary_strict_link_rate": 0.8889,
+    "commodity_primary_title_issue_signal_rate": 0.8333,
+    "commodity_primary_strict_link_rate": 0.8333,
     "commodity_primary_low_rank_rate": 0.0,
-    "commodity_primary_count": 9,
-    "commodity_active_today_total": 19,
-    "commodity_active_today_unlinked_total": 10,
-    "commodity_managed_unlinked_total": 24,
+    "commodity_primary_count": 12,
+    "commodity_active_today_total": 17,
+    "commodity_active_today_unlinked_total": 5,
+    "commodity_managed_unlinked_total": 21,
     "commodity_board_daily_min_primary_count": 6,
     "commodity_board_low_coverage": false,
-    "commodity_board_coverage_rate": 0.2727,
+    "commodity_board_coverage_rate": 0.3636,
     "commodity_primary_title_item_missing_rate": 0.0,
     "commodity_primary_body_only_rate": 0.0,
     "commodity_primary_false_link_rate": 0.0,
-    "commodity_pool_count": 18,
+    "commodity_pool_count": 11,
     "commodity_pool_false_link_rate": 0.0,
     "commodity_primary_dominant_section_rate": 0.6667
   },
   "selection_guardrails": {
-    "driver_tags": [
-      "low_tier_source_concentration"
-    ],
+    "driver_tags": [],
     "section_card_min_fit": {
       "default": 0.8,
       "supply": 0.82,
@@ -83,12 +81,21 @@
   },
   "editorial_quality_samples": [
     {
-      "title": "제철 '참나물', 다이어트는 기본, 노화방지·치매예방까지 숨은 효능",
-      "href": "https://www.ytn.co.kr/_ln/0102_202608241039156430",
+      "title": "'금 사과 ' 우려 덜었지만…추석 선물용 대과는 변수",
+      "href": "https://www.fnnews.com/news/202608241434369669",
       "section": "policy",
       "is_core": false,
       "reasons": [
         "policy_price_report_without_policy_action"
+      ]
+    },
+    {
+      "title": "aT, 온라인도매시장 판·구매자 상담회… 중소업체 거래 잇는다",
+      "href": "https://www.newscj.com/news/articleView.html?idxno=3427729",
+      "section": "dist",
+      "is_core": true,
+      "reasons": [
+        "promotional_or_event_filler"
       ]
     }
   ],
