@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-08-25T00:02:22+09:00",
+  "generated_at": "2026-08-26T00:07:31+09:00",
   "rows": [
     {
       "date": "2026-08-24",
       "query": "포도",
-      "section_filter": "",
+      "section_filter": "(not set)",
       "result_count": 0,
-      "count": 3
+      "count": 4
     },
     {
       "date": "2026-04-30",
@@ -95,28 +95,28 @@
     {
       "date": "2026-08-24",
       "query": "김천 포도",
-      "section_filter": "",
+      "section_filter": "(not set)",
       "result_count": 7,
       "count": 1
     },
     {
       "date": "2026-08-24",
       "query": "샤인",
-      "section_filter": "",
+      "section_filter": "(not set)",
       "result_count": 0,
       "count": 1
     },
     {
       "date": "2026-08-24",
       "query": "포도",
-      "section_filter": "",
+      "section_filter": "(not set)",
       "result_count": 232,
       "count": 1
     },
     {
       "date": "2026-08-24",
       "query": "포도",
-      "section_filter": "",
+      "section_filter": "(not set)",
       "result_count": 257,
       "count": 1
     }
