@@ -1,47 +1,47 @@
 {
-  "report_date": "2026-08-26",
-  "generated_at_kst": "2026-08-26T06:22:35+09:00",
+  "report_date": "2026-08-27",
+  "generated_at_kst": "2026-08-27T06:19:04+09:00",
   "scores": {
     "section_alignment": 100.0,
     "core_quality": 100.0,
-    "commodity_board_quality": 91.0
+    "commodity_board_quality": 97.19
   },
   "metrics": {
-    "section_alignment_low_fit_rate": 0.05,
+    "section_alignment_low_fit_rate": 0.0,
     "section_alignment_cross_gap_rate": 0.0,
     "content_false_positive_rate": 0.0,
     "reader_hard_issue_count": 0,
     "reader_hard_issue_rate": 0.0,
-    "reader_quality_penalty": 7.02,
+    "reader_quality_penalty": 0.0,
     "reader_quality_cap": 100.0,
     "weak_core_rate": 0.0,
-    "policy_wrong_section_rate": 0.05,
-    "promotional_filler_rate": 0.05,
-    "promotional_core_rate": 0.1667,
-    "weak_core_editorial_rate": 0.1667,
+    "policy_wrong_section_rate": 0.0,
+    "promotional_filler_rate": 0.0,
+    "promotional_core_rate": 0.0,
+    "weak_core_editorial_rate": 0.0,
     "pest_theme_duplicate_rate": 0.0,
     "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 3.9,
+    "editorial_quality_penalty": 0.0,
     "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0,
     "commodity_primary_title_item_focus_rate": 1.0,
-    "commodity_primary_title_issue_signal_rate": 0.8333,
-    "commodity_primary_strict_link_rate": 0.8333,
+    "commodity_primary_title_issue_signal_rate": 1.0,
+    "commodity_primary_strict_link_rate": 1.0,
     "commodity_primary_low_rank_rate": 0.0,
-    "commodity_primary_count": 12,
-    "commodity_active_today_total": 17,
-    "commodity_active_today_unlinked_total": 5,
-    "commodity_managed_unlinked_total": 21,
+    "commodity_primary_count": 11,
+    "commodity_active_today_total": 19,
+    "commodity_active_today_unlinked_total": 8,
+    "commodity_managed_unlinked_total": 22,
     "commodity_board_daily_min_primary_count": 6,
     "commodity_board_low_coverage": false,
-    "commodity_board_coverage_rate": 0.3636,
+    "commodity_board_coverage_rate": 0.3333,
     "commodity_primary_title_item_missing_rate": 0.0,
     "commodity_primary_body_only_rate": 0.0,
     "commodity_primary_false_link_rate": 0.0,
-    "commodity_pool_count": 11,
+    "commodity_pool_count": 10,
     "commodity_pool_false_link_rate": 0.0,
-    "commodity_primary_dominant_section_rate": 0.6667
+    "commodity_primary_dominant_section_rate": 0.5455
   },
   "selection_guardrails": {
     "driver_tags": [],
@@ -79,26 +79,7 @@
     "commodity_strict_primary_only": true,
     "commodity_disable_primary_fallback": true
   },
-  "editorial_quality_samples": [
-    {
-      "title": "'금 사과 ' 우려 덜었지만…추석 선물용 대과는 변수",
-      "href": "https://www.fnnews.com/news/202608241434369669",
-      "section": "policy",
-      "is_core": false,
-      "reasons": [
-        "policy_price_report_without_policy_action"
-      ]
-    },
-    {
-      "title": "aT, 온라인도매시장 판·구매자 상담회… 중소업체 거래 잇는다",
-      "href": "https://www.newscj.com/news/articleView.html?idxno=3427729",
-      "section": "dist",
-      "is_core": true,
-      "reasons": [
-        "promotional_or_event_filler"
-      ]
-    }
-  ],
+  "editorial_quality_samples": [],
   "reader_hard_issue_samples": [],
   "editorial_improvement_plan": {}
 }
