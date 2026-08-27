@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-27T00:53:52+09:00",
+  "generated_at": "2026-08-28T08:48:27+09:00",
   "section_jump": [
     {
       "date": "2026-07-01",
@@ -12,12 +12,6 @@
       "count": 3,
       "section": "pest",
       "surface": "briefing_chip"
-    },
-    {
-      "date": "2026-04-30",
-      "count": 2,
-      "section": "fruit_flower",
-      "surface": "commodity_group_chip"
     },
     {
       "date": "2026-06-04",
@@ -282,12 +276,6 @@
     {
       "date": "2026-05-27",
       "count": 7,
-      "from_view": "briefing",
-      "to_view": "commodity"
-    },
-    {
-      "date": "2026-04-30",
-      "count": 5,
       "from_view": "briefing",
       "to_view": "commodity"
     },
@@ -806,6 +794,12 @@
       "count": 1,
       "from_view": "briefing",
       "to_view": "commodity"
+    },
+    {
+      "date": "2026-08-27",
+      "count": 1,
+      "from_view": "briefing",
+      "to_view": "commodity"
     }
   ],
   "archive_nav": [
@@ -815,13 +809,6 @@
       "nav_type": "prev_date",
       "from_date": "2026-08-24",
       "to_date": "2026-08-21"
-    },
-    {
-      "date": "2026-04-30",
-      "count": 3,
-      "nav_type": "prev_date",
-      "from_date": "2026-04-30",
-      "to_date": "2026-04-29"
     },
     {
       "date": "2026-05-12",
@@ -850,13 +837,6 @@
       "nav_type": "archive_index",
       "from_date": "2026-08-24",
       "to_date": "(not set)"
-    },
-    {
-      "date": "2026-04-30",
-      "count": 2,
-      "nav_type": "prev_date",
-      "from_date": "2026-04-28",
-      "to_date": "2026-04-27"
     },
     {
       "date": "2026-05-12",
@@ -1431,6 +1411,13 @@
       "nav_type": "prev_date",
       "from_date": "2026-08-25",
       "to_date": "2026-08-24"
+    },
+    {
+      "date": "2026-08-27",
+      "count": 1,
+      "nav_type": "archive_card",
+      "from_date": "2026-08-27",
+      "to_date": "2026-08-27"
     }
   ]
 }

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-27T00:53:52+09:00",
+  "generated_at": "2026-08-28T08:48:27+09:00",
   "rows": [
     {
       "date": "2026-05-20",
@@ -221,32 +221,6 @@
       "users": 2,
       "archive_url": "",
       "source_url": ""
-    },
-    {
-      "date": "2026-04-30",
-      "article_id": "aeeff888a693",
-      "title": "제주도 만감류, 가격 우위 바탕 시장 안착 가속",
-      "report_date": "2026-04-30",
-      "section": "supply",
-      "surface": "briefing_card",
-      "target_domain": "www.wonyesanup.co.kr",
-      "clicks": 4,
-      "users": 2,
-      "archive_url": "/agri-news-brief/archive/2026-04-30.html#commodity-citrus",
-      "source_url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64462"
-    },
-    {
-      "date": "2026-04-30",
-      "article_id": "aeeff888a693",
-      "title": "제주도 만감류, 가격 우위 바탕 시장 안착 가속",
-      "report_date": "2026-04-30",
-      "section": "supply",
-      "surface": "briefing_open",
-      "target_domain": "www.wonyesanup.co.kr",
-      "clicks": 4,
-      "users": 2,
-      "archive_url": "/agri-news-brief/archive/2026-04-30.html#commodity-citrus",
-      "source_url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64462"
     },
     {
       "date": "2026-05-04",
@@ -518,19 +492,6 @@
       "target_domain": "www.mt.co.kr",
       "clicks": 4,
       "users": 1,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-04-30",
-      "article_id": "72153b4cbc4b",
-      "title": "대파 가격 급락…남해작목회, 소비 촉진 호소문까지",
-      "report_date": "2026-04-30",
-      "section": "supply",
-      "surface": "briefing_open",
-      "target_domain": "www.idomin.com",
-      "clicks": 3,
-      "users": 2,
       "archive_url": "",
       "source_url": ""
     },
@@ -1443,6 +1404,19 @@
       "users": 1,
       "archive_url": "",
       "source_url": ""
+    },
+    {
+      "date": "2026-08-27",
+      "article_id": "5c949de4cad5",
+      "title": "사천 단감 어쩌나… 폭염 에 일소 피해 지난해 100배",
+      "report_date": "2026-08-27",
+      "section": "pest",
+      "surface": "commodity_primary",
+      "target_domain": "www.gnnews.co.kr",
+      "clicks": 3,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-08-27.html#commodity-sweet_persimmon",
+      "source_url": "https://www.gnnews.co.kr/news/articleView.html?idxno=644111"
     },
     {
       "date": "2026-05-04",
@@ -4032,67 +4006,15 @@
       "source_url": ""
     },
     {
-      "date": "2026-04-30",
-      "article_id": "22d04167aa7b",
-      "title": "전남 나주 배농가 저온피해 로 착과불량 피해 심각",
-      "report_date": "2026-04-29",
-      "section": "policy",
-      "surface": "commodity_primary",
-      "target_domain": "www.wonyesanup.co.kr",
-      "clicks": 1,
-      "users": 1,
-      "archive_url": "/agri-news-brief/archive/2026-04-29.html#commodity-pear",
-      "source_url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=64457"
-    },
-    {
-      "date": "2026-04-30",
-      "article_id": "32b9048713ac",
-      "title": "[D리포트] 중국산 사과 묘목 밀수 일당 16명 적발…63만 주 압수",
-      "report_date": "2026-04-30",
+      "date": "2026-08-26",
+      "article_id": "a6ff0234ba7a",
+      "title": "연일 폭염에 채솟값 폭등‥추석 앞두고 '밥상 물가' 비상",
+      "report_date": "2026-08-26",
       "section": "supply",
       "surface": "briefing_open",
-      "target_domain": "news.sbs.co.kr",
-      "clicks": 1,
-      "users": 1,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-04-30",
-      "article_id": "e4e2458d0482",
-      "title": "곡성군, 농축산물 가격안정 기금 확대…고사리·두릅 신규 지원",
-      "report_date": "2026-04-30",
-      "section": "policy",
-      "surface": "commodity_primary",
-      "target_domain": "www.m-i.kr",
-      "clicks": 1,
-      "users": 1,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-04-30",
-      "article_id": "e6ad1cf47454",
-      "title": "마늘, 가격 오르며 재배면적 5.3%↑… 양파 는 2년째 감소",
-      "report_date": "2026-04-30",
-      "section": "supply",
-      "surface": "briefing_card",
-      "target_domain": "www.newsis.com",
-      "clicks": 1,
-      "users": 1,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-04-30",
-      "article_id": "e6ad1cf47454",
-      "title": "마늘, 가격 오르며 재배면적 5.3%↑… 양파 는 2년째 감소",
-      "report_date": "2026-04-30",
-      "section": "supply",
-      "surface": "briefing_open",
-      "target_domain": "www.newsis.com",
-      "clicks": 1,
-      "users": 1,
+      "target_domain": "imnews.imbc.com",
+      "clicks": 2,
+      "users": 2,
       "archive_url": "",
       "source_url": ""
     },
@@ -13328,19 +13250,6 @@
     },
     {
       "date": "2026-08-26",
-      "article_id": "a6ff0234ba7a",
-      "title": "연일 폭염에 채솟값 폭등‥추석 앞두고 '밥상 물가' 비상",
-      "report_date": "2026-08-26",
-      "section": "supply",
-      "surface": "briefing_open",
-      "target_domain": "imnews.imbc.com",
-      "clicks": 1,
-      "users": 1,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-08-26",
       "article_id": "c62a059e47eb",
       "title": "농산물가격안정제 시행됐지만··· 가격 보전까지 '산 넘어 산'",
       "report_date": "2026-08-26",
@@ -13351,6 +13260,45 @@
       "users": 1,
       "archive_url": "/agri-news-brief/archive/2026-08-26.html#sec-policy",
       "source_url": "https://www.agrinet.co.kr/news/articleView.html?idxno=406668"
+    },
+    {
+      "date": "2026-08-27",
+      "article_id": "0e392bc4361d",
+      "title": "\"포름알데히드 의혹 중국산 배추 , 국내 반입 여부 밝혀야\"",
+      "report_date": "2026-08-27",
+      "section": "dist",
+      "surface": "briefing_card",
+      "target_domain": "www.newsfarm.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-08-27.html#sec-dist",
+      "source_url": "http://www.newsfarm.co.kr/news/articleView.html?idxno=102109"
+    },
+    {
+      "date": "2026-08-27",
+      "article_id": "976d883cfa70",
+      "title": "김천시, 추석 앞두고 샤인머스캣 고품질·적기 출하 총력",
+      "report_date": "2026-08-27",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.hidomin.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-08-27.html#sec-supply",
+      "source_url": "https://www.hidomin.com/news/articleView.html?idxno=718626"
+    },
+    {
+      "date": "2026-08-27",
+      "article_id": "9cec51dff86d",
+      "title": "폭염 불구 사과 , 배 등 주요 과일 작황 양호",
+      "report_date": "2026-08-27",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.wonyesanup.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-08-27.html#sec-supply",
+      "source_url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=65602"
     }
   ]
 }
