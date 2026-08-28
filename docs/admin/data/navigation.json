@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-28T08:48:27+09:00",
+  "generated_at": "2026-08-29T08:33:56+09:00",
   "section_jump": [
     {
       "date": "2026-07-01",
@@ -1417,6 +1417,13 @@
       "count": 1,
       "nav_type": "archive_card",
       "from_date": "2026-08-27",
+      "to_date": "2026-08-27"
+    },
+    {
+      "date": "2026-08-28",
+      "count": 1,
+      "nav_type": "prev_date",
+      "from_date": "2026-08-28",
       "to_date": "2026-08-27"
     }
   ]
