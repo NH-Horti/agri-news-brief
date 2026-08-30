@@ -1,0 +1,420 @@
+{
+  "report_date": "2026-08-31",
+  "generated_at_kst": "2026-08-31T06:20:42+09:00",
+  "status": "warn",
+  "overall_score": 84.25,
+  "operational_score": 89.25,
+  "reader_quality_score": 84.25,
+  "reader_quality_gate": {
+    "status": "clear",
+    "headline_score": 84.25,
+    "operational_score": 89.25,
+    "penalty": 5.0,
+    "cap": 100.0,
+    "reasons": []
+  },
+  "scores": {
+    "completeness": 100.0,
+    "diversity": 100.0,
+    "source_quality": 100.0,
+    "summary_quality": 100.0,
+    "freshness": 90.0,
+    "retrieval_support": 91.25,
+    "section_alignment": 91.67,
+    "core_quality": 85.0,
+    "commodity_board_quality": 88.0,
+    "reader_quality": 84.25
+  },
+  "counts": {
+    "briefing_total": 20,
+    "commodity_total": 27,
+    "commodity_primary_total": 10,
+    "commodity_pool_total": 8,
+    "commodity_active_today_total": 14,
+    "commodity_active_today_unlinked_total": 4,
+    "commodity_managed_unlinked_total": 23,
+    "briefing_by_section": {
+      "supply": 5,
+      "policy": 5,
+      "dist": 5,
+      "pest": 5
+    },
+    "core_by_section": {
+      "supply": 3,
+      "policy": 3,
+      "dist": 3,
+      "pest": 1
+    },
+    "commodity_by_section": {
+      "supply": 23,
+      "policy": 1,
+      "dist": 1,
+      "pest": 2
+    },
+    "raw_by_section": {
+      "supply": 331,
+      "policy": 98,
+      "dist": 69,
+      "pest": 36
+    },
+    "expected_briefing_by_section": {
+      "supply": 5,
+      "policy": 5,
+      "dist": 5,
+      "pest": 5
+    },
+    "soft_fallback_briefing_by_section": {
+      "supply": 4,
+      "policy": 4,
+      "dist": 4,
+      "pest": 4
+    },
+    "minimum_fallback_briefing_by_section": {
+      "supply": 3,
+      "policy": 3,
+      "dist": 3,
+      "pest": 3
+    },
+    "preferred_slot_gap_by_section": {
+      "supply": 0,
+      "policy": 0,
+      "dist": 0,
+      "pest": 0
+    },
+    "low_tier_source_total": 2,
+    "low_tier_source_by_section": {
+      "supply": 1,
+      "policy": 0,
+      "dist": 0,
+      "pest": 1
+    }
+  },
+  "metrics": {
+    "briefing_title_unique_rate": 1.0,
+    "briefing_domain_diversity_rate": 0.85,
+    "low_tier_source_rate": 0.1,
+    "low_tier_source_excess_count": 0,
+    "source_quality_penalty": 0.0,
+    "surface_reuse_penalty": 0.0213,
+    "summary_presence_rate": 1.0,
+    "summary_length_ok_rate": 1.0,
+    "summary_numeric_rate": 0.9,
+    "summary_opening_diversity": 1.0,
+    "matched_article_rate": 1.0,
+    "within_48h_rate": 0.5,
+    "within_72h_rate": 1.0,
+    "stale_over_96h_rate": 0.0,
+    "freshness_window_mode": "weekend_span",
+    "seed_coverage_score": 0.7083,
+    "section_alignment_fit_avg": 4.924,
+    "section_alignment_low_fit_rate": 0.0,
+    "section_alignment_cross_gap_rate": 0.0,
+    "section_alignment_weak_stage_rate": 0.0,
+    "content_false_positive_rate": 0.05,
+    "reader_hard_issue_count": 0,
+    "reader_hard_issue_rate": 0.0,
+    "reader_hard_core_issue_count": 0,
+    "reader_quality_penalty": 5.0,
+    "reader_quality_cap": 100.0,
+    "preferred_slot_reader_penalty_weight": 1.5,
+    "off_scope_foreign_rate": 0.05,
+    "story_duplicate_rate": 0.0,
+    "cross_section_duplicate_rate": 0.0,
+    "content_irrelevant_rate": 0.05,
+    "semantic_false_positive_penalty": 6.0,
+    "story_duplicate_penalty": 0.0,
+    "policy_wrong_section_rate": 0.0,
+    "promotional_filler_rate": 0.0,
+    "promotional_core_rate": 0.0,
+    "weak_core_editorial_rate": 0.0,
+    "pest_theme_duplicate_rate": 0.0,
+    "dist_weak_ops_rate": 0.0,
+    "editorial_quality_penalty": 0.0,
+    "preferred_slot_gap_rate": 0.0,
+    "preferred_slot_gap_total": 0,
+    "preferred_slot_penalty": 0.0,
+    "core_fit_avg": 5.357,
+    "core_rank_percentile_avg": 0.9482,
+    "core_stage_core_rate": 0.0,
+    "weak_core_rate": 0.0,
+    "commodity_primary_item_focus_rate": 1.0,
+    "commodity_primary_issue_signal_rate": 1.0,
+    "commodity_primary_weak_rate": 0.0,
+    "commodity_primary_fit_avg": 3.221,
+    "commodity_primary_rank_avg": 3.5,
+    "commodity_primary_title_item_focus_rate": 1.0,
+    "commodity_primary_title_issue_signal_rate": 0.9,
+    "commodity_primary_strict_link_rate": 0.9,
+    "commodity_primary_low_rank_rate": 0.0,
+    "commodity_primary_count": 10,
+    "commodity_active_today_total": 14,
+    "commodity_active_today_unlinked_total": 4,
+    "commodity_managed_unlinked_total": 23,
+    "commodity_board_daily_min_primary_count": 6,
+    "commodity_board_low_coverage": false,
+    "commodity_board_coverage_rate": 0.303,
+    "commodity_primary_title_item_missing_rate": 0.0,
+    "commodity_primary_body_only_rate": 0.0,
+    "commodity_primary_false_link_rate": 0.0,
+    "commodity_pool_count": 8,
+    "commodity_pool_false_link_rate": 0.0,
+    "commodity_primary_dominant_section_rate": 0.8,
+    "commodity_primary_section_balance_score": 0.0
+  },
+  "section_scores": {
+    "briefing_fill": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "core_fill": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "retrieval_pool": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "seed_coverage": {
+      "supply": 0.75,
+      "policy": 0.75,
+      "dist": 0.75,
+      "pest": 0.5833
+    },
+    "section_alignment": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "core_quality": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    }
+  },
+  "freshness_samples": [
+    {
+      "title": "'폭염' 등 비 내린 후 원예농가...장흥군 병해충 관리 비상",
+      "section": "pest",
+      "age_hours": 69.6
+    },
+    {
+      "title": "17년 만에 열린 경남 단감 중국 수출 길…현지 유통망 확보 나선다",
+      "section": "dist",
+      "age_hours": 68.5
+    },
+    {
+      "title": "농안법 시행… 제주 감귤·월동채소 '가격안정제' 들어갈까",
+      "section": "policy",
+      "age_hours": 67.9
+    },
+    {
+      "title": "온라인도매시장 '무늬만 온라인 ' 거래, 정부 지원 끊는다",
+      "section": "dist",
+      "age_hours": 67.6
+    },
+    {
+      "title": "곡성군, 폭염·가뭄에 벼 병해충 선제 대응… 3500농가 약제비 지원",
+      "section": "pest",
+      "age_hours": 67.2
+    },
+    {
+      "title": "고흥군, 마늘· 양파 재배면적 '제자리'…대서종은 증가",
+      "section": "supply",
+      "age_hours": 62.8
+    },
+    {
+      "title": "농식차관 \"공동영농 지원 확대…제도개선 적극 발굴\"",
+      "section": "policy",
+      "age_hours": 60.5
+    },
+    {
+      "title": "저장봄배추 여름 출하 고착화···'설 자리 잃은' 고랭지배추",
+      "section": "supply",
+      "age_hours": 59.3
+    }
+  ],
+  "content_false_positive_samples": [
+    {
+      "title": "추석 앞두고 농수산물 값 급등… 배추 석달새 53% 올라",
+      "href": "https://www.chosun.com/economy/economy_general/2026/08/31/NYCRKDSGQVEJBOSG6V6WE6ZT2Q/",
+      "section": "supply",
+      "reason": "foreign_unmanaged_commodity"
+    }
+  ],
+  "reader_hard_issue_samples": [],
+  "story_duplicate_samples": [],
+  "commodity_primary_linkage_samples": [
+    {
+      "title": "사과 값 떨어지면 주스로 만들면 끝?…20년 농부들이 꺼낸 걱정",
+      "item_label": "사과",
+      "section": "supply",
+      "surface": "commodity_primary",
+      "representative_rank": 4,
+      "reasons": [
+        "title_issue_missing"
+      ]
+    }
+  ],
+  "commodity_pool_linkage_samples": [],
+  "editorial_quality_samples": [],
+  "improvement_hints": [
+    "품목 보드 대표기사가 품목 핵심 이슈를 충분히 대변하지 못합니다. 제목에서 품목명과 수급·가격·병해충 신호가 함께 보이는 기사, representative rank 상위 후보, 비수급 섹션의 직접 이슈 후보를 우선하세요.",
+    "금융·정치성 오탐이 브리핑에 섞였습니다 (비율 5%). 제목 기준 원예·시장 실무 신호가 약한 주가·공약형 기사는 수집, 최종 선정, 품목 보드 단계에서 함께 차단하세요.",
+    "농업과 무관한 기사가 브리핑에 포함되어 있습니다 (비율 5%). 해외 경제지표, 관광 홍보, 비농업 기사가 선정되지 않도록 is_relevant 게이트를 점검하세요."
+  ],
+  "selection_guardrails": {
+    "driver_tags": [
+      "semantic_false_positive",
+      "commodity_board"
+    ],
+    "section_card_min_fit": {
+      "default": 0.8,
+      "supply": 0.9,
+      "policy": 0.88,
+      "dist": 1.05,
+      "pest": 0.78
+    },
+    "section_low_fit_rescue_min": 0.35,
+    "high_score_low_fit_rescue_margin": 4.4,
+    "tail_score_floor_delta": 0.5,
+    "core_fit_min": {
+      "default": 1.2,
+      "supply": 1.4,
+      "policy": 1.4,
+      "dist": 1.6,
+      "pest": 1.2
+    },
+    "core_relaxed_min_fit": {
+      "default": 1.0,
+      "supply": 1.18,
+      "policy": 1.15,
+      "dist": 1.35,
+      "pest": 1.0
+    },
+    "disable_relaxed_core_fill": false,
+    "final_low_tier_max_per_section": 1,
+    "final_low_tier_max_total": 4,
+    "commodity_active_min_rank": 2,
+    "commodity_program_core_min_rank": 3,
+    "commodity_require_issue_signal": false,
+    "commodity_require_direct_item_focus": false,
+    "commodity_strict_primary_only": true,
+    "commodity_disable_primary_fallback": true
+  },
+  "summary_prompt_feedback": [
+    "각 기사 요약은 2문장으로 유지하고 첫 문장에 품목·지역·핵심 이슈를 바로 적는다.",
+    "기사에 수치가 있으면 1개 이상 남기고, 없으면 대응 주체나 시점을 분명히 적는다.",
+    "비슷한 시작 표현을 반복하지 말고 원인과 대응을 분리해서 간결하게 쓴다."
+  ],
+  "adaptive_evaluation": {
+    "full_editorial_eval": false,
+    "reason": "editorial_budget_exhausted_after_repair",
+    "stable_days_required": 20
+  },
+  "editorial": {
+    "status": "skipped",
+    "reason": "editorial_budget_exhausted_after_repair",
+    "model": "gpt-5.6-sol"
+  },
+  "prepublish_quality_gate": {
+    "status": "sla_fallback_passed",
+    "publishable": true,
+    "publication_mode": "sla_fallback",
+    "repair_count": 1,
+    "applied_repair_count": 1,
+    "repair_proposal_limit": 2,
+    "repair_attempts": [
+      {
+        "attempt": 1,
+        "status": "success",
+        "reason": "제외·비코어 제약을 준수하고 중복 발표, 판촉성 지역 기사, 부적합 국감 전망을 제거했다. 최신 가격·수급, 농안법과 제도 변화, 온라인도매시장·수출·판매망 운영, 명명 병해충과 복합재해 대응을 우선했다.",
+        "usage": {
+          "input_tokens": 20325,
+          "cached_input_tokens": 0,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 1010,
+          "total_tokens": 21335,
+          "estimated_cost_usd": 0.131925,
+          "pricing_basis": "gpt-5.6-sol-standard-under-272k-2026-07"
+        },
+        "model_verification_funded": false,
+        "invalidated_summary_cache_entries": 0,
+        "applied_repair": 1
+      }
+    ],
+    "deadline_kst": "06:50",
+    "deadline_reached": false,
+    "minimum_operational_score": 85.0,
+    "sla_fallback_enabled": true,
+    "sla_fallback_allowed_for_run": true,
+    "editorial_forced_for_run": false,
+    "editorial_required_satisfied": true,
+    "sla_fallback_forced": false,
+    "sla_fallback_minimum_score": 78.0,
+    "sla_fallback_score_enforced": true,
+    "sla_fallback_minimum_per_section": 4,
+    "sla_fallback_blockers": [],
+    "hard_editorial_issue_count": 0,
+    "model": "gpt-5.6-sol",
+    "usage_events": [
+      {
+        "stage": "summary",
+        "model": "gpt-5.6-sol",
+        "input_tokens": 5521,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 5518,
+        "output_tokens": 2138,
+        "total_tokens": 7659,
+        "estimated_cost_usd": 0.098642,
+        "pricing_basis": "gpt-5.6-sol-standard-under-272k-2026-07"
+      },
+      {
+        "stage": "editorial_eval",
+        "model": "gpt-5.6-sol",
+        "input_tokens": 20280,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 1499,
+        "total_tokens": 21779,
+        "estimated_cost_usd": 0.14637,
+        "pricing_basis": "gpt-5.6-sol-standard-under-272k-2026-07"
+      },
+      {
+        "stage": "editorial_repair",
+        "model": "gpt-5.6-sol",
+        "input_tokens": 20325,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 1010,
+        "total_tokens": 21335,
+        "estimated_cost_usd": 0.131925,
+        "pricing_basis": "gpt-5.6-sol-standard-under-272k-2026-07"
+      },
+      {
+        "stage": "summary",
+        "model": "gpt-5.6-sol",
+        "input_tokens": 3099,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 3096,
+        "output_tokens": 1073,
+        "total_tokens": 4172,
+        "estimated_cost_usd": 0.051555,
+        "pricing_basis": "gpt-5.6-sol-standard-under-272k-2026-07"
+      }
+    ],
+    "editorial_usage_calls": 2,
+    "editorial_usage_tokens": 43114,
+    "editorial_max_calls": 3,
+    "editorial_token_budget": 60000,
+    "editorial_budget_available": false,
+    "estimated_cost_usd": 0.428492
+  }
+}
