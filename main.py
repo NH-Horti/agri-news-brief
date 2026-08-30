@@ -24635,6 +24635,11 @@ def _is_community_welfare_service_story(title: str, desc: str) -> bool:
 
 
 def _postbuild_article_reject_reason(a: "Article", section_key: str, *, apply_selection_fit: bool = True) -> str:
+    # 운영자 피드백 배제(exclude_url_fragments/exclude_title_terms)는 선정 입구뿐 아니라
+    # 후반 rescue/swap/refill이 raw 풀에서 직접 끌어오는 경로에서도 강제되어야 한다.
+    feedback_reason = _selection_feedback_block_reason(a, section_key)
+    if feedback_reason:
+        return feedback_reason
     text = ((a.title or "") + " " + (a.description or "")).lower()
     if is_garbled_article_text(a.title or "", a.description or ""):
         return "garbled_article_text"
