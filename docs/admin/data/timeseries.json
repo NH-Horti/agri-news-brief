@@ -1,15 +1,6 @@
 {
-  "generated_at": "2026-08-31T03:04:44+09:00",
+  "generated_at": "2026-09-01T05:08:20+09:00",
   "daily": [
-    {
-      "date": "2026-05-04",
-      "visits": 6,
-      "users": 6,
-      "pageviews": 18,
-      "avg_engagement_sec": 208.01,
-      "page_view_home": 0,
-      "page_view_archive": 18
-    },
     {
       "date": "2026-05-06",
       "visits": 10,
@@ -837,6 +828,15 @@
       "avg_engagement_sec": 85.97,
       "page_view_home": 0,
       "page_view_archive": 15
+    },
+    {
+      "date": "2026-08-31",
+      "visits": 6,
+      "users": 1,
+      "pageviews": 15,
+      "avg_engagement_sec": 339.91,
+      "page_view_home": 0,
+      "page_view_archive": 14
     }
   ]
 }
