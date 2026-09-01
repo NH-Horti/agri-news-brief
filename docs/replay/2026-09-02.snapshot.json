@@ -2,8 +2,8 @@
   "schema_version": 1,
   "version": 1,
   "report_date": "2026-09-02",
-  "created_at_kst": "2026-09-02T06:19:37+09:00",
-  "build_tag": "4c89211",
+  "created_at_kst": "2026-09-02T06:33:26+09:00",
+  "build_tag": "344ca21",
   "content_ref": "main",
   "content_branch": "main",
   "window": {
@@ -463,31 +463,6 @@
         "is_core": true
       },
       {
-        "pub_dt_kst": "2026-09-01T06:00:00+09:00",
-        "section": "supply",
-        "title": "이마트·롯데마트, 김장 절임배추 3∼9일 예약 개시",
-        "description": "(서울=연합뉴스) 조민정 기자 = 대형마트들이 김장철을 앞두고 절임배추 사전예약 판매에 나선다. 대형마트들이 김장철을 앞두고 절임배추 사전예약 판매에 나선다. 롯데마트도 같은 기간인 3∼9일 절임배추와 건고추 사전예약 판매를 진행한다. 올해 여름철 고온 영향으로 8∼9월 배추의 높은 시세가 이어지고 있는 가운데 롯데마트는 강원도 평창 지역 산지와 사전 협의해 약 300톤의 절임배추 물량을 확보했다. 인공지능이 자동으로 줄인 '세 줄 요약' 기술을 사용합니다. 전체 내용을 이해하기 위해서는 기사 본문과 함께 읽어야 합니다.",
-        "link": "https://n.news.naver.com/mnews/article/001/0016281318?sid=101",
-        "originallink": "https://www.yna.co.kr/view/AKR20260831149500030?input=1195m",
-        "domain": "yna.co.kr",
-        "press": "연합뉴스",
-        "norm_key": "url:1af1b4550a1b4cbe4a6e54168981b7f0",
-        "title_key": "이마트롯데마트김장절임배추39일예약개시",
-        "canon_url": "https://yna.co.kr/view/AKR20260831149500030?input=1195m",
-        "topic": "배추",
-        "summary": "",
-        "forced_section": "",
-        "origin_section": "supply",
-        "source_query": "건고추 가격",
-        "source_channel": "naver_api",
-        "selection_stage": "",
-        "selection_note": "",
-        "reassigned_from": "",
-        "score": 17.398,
-        "selection_fit_score": 0.0,
-        "is_core": false
-      },
-      {
         "pub_dt_kst": "2026-09-01T12:10:00+09:00",
         "section": "supply",
         "title": "13대 추석 성수품 공급 평시의 1.6배 확대…돼지고기 역대 최대(종합)",
@@ -691,7 +666,7 @@
         "pub_dt_kst": "2026-09-01T08:04:00+09:00",
         "section": "supply",
         "title": "이마트·롯데마트 “김장 준비하세요”…국내산 절임 배추 예약 시작",
-        "description": "강원도 평창 지역 산지 와 사전 협의해 약 300톤의 절임 배추 물량 을 확보했다. 대표 상품은 ‘평창 고랭지 절임 배추 ’와 ‘김치양념’ 등이다. 건고추는 ‘고창 태양초’와 ‘고창 태양초 제분 고춧가루’, ‘순창 햇...",
+        "description": "대형마트가 고온으로 가격이 오른 배추를 사전 예약을 통해 저렴하게 선보이는데 이마트는 절임배추 특별 사전예약 행사를 ‘오더투홈’을 통해 진행하며 오는 3~9일까지 뉴스 경제 금융 증권 부동산 산업 정치 사회 국제 중기·바이오 IT·과학 컨슈머 생활·문화 오피니언 연예 스포츠 호남취재본부 대구&경북 부산·울산·경남본부 PR Newswire 구독 HeralDeep 연재 스페셜 HeMil(밀리터리) 서울젠트리피케이션 라스트포레스트 라스트씨 인간대포통장 여론을조사하다 고객센터 공지사항 독자문의 기사제보 헤럴드 미디어그룹 코리아헤럴드 헤럴드뮤즈 리얼푸드 더인베스터 헤럴드에코 헤럴드디자인 마이페이지 구독함 보관함 계정정보관리 회원전용 경제 금융 증권 부동산 산업 정치 사회 국제 중기·바이오 IT·과학 컨슈머 생활·문화 오피니언 부·울·경 이마트·롯데마트 “김장 준비하세요”…국내산 절임배추 예약 시작 /* TTS */ var playing = false; var tts_load = false; const tts = document.getElementById(\"tts_audio\"); function tts_click(){if(playing){ tts_pause(); }else{ tts_play();}} function tts_play(){ playing = true; if(!tts_load){tts.load(); tts_load = true;} tts.play(); $(\"#tts_icon\").addClass(\"on\"); } function tts_pause(){playing = false;tts.pause();$(\"#tts_icon\").removeClass(\"on\");} 복사완료! function printNews() { window.open(\"/article/print/10858006\", \"\", \"width=720, height=620, scrollbars=yes,resizable=no\"); } 박연수 기자 [헤럴드경제=박연수 기자] 대형마트가 명절 김장 수요 잡기에 나섰다. 고온으로 가격이 오른 배추를 사전 예약을 통해 저렴하게 선보인다. 먼저 이마트는 절임배추 특별 사전예약 행사를 ‘오더투홈’을 통해 진행한다. 오더투홈은 고객이 이마트앱(애플리케이션)에서 주문한 신선식품을 유통 단계를 최소화해 산지에서 집으로 배송해주는 산지 직송 서비스다. 오는 3~9일까지 총 7일간 이마트 앱에서 오더투홈을 통해 절임배추를 사전예약하면 16~19일 중 신청한 날짜에 받아볼 수 있다. 총 3000박스 한정이다. 국내산 ‘절임배추 10㎏(박스)’를 행사카드로 구매하면 10% 할인된 2만8620원이다. 롯데마트도 3일부터 9일까지 절임배추와 건고추 사전예약 판매를 진행한다. 예약 상품은 18∼19일 매장에서 수령할 수 있다. 롯데슈퍼에서도 같은 가격에 살 수 있다. 강원도 평창 지역 산지와 사전 협의해 약 300톤의 절임배추 물량을 확보했다. 대표 상품은 ‘평창 고랭지 절임배추’와 ‘김치양념’ 등이다. 건고추는 ‘고창 태양초’와 ‘고창 태양초 제분 고춧가루’, ‘순창 햇 건고추’와 ‘순창 건고추 제분 고춧가루’ 등을 판매한다. 구독 + ‘감튀홀더’에 3배 웃돈 품절 대란 ‘버거 굿즈’ 파리에선 1만2000원에 팝니다…해외서 신분 상승한 ‘아재 아이스크림’? [푸드360] 김원훈 ‘왜, 안 돼?’ 통했다…테라 제로 광고 2000만뷰 돌파 이 기사가 어떠셨나요? 좋아요 0 슬퍼요 0 화나요 0 추천해요 0 var contAdCode = ' '; var $target = $(\"#articleText > p\").eq(6); if ($target.length > 0) { $target.after(contAdCode); } var googletag = googletag || {}; googletag.cmd = googletag.cmd || []; googletag.cmd.push(function () { googletag.defineSlot('/83673359,3503216/heraldbiz_articlebottom_b_500_250', [500, 25",
         "link": "https://n.news.naver.com/mnews/article/016/0002690871?sid=101",
         "originallink": "https://biz.heraldcorp.com/article/10858006",
         "domain": "biz.heraldcorp.com",
@@ -708,7 +683,7 @@
         "selection_stage": "",
         "selection_note": "",
         "reassigned_from": "",
-        "score": 17.377,
+        "score": 13.899,
         "selection_fit_score": 0.0,
         "is_core": false
       },
@@ -1009,6 +984,31 @@
         "selection_note": "",
         "reassigned_from": "",
         "score": 16.44,
+        "selection_fit_score": 0.0,
+        "is_core": false
+      },
+      {
+        "pub_dt_kst": "2026-09-01T06:00:00+09:00",
+        "section": "supply",
+        "title": "이마트·롯데마트, 김장 절임 배추 3∼9일 예약 개시",
+        "description": "고랭지 배추 산지 서 사전에 물량 확보 대형마트들이 김장철을 앞두고 절임 배추 사전예약 판매에 나선다. 여름철 폭염으로 배추 가격이 오름세를 보이는 가운데 산지 계약과 사전 물량 확보 등을 통해 가격 경쟁력을...",
+        "link": "https://n.news.naver.com/mnews/article/001/0016281318?sid=101",
+        "originallink": "https://www.yna.co.kr/view/AKR20260831149500030?input=1195m",
+        "domain": "yna.co.kr",
+        "press": "연합뉴스",
+        "norm_key": "url:1af1b4550a1b4cbe4a6e54168981b7f0",
+        "title_key": "이마트롯데마트김장절임배추39일예약개시",
+        "canon_url": "https://yna.co.kr/view/AKR20260831149500030?input=1195m",
+        "topic": "배추",
+        "summary": "",
+        "forced_section": "",
+        "origin_section": "supply",
+        "source_query": "배추 산지 물량",
+        "source_channel": "naver_api",
+        "selection_stage": "",
+        "selection_note": "",
+        "reassigned_from": "",
+        "score": 16.27,
         "selection_fit_score": 0.0,
         "is_core": false
       },
@@ -2563,6 +2563,31 @@
         "is_core": false
       },
       {
+        "pub_dt_kst": "2026-09-01T06:00:00+09:00",
+        "section": "supply",
+        "title": "이마트, 추석 김장 수요 잡는다···절임 배추 사전예약",
+        "description": "이마트는 파종 시기부터 산지 와 계약하고 직거래하는 방식으로 여름 절임 배추 사전예약 물량 을 확보했다. 절임 배추 10kg 한 박스에는 4~8포기 내외의 절임 배추 가 들어간다. 평균 5포기를 기준으로 계산하면 포기당...",
+        "link": "http://www.finomy.com/news/articleView.html?idxno=260412",
+        "originallink": "http://www.finomy.com/news/articleView.html?idxno=260412",
+        "domain": "finomy.com",
+        "press": "피노미",
+        "norm_key": "url:a21b9d9077750b11d34142bf204db2e4",
+        "title_key": "이마트추석김장수요잡는다절임배추사전예약",
+        "canon_url": "https://finomy.com/news/articleView.html?idxno=260412",
+        "topic": "배추",
+        "summary": "",
+        "forced_section": "",
+        "origin_section": "supply",
+        "source_query": "배추 산지 물량",
+        "source_channel": "naver_api",
+        "selection_stage": "",
+        "selection_note": "",
+        "reassigned_from": "",
+        "score": 9.747,
+        "selection_fit_score": 0.0,
+        "is_core": false
+      },
+      {
         "pub_dt_kst": "2026-09-01T06:06:00+09:00",
         "section": "supply",
         "title": "이마트, '오더투홈' 절임 배추 사전예약...고랭지 배추 3000박스 한정 판...",
@@ -2813,31 +2838,6 @@
         "is_core": false
       },
       {
-        "pub_dt_kst": "2026-09-01T06:00:00+09:00",
-        "section": "supply",
-        "title": "이마트 '오더투홈' 고랭지 절임 배추 집으로 배송…3000박스 한정",
-        "description": "이마트는 여름철 고온에도 품질이 좋은 배추 를 확보하기 위해 파종 시기부터 산지 와 계약하고 직거래 방식으로 물량 을 준비했다. 절임 배추 10㎏ 한 박스에는 4~8포기가량이 들어간다. 평균 5포기를 기준으로 하면...",
-        "link": "https://n.news.naver.com/mnews/article/003/0014159943?sid=101",
-        "originallink": "https://www.newsis.com/view/NISX20260831_0003770137",
-        "domain": "newsis.com",
-        "press": "뉴시스",
-        "norm_key": "url:a65bde92a18360be26b26f3e173f5b17",
-        "title_key": "이마트오더투홈고랭지절임배추집으로배송3000박스한정",
-        "canon_url": "https://newsis.com/view/NISX20260831_0003770137",
-        "topic": "배추",
-        "summary": "",
-        "forced_section": "",
-        "origin_section": "supply",
-        "source_query": "배추 산지 물량",
-        "source_channel": "naver_api",
-        "selection_stage": "",
-        "selection_note": "",
-        "reassigned_from": "",
-        "score": 8.997,
-        "selection_fit_score": 0.0,
-        "is_core": false
-      },
-      {
         "pub_dt_kst": "2026-09-01T20:51:00+09:00",
         "section": "supply",
         "title": "롯데마트, 제철 먹거리 등 ‘통큰데이’ 행사",
@@ -2866,7 +2866,7 @@
         "pub_dt_kst": "2026-09-01T06:00:00+09:00",
         "section": "supply",
         "title": "롯데마트, 9월 통큰데이 진행…가을 제철 먹거리 할인",
-        "description": "롯데마트는 강원도 평창 지역 산지 와 사전 협의를 통해 약 300톤의 절임배추 물량 을 확보했다. 예약 상품은 18일부터 19일까지 매장에서 수령할 수 있다. 주요 채소도 할인 판매한다. 파프리카와 애호박, 양파 등 제철...",
+        "description": "롯데마트는 강원도 평창 지역 산지 와 사전 협의를 통해 약 300톤의 절임 배추 물량 을 확보했다. 예약 상품은 18일부터 19일까지 매장에서 수령할 수 있다. 주요 채소도 할인 판매한다. 파프리카와 애호박, 양파 등 제철...",
         "link": "https://n.news.naver.com/mnews/article/421/0009142656?sid=101",
         "originallink": "https://www.news1.kr/industry/distribution/6275203",
         "domain": "news1.kr",
@@ -2878,7 +2878,7 @@
         "summary": "",
         "forced_section": "",
         "origin_section": "supply",
-        "source_query": "양파 산지 물량",
+        "source_query": "배추 산지 물량",
         "source_channel": "naver_api",
         "selection_stage": "",
         "selection_note": "",
@@ -4363,31 +4363,6 @@
         "is_core": false
       },
       {
-        "pub_dt_kst": "2026-09-01T06:00:00+09:00",
-        "section": "supply",
-        "title": "이마트, 추석 김장 수요 잡는다···절임배추 사전예약",
-        "description": "1포기 가격 은 각각 6309원, 7096원이었다. 절임배추와 함께 간편한 김장을 위한 중부식·남부식 '김치 양념 4kg... 이마트 윤샘이 채소 팀 바이어는 \"올해는 절임배추를 더욱 편리하게 받아 보실 수 있도록 '오더투홈'으로...",
-        "link": "http://www.finomy.com/news/articleView.html?idxno=260412",
-        "originallink": "http://www.finomy.com/news/articleView.html?idxno=260412",
-        "domain": "finomy.com",
-        "press": "피노미",
-        "norm_key": "url:a21b9d9077750b11d34142bf204db2e4",
-        "title_key": "이마트추석김장수요잡는다절임배추사전예약",
-        "canon_url": "https://finomy.com/news/articleView.html?idxno=260412",
-        "topic": "배추",
-        "summary": "",
-        "forced_section": "",
-        "origin_section": "supply",
-        "source_query": "양념채소 가격",
-        "source_channel": "naver_api",
-        "selection_stage": "",
-        "selection_note": "",
-        "reassigned_from": "",
-        "score": 5.405,
-        "selection_fit_score": 0.0,
-        "is_core": false
-      },
-      {
         "pub_dt_kst": "2026-09-01T19:56:00+09:00",
         "section": "supply",
         "title": "[입는 로봇, 농작업 부담 덜어줄까] 근력 보태고 부상 낮춘다···고된 ...",
@@ -5838,31 +5813,6 @@
         "is_core": false
       },
       {
-        "pub_dt_kst": "2026-09-01T22:23:00+09:00",
-        "section": "supply",
-        "title": "대왕님표 여주쌀, 미쉐린 1스타 '비채나' 파인다이닝에 올랐다…'진상 ...",
-        "description": "농 산업 공동브랜드 활성화센터, 비채나 및 행사 관계자들이 기념촬영을 하고 있다. 이날 쇼케이스에서는... 마지막 '설미(雪米)'는 볶은 여주쌀과 두유로 만든 아이스크림을 쌀우메기 위에 올리고 생강 청과 여주쌀 튀밥을...",
-        "link": "http://www.newstown.co.kr/news/articleView.html?idxno=714416",
-        "originallink": "http://www.newstown.co.kr/news/articleView.html?idxno=714416",
-        "domain": "newstown.co.kr",
-        "press": "뉴스타운",
-        "norm_key": "url:74821207a7293d3742c8131bd692e83a",
-        "title_key": "대왕님표여주쌀미쉐린1스타비채나파인다이닝에올랐다진상",
-        "canon_url": "https://newstown.co.kr/news/articleView.html?idxno=714416",
-        "topic": "도매시장",
-        "summary": "",
-        "forced_section": "",
-        "origin_section": "supply",
-        "source_query": "생강 산업",
-        "source_channel": "naver_api",
-        "selection_stage": "",
-        "selection_note": "",
-        "reassigned_from": "",
-        "score": 1.36,
-        "selection_fit_score": 0.0,
-        "is_core": false
-      },
-      {
         "pub_dt_kst": "2026-09-01T14:50:00+09:00",
         "section": "supply",
         "title": "청주시 '청원생명 포도 ' 본격 출하 …15일까지 판촉 행사",
@@ -5984,6 +5934,31 @@
         "selection_note": "",
         "reassigned_from": "",
         "score": 1.03,
+        "selection_fit_score": 0.0,
+        "is_core": false
+      },
+      {
+        "pub_dt_kst": "2026-09-01T22:23:00+09:00",
+        "section": "supply",
+        "title": "대왕님표 여주쌀, 미쉐린 1스타 '비채나' 파인다이닝에 올랐다…'진상 ...",
+        "description": "농 산업 공동브랜드 활성화센터, 비채나 및 행사 관계자들이 기념촬영을 하고 있다. 이날 쇼케이스에서는... 마지막 '설미(雪米)'는 볶은 여주쌀과 두유로 만든 아이스크림을 쌀우메기 위에 올리고 생강 청과 여주쌀 튀밥을...",
+        "link": "http://www.newstown.co.kr/news/articleView.html?idxno=714416",
+        "originallink": "http://www.newstown.co.kr/news/articleView.html?idxno=714416",
+        "domain": "newstown.co.kr",
+        "press": "뉴스타운",
+        "norm_key": "url:74821207a7293d3742c8131bd692e83a",
+        "title_key": "대왕님표여주쌀미쉐린1스타비채나파인다이닝에올랐다진상",
+        "canon_url": "https://newstown.co.kr/news/articleView.html?idxno=714416",
+        "topic": "도매시장",
+        "summary": "",
+        "forced_section": "",
+        "origin_section": "supply",
+        "source_query": "생강 산업",
+        "source_channel": "naver_api",
+        "selection_stage": "",
+        "selection_note": "",
+        "reassigned_from": "",
+        "score": 0.96,
         "selection_fit_score": 0.0,
         "is_core": false
       },
@@ -7943,7 +7918,7 @@
         "pub_dt_kst": "2026-09-01T16:23:00+09:00",
         "section": "policy",
         "title": "李대통령 “물가 못 잡으면 지명 취소”... 이형일 부총리 후보자 “확...",
-        "description": "성수품 19종 18만3000t 공급 농축수산물 할인에 1030억 투입 전통시장 최대 2만원 환급 소상공인 명절자금 43조 지원 李 “필요하면 추가대책 검토” 매일경제 60 Maeil Business News Korea 매일경제 60 나만의 AI 비서 매일경제 60 (function() { var stockData = '{\"_DATA\":[{\"date\":\"2026-09-01 18:05:39\",\"prepare_price\":\"6,835.8\",\"code\":\"KSP\",\"prepare_rate\":0.23,\"price\":\"6,835.80\",\"name\":\"코스피\",\"mark\":1},{\"date\":\"2026-09-01 18:05:39\",\"prepare_price\":\"821.25\",\"code\":\"KSQ\",\"prepare_rate\":-1.56,\"price\":\"821.25\",\"name\":\"코스닥\",\"mark\":-1},{\"date\":\"2026-09-01 18:05:34\",\"prepare_price\":\"1,075.3\",\"code\":\"K200\",\"prepare_rate\":0.32,\"price\":\"1,075.30\",\"name\":\"코스피200\",\"mark\":1},{\"date\":\"2026-09-01 21:00:56\",\"prepare_price\":\"48.2\",\"code\":\"MUSD\",\"prepare_rate\":0.42,\"price\":\"1,374.70\",\"name\":\"미국 USD\",\"mark\":1},{\"date\":\"2026-09-02 06:15:43\",\"prepare_price\":\"0\",\"code\":\"KRW-BTC\",\"prepare_rate\":-1.73,\"price\":\"106,810,000\",\"name\":\"비트코인\",\"mark\":-1},{\"date\":\"2026-09-02 06:15:43\",\"prepare_price\":\"0\",\"code\":\"KRW-ETH\",\"prepare_rate\":-2.17,\"price\":\"3,336,000\",\"name\":\"이더리움\",\"mark\":-1},{\"date\":\"2026-09-02 06:15:43\",\"prepare_price\":\"0\",\"code\":\"KRW-XRP\",\"prepare_rate\":-2.36,\"price\":\"1,862\",\"name\":\"리플\",\"mark\":-1}]}'; var stockList = JSON.parse(stockData); var stockRolling = document.querySelector('.stock_rolling'); var gaTag = ' data-category_1depth=\"뉴스\" data-category_2depth=\"뷰\"'; var html = ''; stockList._DATA.forEach(function(item) { var rateText = (item.mark > 0 ? '+ ' : '- ') + Math.abs(item.prepare_rate) + '%'; html += ' ' + ' ' + item.name + ' ' + ' 0 ? 'is_plus' : 'is_minus') + '\">' + rateText + ' 0 ? 'plus' : 'minus') + '\"> ' + ' ' + ' '; }); stockRolling.innerHTML = html; })(); 2026년 9월 2일 (수) 경제 금융 기업 증권 부동산 테크·과학 오피니언 정치 사회 국제 문화 스포츠 M 유튜브 경제 홈 경제 정책 지표 무역 생활 경제 이슈 #2027년 예산안 #세제개편 #연금개혁 #소상공인 재기 지원 콘텐츠 Hub 디그 쉽지만 얕지 않게 파고드는 경제뉴스 재테크 #2030 자산 늘리기 #3040 자산 지키기 #4050 노후 준비하기 경제 많이 본 기사 1 “주식 접고 3% 이자 받겠다”…두 달새 정기예금에 몰린 돈 56조 2 기초연금, 저소득층 3만원 더 주고 ‘70%룰’ 유지…예산 2.6조 더 늘어 [2027년도 예산안] 3 \"주식 접고 3% 이자 받겠다\" 2달새 56조 몰린 정기예금 4 세제개편안 유턴 … 도곡렉슬 내년 보유세 2764만 → 2139만원 5 고용보험료율 올리고 실업급여 줄",
+        "description": "성수품 19종 18만3000t 공급 농축수산물 할인에 1030억 투입 전통시장 최대 2만원 환급 소상공인 명절자금 43조 지원 李 “필요하면 추가대책 검토” 매일경제 60 Maeil Business News Korea 매일경제 60 나만의 AI 비서 매일경제 60 (function() { var stockData = '{\"_DATA\":[{\"date\":\"2026-09-01 18:05:39\",\"prepare_price\":\"6,835.8\",\"code\":\"KSP\",\"prepare_rate\":0.23,\"price\":\"6,835.80\",\"name\":\"코스피\",\"mark\":1},{\"date\":\"2026-09-01 18:05:39\",\"prepare_price\":\"821.25\",\"code\":\"KSQ\",\"prepare_rate\":-1.56,\"price\":\"821.25\",\"name\":\"코스닥\",\"mark\":-1},{\"date\":\"2026-09-01 18:05:34\",\"prepare_price\":\"1,075.3\",\"code\":\"K200\",\"prepare_rate\":0.32,\"price\":\"1,075.30\",\"name\":\"코스피200\",\"mark\":1},{\"date\":\"2026-09-01 21:00:56\",\"prepare_price\":\"48.2\",\"code\":\"MUSD\",\"prepare_rate\":0.42,\"price\":\"1,374.70\",\"name\":\"미국 USD\",\"mark\":1},{\"date\":\"2026-09-02 06:30:02\",\"prepare_price\":\"0\",\"code\":\"KRW-BTC\",\"prepare_rate\":-1.67,\"price\":\"106,980,000\",\"name\":\"비트코인\",\"mark\":-1},{\"date\":\"2026-09-02 06:30:02\",\"prepare_price\":\"0\",\"code\":\"KRW-ETH\",\"prepare_rate\":-2.02,\"price\":\"3,346,000\",\"name\":\"이더리움\",\"mark\":-1},{\"date\":\"2026-09-02 06:30:02\",\"prepare_price\":\"0\",\"code\":\"KRW-XRP\",\"prepare_rate\":-2.3,\"price\":\"1,868\",\"name\":\"리플\",\"mark\":-1}]}'; var stockList = JSON.parse(stockData); var stockRolling = document.querySelector('.stock_rolling'); var gaTag = ' data-category_1depth=\"뉴스\" data-category_2depth=\"뷰\"'; var html = ''; stockList._DATA.forEach(function(item) { var rateText = (item.mark > 0 ? '+ ' : '- ') + Math.abs(item.prepare_rate) + '%'; html += ' ' + ' ' + item.name + ' ' + ' 0 ? 'is_plus' : 'is_minus') + '\">' + rateText + ' 0 ? 'plus' : 'minus') + '\"> ' + ' ' + ' '; }); stockRolling.innerHTML = html; })(); 2026년 9월 2일 (수) 경제 금융 기업 증권 부동산 테크·과학 오피니언 정치 사회 국제 문화 스포츠 M 유튜브 경제 홈 경제 정책 지표 무역 생활 경제 이슈 #2027년 예산안 #세제개편 #연금개혁 #소상공인 재기 지원 콘텐츠 Hub 디그 쉽지만 얕지 않게 파고드는 경제뉴스 재테크 #2030 자산 늘리기 #3040 자산 지키기 #4050 노후 준비하기 경제 많이 본 기사 1 “주식 접고 3% 이자 받겠다”…두 달새 정기예금에 몰린 돈 56조 2 기초연금, 저소득층 3만원 더 주고 ‘70%룰’ 유지…예산 2.6조 더 늘어 [2027년도 예산안] 3 \"주식 접고 3% 이자 받겠다\" 2달새 56조 몰린 정기예금 4 세제개편안 유턴 … 도곡렉슬 내년 보유세 2764만 → 2139만원 5 고용보험료율 올리고 실업급여 줄인",
         "link": "https://n.news.naver.com/mnews/article/009/0005728786?sid=101",
         "originallink": "https://www.mk.co.kr/article/12141429",
         "domain": "mk.co.kr",
@@ -8169,13 +8144,13 @@
         "section": "policy",
         "title": "민생안정대책으로 추석 성수품 1.6배 확대… 할인지원 1030억원",
         "description": "(서울=뉴스1) 이종수 기자 = 정부가 추석 장바구니 물가 안정을 위한 ‘추석 민생안정대책’을 발표한 1일 서울 동대문구의 한 전통시장에서 물품이 진열되어 있다. 정부는 배추·무·사과·배·소고기·명태 등 19대 성수품을 평시보다 1.6배 많은 역대 최대 규모인 18만3000톤 공급하고, 농축수산물 할인 지원에 역대 최대인 1030억원을 투입하기로 했다. 2026.9.1/뉴스1",
-        "link": "https://n.news.naver.com/mnews/article/421/0009144060?sid=101",
-        "originallink": "https://www.news1.kr/photos/8081727",
+        "link": "https://n.news.naver.com/mnews/article/421/0009144061?sid=101",
+        "originallink": "https://www.news1.kr/photos/8081726",
         "domain": "news1.kr",
         "press": "뉴스1",
-        "norm_key": "url:e2b8c6a4353779be27ae1d71675b4802",
+        "norm_key": "url:c3bdf59e7caad6c13e94b17efb28d292",
         "title_key": "민생안정대책으로추석성수품16배확대할인지원1030억원",
-        "canon_url": "https://news1.kr/photos/8081727",
+        "canon_url": "https://news1.kr/photos/8081726",
         "topic": "정책",
         "summary": "",
         "forced_section": "",
@@ -8619,13 +8594,13 @@
         "section": "policy",
         "title": "추석 물가 안정 총력…19대 성수품 역대 최대 공급",
         "description": "정부는 배추·무·사과·배·소고기·명태 등 19대 성수품을 평시보다 1.6배 많은 역대 최대 규모인 18만3000톤 공급하고, 농축수산물 할인 지원 에 역대 최대인 1030억원을 투입하기로 했다. 2026.9.1/뉴스1",
-        "link": "https://n.news.naver.com/mnews/article/421/0009144049?sid=101",
-        "originallink": "https://www.news1.kr/photos/8081742",
+        "link": "https://n.news.naver.com/mnews/article/421/0009144045?sid=101",
+        "originallink": "https://www.news1.kr/photos/8081750",
         "domain": "news1.kr",
         "press": "뉴스1",
-        "norm_key": "url:90f07a48ec4abbb2c5c6e4851d6cddea",
+        "norm_key": "url:8240638cf8ac6480f339848670938868",
         "title_key": "추석물가안정총력19대성수품역대최대공급",
-        "canon_url": "https://news1.kr/photos/8081742",
+        "canon_url": "https://news1.kr/photos/8081750",
         "topic": "정책",
         "summary": "",
         "forced_section": "",
@@ -9715,31 +9690,6 @@
         "is_core": false
       },
       {
-        "pub_dt_kst": "2026-09-01T10:50:00+09:00",
-        "section": "policy",
-        "title": "추석 성수품 18만t·명절자금 43조 '역대 최대' 공급",
-        "description": "오는 3일부터 유통업체와 협업해 온·오프라인에서 사과, 배, 소고기 등 농축산물 을 최대 40% 할인한다.... 관계부처 합동 민생물가 태스크포스(TF)는 가격 ·수급 동향 을 매일 점검하고 필요 시 즉시 대응하는 등 물가...",
-        "link": "https://news.einfomax.co.kr/news/articleView.html?idxno=4432825",
-        "originallink": "https://news.einfomax.co.kr/news/articleView.html?idxno=4432825",
-        "domain": "news.einfomax.co.kr",
-        "press": "연합인포맥스",
-        "norm_key": "url:f1b4b0e247dad81e089c90de16bc3c45",
-        "title_key": "추석성수품18만t명절자금43조역대최대공급",
-        "canon_url": "https://news.einfomax.co.kr/news/articleView.html?idxno=4432825",
-        "topic": "기타",
-        "summary": "",
-        "forced_section": "",
-        "origin_section": "policy",
-        "source_query": "농축산물 가격 동향",
-        "source_channel": "naver_api",
-        "selection_stage": "",
-        "selection_note": "",
-        "reassigned_from": "",
-        "score": 19.55,
-        "selection_fit_score": 0.0,
-        "is_core": false
-      },
-      {
         "pub_dt_kst": "2026-09-01T11:56:00+09:00",
         "section": "policy",
         "title": "함평군의회, '22일간 의정활동'... 행감·추경·결산안 집중 심사",
@@ -9835,7 +9785,7 @@
         "selection_stage": "",
         "selection_note": "",
         "reassigned_from": "",
-        "score": 51.66,
+        "score": 51.26,
         "selection_fit_score": 0.0,
         "is_core": false
       },
@@ -10536,6 +10486,31 @@
         "selection_note": "",
         "reassigned_from": "",
         "score": 13.67,
+        "selection_fit_score": 0.0,
+        "is_core": false
+      },
+      {
+        "pub_dt_kst": "2026-09-01T10:50:00+09:00",
+        "section": "policy",
+        "title": "추석 성수품 18만t·명절자금 43조 '역대 최대' 공급",
+        "description": "이번 대책은 성수품 물가 안정과 민생 부담 경감, 내수 활력 제고, 국민 안전 등 4가지 분야에 중점을 두고... 배추·무 등 채소류는 평시 대비 1.9배인 1만8천t, 사과·배 등 과일 은 평시보다 3배 이상 확대한 3만2천t을...",
+        "link": "https://news.einfomax.co.kr/news/articleView.html?idxno=4432825",
+        "originallink": "https://news.einfomax.co.kr/news/articleView.html?idxno=4432825",
+        "domain": "news.einfomax.co.kr",
+        "press": "연합인포맥스",
+        "norm_key": "url:f1b4b0e247dad81e089c90de16bc3c45",
+        "title_key": "추석성수품18만t명절자금43조역대최대공급",
+        "canon_url": "https://news.einfomax.co.kr/news/articleView.html?idxno=4432825",
+        "topic": "정책",
+        "summary": "",
+        "forced_section": "",
+        "origin_section": "policy",
+        "source_query": "성수품 물가 과일",
+        "source_channel": "naver_api",
+        "selection_stage": "",
+        "selection_note": "",
+        "reassigned_from": "",
+        "score": 13.51,
         "selection_fit_score": 0.0,
         "is_core": false
       },
@@ -15084,7 +15059,7 @@
           ],
           [
             "성수품 물가 과일",
-            19
+            20
           ],
           [
             "온라인 도매시장 농식품부",
@@ -15131,7 +15106,7 @@
             3
           ],
           [
-            "농축산물 가격 동향",
+            "농식품부 수급 점검",
             2
           ]
         ],
@@ -15200,7 +15175,7 @@
           {
             "seed": "농축산물",
             "rep": "농축산물",
-            "hits": 27,
+            "hits": 26,
             "selected_hits": 0,
             "missing": false,
             "sample_title": "추석물가 잡는다…정부, 성수품 16.3만 톤 풀고 590억 원 할인 지원"
@@ -15334,11 +15309,11 @@
             50
           ],
           [
-            "사과 출하",
+            "배 과일 가격",
             50
           ],
           [
-            "배 과일 가격",
+            "사과 출하",
             50
           ],
           [
@@ -15405,7 +15380,7 @@
           ],
           [
             "건고추 가격",
-            14
+            13
           ],
           [
             "감자 재배",
@@ -15416,15 +15391,15 @@
             10
           ],
           [
+            "배추 산지 물량",
+            10
+          ],
+          [
             "멜론 출하",
             9
           ],
           [
             "배추 농가",
-            8
-          ],
-          [
-            "배추 산지 물량",
             8
           ],
           [
@@ -15712,7 +15687,7 @@
             "수박"
           ]
         },
-        "items_total": 379,
+        "items_total": 378,
         "seed_coverage": [
           {
             "seed": "양배추",
@@ -15733,7 +15708,7 @@
           {
             "seed": "배추",
             "rep": "배추",
-            "hits": 57,
+            "hits": 56,
             "selected_hits": 0,
             "missing": false,
             "sample_title": "농식품부 내년 예산안 10.4%↑ 22조2215억…Next K-푸드 육성 60억→200억"
@@ -15875,15 +15850,15 @@
             50
           ],
           [
-            "도매시장 수급",
-            50
-          ],
-          [
             "공판장 청과 경매",
             50
           ],
           [
             "공영도매시장 경매",
+            50
+          ],
+          [
+            "도매시장 수급",
             50
           ],
           [
@@ -16185,11 +16160,11 @@
             50
           ],
           [
-            "탄저병 방제",
+            "월동 해충 방제",
             50
           ],
           [
-            "월동 해충 방제",
+            "탄저병 방제",
             50
           ],
           [
@@ -16837,6 +16812,16 @@
         "reason": "apple_non_edible_context",
         "press": "뉴스1",
         "domain": "news1.kr",
+        "title": "추석 장바구니 부담 낮춘다…성수품 공급· 할인 확대",
+        "url": "https://www.news1.kr/photos/8081739",
+        "source_query": "농축수산물 할인지원",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "policy",
+        "reason": "apple_non_edible_context",
+        "press": "뉴스1",
+        "domain": "news1.kr",
         "title": "추석 앞두고 성수품 역대 최대 18만3000톤 공급",
         "url": "https://www.news1.kr/photos/8081733",
         "source_query": "농축수산물 할인지원",
@@ -16847,8 +16832,8 @@
         "reason": "apple_non_edible_context",
         "press": "뉴스1",
         "domain": "news1.kr",
-        "title": "추석 장바구니 부담 낮춘다…성수품 공급· 할인 확대",
-        "url": "https://www.news1.kr/photos/8081739",
+        "title": "추석 앞두고 성수품 역대 최대 18만3000톤 공급",
+        "url": "https://www.news1.kr/photos/8081729",
         "source_query": "농축수산물 할인지원",
         "source_channel": "naver_api"
       },
@@ -16869,16 +16854,6 @@
         "domain": "news1.kr",
         "title": "추석 앞두고 성수품 역대 최대 18만3000톤 공급",
         "url": "https://www.news1.kr/photos/8081738",
-        "source_query": "농축수산물 할인지원",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "policy",
-        "reason": "apple_non_edible_context",
-        "press": "뉴스1",
-        "domain": "news1.kr",
-        "title": "추석 장바구니 부담 낮춘다…성수품 공급· 할인 확대",
-        "url": "https://www.news1.kr/photos/8081728",
         "source_query": "농축수산물 할인지원",
         "source_channel": "naver_api"
       },
@@ -17155,20 +17130,20 @@
       {
         "section": "policy",
         "reason": "origin_fraud_enforcement",
-        "press": "WOWTV",
-        "domain": "wowtv.co.kr",
-        "title": "추석 성수품 16.3만 톤 공급…590억 원 투입 농축산물 최대 40% 할인",
-        "url": "http://www.wowtv.co.kr/NewsCenter/News/Read?articleId=A202609010561&t=NN",
+        "press": "브릿지경제",
+        "domain": "viva100.com",
+        "title": "13대 추석 성수품 공급⋯ 평시보다 1.6배 확대",
+        "url": "https://www.viva100.com/article/20260901500834",
         "source_query": "원산지 단속 농산물",
         "source_channel": "naver_api"
       },
       {
         "section": "policy",
         "reason": "origin_fraud_enforcement",
-        "press": "브릿지경제",
-        "domain": "viva100.com",
-        "title": "13대 추석 성수품 공급⋯ 평시보다 1.6배 확대",
-        "url": "https://www.viva100.com/article/20260901500834",
+        "press": "WOWTV",
+        "domain": "wowtv.co.kr",
+        "title": "추석 성수품 16.3만 톤 공급…590억 원 투입 농축산물 최대 40% 할인",
+        "url": "http://www.wowtv.co.kr/NewsCenter/News/Read?articleId=A202609010561&t=NN",
         "source_query": "원산지 단속 농산물",
         "source_channel": "naver_api"
       },
@@ -17575,16 +17550,6 @@
       {
         "section": "policy",
         "reason": "fishery_title_only",
-        "press": "머니투데이",
-        "domain": "mt.co.kr",
-        "title": "\"추석 대책 역대 최대 규모\"… 성수품 18.3만톤·농축수산물 1030억",
-        "url": "https://www.mt.co.kr/economy/2026/09/01/2026083115465980186",
-        "source_query": "성수품 물가 과일",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "policy",
-        "reason": "fishery_title_only",
         "press": "KBS",
         "domain": "news.kbs.co.kr",
         "title": "‘추석 맞이’ 농축수산물 최대 50% 할인… 성수품 1.6배 확대 공급",
@@ -17595,10 +17560,10 @@
       {
         "section": "policy",
         "reason": "fishery_title_only",
-        "press": "조선일보",
-        "domain": "biz.chosun.com",
-        "title": "추석 농축산물 최대 40%·수산물 최대 50% 할인",
-        "url": "https://biz.chosun.com/policy/policy_sub/2026/09/01/X6YUV3GDKFEFNNH3RE4Z4IS4PU/",
+        "press": "머니투데이",
+        "domain": "mt.co.kr",
+        "title": "\"추석 대책 역대 최대 규모\"… 성수품 18.3만톤·농축수산물 1030억",
+        "url": "https://www.mt.co.kr/economy/2026/09/01/2026083115465980186",
         "source_query": "성수품 물가 과일",
         "source_channel": "naver_api"
       },
@@ -17734,21 +17699,21 @@
       },
       {
         "section": "policy",
-        "reason": "fishery_only",
-        "press": "조선일보",
-        "domain": "biz.chosun.com",
-        "title": "추석 농축산물 최대 40%·수산물 최대 50% 할인",
-        "url": "https://biz.chosun.com/policy/policy_sub/2026/09/01/X6YUV3GDKFEFNNH3RE4Z4IS4PU/",
-        "source_query": "농축산물 가격 동향",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "policy",
         "reason": "ban_keywords",
         "press": "이투데이",
         "domain": "etoday.co.kr",
         "title": "성수품 '역대 최대' 18.3만t 공급…대출·보증 43.4조원 푼다",
         "url": "https://www.etoday.co.kr/news/view/2620445",
+        "source_query": "농축산물 가격 동향",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "policy",
+        "reason": "fishery_only",
+        "press": "조선일보",
+        "domain": "biz.chosun.com",
+        "title": "추석 농축산물 최대 40%·수산물 최대 50% 할인",
+        "url": "https://biz.chosun.com/policy/policy_sub/2026/09/01/X6YUV3GDKFEFNNH3RE4Z4IS4PU/",
         "source_query": "농축산물 가격 동향",
         "source_channel": "naver_api"
       },
@@ -18104,21 +18069,21 @@
       },
       {
         "section": "policy",
-        "reason": "origin_fraud_enforcement",
-        "press": "WOWTV",
-        "domain": "wowtv.co.kr",
-        "title": "추석 성수품 16.3만 톤 공급…590억 원 투입 농축산물 최대 40% 할인",
-        "url": "http://www.wowtv.co.kr/NewsCenter/News/Read?articleId=A202609010561&t=NN",
-        "source_query": "농식품부 가격 점검",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "policy",
         "reason": "policy_livestock_only",
         "press": "브릿지경제",
         "domain": "viva100.com",
         "title": "13대 추석 성수품 공급⋯ 평시보다 1.6배 확대",
         "url": "https://www.viva100.com/article/20260901500834",
+        "source_query": "농식품부 가격 점검",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "policy",
+        "reason": "origin_fraud_enforcement",
+        "press": "WOWTV",
+        "domain": "wowtv.co.kr",
+        "title": "추석 성수품 16.3만 톤 공급…590억 원 투입 농축산물 최대 40% 할인",
+        "url": "http://www.wowtv.co.kr/NewsCenter/News/Read?articleId=A202609010561&t=NN",
         "source_query": "농식품부 가격 점검",
         "source_channel": "naver_api"
       },
@@ -19185,6 +19150,16 @@
       {
         "section": "policy",
         "reason": "must_terms_fail_policy",
+        "press": "농기자재신문",
+        "domain": "newsam.co.kr",
+        "title": "농업 대전환 뒷받침, 2027년도 농촌진흥청 예산안 편성현장 체감 성과 창...",
+        "url": "https://www.newsam.co.kr/news/article.html?no=43883",
+        "source_query": "농산물 수급 관리센터",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "policy",
+        "reason": "must_terms_fail_policy",
         "press": "TV조선",
         "domain": "news.tvchosun.com",
         "title": "식약처 내년 예산 8천829억원…식의약 안전 관리 ·AI 전환 강화",
@@ -19199,16 +19174,6 @@
         "domain": "news.kbs.co.kr",
         "title": "식약처 내년도 예산 8천892억 원 편성…마약류 관리 강화",
         "url": "https://news.kbs.co.kr/news/pc/view/view.do?ncd=8651625",
-        "source_query": "농산물 수급 관리센터",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "policy",
-        "reason": "must_terms_fail_policy",
-        "press": "농기자재신문",
-        "domain": "newsam.co.kr",
-        "title": "농업 대전환 뒷받침, 2027년도 농촌진흥청 예산안 편성현장 체감 성과 창...",
-        "url": "https://www.newsam.co.kr/news/article.html?no=43883",
         "source_query": "농산물 수급 관리센터",
         "source_channel": "naver_api"
       },
@@ -19234,21 +19199,21 @@
       },
       {
         "section": "policy",
-        "reason": "must_terms_fail_policy",
-        "press": "식품음료신문",
-        "domain": "foodnews.co.kr",
-        "title": "농진청, 내년 예산안 1조2134억 편성…올해보다 740억 증액",
-        "url": "http://www.foodnews.co.kr/news/articleView.html?idxno=119990",
-        "source_query": "농산물 수급 관리센터",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "policy",
         "reason": "hard_offtopic_no_agri_context",
         "press": "IFM",
         "domain": "news.ifm.kr",
         "title": "식약처 내년 예산 8829억원…AI 식품안전·바이오 규제지원에 힘 싣는다",
         "url": "https://news.ifm.kr/news/articleView.html?idxno=478406",
+        "source_query": "농산물 수급 관리센터",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "policy",
+        "reason": "must_terms_fail_policy",
+        "press": "식품음료신문",
+        "domain": "foodnews.co.kr",
+        "title": "농진청, 내년 예산안 1조2134억 편성…올해보다 740억 증액",
+        "url": "http://www.foodnews.co.kr/news/articleView.html?idxno=119990",
         "source_query": "농산물 수급 관리센터",
         "source_channel": "naver_api"
       },
@@ -19784,21 +19749,21 @@
       },
       {
         "section": "policy",
-        "reason": "ban_keywords",
-        "press": "이투데이",
-        "domain": "etoday.co.kr",
-        "title": "성수품 '역대 최대' 18.3만t 공급…대출·보증 43.4조원 푼다",
-        "url": "https://www.etoday.co.kr/news/view/2620445",
-        "source_query": "사과 수급 안정",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "policy",
         "reason": "fishery_title_only",
         "press": "조선일보",
         "domain": "biz.chosun.com",
         "title": "추석 농축산물 최대 40%·수산물 최대 50% 할인",
         "url": "https://biz.chosun.com/policy/policy_sub/2026/09/01/X6YUV3GDKFEFNNH3RE4Z4IS4PU/",
+        "source_query": "사과 수급 안정",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "policy",
+        "reason": "ban_keywords",
+        "press": "이투데이",
+        "domain": "etoday.co.kr",
+        "title": "성수품 '역대 최대' 18.3만t 공급…대출·보증 43.4조원 푼다",
+        "url": "https://www.etoday.co.kr/news/view/2620445",
         "source_query": "사과 수급 안정",
         "source_channel": "naver_api"
       },
@@ -19924,11 +19889,11 @@
       },
       {
         "section": "policy",
-        "reason": "policy_retail_sales_trend",
-        "press": "연합인포맥스",
-        "domain": "news.einfomax.co.kr",
-        "title": "추석 성수품 18만t·명절자금 43조 '역대 최대' 공급",
-        "url": "https://news.einfomax.co.kr/news/articleView.html?idxno=4432825",
+        "reason": "fishery_title_only",
+        "press": "조선일보",
+        "domain": "biz.chosun.com",
+        "title": "추석 농축산물 최대 40%·수산물 최대 50% 할인",
+        "url": "https://biz.chosun.com/policy/policy_sub/2026/09/01/X6YUV3GDKFEFNNH3RE4Z4IS4PU/",
         "source_query": "배추 수급 안정",
         "source_channel": "naver_api"
       },
@@ -19944,11 +19909,11 @@
       },
       {
         "section": "policy",
-        "reason": "fishery_title_only",
-        "press": "조선일보",
-        "domain": "biz.chosun.com",
-        "title": "추석 농축산물 최대 40%·수산물 최대 50% 할인",
-        "url": "https://biz.chosun.com/policy/policy_sub/2026/09/01/X6YUV3GDKFEFNNH3RE4Z4IS4PU/",
+        "reason": "policy_retail_sales_trend",
+        "press": "연합인포맥스",
+        "domain": "news.einfomax.co.kr",
+        "title": "추석 성수품 18만t·명절자금 43조 '역대 최대' 공급",
+        "url": "https://news.einfomax.co.kr/news/articleView.html?idxno=4432825",
         "source_query": "배추 수급 안정",
         "source_channel": "naver_api"
       },
@@ -21174,11 +21139,11 @@
       },
       {
         "section": "supply",
-        "reason": "livestock_only_supply",
-        "press": "조선일보",
-        "domain": "biz.chosun.com",
-        "title": "추석 농축산물 최대 40%·수산물 최대 50% 할인",
-        "url": "https://biz.chosun.com/policy/policy_sub/2026/09/01/X6YUV3GDKFEFNNH3RE4Z4IS4PU/",
+        "reason": "supply_macro_price_watch",
+        "press": "연합인포맥스",
+        "domain": "news.einfomax.co.kr",
+        "title": "추석 성수품 18만t·명절자금 43조 '역대 최대' 공급",
+        "url": "https://news.einfomax.co.kr/news/articleView.html?idxno=4432825",
         "source_query": "사과 수급",
         "source_channel": "naver_api"
       },
@@ -21194,11 +21159,11 @@
       },
       {
         "section": "supply",
-        "reason": "supply_macro_price_watch",
-        "press": "연합인포맥스",
-        "domain": "news.einfomax.co.kr",
-        "title": "추석 성수품 18만t·명절자금 43조 '역대 최대' 공급",
-        "url": "https://news.einfomax.co.kr/news/articleView.html?idxno=4432825",
+        "reason": "livestock_only_supply",
+        "press": "조선일보",
+        "domain": "biz.chosun.com",
+        "title": "추석 농축산물 최대 40%·수산물 최대 50% 할인",
+        "url": "https://biz.chosun.com/policy/policy_sub/2026/09/01/X6YUV3GDKFEFNNH3RE4Z4IS4PU/",
         "source_query": "사과 수급",
         "source_channel": "naver_api"
       },
@@ -21315,20 +21280,20 @@
       {
         "section": "supply",
         "reason": "apple_non_edible_context",
-        "press": "경남매일",
-        "domain": "gnmaeil.com",
-        "title": "함양군, 추석 농특산물 할인행사",
-        "url": "http://www.gnmaeil.com/news/articleView.html?idxno=593937",
+        "press": "ulsanpress",
+        "domain": "ulsanpress.net",
+        "title": "추석 성수품 대량 공급…농축산물 최대 40% 할인",
+        "url": "https://www.ulsanpress.net/news/articleView.html?idxno=582112",
         "source_query": "사과 가격",
         "source_channel": "naver_api"
       },
       {
         "section": "supply",
         "reason": "apple_non_edible_context",
-        "press": "ulsanpress",
-        "domain": "ulsanpress.net",
-        "title": "추석 성수품 대량 공급…농축산물 최대 40% 할인",
-        "url": "https://www.ulsanpress.net/news/articleView.html?idxno=582112",
+        "press": "경남매일",
+        "domain": "gnmaeil.com",
+        "title": "함양군, 추석 농특산물 할인행사",
+        "url": "http://www.gnmaeil.com/news/articleView.html?idxno=593937",
         "source_query": "사과 가격",
         "source_channel": "naver_api"
       },
@@ -21414,21 +21379,21 @@
       },
       {
         "section": "supply",
-        "reason": "low_value_local_promo",
-        "press": "충청매일",
-        "domain": "ccdn.co.kr",
-        "title": "'충남농사랑' 추석 명절 기획전 개최",
-        "url": "https://www.ccdn.co.kr/news/articleView.html?idxno=1097165",
-        "source_query": "사과 가격",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
         "reason": "apple_non_edible_context",
         "press": "충청매일",
         "domain": "ccdn.co.kr",
         "title": "정부, 추석 성수품 역대 최대 공급",
         "url": "https://www.ccdn.co.kr/news/articleView.html?idxno=1097180",
+        "source_query": "사과 가격",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "low_value_local_promo",
+        "press": "충청매일",
+        "domain": "ccdn.co.kr",
+        "title": "'충남농사랑' 추석 명절 기획전 개최",
+        "url": "https://www.ccdn.co.kr/news/articleView.html?idxno=1097165",
         "source_query": "사과 가격",
         "source_channel": "naver_api"
       },
@@ -21700,356 +21665,6 @@
         "title": "사과 농가 일손 부담 줄인다…장수군, 무인방제기 시연",
         "url": "https://www.etoday.co.kr/news/view/2620225",
         "source_query": "사과 저장",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "apple_non_edible_context",
-        "press": "thetracker",
-        "domain": "thetracker.co.kr",
-        "title": "이마트, ‘고래잇 페스타’ 개최…제철 먹거리부터 추석 상품까지 최대...",
-        "url": "https://thetracker.co.kr/View.aspx?No=4208213",
-        "source_query": "사과 출하",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "apple_non_edible_context",
-        "press": "yeongnam",
-        "domain": "yeongnam.com",
-        "title": "[산소카페 청송의 맛⑪] 청송 자두와 복숭아",
-        "url": "https://www.yeongnam.com/web/view.php?key=20260901025525730",
-        "source_query": "사과 출하",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "apple_non_edible_context",
-        "press": "강원일보",
-        "domain": "kwnews.co.kr",
-        "title": "추석 앞두고 강원 전통시장 경기 전망 증가, 명절효과 기대감↑",
-        "url": "https://www.kwnews.co.kr/article/20260901501463",
-        "source_query": "사과 출하",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "livestock_only_supply",
-        "press": "중앙일보",
-        "domain": "joongang.co.kr",
-        "title": "추석 농수산물 최대 50% 할인…정부, 역대 최대 1030억 투입",
-        "url": "https://www.joongang.co.kr/article/25458241",
-        "source_query": "사과 출하",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "livestock_only_supply",
-        "press": "ulsanpress",
-        "domain": "ulsanpress.net",
-        "title": "추석 성수품 대량 공급…농축산물 최대 40% 할인",
-        "url": "https://www.ulsanpress.net/news/articleView.html?idxno=582112",
-        "source_query": "사과 출하",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "apple_non_edible_context",
-        "press": "안동MBC",
-        "domain": "andongmbc.co.kr",
-        "title": "[R]추석 앞둔 사과 '우두두'..우박에 사과 밭 초토화",
-        "url": "http://andongmbc.co.kr/adboard/NewsView84531",
-        "source_query": "사과 출하",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "livestock_only_supply",
-        "press": "KTV",
-        "domain": "ktv.go.kr",
-        "title": "추석 성수품 '역대 최대' 18만3천 톤···최대 50% 할인",
-        "url": "https://www.ktv.go.kr/content/view?content_id=760299",
-        "source_query": "사과 출하",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "apple_non_edible_context",
-        "press": "경북일보",
-        "domain": "kyongbuk.co.kr",
-        "title": "정부, 추석 물가대책 가동…성수품 공급·할인 대폭 확대",
-        "url": "https://www.kyongbuk.co.kr/news/articleView.html?idxno=4082855",
-        "source_query": "사과 출하",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "fishery_title_only",
-        "press": "한국농업신문",
-        "domain": "newsfarm.co.kr",
-        "title": "aT 농수산물 온라인도매시장, 우수 중소 판매자와 구매자 잇는다",
-        "url": "http://www.newsfarm.co.kr/news/articleView.html?idxno=102180",
-        "source_query": "사과 출하",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "apple_non_edible_context",
-        "press": "대경일보",
-        "domain": "dkilbo.com",
-        "title": "추석 장바구니 부담 덜까…성수품 16만3000t 푼다",
-        "url": "https://www.dkilbo.com/news/articleView.html?idxno=552988",
-        "source_query": "사과 출하",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "apple_non_edible_context",
-        "press": "식품안전뉴스",
-        "domain": "fsnews.co.kr",
-        "title": "추석 성수품 1.6배 푼다",
-        "url": "http://www.fsnews.co.kr/news/articleView.html?idxno=62043",
-        "source_query": "사과 출하",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "apple_non_edible_context",
-        "press": "남도일보",
-        "domain": "namdonews.com",
-        "title": "추석 장바구니 부담 낮춘다…성수품 16만3천t 공급",
-        "url": "https://www.namdonews.com/news/articleView.html?idxno=921928",
-        "source_query": "사과 출하",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "supply_social_policy_noise",
-        "press": "경기일보",
-        "domain": "kyeonggi.com",
-        "title": "내년 농식품부 예산 22.2조…농어촌 기본소득 대상지 두 배 확대",
-        "url": "https://www.kyeonggi.com/article/20260901580396",
-        "source_query": "사과 출하",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "supply_social_policy_noise",
-        "press": "정책브리핑",
-        "domain": "korea.kr",
-        "title": "기본소득 확대로 농가 경영 안정화…K-푸드 글로벌화로 성장동력 ↑",
-        "url": "https://www.korea.kr/news/policyNewsView.do?newsId=148970966&call_from=naver_news",
-        "source_query": "사과 출하",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "fishery_title_only",
-        "press": "중앙일보",
-        "domain": "joongang.co.kr",
-        "title": "추석 농수산물 최대 50% 할인…자금난 소상공인에 43.4조 명절자금 푼다",
-        "url": "https://www.joongang.co.kr/article/25458144",
-        "source_query": "사과 출하",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "apple_non_edible_context",
-        "press": "충남일보",
-        "domain": "chungnamilbo.co.kr",
-        "title": "'추석 장바구니 부담 낮춘다'... 정부, '성수품 공급 확대·농축산물 할...",
-        "url": "http://www.chungnamilbo.co.kr/news/articleView.html?idxno=907102",
-        "source_query": "사과 출하",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "livestock_only_supply",
-        "press": "정책브리핑",
-        "domain": "korea.kr",
-        "title": "추석 장바구니 부담 던다…성수품 18만 3000톤 역대 최대 공급",
-        "url": "https://www.korea.kr/news/policyNewsView.do?newsId=148970987&call_from=naver_news",
-        "source_query": "사과 출하",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "apple_non_edible_context",
-        "press": "세계비즈",
-        "domain": "segyebiz.com",
-        "title": "“추석 물가 잡는다”…정부, 성수품 18만톤 공급·최대 50% 할인",
-        "url": "http://www.segyebiz.com/newsView/20260901515242",
-        "source_query": "사과 출하",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "livestock_only_supply",
-        "press": "에너지경제신문",
-        "domain": "ekn.kr",
-        "title": "정부 ‘추석 물가안정대책’ 발표…공급량도 할인폭도 ‘역대 최대’",
-        "url": "https://www.ekn.kr/web/view.php?key=20260901021219016",
-        "source_query": "사과 출하",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "apple_non_edible_context",
-        "press": "미디어펜",
-        "domain": "mediapen.com",
-        "title": "추석물가 잡는다…정부, 성수품 16.3만 톤 풀고 590억 원 할인 지원",
-        "url": "https://www.mediapen.com/news/view/1120457",
-        "source_query": "사과 출하",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "apple_non_edible_context",
-        "press": "아이대구",
-        "domain": "idaegu.com",
-        "title": "추석 앞 대구 장바구니 물가 들썩…정부 성수품 공급 확대",
-        "url": "https://www.idaegu.com/news/articleView.html?idxno=665380",
-        "source_query": "사과 출하",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "apple_non_edible_context",
-        "press": "sisunnews",
-        "domain": "sisunnews.co.kr",
-        "title": "내년 예산 820조 사상 최대·지출 최대 증가… 162조 미래대응기금 신설...",
-        "url": "http://www.sisunnews.co.kr/news/articleView.html?idxno=245262",
-        "source_query": "사과 출하",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "apple_non_edible_context",
-        "press": "대전일보",
-        "domain": "daejonilbo.com",
-        "title": "추석 성수품 공급 1.6배 확대…농축산물 최대 40% 할인",
-        "url": "https://www.daejonilbo.com/news/articleView.html?idxno=2298093",
-        "source_query": "사과 출하",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "apple_non_edible_context",
-        "press": "WOWTV",
-        "domain": "wowtv.co.kr",
-        "title": "추석 성수품 16.3만 톤 공급…590억 원 투입 농축산물 최대 40% 할인",
-        "url": "http://www.wowtv.co.kr/NewsCenter/News/Read?articleId=A202609010561&t=NN",
-        "source_query": "사과 출하",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "apple_non_edible_context",
-        "press": "뉴스워커",
-        "domain": "newsworker.co.kr",
-        "title": "충남 서산시, '안전 먹거리 구축'... GAP 경진대회 장관상 쾌거",
-        "url": "https://www.newsworker.co.kr/news/articleView.html?idxno=501926",
-        "source_query": "사과 출하",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "apple_non_edible_context",
-        "press": "SBS",
-        "domain": "news.sbs.co.kr",
-        "title": "13대 추석 성수품 공급 평시 1.6배 확대…농축산물 최대 40% 할인",
-        "url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008732120&plink=ORI&cooper=NAVER",
-        "source_query": "사과 출하",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "livestock_only_supply",
-        "press": "IMINJU",
-        "domain": "iminju.net",
-        "title": "추석 물가 잡기에 '역대 최대' 지원…성수품 16만 톤 공급",
-        "url": "http://www.iminju.net/news/articleView.html?idxno=168873",
-        "source_query": "사과 출하",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "apple_non_edible_context",
-        "press": "헤럴드경제",
-        "domain": "biz.heraldcorp.com",
-        "title": "추석 성수품 18만톤 풀고 최대 50% 할인",
-        "url": "https://biz.heraldcorp.com/article/10858659",
-        "source_query": "사과 출하",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "apple_non_edible_context",
-        "press": "스트레이트뉴스",
-        "domain": "straightnews.co.kr",
-        "title": "[추석 민생대책] 농축수산물 최대 50% 할인...성수품 18만3000t 푼다",
-        "url": "https://www.straightnews.co.kr/news/articleView.html?idxno=310168",
-        "source_query": "사과 출하",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "local_political_campaign_noise",
-        "press": "한국일보",
-        "domain": "hankookilbo.com",
-        "title": "李 \"추석 물가 못 잡으면 지명 취소\"…이형일 부총리 후보 \"꼭 잡겠다\"",
-        "url": "https://www.hankookilbo.com/news/article/A2026083114210001547?did=NA",
-        "source_query": "사과 출하",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "livestock_only_supply",
-        "press": "직썰",
-        "domain": "ziksir.com",
-        "title": "정부, 추석 물가 잡기 총력…성수품 18만3000t 공급·할인 1030억",
-        "url": "https://www.ziksir.com/news/articleView.html?idxno=144956",
-        "source_query": "사과 출하",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "livestock_only_supply",
-        "press": "더파워뉴스",
-        "domain": "thepowernews.co.kr",
-        "title": "추석 성수품 18.3만톤 공급…명절자금 43.4조·고속도로 통행료 면제",
-        "url": "https://www.thepowernews.co.kr/view.php?ud=202609011320102741de3f0aa1be_7",
-        "source_query": "사과 출하",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "apple_non_edible_context",
-        "press": "경기일보",
-        "domain": "kyeonggi.com",
-        "title": "정부, 추석 성수품 16만3천t 공급…농축산물 최대 40% 할인",
-        "url": "https://www.kyeonggi.com/article/20260901580093",
-        "source_query": "사과 출하",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "apple_non_edible_context",
-        "press": "에스리스트",
-        "domain": "slist.kr",
-        "title": "정부, 추석 장바구니 부담 낮춘다…성수품 1.6배 공급·최대 40% 할인",
-        "url": "https://www.slist.kr/news/articleView.html?idxno=762842",
-        "source_query": "사과 출하",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "apple_non_edible_context",
-        "press": "데일리안",
-        "domain": "dailian.co.kr",
-        "title": "추석 성수품 ‘역대 최대’ 18.3t 푼다…농축수산물 최대 50% 할인",
-        "url": "https://www.dailian.co.kr/news/view/1684981/?sc=Naver",
-        "source_query": "사과 출하",
         "source_channel": "naver_api"
       },
       {
@@ -22434,12 +22049,362 @@
       },
       {
         "section": "supply",
+        "reason": "supply_policy_market_brief",
+        "press": "skbroadband",
+        "domain": "news.skbroadband.com",
+        "title": "[주간알뜰장보기] '열무· 배 ' 이번 주 구매 타이밍!",
+        "url": "https://news.skbroadband.com/news/articleView.html?idxno=236545",
+        "source_query": "배 과일 가격",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "apple_non_edible_context",
+        "press": "thetracker",
+        "domain": "thetracker.co.kr",
+        "title": "이마트, ‘고래잇 페스타’ 개최…제철 먹거리부터 추석 상품까지 최대...",
+        "url": "https://thetracker.co.kr/View.aspx?No=4208213",
+        "source_query": "사과 출하",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "apple_non_edible_context",
+        "press": "yeongnam",
+        "domain": "yeongnam.com",
+        "title": "[산소카페 청송의 맛⑪] 청송 자두와 복숭아",
+        "url": "https://www.yeongnam.com/web/view.php?key=20260901025525730",
+        "source_query": "사과 출하",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
         "reason": "livestock_only_supply",
+        "press": "중앙일보",
+        "domain": "joongang.co.kr",
+        "title": "추석 농수산물 최대 50% 할인…정부, 역대 최대 1030억 투입",
+        "url": "https://www.joongang.co.kr/article/25458241",
+        "source_query": "사과 출하",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "apple_non_edible_context",
+        "press": "강원일보",
+        "domain": "kwnews.co.kr",
+        "title": "추석 앞두고 강원 전통시장 경기 전망 증가, 명절효과 기대감↑",
+        "url": "https://www.kwnews.co.kr/article/20260901501463",
+        "source_query": "사과 출하",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "livestock_only_supply",
+        "press": "ulsanpress",
+        "domain": "ulsanpress.net",
+        "title": "추석 성수품 대량 공급…농축산물 최대 40% 할인",
+        "url": "https://www.ulsanpress.net/news/articleView.html?idxno=582112",
+        "source_query": "사과 출하",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "apple_non_edible_context",
+        "press": "안동MBC",
+        "domain": "andongmbc.co.kr",
+        "title": "[R]추석 앞둔 사과 '우두두'..우박에 사과 밭 초토화",
+        "url": "http://andongmbc.co.kr/adboard/NewsView84531",
+        "source_query": "사과 출하",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "livestock_only_supply",
+        "press": "KTV",
+        "domain": "ktv.go.kr",
+        "title": "추석 성수품 '역대 최대' 18만3천 톤···최대 50% 할인",
+        "url": "https://www.ktv.go.kr/content/view?content_id=760299",
+        "source_query": "사과 출하",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "apple_non_edible_context",
+        "press": "경북일보",
+        "domain": "kyongbuk.co.kr",
+        "title": "정부, 추석 물가대책 가동…성수품 공급·할인 대폭 확대",
+        "url": "https://www.kyongbuk.co.kr/news/articleView.html?idxno=4082855",
+        "source_query": "사과 출하",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "fishery_title_only",
+        "press": "한국농업신문",
+        "domain": "newsfarm.co.kr",
+        "title": "aT 농수산물 온라인도매시장, 우수 중소 판매자와 구매자 잇는다",
+        "url": "http://www.newsfarm.co.kr/news/articleView.html?idxno=102180",
+        "source_query": "사과 출하",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "apple_non_edible_context",
+        "press": "대경일보",
+        "domain": "dkilbo.com",
+        "title": "추석 장바구니 부담 덜까…성수품 16만3000t 푼다",
+        "url": "https://www.dkilbo.com/news/articleView.html?idxno=552988",
+        "source_query": "사과 출하",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "apple_non_edible_context",
+        "press": "식품안전뉴스",
+        "domain": "fsnews.co.kr",
+        "title": "추석 성수품 1.6배 푼다",
+        "url": "http://www.fsnews.co.kr/news/articleView.html?idxno=62043",
+        "source_query": "사과 출하",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "apple_non_edible_context",
+        "press": "남도일보",
+        "domain": "namdonews.com",
+        "title": "추석 장바구니 부담 낮춘다…성수품 16만3천t 공급",
+        "url": "https://www.namdonews.com/news/articleView.html?idxno=921928",
+        "source_query": "사과 출하",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "supply_social_policy_noise",
+        "press": "경기일보",
+        "domain": "kyeonggi.com",
+        "title": "내년 농식품부 예산 22.2조…농어촌 기본소득 대상지 두 배 확대",
+        "url": "https://www.kyeonggi.com/article/20260901580396",
+        "source_query": "사과 출하",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "supply_social_policy_noise",
+        "press": "정책브리핑",
+        "domain": "korea.kr",
+        "title": "기본소득 확대로 농가 경영 안정화…K-푸드 글로벌화로 성장동력 ↑",
+        "url": "https://www.korea.kr/news/policyNewsView.do?newsId=148970966&call_from=naver_news",
+        "source_query": "사과 출하",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "fishery_title_only",
+        "press": "중앙일보",
+        "domain": "joongang.co.kr",
+        "title": "추석 농수산물 최대 50% 할인…자금난 소상공인에 43.4조 명절자금 푼다",
+        "url": "https://www.joongang.co.kr/article/25458144",
+        "source_query": "사과 출하",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "apple_non_edible_context",
+        "press": "충남일보",
+        "domain": "chungnamilbo.co.kr",
+        "title": "'추석 장바구니 부담 낮춘다'... 정부, '성수품 공급 확대·농축산물 할...",
+        "url": "http://www.chungnamilbo.co.kr/news/articleView.html?idxno=907102",
+        "source_query": "사과 출하",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "livestock_only_supply",
+        "press": "정책브리핑",
+        "domain": "korea.kr",
+        "title": "추석 장바구니 부담 던다…성수품 18만 3000톤 역대 최대 공급",
+        "url": "https://www.korea.kr/news/policyNewsView.do?newsId=148970987&call_from=naver_news",
+        "source_query": "사과 출하",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "apple_non_edible_context",
+        "press": "세계비즈",
+        "domain": "segyebiz.com",
+        "title": "“추석 물가 잡는다”…정부, 성수품 18만톤 공급·최대 50% 할인",
+        "url": "http://www.segyebiz.com/newsView/20260901515242",
+        "source_query": "사과 출하",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "livestock_only_supply",
+        "press": "에너지경제신문",
+        "domain": "ekn.kr",
+        "title": "정부 ‘추석 물가안정대책’ 발표…공급량도 할인폭도 ‘역대 최대’",
+        "url": "https://www.ekn.kr/web/view.php?key=20260901021219016",
+        "source_query": "사과 출하",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "apple_non_edible_context",
+        "press": "미디어펜",
+        "domain": "mediapen.com",
+        "title": "추석물가 잡는다…정부, 성수품 16.3만 톤 풀고 590억 원 할인 지원",
+        "url": "https://www.mediapen.com/news/view/1120457",
+        "source_query": "사과 출하",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "apple_non_edible_context",
+        "press": "아이대구",
+        "domain": "idaegu.com",
+        "title": "추석 앞 대구 장바구니 물가 들썩…정부 성수품 공급 확대",
+        "url": "https://www.idaegu.com/news/articleView.html?idxno=665380",
+        "source_query": "사과 출하",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "apple_non_edible_context",
+        "press": "sisunnews",
+        "domain": "sisunnews.co.kr",
+        "title": "내년 예산 820조 사상 최대·지출 최대 증가… 162조 미래대응기금 신설...",
+        "url": "http://www.sisunnews.co.kr/news/articleView.html?idxno=245262",
+        "source_query": "사과 출하",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "apple_non_edible_context",
+        "press": "대전일보",
+        "domain": "daejonilbo.com",
+        "title": "추석 성수품 공급 1.6배 확대…농축산물 최대 40% 할인",
+        "url": "https://www.daejonilbo.com/news/articleView.html?idxno=2298093",
+        "source_query": "사과 출하",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "apple_non_edible_context",
+        "press": "WOWTV",
+        "domain": "wowtv.co.kr",
+        "title": "추석 성수품 16.3만 톤 공급…590억 원 투입 농축산물 최대 40% 할인",
+        "url": "http://www.wowtv.co.kr/NewsCenter/News/Read?articleId=A202609010561&t=NN",
+        "source_query": "사과 출하",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "apple_non_edible_context",
+        "press": "뉴스워커",
+        "domain": "newsworker.co.kr",
+        "title": "충남 서산시, '안전 먹거리 구축'... GAP 경진대회 장관상 쾌거",
+        "url": "https://www.newsworker.co.kr/news/articleView.html?idxno=501926",
+        "source_query": "사과 출하",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "apple_non_edible_context",
+        "press": "SBS",
+        "domain": "news.sbs.co.kr",
+        "title": "13대 추석 성수품 공급 평시 1.6배 확대…농축산물 최대 40% 할인",
+        "url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008732120&plink=ORI&cooper=NAVER",
+        "source_query": "사과 출하",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "livestock_only_supply",
+        "press": "IMINJU",
+        "domain": "iminju.net",
+        "title": "추석 물가 잡기에 '역대 최대' 지원…성수품 16만 톤 공급",
+        "url": "http://www.iminju.net/news/articleView.html?idxno=168873",
+        "source_query": "사과 출하",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "apple_non_edible_context",
+        "press": "헤럴드경제",
+        "domain": "biz.heraldcorp.com",
+        "title": "추석 성수품 18만톤 풀고 최대 50% 할인",
+        "url": "https://biz.heraldcorp.com/article/10858659",
+        "source_query": "사과 출하",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "apple_non_edible_context",
+        "press": "스트레이트뉴스",
+        "domain": "straightnews.co.kr",
+        "title": "[추석 민생대책] 농축수산물 최대 50% 할인...성수품 18만3000t 푼다",
+        "url": "https://www.straightnews.co.kr/news/articleView.html?idxno=310168",
+        "source_query": "사과 출하",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "local_political_campaign_noise",
+        "press": "한국일보",
+        "domain": "hankookilbo.com",
+        "title": "李 \"추석 물가 못 잡으면 지명 취소\"…이형일 부총리 후보 \"꼭 잡겠다\"",
+        "url": "https://www.hankookilbo.com/news/article/A2026083114210001547?did=NA",
+        "source_query": "사과 출하",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "livestock_only_supply",
+        "press": "직썰",
+        "domain": "ziksir.com",
+        "title": "정부, 추석 물가 잡기 총력…성수품 18만3000t 공급·할인 1030억",
+        "url": "https://www.ziksir.com/news/articleView.html?idxno=144956",
+        "source_query": "사과 출하",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "livestock_only_supply",
+        "press": "더파워뉴스",
+        "domain": "thepowernews.co.kr",
+        "title": "추석 성수품 18.3만톤 공급…명절자금 43.4조·고속도로 통행료 면제",
+        "url": "https://www.thepowernews.co.kr/view.php?ud=202609011320102741de3f0aa1be_7",
+        "source_query": "사과 출하",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "apple_non_edible_context",
+        "press": "경기일보",
+        "domain": "kyeonggi.com",
+        "title": "정부, 추석 성수품 16만3천t 공급…농축산물 최대 40% 할인",
+        "url": "https://www.kyeonggi.com/article/20260901580093",
+        "source_query": "사과 출하",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "apple_non_edible_context",
+        "press": "에스리스트",
+        "domain": "slist.kr",
+        "title": "정부, 추석 장바구니 부담 낮춘다…성수품 1.6배 공급·최대 40% 할인",
+        "url": "https://www.slist.kr/news/articleView.html?idxno=762842",
+        "source_query": "사과 출하",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "apple_non_edible_context",
         "press": "데일리안",
         "domain": "dailian.co.kr",
         "title": "추석 성수품 ‘역대 최대’ 18.3t 푼다…농축수산물 최대 50% 할인",
         "url": "https://www.dailian.co.kr/news/view/1684981/?sc=Naver",
-        "source_query": "배 과일 가격",
+        "source_query": "사과 출하",
         "source_channel": "naver_api"
       },
       {
@@ -22624,21 +22589,21 @@
       },
       {
         "section": "supply",
-        "reason": "ban_keywords",
-        "press": "이투데이",
-        "domain": "etoday.co.kr",
-        "title": "성수품 '역대 최대' 18.3만t 공급…대출·보증 43.4조원 푼다",
-        "url": "https://www.etoday.co.kr/news/view/2620445",
-        "source_query": "배 과일 수급",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
         "reason": "supply_macro_price_watch",
         "press": "연합인포맥스",
         "domain": "news.einfomax.co.kr",
         "title": "추석 성수품 18만t·명절자금 43조 '역대 최대' 공급",
         "url": "https://news.einfomax.co.kr/news/articleView.html?idxno=4432825",
+        "source_query": "배 과일 수급",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "ban_keywords",
+        "press": "이투데이",
+        "domain": "etoday.co.kr",
+        "title": "성수품 '역대 최대' 18.3만t 공급…대출·보증 43.4조원 푼다",
+        "url": "https://www.etoday.co.kr/news/view/2620445",
         "source_query": "배 과일 수급",
         "source_channel": "naver_api"
       },
@@ -22864,21 +22829,21 @@
       },
       {
         "section": "supply",
-        "reason": "livestock_only_supply",
-        "press": "데일리안",
-        "domain": "dailian.co.kr",
-        "title": "추석 성수품 ‘역대 최대’ 18.3t 푼다…농축수산물 최대 50% 할인",
-        "url": "https://www.dailian.co.kr/news/view/1684981/?sc=Naver",
-        "source_query": "배 과일 출하",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
         "reason": "supply_policy_market_brief",
         "press": "skbroadband",
         "domain": "news.skbroadband.com",
         "title": "[주간알뜰장보기] '열무· 배 ' 이번 주 구매 타이밍!",
         "url": "https://news.skbroadband.com/news/articleView.html?idxno=236545",
+        "source_query": "배 과일 출하",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "livestock_only_supply",
+        "press": "데일리안",
+        "domain": "dailian.co.kr",
+        "title": "추석 성수품 ‘역대 최대’ 18.3t 푼다…농축수산물 최대 50% 할인",
+        "url": "https://www.dailian.co.kr/news/view/1684981/?sc=Naver",
         "source_query": "배 과일 출하",
         "source_channel": "naver_api"
       },
@@ -24274,21 +24239,21 @@
       },
       {
         "section": "supply",
-        "reason": "supply_macro_price_watch",
-        "press": "헤럴드경제",
-        "domain": "biz.heraldcorp.com",
-        "title": "추석 성수품 18.3만톤 역대 최대 공급…명절자금 43.4조 푼다[추석민생...",
-        "url": "https://biz.heraldcorp.com/article/10858477",
-        "source_query": "호박 가격",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
         "reason": "apple_non_edible_context",
         "press": "머니투데이",
         "domain": "mt.co.kr",
         "title": "추석 13대 성수품 16만3000 푼다…농축산물 최대 40% 할인",
         "url": "https://www.mt.co.kr/economy/2026/09/01/2026090109182523245",
+        "source_query": "호박 가격",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "supply_macro_price_watch",
+        "press": "헤럴드경제",
+        "domain": "biz.heraldcorp.com",
+        "title": "추석 성수품 18.3만톤 역대 최대 공급…명절자금 43.4조 푼다[추석민생...",
+        "url": "https://biz.heraldcorp.com/article/10858477",
         "source_query": "호박 가격",
         "source_channel": "naver_api"
       },
@@ -25584,21 +25549,21 @@
       },
       {
         "section": "supply",
-        "reason": "ban_keywords",
-        "press": "이투데이",
-        "domain": "etoday.co.kr",
-        "title": "성수품 '역대 최대' 18.3만t 공급…대출·보증 43.4조원 푼다",
-        "url": "https://www.etoday.co.kr/news/view/2620445",
-        "source_query": "무 수급",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
         "reason": "supply_macro_price_watch",
         "press": "연합인포맥스",
         "domain": "news.einfomax.co.kr",
         "title": "추석 성수품 18만t·명절자금 43조 '역대 최대' 공급",
         "url": "https://news.einfomax.co.kr/news/articleView.html?idxno=4432825",
+        "source_query": "무 수급",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "ban_keywords",
+        "press": "이투데이",
+        "domain": "etoday.co.kr",
+        "title": "성수품 '역대 최대' 18.3만t 공급…대출·보증 43.4조원 푼다",
+        "url": "https://www.etoday.co.kr/news/view/2620445",
         "source_query": "무 수급",
         "source_channel": "naver_api"
       },
@@ -26354,21 +26319,21 @@
       },
       {
         "section": "supply",
-        "reason": "fishery_title_only",
-        "press": "KBS",
-        "domain": "news.kbs.co.kr",
-        "title": "‘추석 맞이’ 농축수산물 최대 50% 할인…성수품 1.6배 확대 공급",
-        "url": "https://news.kbs.co.kr/news/pc/view/view.do?ncd=8651334",
-        "source_query": "무 출하",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
         "reason": "livestock_only_supply",
         "press": "뉴스핌",
         "domain": "newspim.com",
         "title": "추석 민생에 1030억 할인 지원…소상공인 43조 자금 공급",
         "url": "https://www.newspim.com/news/view/20260901000280",
+        "source_query": "무 출하",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "fishery_title_only",
+        "press": "KBS",
+        "domain": "news.kbs.co.kr",
+        "title": "‘추석 맞이’ 농축수산물 최대 50% 할인…성수품 1.6배 확대 공급",
+        "url": "https://news.kbs.co.kr/news/pc/view/view.do?ncd=8651334",
         "source_query": "무 출하",
         "source_channel": "naver_api"
       },
@@ -27657,8 +27622,8 @@
         "reason": "ban_keywords",
         "press": "뉴스핌",
         "domain": "newspim.com",
-        "title": "조방형 청주 강내농협 조합장, 농협중앙회 '공적상' 수상",
-        "url": "https://www.newspim.com/news/view/20260901000464",
+        "title": "추석 민생에 1030억 할인 지원…소상공인 43조 자금 공급",
+        "url": "https://www.newspim.com/news/view/20260901000280",
         "source_query": "배추 농가",
         "source_channel": "naver_api"
       },
@@ -27667,8 +27632,8 @@
         "reason": "ban_keywords",
         "press": "뉴스핌",
         "domain": "newspim.com",
-        "title": "추석 민생에 1030억 할인 지원…소상공인 43조 자금 공급",
-        "url": "https://www.newspim.com/news/view/20260901000280",
+        "title": "조방형 청주 강내농협 조합장, 농협중앙회 '공적상' 수상",
+        "url": "https://www.newspim.com/news/view/20260901000464",
         "source_query": "배추 농가",
         "source_channel": "naver_api"
       },
@@ -27944,21 +27909,21 @@
       },
       {
         "section": "supply",
-        "reason": "apple_non_edible_context",
-        "press": "강원일보",
-        "domain": "kwnews.co.kr",
-        "title": "추석 앞두고 강원 전통시장 경기 전망 증가, 명절효과 기대감↑",
-        "url": "https://www.kwnews.co.kr/article/20260901501463",
-        "source_query": "배추 출하",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
         "reason": "livestock_only_supply",
         "press": "중앙일보",
         "domain": "joongang.co.kr",
         "title": "추석 농수산물 최대 50% 할인…정부, 역대 최대 1030억 투입",
         "url": "https://www.joongang.co.kr/article/25458241",
+        "source_query": "배추 출하",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "apple_non_edible_context",
+        "press": "강원일보",
+        "domain": "kwnews.co.kr",
+        "title": "추석 앞두고 강원 전통시장 경기 전망 증가, 명절효과 기대감↑",
+        "url": "https://www.kwnews.co.kr/article/20260901501463",
         "source_query": "배추 출하",
         "source_channel": "naver_api"
       },
@@ -28514,21 +28479,21 @@
       },
       {
         "section": "supply",
-        "reason": "finance_strict_no_agri_context",
-        "press": "한국농식품유통신문",
-        "domain": "kfenews.co.kr",
-        "title": "풀무원 뮤지엄 김치 간, 어린이와 ' 김치 유산' 잇는다",
-        "url": "https://www.kfenews.co.kr/news/articleView.html?idxno=663593",
-        "source_query": "김치업계",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
         "reason": "must_terms_fail",
         "press": "데일리팝",
         "domain": "dailypop.kr",
         "title": "유통·가전 업계 , 가을 이사·혼수·추석 대목에 '총력전'…온·오프라인...",
         "url": "http://www.dailypop.kr/news/articleView.html?idxno=102113",
+        "source_query": "김치업계",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "finance_strict_no_agri_context",
+        "press": "한국농식품유통신문",
+        "domain": "kfenews.co.kr",
+        "title": "풀무원 뮤지엄 김치 간, 어린이와 ' 김치 유산' 잇는다",
+        "url": "https://www.kfenews.co.kr/news/articleView.html?idxno=663593",
         "source_query": "김치업계",
         "source_channel": "naver_api"
       },
@@ -28604,21 +28569,21 @@
       },
       {
         "section": "supply",
-        "reason": "apple_non_edible_context",
-        "press": "뉴스핌",
-        "domain": "newspim.com",
-        "title": "추석 농축산물 최대 40% 할인…성수품 16만톤 푼다",
-        "url": "https://www.newspim.com/news/view/20260831001080",
-        "source_query": "김치업계",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
         "reason": "must_terms_fail",
         "press": "에스리스트",
         "domain": "slist.kr",
         "title": "[식음료] 아웃백 '치즈 온' 가을 신메뉴 6종 출시 外",
         "url": "https://www.slist.kr/news/articleView.html?idxno=762782",
+        "source_query": "김치업계",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "apple_non_edible_context",
+        "press": "뉴스핌",
+        "domain": "newspim.com",
+        "title": "추석 농축산물 최대 40% 할인…성수품 16만톤 푼다",
+        "url": "https://www.newspim.com/news/view/20260831001080",
         "source_query": "김치업계",
         "source_channel": "naver_api"
       },
@@ -29104,11 +29069,11 @@
       },
       {
         "section": "supply",
-        "reason": "apple_non_edible_context",
-        "press": "BBS불교방송",
-        "domain": "news.bbsi.co.kr",
-        "title": "\"추석 장바구니 부담 확 줄인다\"…성수품 역대 최대 공급·할인 지원",
-        "url": "https://news.bbsi.co.kr/news/articleView.html?idxno=4103892",
+        "reason": "fishery_title_only",
+        "press": "부산일보",
+        "domain": "busan.com",
+        "title": "정부, 추석 성수품 18.3만톤 공급..농축수산물 할인지원 1030억 투입",
+        "url": "https://www.busan.com/view/busan/view.php?code=2026090111011111956",
         "source_query": "배추 소비 대책",
         "source_channel": "naver_api"
       },
@@ -29484,21 +29449,21 @@
       },
       {
         "section": "supply",
-        "reason": "ban_keywords",
-        "press": "이투데이",
-        "domain": "etoday.co.kr",
-        "title": "성수품 '역대 최대' 18.3만t 공급…대출·보증 43.4조원 푼다",
-        "url": "https://www.etoday.co.kr/news/view/2620445",
-        "source_query": "배추 수급 안정",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
         "reason": "livestock_only_supply",
         "press": "조선일보",
         "domain": "biz.chosun.com",
         "title": "추석 농축산물 최대 40%·수산물 최대 50% 할인",
         "url": "https://biz.chosun.com/policy/policy_sub/2026/09/01/X6YUV3GDKFEFNNH3RE4Z4IS4PU/",
+        "source_query": "배추 수급 안정",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "ban_keywords",
+        "press": "이투데이",
+        "domain": "etoday.co.kr",
+        "title": "성수품 '역대 최대' 18.3만t 공급…대출·보증 43.4조원 푼다",
+        "url": "https://www.etoday.co.kr/news/view/2620445",
         "source_query": "배추 수급 안정",
         "source_channel": "naver_api"
       },
@@ -32964,21 +32929,21 @@
       },
       {
         "section": "supply",
-        "reason": "apple_non_edible_context",
-        "press": "머니투데이",
-        "domain": "mt.co.kr",
-        "title": "추석 13대 성수품 16만3000 푼다…농축산물 최대 40% 할인",
-        "url": "https://www.mt.co.kr/economy/2026/09/01/2026090109182523245",
-        "source_query": "마늘 가격",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
         "reason": "supply_macro_price_watch",
         "press": "헤럴드경제",
         "domain": "biz.heraldcorp.com",
         "title": "추석 성수품 18.3만톤 역대 최대 공급…명절자금 43.4조 푼다[추석민생...",
         "url": "https://biz.heraldcorp.com/article/10858477",
+        "source_query": "마늘 가격",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "apple_non_edible_context",
+        "press": "머니투데이",
+        "domain": "mt.co.kr",
+        "title": "추석 13대 성수품 16만3000 푼다…농축산물 최대 40% 할인",
+        "url": "https://www.mt.co.kr/economy/2026/09/01/2026090109182523245",
         "source_query": "마늘 가격",
         "source_channel": "naver_api"
       },
@@ -34244,21 +34209,21 @@
       },
       {
         "section": "supply",
-        "reason": "apple_non_edible_context",
-        "press": "머니투데이",
-        "domain": "mt.co.kr",
-        "title": "추석 13대 성수품 16만3000 푼다…농축산물 최대 40% 할인",
-        "url": "https://www.mt.co.kr/economy/2026/09/01/2026090109182523245",
-        "source_query": "마늘 가격 안정",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
         "reason": "supply_macro_price_watch",
         "press": "헤럴드경제",
         "domain": "biz.heraldcorp.com",
         "title": "추석 성수품 18.3만톤 역대 최대 공급…명절자금 43.4조 푼다[추석민생...",
         "url": "https://biz.heraldcorp.com/article/10858477",
+        "source_query": "마늘 가격 안정",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "apple_non_edible_context",
+        "press": "머니투데이",
+        "domain": "mt.co.kr",
+        "title": "추석 13대 성수품 16만3000 푼다…농축산물 최대 40% 할인",
+        "url": "https://www.mt.co.kr/economy/2026/09/01/2026090109182523245",
         "source_query": "마늘 가격 안정",
         "source_channel": "naver_api"
       },
@@ -34935,20 +34900,20 @@
       {
         "section": "supply",
         "reason": "supply_context_gate",
-        "press": "한국영농신문",
-        "domain": "youngnong.co.kr",
-        "title": "동원F&B, 추석 선물세트 110종 선봬…'단백질·저당·저나트륨' 건강 트...",
-        "url": "http://www.youngnong.co.kr/news/articleView.html?idxno=62013",
+        "press": "메트로신문",
+        "domain": "metroseoul.co.kr",
+        "title": "'아침 식사부터 지역 상생까지'…버거 업계의 닮은꼴 레이스",
+        "url": "http://www.metroseoul.co.kr/article/20260901500466",
         "source_query": "고추 가격",
         "source_channel": "naver_api"
       },
       {
         "section": "supply",
         "reason": "supply_context_gate",
-        "press": "메트로신문",
-        "domain": "metroseoul.co.kr",
-        "title": "'아침 식사부터 지역 상생까지'…버거 업계의 닮은꼴 레이스",
-        "url": "http://www.metroseoul.co.kr/article/20260901500466",
+        "press": "한국영농신문",
+        "domain": "youngnong.co.kr",
+        "title": "동원F&B, 추석 선물세트 110종 선봬…'단백질·저당·저나트륨' 건강 트...",
+        "url": "http://www.youngnong.co.kr/news/articleView.html?idxno=62013",
         "source_query": "고추 가격",
         "source_channel": "naver_api"
       },
@@ -36461,10 +36426,20 @@
         "url": "https://www.ohmynews.com/NWS_Web/View/at_pg.aspx?CNTN_CD=A0003263431&CMPT_CD=P0010",
         "source_query": "애호박 가격 안정",
         "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "supply_macro_price_watch",
+        "press": "헤럴드경제",
+        "domain": "biz.heraldcorp.com",
+        "title": "추석 성수품 18.3만톤 역대 최대 공급…명절자금 43.4조 푼다[추석민생...",
+        "url": "https://biz.heraldcorp.com/article/10858477",
+        "source_query": "애호박 가격 안정",
+        "source_channel": "naver_api"
       }
     ],
     "runtime": {
-      "started_at_kst": "2026-09-02T06:09:52+09:00",
+      "started_at_kst": "2026-09-02T06:24:29+09:00",
       "local_dry_run": false,
       "placement_only": false
     },
