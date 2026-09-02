@@ -1,7 +1,1026 @@
 {
   "version": 1,
-  "updated_at": "2026-09-02T06:33:30.160997+09:00",
+  "updated_at": "2026-09-03T06:21:30.251916+09:00",
   "items": [
+    {
+      "id": "e2ed95794aac",
+      "date": "2026-09-03",
+      "section": "policy",
+      "section_title": "정책 및 주요 이슈",
+      "rank": 5,
+      "title": "정부 \"물가 압력 최소화\"…추석 민생 안정대책 신속 추진",
+      "press": "정책브리핑",
+      "summary": "정부가 추석 농축수산물 가격 부담을 낮추기 위한 민생 안정대책을 신속히 추진한다. 역대 최대인 1030억원을 투입해 성수품을 최대 40% 할인하고 전 부처가 과제 이행에 나선다.",
+      "url": "https://www.korea.kr/news/policyNewsView.do?newsId=148971079&call_from=naver_news",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#sec-policy",
+      "score": 27.01,
+      "press_tier": 4,
+      "topics": []
+    },
+    {
+      "id": "a632a888473f",
+      "date": "2026-09-03",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 3,
+      "title": "\"돈 된다\" 너도나도 심더니…'귀족 과일' 샤인머스캣의 추락 [박상경의...",
+      "press": "한국경제",
+      "summary": "샤인머스캣 소매가격이 3년 만에 41% 하락하고 포도 출하 비중은 48%에 육박했다. 8월 출하량은 8.0% 늘 전망이며, 2㎏ 소매가는 1만6000원대·도매가는 1만2000원 선으로 낮아졌다.",
+      "url": "https://n.news.naver.com/mnews/article/015/0005327937?sid=101",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#sec-supply",
+      "score": 57.99,
+      "press_tier": 3,
+      "topics": [
+        "포도"
+      ]
+    },
+    {
+      "id": "447eefc588b5",
+      "date": "2026-09-03",
+      "section": "policy",
+      "section_title": "정책 및 주요 이슈",
+      "rank": 2,
+      "title": "배추 26%·사과 22% ↑…추석 물가 초비상",
+      "press": "헤럴드경제",
+      "summary": "",
+      "url": "https://biz.heraldcorp.com/article/10860136",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#commodity-napa_cabbage",
+      "score": 55.99,
+      "press_tier": 3,
+      "topics": [
+        "배추"
+      ]
+    },
+    {
+      "id": "0ab2b0ff9dd0",
+      "date": "2026-09-03",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 2,
+      "title": "샤인머스캣…“조기출하 줄여 제 값 받을 수 있게 품질관리 강화”",
+      "press": "국민일보",
+      "summary": "경북 샤인머스캣 산지에서 조기 출하를 줄이고 품질관리를 강화해 가격과 소비자 신뢰를 회복하기로 했다. 경북도는 2일 김천·영천·상주·경산 농가와 APC, 농협 등 관계기관 대책회의를 열었다.",
+      "url": "https://n.news.naver.com/mnews/article/005/0001870415?sid=102",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#sec-dist",
+      "score": 54.96,
+      "press_tier": 3,
+      "topics": [
+        "포도"
+      ]
+    },
+    {
+      "id": "b72f01e07e2b",
+      "date": "2026-09-03",
+      "section": "policy",
+      "section_title": "정책 및 주요 이슈",
+      "rank": 4,
+      "title": "배추 26%·사과 22% ‘껑충’…추석 앞두고 식탁 물가 초비상",
+      "press": "헤럴드경제",
+      "summary": "",
+      "url": "https://biz.heraldcorp.com/article/10859894",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#commodity-napa_cabbage",
+      "score": 54.87,
+      "press_tier": 3,
+      "topics": [
+        "배추"
+      ]
+    },
+    {
+      "id": "9e8132ca6937",
+      "date": "2026-09-03",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 5,
+      "title": "횡성 둔내농협, 토마토 값 하락에 판로 넓히고 생산비 부담 덜고",
+      "press": "농민신문",
+      "summary": "",
+      "url": "https://www.nongmin.com/article/20260902500282",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#commodity-tomato",
+      "score": 52.31,
+      "press_tier": 3,
+      "topics": []
+    },
+    {
+      "id": "839257767f54",
+      "date": "2026-09-03",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 4,
+      "title": "경북도, 추석 샤인머스캣 제 값 받기 위해 총력",
+      "press": "파이낸셜뉴스",
+      "summary": "경북 샤인머스캣 4개 주산지가 추석 출하 집중을 완화하고 제값을 받기 위한 공동 대응에 나섰다. 경북도는 2일 김천·영천·상주·경산의 행정·농가·APC·농협 관계자와 출하 대책을 논의했다.",
+      "url": "https://n.news.naver.com/mnews/article/014/0005569727?sid=102",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#sec-dist",
+      "score": 52.07,
+      "press_tier": 3,
+      "topics": [
+        "포도"
+      ]
+    },
+    {
+      "id": "e467060d8dcd",
+      "date": "2026-09-03",
+      "section": "policy",
+      "section_title": "정책 및 주요 이슈",
+      "rank": 1,
+      "title": "' 가격 상승' 쌀은 할인지원 지속…'하락' 배추·토마토는 출하조절",
+      "press": "아시아경제",
+      "summary": "",
+      "url": "https://view.asiae.co.kr/article/2026090209174008698",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#commodity-napa_cabbage",
+      "score": 49.64,
+      "press_tier": 3,
+      "topics": [
+        "배추",
+        "토마토"
+      ]
+    },
+    {
+      "id": "4cea5ca1cf73",
+      "date": "2026-09-03",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 1,
+      "title": "샤인머스캣 가격 3년 새 반토막…추석 출하 몰려 추가 하락할 듯 [프라...",
+      "press": "한국경제",
+      "summary": "샤인머스캣 가격이 3년 사이 절반 수준으로 떨어진 가운데 추석 출하 집중으로 추가 하락이 우려된다. 이른 명절을 앞두고 출하 물량이 한꺼번에 몰릴 가능성이 가격 약세 요인으로 지목됐다.",
+      "url": "https://n.news.naver.com/mnews/article/015/0005327976?sid=101",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#sec-supply",
+      "score": 47.2,
+      "press_tier": 3,
+      "topics": [
+        "포도"
+      ]
+    },
+    {
+      "id": "678ef1081733",
+      "date": "2026-09-03",
+      "section": "policy",
+      "section_title": "정책 및 주요 이슈",
+      "rank": 4,
+      "title": "소비자물가 3.7% 상승…전북, 8월 생활물가 부담 커져",
+      "press": "이투데이",
+      "summary": "전북지역 8월 소비자물가가 전년 동월보다 3.7% 오르고 신선채소 가격도 큰 폭으로 상승했다. 생활물가는 4.3%, 서비스는 4.4% 올랐으며 신선채소는 전월보다 12.2% 뛰었다.",
+      "url": "https://www.etoday.co.kr/news/view/2621240",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#sec-policy",
+      "score": 42.9,
+      "press_tier": 3,
+      "topics": []
+    },
+    {
+      "id": "ef8e1de9ebe0",
+      "date": "2026-09-03",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 12,
+      "title": "샤인머스캣 가격 3년간 45% 하락…추석 출하로 추가 폭락 우려",
+      "press": "연합뉴스",
+      "summary": "",
+      "url": "https://www.yna.co.kr/view/AKR20260902058100053?input=1195m",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#commodity-grape",
+      "score": 35.63,
+      "press_tier": 3,
+      "topics": [
+        "포도"
+      ]
+    },
+    {
+      "id": "c43d4e094478",
+      "date": "2026-09-03",
+      "section": "policy",
+      "section_title": "정책 및 주요 이슈",
+      "rank": 1,
+      "title": "정부, 올 추석 성수품 공급 1.6배 늘린다",
+      "press": "농민신문",
+      "summary": "정부가 추석을 맞아 사과·배·배추 등 13개 성수품 공급을 평시의 1.6배로 확대한다. 전체 공급량은 16만3000t이며, 농산물은 농협 계약재배 물량과 정부 비축물량을 활용한다.",
+      "url": "https://n.news.naver.com/mnews/article/662/0000103315?sid=100",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#sec-policy",
+      "score": 32.67,
+      "press_tier": 3,
+      "topics": [
+        "배",
+        "배추",
+        "사과"
+      ]
+    },
+    {
+      "id": "d001b2c7e2dd",
+      "date": "2026-09-03",
+      "section": "pest",
+      "section_title": "생육 리스크 및 방제",
+      "rank": 33,
+      "title": "'산둥날개매미충' 제주 확산…친환경 감귤 농가 위협",
+      "press": "MBN",
+      "summary": "",
+      "url": "http://www.mbn.co.kr/pages/news/newsView.php?news_seq_no=5216386",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#commodity-citrus",
+      "score": 32.4,
+      "press_tier": 3,
+      "topics": [
+        "감귤/만감"
+      ]
+    },
+    {
+      "id": "6603a3fe655b",
+      "date": "2026-09-03",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 4,
+      "title": "‘너무 일찍 따지 마세요’…경북도, 샤인머스캣 제값 받기 나섰다",
+      "press": "이데일리",
+      "summary": "경북 샤인머스캣 산지에서 이른 추석을 앞둔 미숙과 유통과 출하 쏠림 방지 대책이 추진된다. 경북도는 2일 김천·영천·상주·경산 농가와 APC, 농협 등과 출하 시기 분산을 논의했다.",
+      "url": "https://n.news.naver.com/mnews/article/018/0006362511?sid=100",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#sec-supply",
+      "score": 32.18,
+      "press_tier": 3,
+      "topics": [
+        "포도"
+      ]
+    },
+    {
+      "id": "411b708cd375",
+      "date": "2026-09-03",
+      "section": "pest",
+      "section_title": "생육 리스크 및 방제",
+      "rank": 4,
+      "title": "수발아· 병해충 뚫은 '시흥쌀'…올해 수확량 전년 대비 4% 증가",
+      "press": "머니투데이",
+      "summary": "경기 시흥지역 벼가 수발아와 병해충 피해를 줄이며 올해 평년 이상 작황과 수확량 증가가 전망된다. 시흥시는 790㏊ 재배지에 3차 항공방제와 관찰포 운영을 시행해 전년보다 4% 많은 생산량을 예상했다.",
+      "url": "https://n.news.naver.com/mnews/article/008/0005408414?sid=102",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#sec-pest",
+      "score": 23.81,
+      "press_tier": 3,
+      "topics": []
+    },
+    {
+      "id": "93a6bb73749e",
+      "date": "2026-09-03",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 5,
+      "title": "당도 17브릭스 제주산 샤인머스켓 이달 출하",
+      "press": "국민일보",
+      "summary": "제주산 샤인머스켓이 품질과 상품성을 앞세워 이달부터 소비자에게 출하된다. 제주도농업기술원은 가격 하락 등 어려운 시장 여건에 대응해 당도 17브릭스 이상 물량을 선보인다.",
+      "url": "https://n.news.naver.com/mnews/article/005/0001870463?sid=102",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#sec-supply",
+      "score": 20.1,
+      "press_tier": 3,
+      "topics": [
+        "포도"
+      ]
+    },
+    {
+      "id": "4a3c6f689c31",
+      "date": "2026-09-03",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 1,
+      "title": "[특별기획④-2026 K-원예 희망 보고서 : 위기를 넘어 희망을 짓다] '스마...",
+      "press": "원예산업신문",
+      "summary": "전국 산지의 스마트 APC가 수입 과일 확대에 대응하고 원예농산물 교섭력을 높일 핵심 시설로 부상했다. 정부는 절차 간소화와 AI 선별·로봇 자동화, 데이터 연계를 통해 2030년까지 300곳 확충을 추진한다.",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=65667",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#sec-dist",
+      "score": 89.25,
+      "press_tier": 2,
+      "topics": []
+    },
+    {
+      "id": "85b3181a6120",
+      "date": "2026-09-03",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 3,
+      "title": "농산물가격안정제 Q&A",
+      "press": "원예산업신문",
+      "summary": "농산물가격안정제가 수급조절 뒤에도 연평균 가격이 기준가격보다 낮은 품목의 농가 손실을 보전한다. 제도는 8월 27일 시행됐으며 지원액은 가격 차액과 지급비율, 생산량 등을 반영해 산정한다.",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=65679",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#sec-dist",
+      "score": 57.36,
+      "press_tier": 2,
+      "topics": []
+    },
+    {
+      "id": "3a5f3fb38e37",
+      "date": "2026-09-03",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 10,
+      "title": "샤인머스캣 가격 폭락…경북도 \"안정적 출하 행정력 집중\"",
+      "press": "뉴시스",
+      "summary": "",
+      "url": "https://www.newsis.com/view/NISX20260902_0003772432",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#commodity-grape",
+      "score": 57.35,
+      "press_tier": 2,
+      "topics": [
+        "포도"
+      ]
+    },
+    {
+      "id": "4de6e4f1bf3a",
+      "date": "2026-09-03",
+      "section": "policy",
+      "section_title": "정책 및 주요 이슈",
+      "rank": 3,
+      "title": "홍천군의회 “고랭지 채소 가격 폭락 정부 대책 시급”",
+      "press": "강원일보",
+      "summary": "강원 홍천 내면의 고랭지 채소 가격 폭락으로 산지 위기가 심화하자 군의회가 정부 대책을 촉구했다. 홍천군의회 의원 8명 전원은 2일 본회의장에서 신속한 지원을 요구하는 성명을 발표했다.",
+      "url": "https://n.news.naver.com/mnews/article/087/0001215329?sid=102",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#sec-policy",
+      "score": 53.18,
+      "press_tier": 2,
+      "topics": []
+    },
+    {
+      "id": "1d872ed1395e",
+      "date": "2026-09-03",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 18,
+      "title": "경북도, 추석 샤인머스캣 '제때·제대로' 출하 총력...시장 불안 차단",
+      "press": "BBS불교방송",
+      "summary": "",
+      "url": "https://news.bbsi.co.kr/news/articleView.html?idxno=4104286",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#commodity-grape",
+      "score": 40.42,
+      "press_tier": 2,
+      "topics": [
+        "포도"
+      ]
+    },
+    {
+      "id": "510f6de94cde",
+      "date": "2026-09-03",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 19,
+      "title": "경북도, 샤인머스캣 가격 하락 막는다…출하 분산·품질관리 강화",
+      "press": "신아일보",
+      "summary": "",
+      "url": "https://www.shinailbo.co.kr/news/articleView.html?idxno=5057725",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#commodity-grape",
+      "score": 38.74,
+      "press_tier": 2,
+      "topics": [
+        "포도"
+      ]
+    },
+    {
+      "id": "41d346cd173e",
+      "date": "2026-09-03",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 16,
+      "title": "\"가격 하락 막자\"…경북 샤인머스캣 '16브릭스 이상'만 출하",
+      "press": "뉴스1",
+      "summary": "",
+      "url": "https://www.news1.kr/local/daegu-gyeongbuk/6276975",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#commodity-grape",
+      "score": 35.07,
+      "press_tier": 2,
+      "topics": [
+        "포도"
+      ]
+    },
+    {
+      "id": "3e1379e6dd78",
+      "date": "2026-09-03",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 13,
+      "title": "경북도 샤인머스캣 가격 안정 위해 출하·유통 대책 마련",
+      "press": "경북매일",
+      "summary": "",
+      "url": "https://www.kbmaeil.com/article/20260902500425",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#commodity-grape",
+      "score": 34.68,
+      "press_tier": 2,
+      "topics": [
+        "포도"
+      ]
+    },
+    {
+      "id": "cd5054047b1e",
+      "date": "2026-09-03",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 5,
+      "title": "상주 중화 농협 공선 출하 회, GAP 우수사례 경진대회 금상",
+      "press": "신아일보",
+      "summary": "경북 상주 중화농협 공선출하회가 생산부터 선별·출하까지의 안전·품질관리 성과로 GAP 우수사례 금상을 받았다. 상주시는 제12회 경진대회 수상을 계기로 GAP 인증 농가와 안전농산물 생산 기반을 확대한다.",
+      "url": "https://www.shinailbo.co.kr/news/articleView.html?idxno=5057422",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#sec-dist",
+      "score": 33.41,
+      "press_tier": 2,
+      "topics": []
+    },
+    {
+      "id": "074b816c1d77",
+      "date": "2026-09-03",
+      "section": "policy",
+      "section_title": "정책 및 주요 이슈",
+      "rank": 2,
+      "title": "농산물 가격안정제 , 생산비 보상기준 마련이 성패 관건",
+      "press": "원예산업신문",
+      "summary": "농산물 가격 급락 때 농가의 경영위험을 덜어주는 농산물가격안정제가 8월 27일부터 시행됐다. 정부가 기준 이하 가격의 차액 전부나 일부를 지원하는 만큼 생산비 보상기준 마련이 핵심 과제로 꼽힌다.",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=65689",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#sec-policy",
+      "score": 29.01,
+      "press_tier": 2,
+      "topics": []
+    },
+    {
+      "id": "6ff1eb77134b",
+      "date": "2026-09-03",
+      "section": "policy",
+      "section_title": "정책 및 주요 이슈",
+      "rank": 41,
+      "title": "한·에 SECA 비준 임박 … 화훼업계, 국회 찾아 피해 대책 촉구",
+      "press": "원예산업신문",
+      "summary": "",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=65676",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#commodity-flowers",
+      "score": 25.71,
+      "press_tier": 2,
+      "topics": [
+        "화훼"
+      ]
+    },
+    {
+      "id": "394176f79348",
+      "date": "2026-09-03",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 2,
+      "title": "채소류 가격 , 전월 대비 12.4% 상승",
+      "press": "뉴시스",
+      "summary": "전국 채소류 가격이 8월 들어 전월보다 12.4% 오르며 장바구니 부담을 키웠다. 배추는 37.0%, 시금치는 68.2%, 오이는 40.4% 각각 한 달 새 상승했다.",
+      "url": "https://n.news.naver.com/mnews/article/003/0014164615?sid=101",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#sec-supply",
+      "score": 24.24,
+      "press_tier": 2,
+      "topics": [
+        "오이"
+      ]
+    },
+    {
+      "id": "ee0e689024f1",
+      "date": "2026-09-03",
+      "section": "pest",
+      "section_title": "생육 리스크 및 방제",
+      "rank": 1,
+      "title": "\"폭염에 호우 까지\"…영광군, 대파 농가 병해충 긴급방제",
+      "press": "뉴시스",
+      "summary": "전남광주통합특별시 영광군 대파 산지에서 폭염과 집중호우에 따른 생육 저하와 침수 피해가 발생했다. 군은 무름병 등 2차 병해충을 막기 위한 긴급방제를 지원하며 1~9일 읍·면사무소에서 신청받는다.",
+      "url": "https://n.news.naver.com/mnews/article/003/0014164381?sid=102",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#sec-pest",
+      "score": 23.69,
+      "press_tier": 2,
+      "topics": [
+        "대파"
+      ]
+    },
+    {
+      "id": "5738d7f456d1",
+      "date": "2026-09-03",
+      "section": "policy",
+      "section_title": "정책 및 주요 이슈",
+      "rank": 7,
+      "title": "\"한 달 새 시금치 48%. 상추 41% 올랐다\"...폭염으로 채소 값 폭등",
+      "press": "헤드라인제주",
+      "summary": "",
+      "url": "https://www.headlinejeju.co.kr/news/articleView.html?idxno=598360",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#commodity-lettuce",
+      "score": 22.05,
+      "press_tier": 2,
+      "topics": [
+        "상추"
+      ]
+    },
+    {
+      "id": "482ff295cd66",
+      "date": "2026-09-03",
+      "section": "pest",
+      "section_title": "생육 리스크 및 방제",
+      "rank": 34,
+      "title": "제주도내 친환경 감귤원 '산둥날개매미충'분포지역 확산",
+      "press": "원예산업신문",
+      "summary": "",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=65673",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#commodity-citrus",
+      "score": 21.99,
+      "press_tier": 2,
+      "topics": [
+        "감귤/만감"
+      ]
+    },
+    {
+      "id": "3f564ca278fe",
+      "date": "2026-09-03",
+      "section": "pest",
+      "section_title": "생육 리스크 및 방제",
+      "rank": 2,
+      "title": "충남도의회 5분발언서 스마트팜 수익성·재선충 방제 대책 촉구",
+      "press": "농수축산신문",
+      "summary": "충남 스마트팜이 방울토마토와 딸기 등 일부 품목에 편중돼 가격 하락 시 농가 경영 불안이 우려된다. 충남도의회에서는 사업 선정 단계부터 생산원가와 수익성을 검토하고 재선충 방제도 강화하라고 촉구했다.",
+      "url": "https://www.aflnews.co.kr/news/articleView.html?idxno=327301",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#sec-pest",
+      "score": 14.62,
+      "press_tier": 2,
+      "topics": [
+        "딸기",
+        "토마토"
+      ]
+    },
+    {
+      "id": "91fe57dc4b8a",
+      "date": "2026-09-03",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 29,
+      "title": "골드키위 '감황', 꽃봉오리 모양 달라져도 수확량은 안정적",
+      "press": "원예산업신문",
+      "summary": "",
+      "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=65671",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#commodity-kiwifruit",
+      "score": 14.041,
+      "press_tier": 2,
+      "topics": [
+        "키위"
+      ]
+    },
+    {
+      "id": "bc594a9b6d47",
+      "date": "2026-09-03",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 40,
+      "title": "남해군, 조경수· 화훼 자원 DB 구축…지역 생산자와 상생",
+      "press": "경남도민일보",
+      "summary": "",
+      "url": "https://www.idomin.com/news/articleView.html?idxno=2013940",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#commodity-flowers",
+      "score": 11.634,
+      "press_tier": 2,
+      "topics": [
+        "화훼"
+      ]
+    },
+    {
+      "id": "d937a3b00582",
+      "date": "2026-09-03",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 8,
+      "title": "천안 하늘그린 멜론 , 가을 신품종 '설원' 출하",
+      "press": "농수축산신문",
+      "summary": "",
+      "url": "https://www.aflnews.co.kr/news/articleView.html?idxno=327291",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#commodity-muskmelon",
+      "score": 10.971,
+      "press_tier": 2,
+      "topics": [
+        "멜론"
+      ]
+    },
+    {
+      "id": "bc0571df672b",
+      "date": "2026-09-03",
+      "section": "policy",
+      "section_title": "정책 및 주요 이슈",
+      "rank": 32,
+      "title": "단감 일소 피해과, 제거하면 보상 누락 놔두면 2차 피해 ‘딜레마’",
+      "press": "부산일보",
+      "summary": "",
+      "url": "https://www.busan.com/view/busan/view.php?code=2026090215292004200",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#commodity-sweet_persimmon",
+      "score": 8.97,
+      "press_tier": 2,
+      "topics": [
+        "단감"
+      ]
+    },
+    {
+      "id": "e1576f994c8c",
+      "date": "2026-09-03",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 37,
+      "title": "홍천군, '대홍' 잇는 차세대 복숭아 찾는다…6개 품종 품평회",
+      "press": "신아일보",
+      "summary": "",
+      "url": "https://www.shinailbo.co.kr/news/articleView.html?idxno=5057541",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#commodity-peach",
+      "score": 8.685,
+      "press_tier": 2,
+      "topics": [
+        "복숭아"
+      ]
+    },
+    {
+      "id": "f6584d06e93c",
+      "date": "2026-09-03",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 31,
+      "title": "\"제거하면 보상 누락, 놔두면 2차 피해\"…단감 농가 '한숨'",
+      "press": "뉴스경남",
+      "summary": "",
+      "url": "https://www.newsgn.com/news/articleView.html?idxno=571159",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#commodity-sweet_persimmon",
+      "score": 8.353,
+      "press_tier": 2,
+      "topics": [
+        "단감"
+      ]
+    },
+    {
+      "id": "305d1e73ecea",
+      "date": "2026-09-03",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 38,
+      "title": "홍천군, 차세대 복숭아 품종 발굴 품평회",
+      "press": "강원도민일보",
+      "summary": "",
+      "url": "https://www.kado.net/news/articleView.html?idxno=2070202",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#commodity-peach",
+      "score": 8.135,
+      "press_tier": 2,
+      "topics": [
+        "복숭아"
+      ]
+    },
+    {
+      "id": "d3a8dff2da3d",
+      "date": "2026-09-03",
+      "section": "pest",
+      "section_title": "생육 리스크 및 방제",
+      "rank": 30,
+      "title": "일소 피해 도 힘든데 손해평가 방식에 단감 농가 혼란",
+      "press": "경남도민일보",
+      "summary": "",
+      "url": "https://www.idomin.com/news/articleView.html?idxno=2013949",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#commodity-sweet_persimmon",
+      "score": 1.98,
+      "press_tier": 2,
+      "topics": [
+        "단감"
+      ]
+    },
+    {
+      "id": "0cd399101913",
+      "date": "2026-09-03",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 20,
+      "title": "경북도, 샤인머스캣 출하 안정화 대책 마련 나서",
+      "press": "전국매일신문",
+      "summary": "",
+      "url": "https://www.jeonmae.co.kr/news/articleView.html?idxno=1289562",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#commodity-grape",
+      "score": 58.04,
+      "press_tier": 1,
+      "topics": [
+        "포도"
+      ]
+    },
+    {
+      "id": "cd09e2f5a3cf",
+      "date": "2026-09-03",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 22,
+      "title": "경북도, 추석 샤인머스캣 수급 안정 총력…출하량 조절·품질 검사 강화...",
+      "press": "이로운넷",
+      "summary": "",
+      "url": "https://www.eroun.net/news/articleView.html?idxno=89005",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#commodity-grape",
+      "score": 44.67,
+      "press_tier": 1,
+      "topics": [
+        "포도"
+      ]
+    },
+    {
+      "id": "9b2f70b04c7f",
+      "date": "2026-09-03",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 9,
+      "title": "김천시, 도립 포도 연구소 유치…추석 앞두고 포도 농가 가격 폭락 신음",
+      "press": "아이대구",
+      "summary": "",
+      "url": "https://www.idaegu.com/news/articleView.html?idxno=665411",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#commodity-grape",
+      "score": 42.35,
+      "press_tier": 1,
+      "topics": [
+        "포도"
+      ]
+    },
+    {
+      "id": "e040a6dfb5f1",
+      "date": "2026-09-03",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 15,
+      "title": "샤인머스캣 3년 새 45% 하락…추석 앞두고 추가 폭락 우려",
+      "press": "진일보",
+      "summary": "",
+      "url": "https://www.jnilbo.com/news/articleView.html?idxno=90000061767",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#commodity-grape",
+      "score": 41.34,
+      "press_tier": 1,
+      "topics": [
+        "포도"
+      ]
+    },
+    {
+      "id": "ddfd2ec86fdc",
+      "date": "2026-09-03",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 14,
+      "title": "추석 앞두고 샤인머스켓 가격 안정 '총력'",
+      "press": "아이대구",
+      "summary": "",
+      "url": "https://www.idaegu.co.kr/news/articleView.html?idxno=558488",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#commodity-grape",
+      "score": 40.73,
+      "press_tier": 1,
+      "topics": [
+        "포도"
+      ]
+    },
+    {
+      "id": "0a4f9a34d9f4",
+      "date": "2026-09-03",
+      "section": "pest",
+      "section_title": "생육 리스크 및 방제",
+      "rank": 3,
+      "title": "농작물 병해충, 한발 앞서 살펴보자",
+      "press": "도민일보",
+      "summary": "전국 농작물 재배지에서 집중호우와 폭염이 번갈아 나타나며 병해충과 농업재해 위험이 커지고 있다. 농촌진흥청은 기후 불안정에 대응해 피해가 발생하기 전 작물과 포장을 선제적으로 살필 필요성을 강조했다.",
+      "url": "http://www.domin.co.kr/news/articleView.html?idxno=1567340",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#sec-pest",
+      "score": 32.62,
+      "press_tier": 1,
+      "topics": []
+    },
+    {
+      "id": "32396e144d40",
+      "date": "2026-09-03",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 24,
+      "title": "경북도, 추석 앞두고 샤인머스캣 가격 안정에 총력",
+      "press": "쿠키뉴스",
+      "summary": "",
+      "url": "https://www.kukinews.com/article/view/kuk202609020109",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#commodity-grape",
+      "score": 32.27,
+      "press_tier": 1,
+      "topics": [
+        "포도"
+      ]
+    },
+    {
+      "id": "fac61c8a6a0f",
+      "date": "2026-09-03",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 11,
+      "title": "경북도, 추석 샤인머스캣 출하 대책회의",
+      "press": "대경일보",
+      "summary": "",
+      "url": "https://www.dkilbo.com/news/articleView.html?idxno=553138",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#commodity-grape",
+      "score": 32.12,
+      "press_tier": 1,
+      "topics": [
+        "포도"
+      ]
+    },
+    {
+      "id": "c978160d44d1",
+      "date": "2026-09-03",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 23,
+      "title": "추석 앞둔 샤인머스캣 ‘물량 폭탄’ 막는다…경북도, 출하 조절·품질...",
+      "press": "뉴데일리경제",
+      "summary": "",
+      "url": "https://tk.newdaily.co.kr/site/data/html/2026/09/02/2026090200220.html",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#commodity-grape",
+      "score": 29.93,
+      "press_tier": 1,
+      "topics": [
+        "포도"
+      ]
+    },
+    {
+      "id": "affd15ebd550",
+      "date": "2026-09-03",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 21,
+      "title": "경북도, 샤인머스캣 가격 하락 대응…출하 시기 분산·품질 관리 총력",
+      "press": "국제뉴스",
+      "summary": "",
+      "url": "https://www.gukjenews.com/news/articleView.html?idxno=3682429",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#commodity-grape",
+      "score": 29.62,
+      "press_tier": 1,
+      "topics": [
+        "포도"
+      ]
+    },
+    {
+      "id": "123823f5eca4",
+      "date": "2026-09-03",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 25,
+      "title": "'품질 저하·가격 폭락' 악순환 끊는다… 추석 대목 앞두고 샤인머스캣...",
+      "press": "하이도민",
+      "summary": "",
+      "url": "https://www.hidomin.com/news/articleView.html?idxno=719560",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#commodity-grape",
+      "score": 25.7,
+      "press_tier": 1,
+      "topics": [
+        "포도"
+      ]
+    },
+    {
+      "id": "9bf7b1e2031f",
+      "date": "2026-09-03",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 28,
+      "title": "경북도, 샤인머스캣 출하 분산·품질관리 강화",
+      "press": "경북신문",
+      "summary": "",
+      "url": "https://www.kbsm.net/news/view.php?idx=532536",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#commodity-grape",
+      "score": 23.592,
+      "press_tier": 1,
+      "topics": [
+        "포도"
+      ]
+    },
+    {
+      "id": "cb62a55be3f0",
+      "date": "2026-09-03",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 17,
+      "title": "\"샤인머스켓 편중·기후변화 위기\"…김천시, '경북 포도 연구소' 유치 총...",
+      "press": "비즈로뉴스",
+      "summary": "",
+      "url": "https://www.bzeronews.com/news/articleView.html?idxno=822019",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#commodity-grape",
+      "score": 22.55,
+      "press_tier": 1,
+      "topics": [
+        "포도"
+      ]
+    },
+    {
+      "id": "5520e0eacc65",
+      "date": "2026-09-03",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 6,
+      "title": "순천 외서 딸기 묘 전국 출하길…330만 주 생산·23억원 소득 기대",
+      "press": "아시아투데이",
+      "summary": "",
+      "url": "https://www.asiatoday.co.kr/kn/view.php?key=20260902010000644",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#commodity-strawberry",
+      "score": 19.513,
+      "press_tier": 1,
+      "topics": [
+        "딸기"
+      ]
+    },
+    {
+      "id": "7f6cfd999c63",
+      "date": "2026-09-03",
+      "section": "policy",
+      "section_title": "정책 및 주요 이슈",
+      "rank": 3,
+      "title": "시금치 값 68%·배추 37% ↑… 고유가 겹쳐 서민 허리 휜다",
+      "press": "문화일보",
+      "summary": "",
+      "url": "https://www.munhwa.com/article/11613968",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#commodity-napa_cabbage",
+      "score": 19.12,
+      "press_tier": 1,
+      "topics": [
+        "배추"
+      ]
+    },
+    {
+      "id": "424935640b32",
+      "date": "2026-09-03",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 26,
+      "title": "경북도, 추석 앞두고 샤인머스캣 가격 안정 및 품질 관리 총력",
+      "press": "CNB뉴스",
+      "summary": "",
+      "url": "https://www.cnbnews.com/news/articleView.html?idxno=1014010",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#commodity-grape",
+      "score": 18.8,
+      "press_tier": 1,
+      "topics": [
+        "포도"
+      ]
+    },
+    {
+      "id": "c0b8854e34c7",
+      "date": "2026-09-03",
+      "section": "pest",
+      "section_title": "생육 리스크 및 방제",
+      "rank": 5,
+      "title": "'사과 병해충, 이제 우리가 전문가'… 봉화군, 농민사관학교 수료생 31명...",
+      "press": "이로운넷",
+      "summary": "경북 봉화군이 이상기후에 대응할 과학적 방제 역량을 갖춘 사과 병해충 관리인력 31명을 배출했다. 봉화군은 1일 농업기술센터에서 제16기 농민사관학교 사과병해충관리과정 수료식을 열었다.",
+      "url": "https://www.eroun.net/news/articleView.html?idxno=89049",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#sec-pest",
+      "score": 18.01,
+      "press_tier": 1,
+      "topics": []
+    },
+    {
+      "id": "72aeae3b1b68",
+      "date": "2026-09-03",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 27,
+      "title": "경북도, 샤인머스캣 조기 출하 막는다…추석 공급과잉 대응",
+      "press": "경북일보",
+      "summary": "",
+      "url": "https://www.kyongbuk.co.kr/news/articleView.html?idxno=4082943",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#commodity-grape",
+      "score": 14.15,
+      "press_tier": 1,
+      "topics": [
+        "포도"
+      ]
+    },
+    {
+      "id": "e718be765bc7",
+      "date": "2026-09-03",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 35,
+      "title": "달콤한 릴레이 출하…홍천군, 복숭아 ‘차세대 주력’ 품평회",
+      "press": "프레시안",
+      "summary": "",
+      "url": "https://www.pressian.com/pages/articles/2026090215410550765",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#commodity-peach",
+      "score": 8.828,
+      "press_tier": 1,
+      "topics": [
+        "복숭아"
+      ]
+    },
+    {
+      "id": "2c1948b54cad",
+      "date": "2026-09-03",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 36,
+      "title": "홍천군, 차세대 복숭아 주력 품종 발굴 품평회 개최",
+      "press": "브레이크뉴스",
+      "summary": "",
+      "url": "http://www.breaknews.com/1233466",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#commodity-peach",
+      "score": 7.878,
+      "press_tier": 1,
+      "topics": [
+        "복숭아"
+      ]
+    },
+    {
+      "id": "6e4b3b14420d",
+      "date": "2026-09-03",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 39,
+      "title": "[마켓포토] \"올 추석엔 더 달콤하게\"…현대百, 15브릭스 복숭아 선보인...",
+      "press": "newslock",
+      "summary": "",
+      "url": "http://www.newslock.co.kr/news/articleView.html?idxno=135340",
+      "archive": "/agri-news-brief/archive/2026-09-03.html#commodity-peach",
+      "score": 4.03,
+      "press_tier": 1,
+      "topics": [
+        "복숭아"
+      ]
+    },
     {
       "id": "52d9f848e190",
       "date": "2026-09-02",
