@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-05T02:37:37+09:00",
+  "generated_at": "2026-09-06T01:50:36+09:00",
   "rows": [
     {
       "date": "2026-05-20",
@@ -505,6 +505,32 @@
       "target_domain": "www.mt.co.kr",
       "clicks": 4,
       "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-09-04",
+      "article_id": "3b9006690a96",
+      "title": "경북도, 안동·예천 우박 피해 사과 300톤 긴급 수매",
+      "report_date": "2026-09-04",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.breaknews.com",
+      "clicks": 4,
+      "users": 2,
+      "archive_url": "/agri-news-brief/archive/2026-09-04.html#sec-supply",
+      "source_url": "http://www.breaknews.com/1233780"
+    },
+    {
+      "date": "2026-09-04",
+      "article_id": "589cee1cb20e",
+      "title": "사상 첫 ‘ 가격안정제 ’ 윤곽…‘경작신고·경영체 등록’ 필수",
+      "report_date": "2026-09-04",
+      "section": "policy",
+      "surface": "briefing_open",
+      "target_domain": "www.nongmin.com",
+      "clicks": 4,
+      "users": 2,
       "archive_url": "",
       "source_url": ""
     },
@@ -1441,19 +1467,6 @@
       "target_domain": "news.tvchosun.com",
       "clicks": 3,
       "users": 3,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-09-04",
-      "article_id": "589cee1cb20e",
-      "title": "사상 첫 ‘ 가격안정제 ’ 윤곽…‘경작신고·경영체 등록’ 필수",
-      "report_date": "2026-09-04",
-      "section": "policy",
-      "surface": "briefing_open",
-      "target_domain": "www.nongmin.com",
-      "clicks": 3,
-      "users": 2,
       "archive_url": "",
       "source_url": ""
     },
@@ -4098,16 +4111,16 @@
     },
     {
       "date": "2026-09-04",
-      "article_id": "3b9006690a96",
-      "title": "경북도, 안동·예천 우박 피해 사과 300톤 긴급 수매",
+      "article_id": "4e6e0f0e9248",
+      "title": "K-푸드+ 수출 82.5억달러 ‘역대 최대’…정부, 160억달러 달성 총력전",
       "report_date": "2026-09-04",
-      "section": "supply",
-      "surface": "briefing_open",
-      "target_domain": "www.breaknews.com",
+      "section": "policy",
+      "surface": "briefing_card",
+      "target_domain": "biz.heraldcorp.com",
       "clicks": 2,
-      "users": 1,
-      "archive_url": "/agri-news-brief/archive/2026-09-04.html#sec-supply",
-      "source_url": "http://www.breaknews.com/1233780"
+      "users": 2,
+      "archive_url": "",
+      "source_url": ""
     },
     {
       "date": "2026-09-04",
@@ -4121,6 +4134,19 @@
       "users": 2,
       "archive_url": "/agri-news-brief/archive/2026-09-04.html#commodity-grape",
       "source_url": "http://www.the-biz.co.kr/news/articleView.html?idxno=727284"
+    },
+    {
+      "date": "2026-09-04",
+      "article_id": "f2d84fe1f4f7",
+      "title": "배추 더 심었는데 가격 폭락…해남 농민들 ‘한숨’",
+      "report_date": "2026-09-04",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.kwangju.co.kr",
+      "clicks": 2,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-09-04.html#sec-supply",
+      "source_url": "http://www.kwangju.co.kr/article.php?aid=1788393600802979006"
     },
     {
       "date": "2026-09-04",
@@ -13731,12 +13757,25 @@
     },
     {
       "date": "2026-09-04",
-      "article_id": "4e6e0f0e9248",
-      "title": "K-푸드+ 수출 82.5억달러 ‘역대 최대’…정부, 160억달러 달성 총력전",
+      "article_id": "233a3ae66993",
+      "title": "“싸도 안 팔려”… 샤인머스캣 , 추석 앞두고 폭락 우려 [잇슈 키워드]",
+      "report_date": "2026-09-04",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "news.kbs.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-09-04",
+      "article_id": "589cee1cb20e",
+      "title": "사상 첫 ‘ 가격안정제 ’ 윤곽…‘경작신고·경영체 등록’ 필수",
       "report_date": "2026-09-04",
       "section": "policy",
       "surface": "briefing_card",
-      "target_domain": "biz.heraldcorp.com",
+      "target_domain": "www.nongmin.com",
       "clicks": 1,
       "users": 1,
       "archive_url": "",
@@ -13806,6 +13845,19 @@
       "users": 1,
       "archive_url": "/agri-news-brief/archive/2026-09-04.html#commodity-apple",
       "source_url": "https://www.hankyung.com/article/202609029539g"
+    },
+    {
+      "date": "2026-09-04",
+      "article_id": "d143ffe0232d",
+      "title": "추석 앞 사과 ·배 출하↑…과일·과채 가격 하락 전망",
+      "report_date": "2026-09-04",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.newsis.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
     },
     {
       "date": "2026-09-04",
