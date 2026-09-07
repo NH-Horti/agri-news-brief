@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-07T02:05:34+09:00",
+  "generated_at": "2026-09-08T03:44:51+09:00",
   "section_jump": [
     {
       "date": "2026-07-01",
@@ -538,12 +538,6 @@
       "to_view": "commodity"
     },
     {
-      "date": "2026-05-11",
-      "count": 1,
-      "from_view": "briefing",
-      "to_view": "commodity"
-    },
-    {
       "date": "2026-05-12",
       "count": 1,
       "from_view": "briefing",
@@ -818,6 +812,12 @@
       "count": 1,
       "from_view": "commodity",
       "to_view": "briefing"
+    },
+    {
+      "date": "2026-09-07",
+      "count": 1,
+      "from_view": "briefing",
+      "to_view": "commodity"
     }
   ],
   "archive_nav": [
@@ -960,13 +960,6 @@
       "nav_type": "next_date",
       "from_date": "2026-08-05",
       "to_date": "2026-08-06"
-    },
-    {
-      "date": "2026-05-11",
-      "count": 1,
-      "nav_type": "prev_date",
-      "from_date": "2026-05-11",
-      "to_date": "2026-05-08"
     },
     {
       "date": "2026-05-12",
@@ -1457,6 +1450,13 @@
       "nav_type": "select_date",
       "from_date": "2026-08-12",
       "to_date": "2026-08-14"
+    },
+    {
+      "date": "2026-09-07",
+      "count": 1,
+      "nav_type": "prev_date",
+      "from_date": "2026-09-07",
+      "to_date": "2026-09-04"
     }
   ]
 }
