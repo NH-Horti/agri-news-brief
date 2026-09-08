@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-08T03:44:51+09:00",
+  "generated_at": "2026-09-09T02:56:37+09:00",
   "section_jump": [
     {
       "date": "2026-07-01",
@@ -538,18 +538,6 @@
       "to_view": "commodity"
     },
     {
-      "date": "2026-05-12",
-      "count": 1,
-      "from_view": "briefing",
-      "to_view": "commodity"
-    },
-    {
-      "date": "2026-05-12",
-      "count": 1,
-      "from_view": "commodity",
-      "to_view": "briefing"
-    },
-    {
       "date": "2026-05-17",
       "count": 1,
       "from_view": "commodity",
@@ -818,6 +806,12 @@
       "count": 1,
       "from_view": "briefing",
       "to_view": "commodity"
+    },
+    {
+      "date": "2026-09-08",
+      "count": 1,
+      "from_view": "briefing",
+      "to_view": "commodity"
     }
   ],
   "archive_nav": [
@@ -827,13 +821,6 @@
       "nav_type": "prev_date",
       "from_date": "2026-08-24",
       "to_date": "2026-08-21"
-    },
-    {
-      "date": "2026-05-12",
-      "count": 3,
-      "nav_type": "archive_index",
-      "from_date": "2026-05-12",
-      "to_date": "(not set)"
     },
     {
       "date": "2026-05-18",
@@ -855,13 +842,6 @@
       "nav_type": "archive_index",
       "from_date": "2026-08-24",
       "to_date": "(not set)"
-    },
-    {
-      "date": "2026-05-12",
-      "count": 2,
-      "nav_type": "next_date",
-      "from_date": "2026-05-11",
-      "to_date": "2026-05-12"
     },
     {
       "date": "2026-05-14",
@@ -960,27 +940,6 @@
       "nav_type": "next_date",
       "from_date": "2026-08-05",
       "to_date": "2026-08-06"
-    },
-    {
-      "date": "2026-05-12",
-      "count": 1,
-      "nav_type": "next_date",
-      "from_date": "2026-05-08",
-      "to_date": "2026-05-11"
-    },
-    {
-      "date": "2026-05-12",
-      "count": 1,
-      "nav_type": "prev_date",
-      "from_date": "2026-05-11",
-      "to_date": "2026-05-08"
-    },
-    {
-      "date": "2026-05-12",
-      "count": 1,
-      "nav_type": "prev_date",
-      "from_date": "2026-05-12",
-      "to_date": "2026-05-11"
     },
     {
       "date": "2026-05-13",
