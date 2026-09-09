@@ -1,30 +1,31 @@
-## Daily Eval (2026-09-09)
-- Overall: **95.14** (pass)
-- Operational: **98.04**
-- Reader quality: **98.04** (clear; penalty=0.0, cap=100.0, reasons=clear)
-- Quality gate: **95.14** (needs_major_iteration, editorial_major_issue; editorial=75.4, operational=98.0)
-- Scores: completeness=100.0, diversity=100.0, source=100.0, summary=100.0, freshness=100.0, retrieval=90.0, section_fit=100.0, core=85.0, commodity=97.7
-- Briefing cards: 20 / Commodity cards: 56
-- Sections: supply:5/5 raw=274, policy:5/5 raw=148, dist:5/5 raw=75, pest:5/5 raw=41
-- Metrics: title_unique=1.00, domain_diversity=0.85, low_tier=0.05, summary_presence=1.00, summary_numeric=1.00, fresh_72h=1.00, fit_avg=4.52, false_positive=0.00, hard_reader_issues=0, weak_core=0.00, editorial_penalty=0.0, commodity_weak=0.00, commodity_items=15, commodity_active_today=24, commodity_active_today_unlinked=9, commodity_coverage=0.45, commodity_strict_link=0.93, commodity_false_link=0.00, commodity_pool_false_link=0.00, commodity_dominant_section=0.53, semantic_penalty=0.0
+## Daily Eval (2026-09-10)
+- Overall: **86.35** (pass)
+- Operational: **96.23**
+- Reader quality: **93.17** (clear; penalty=3.1, cap=100.0, reasons=clear)
+- Quality gate: **86.35** (needs_major_iteration, editorial_major_issue; editorial=69.7, operational=96.2)
+- Scores: completeness=100.0, diversity=96.0, source=80.0, summary=100.0, freshness=100.0, retrieval=92.5, section_fit=100.0, core=97.8, commodity=88.0
+- Briefing cards: 20 / Commodity cards: 29
+- Sections: supply:5/5 raw=238, policy:5/5 raw=128, dist:5/5 raw=73, pest:5/5 raw=68
+- Metrics: title_unique=1.00, domain_diversity=0.80, low_tier=0.20, summary_presence=1.00, summary_numeric=0.80, fresh_72h=1.00, fit_avg=3.34, false_positive=0.00, hard_reader_issues=0, weak_core=0.00, editorial_penalty=1.7, commodity_weak=0.00, commodity_items=6, commodity_active_today=18, commodity_active_today_unlinked=12, commodity_coverage=0.18, commodity_strict_link=1.00, commodity_false_link=0.00, commodity_pool_false_link=0.00, commodity_dominant_section=0.83, semantic_penalty=0.0
 
 
 ### Editorial Shadow Eval
-- Editorial: **75.40** (daily target 82, tier=needs_major_iteration, needs_major_iteration)
+- Editorial: **69.70** (daily target 82, tier=needs_major_iteration, needs_major_iteration)
 - Model: gpt-5.6-sol (resolved gpt-5.6-sol)
-- Model-reported score: 76.50; authoritative method=weighted_components_v1
-- Acceptance: needs_iteration (blocking=0, major=1, reasons=editorial_score_min, no_major_issues, critical_components_min, all_components_min)
+- Model-reported score: 70.10; authoritative method=weighted_components_v1
+- Acceptance: needs_iteration (blocking=0, major=3, reasons=editorial_score_min, no_major_issues, critical_components_min, all_components_min, commodity_board_score_min)
 - Section count gate: 100.0 (target_met)
-- Components: article_selection=76.0, section_fit=78.0, core=68.0, summary=82.0, missed=72.0, noise=80.0
-- Summary: 정원과 신선도는 좋지만 정책의 추석 물가 중복, 유통의 홍보성 핵심 선정, 병해충의 약한 사례성 꼬리가 품질을 낮춘다. 원시 후보에 더 강한 사과 수급·유통 운영 기사가 있어 교체 여지도 크다.
-- [major] weak_core: 커피 1000잔으로 잇는 농협대전공판장 유통상생 약속 - 협약의 유통 내용보다 간식 제공을 앞세운 홍보성 기사로 핵심 카드에 약하다.
-- [moderate] promotional_filler: 농협 괴산군지부·군자농협, 사과 공선장 찾아 출하 현장 점검 - 단순 방문·애로 청취에 그쳐 운영 변화나 실적 정보가 부족하다.
-- [moderate] wrong_section: 이승돈 농진청장 "배 재배 85% '신고' 편중…녹색배 보급 확대" - 주된 내용이 품종 보급과 생산구조 개선이며 유통 운영 정보는 부차적이다.
-- [moderate] duplicate_theme: 추석 앞두고 배값 작년보다 30% 넘게 가격 치솟았다 [프라이스&] - 한우·배 물가, 차례상 비용 기사와 추석 가격 주제가 반복되고 정부 설명자료와도 충돌한다.
-- [moderate] bad_summary: [사실은 이렇습니다] 추석 대비 배 출하량 증가로 가격 은 안정 화되고 있... - 정정 대상 보도의 수치와 정부가 제시한 실제 출하량·가격 근거를 충분히 대비하지 않았다.
+- Components: article_selection=68.0, section_fit=82.0, core=58.0, summary=93.0, missed=61.0, noise=57.0
+- Summary: 분량과 요약은 안정적이지만 정책 중복, 홍보성 꼬리 기사, 핵심 지정 오류가 크다. 특히 국가 단위 물가대책과 벼멸구 대응보다 지역 농협 소개·인삼 총채벌레를 핵심으로 둔 편집은 수정이 필요하다.
+- [major] duplicate_story: 청주 내수농협, 계약농가 76명에 모종·비료 등 영농자재 지원 - 바로 앞 카드와 동일한 지원사업을 중복 보도했다.
+- [moderate] promotional_filler: 동천안농협 - 변화와 혁신 통한 선제적 대응만이 경쟁력 확보 - 구체적 신규 정책보다 특정 농협의 포괄적 홍보·소개 성격이 강하다.
+- [major] weak_core: 추석 물가 안정 에 900억 추가 투입… 성수품 할인 - 당일 가장 중요한 전국 단위 농축산물 물가대책인데 비핵심이다.
+- [moderate] weak_core: 9월 과일류 농업관측 - 사과 출하량 19.3% 증가 전망은 지역 점검 기사보다 직접적인 수급 신호다.
+- [major] weak_core: 농진청, 가을철 병해충 대응 고삐…벼멸구 방제 강화 - 여러 지역의 비래해충 급증과 전국 대응을 다룬 대표 병해충 기사다.
 
 ### Improvement Hints
-- 전반적으로 안정적입니다. 점수 추세가 3일 이상 하락할 때만 임계치 조정이나 query 보강을 수행하면 됩니다.
+- 품목 보드 대표기사가 품목 핵심 이슈를 충분히 대변하지 못합니다. 제목에서 품목명과 수급·가격·병해충 신호가 함께 보이는 기사, representative rank 상위 후보, 비수급 섹션의 직접 이슈 후보를 우선하세요.
+- 편집 품질상 약한 기사 선택이 감지되었습니다 (policy_wrong_section=10%, promotional_filler=5%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요.
 
 ### Next Summary Feedback
 - 각 기사 요약은 2문장으로 유지하고 첫 문장에 품목·지역·핵심 이슈를 바로 적는다.
