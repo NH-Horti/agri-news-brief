@@ -1,52 +1,50 @@
 {
-  "report_date": "2026-09-10",
-  "generated_at_kst": "2026-09-10T06:16:42+09:00",
+  "report_date": "2026-09-11",
+  "generated_at_kst": "2026-09-11T06:22:01+09:00",
   "scores": {
-    "section_alignment": 100.0,
-    "core_quality": 97.79,
-    "commodity_board_quality": 88.0
+    "section_alignment": 95.23,
+    "core_quality": 88.07,
+    "commodity_board_quality": 96.14
   },
   "metrics": {
-    "section_alignment_low_fit_rate": 0.0,
+    "section_alignment_low_fit_rate": 0.15,
     "section_alignment_cross_gap_rate": 0.0,
     "content_false_positive_rate": 0.0,
     "reader_hard_issue_count": 0,
     "reader_hard_issue_rate": 0.0,
-    "reader_quality_penalty": 3.06,
+    "reader_quality_penalty": 0.36,
     "reader_quality_cap": 100.0,
-    "weak_core_rate": 0.0,
-    "policy_wrong_section_rate": 0.1,
-    "promotional_filler_rate": 0.05,
+    "weak_core_rate": 0.125,
+    "policy_wrong_section_rate": 0.0,
+    "promotional_filler_rate": 0.1,
     "promotional_core_rate": 0.0,
     "weak_core_editorial_rate": 0.0,
     "pest_theme_duplicate_rate": 0.0,
     "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 1.7,
+    "editorial_quality_penalty": 0.2,
     "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0,
     "commodity_primary_title_item_focus_rate": 1.0,
-    "commodity_primary_title_issue_signal_rate": 1.0,
-    "commodity_primary_strict_link_rate": 1.0,
+    "commodity_primary_title_issue_signal_rate": 0.8,
+    "commodity_primary_strict_link_rate": 0.8,
     "commodity_primary_low_rank_rate": 0.0,
-    "commodity_primary_count": 6,
-    "commodity_active_today_total": 18,
-    "commodity_active_today_unlinked_total": 12,
-    "commodity_managed_unlinked_total": 27,
+    "commodity_primary_count": 10,
+    "commodity_active_today_total": 17,
+    "commodity_active_today_unlinked_total": 7,
+    "commodity_managed_unlinked_total": 23,
     "commodity_board_daily_min_primary_count": 6,
     "commodity_board_low_coverage": false,
-    "commodity_board_coverage_rate": 0.1818,
+    "commodity_board_coverage_rate": 0.303,
     "commodity_primary_title_item_missing_rate": 0.0,
     "commodity_primary_body_only_rate": 0.0,
     "commodity_primary_false_link_rate": 0.0,
-    "commodity_pool_count": 16,
+    "commodity_pool_count": 19,
     "commodity_pool_false_link_rate": 0.0,
-    "commodity_primary_dominant_section_rate": 0.8333
+    "commodity_primary_dominant_section_rate": 0.5
   },
   "selection_guardrails": {
-    "driver_tags": [
-      "commodity_board"
-    ],
+    "driver_tags": [],
     "section_card_min_fit": {
       "default": 0.8,
       "supply": 0.82,
@@ -74,8 +72,8 @@
     "disable_relaxed_core_fill": false,
     "final_low_tier_max_per_section": 1,
     "final_low_tier_max_total": 4,
-    "commodity_active_min_rank": 2,
-    "commodity_program_core_min_rank": 3,
+    "commodity_active_min_rank": 1,
+    "commodity_program_core_min_rank": 1,
     "commodity_require_issue_signal": false,
     "commodity_require_direct_item_focus": false,
     "commodity_strict_primary_only": true,
@@ -83,37 +81,28 @@
   },
   "editorial_quality_samples": [
     {
-      "title": "부여 규암농협, 배추 모 전 조합원에 무상 공급",
-      "href": "https://www.jbnews.com/news/articleView.html?idxno=1511146",
-      "section": "supply",
+      "title": "송미령 장관 \"CPTPP 가입 전제 논의아냐…농업계 의견 충분히 들을 것\"",
+      "href": "https://www.news1.kr/economy/agri-food/6286846",
+      "section": "policy",
       "is_core": false,
       "reasons": [
         "promotional_or_event_filler"
       ]
     },
     {
-      "title": "청주 내수농협, 계약재배 농민에 영농자재 지원 ‘호평’",
-      "href": "https://www.nongmin.com/article/20260909500386",
-      "section": "policy",
+      "title": "영동군, 우체국쇼핑몰에 '마켓영동관' 개설",
+      "href": "https://www.ccdailynews.com/news/articleView.html?idxno=2439871",
+      "section": "dist",
       "is_core": false,
       "reasons": [
-        "policy_price_report_without_policy_action"
-      ]
-    },
-    {
-      "title": "청주 내수농협, 계약농가 76명에 모종·비료 등 영농자재 지원",
-      "href": "https://www.gukjenews.com/news/articleView.html?idxno=3689606",
-      "section": "policy",
-      "is_core": false,
-      "reasons": [
-        "policy_price_report_without_policy_action"
+        "promotional_or_event_filler"
       ]
     }
   ],
   "reader_hard_issue_samples": [],
   "editorial": {
-    "score": 69.7,
-    "model_reported_score": 70.1,
+    "score": 74.65,
+    "model_reported_score": 76.0,
     "score_method": "weighted_components_v1",
     "quality_tier": "needs_major_iteration",
     "target_score": 82.0,
@@ -125,7 +114,7 @@
       "excellent_score": 92.0,
       "stretch_score": 95.0,
       "blocking_issue_count": 0,
-      "major_issue_count": 3,
+      "major_issue_count": 1,
       "critical_component_min": 80.0,
       "all_component_min": 75.0,
       "checks": {
@@ -137,96 +126,94 @@
         "operational_score_min": true,
         "section_count_score_min": true,
         "no_section_underfill": true,
-        "commodity_board_score_min": false
+        "commodity_board_score_min": true
       },
       "failure_reasons": [
         "editorial_score_min",
         "no_major_issues",
         "critical_components_min",
-        "all_components_min",
-        "commodity_board_score_min"
+        "all_components_min"
       ]
     },
     "section_count_score": 100.0,
     "section_count_status": "target_met",
     "scores": {
-      "article_selection": 68.0,
-      "section_fit": 82.0,
-      "core_pick_quality": 58.0,
-      "summary_usefulness": 93.0,
-      "missed_opportunity": 61.0,
-      "noise_control": 57.0
+      "article_selection": 74.0,
+      "section_fit": 86.0,
+      "core_pick_quality": 63.0,
+      "summary_usefulness": 92.0,
+      "missed_opportunity": 67.0,
+      "noise_control": 68.0
     },
     "issues": [
       {
         "type": "duplicate_story",
-        "severity": "major",
-        "section": "policy",
-        "title": "청주 내수농협, 계약농가 76명에 모종·비료 등 영농자재 지원",
-        "reason": "바로 앞 카드와 동일한 지원사업을 중복 보도했다.",
-        "suggested_action": "저품질 후속 카드를 삭제하고 별도 정책 기사로 교체한다."
-      },
-      {
-        "type": "promotional_filler",
         "severity": "moderate",
-        "section": "policy",
-        "title": "동천안농협 - 변화와 혁신 통한 선제적 대응만이 경쟁력 확보",
-        "reason": "구체적 신규 정책보다 특정 농협의 포괄적 홍보·소개 성격이 강하다.",
-        "suggested_action": "핵심에서 제외하고 국가 단위 정책 기사로 교체한다."
-      },
-      {
-        "type": "weak_core",
-        "severity": "major",
-        "section": "policy",
-        "title": "추석 물가 안정 에 900억 추가 투입… 성수품 할인",
-        "reason": "당일 가장 중요한 전국 단위 농축산물 물가대책인데 비핵심이다.",
-        "suggested_action": "이 카드를 core로 승격한다."
+        "section": "supply",
+        "title": "'가격 급락' 뒤늦은 지원 손본다…충북도 농산물 선제 대응 / 농산물값 폭락 때 차액 지원…가격안정 조례 충북도의회 상임위 통과",
+        "reason": "같은 충북 가격안정 조례와 산정식을 중복 전달한다.",
+        "suggested_action": "한 건만 남기고 다른 품목 수급기사로 교체한다."
       },
       {
         "type": "weak_core",
         "severity": "moderate",
         "section": "supply",
-        "title": "9월 과일류 농업관측",
-        "reason": "사과 출하량 19.3% 증가 전망은 지역 점검 기사보다 직접적인 수급 신호다.",
-        "suggested_action": "이 카드를 core로 승격하고 경북 가격점검 카드를 대체 핵심에서 내린다."
-      },
-      {
-        "type": "weak_core",
-        "severity": "major",
-        "section": "pest",
-        "title": "농진청, 가을철 병해충 대응 고삐…벼멸구 방제 강화",
-        "reason": "여러 지역의 비래해충 급증과 전국 대응을 다룬 대표 병해충 기사다.",
-        "suggested_action": "이 카드를 core로 승격하고 인삼 총채벌레 카드를 core에서 강등한다."
+        "title": "마늘·양파값 떨어지면 정부가 차액 보전…평년 도매가 80% 보장",
+        "reason": "전국 단위 신규 가격안정제인데 지역 조례 두 건보다 핵심성이 높다.",
+        "suggested_action": "이 기사를 core로 승격하고 충북 기사 하나를 core에서 강등한다."
       },
       {
         "type": "promotional_filler",
         "severity": "moderate",
-        "section": "dist",
-        "title": "[ 현장 리뷰] \"식품 점유율 3%에 불과\"…프로칠레, 북아시아 수출 판 키운...",
-        "reason": "칠레 수출업계 행사 중심으로 국내 농산물 유통 독자에 대한 실용성이 낮다.",
-        "suggested_action": "동청도농협 APC 준공 또는 금호 복숭아 공동출하 기사로 교체한다."
+        "section": "supply",
+        "title": "거창군, 포도 농가와 소통…현장의 어려움 함께 살펴",
+        "reason": "10여 명 규모의 현장 간담회로 구체적 조치나 시장 정보가 부족하다.",
+        "suggested_action": "가격·출하량이 담긴 전국 또는 품목별 기사로 교체한다."
+      },
+      {
+        "type": "duplicate_theme",
+        "severity": "moderate",
+        "section": "policy",
+        "title": "농협경제지주, 농축산물 수급 안정 점검 / 농협, 추석 물가 안정에 877억원 투입",
+        "reason": "같은 농협 추석 수급·할인 대책을 두 카드가 반복한다.",
+        "suggested_action": "한 건만 유지하고 별도 농정 현안으로 교체한다."
       },
       {
         "type": "missed_candidate",
         "severity": "moderate",
         "section": "dist",
-        "title": "동청도농협, 산지 종합 유통센터 준공 …“ 유통 인프라 구축, 농가 소득 증...",
-        "reason": "유통비 절감과 산지 인프라 확충이 구체적이며 칠레 행사 기사보다 섹션 적합성이 높다.",
-        "suggested_action": "프로칠레 카드를 빼고 이 기사를 선정한다."
+        "title": "가락시장, 9월 23일부터 추석 휴업…청과·수산부류별 경매 재개일 달라",
+        "reason": "출하 농가에 직접 필요한 시장 운영 일정인데 지역 쇼핑몰 기사에 밀렸다.",
+        "suggested_action": "‘마켓영동관’ 대신 선별한다."
       },
       {
-        "type": "noise",
+        "type": "weak_core",
+        "severity": "moderate",
+        "section": "dist",
+        "title": "[경제사업 1등 비결] 산지농협서 제철농산물 직공급",
+        "reason": "사례성 성공담으로 당일 유통 운영정보보다 핵심성이 낮다.",
+        "suggested_action": "core에서 강등하고 가락시장 휴업 일정 등 운영기사를 core로 승격한다."
+      },
+      {
+        "type": "weak_core",
+        "severity": "major",
+        "section": "pest",
+        "title": "가을 시설채소 흰가루병, 신규 작용기작 약제로 저항성 차단",
+        "reason": "특정 업체의 출시 제품 중심 기사여서 핵심 방제 위험 기사로 부적절하다.",
+        "suggested_action": "core에서 강등하고 벼멸구 확산·전국 대응 기사를 core로 승격한다."
+      },
+      {
+        "type": "missed_candidate",
         "severity": "moderate",
         "section": "pest",
-        "title": "서천군, 소나무재선충병 방제 강화…18억 추가 투입",
-        "reason": "산림 방제 기사로 농작물 병해충 브리핑의 직접성이 상대적으로 낮다.",
-        "suggested_action": "혹명나방·벼멸구 발생이 확인된 영광군 예찰 기사로 교체한다."
+        "title": "벼멸구 급증에 방제 강화…농촌진흥청 전국 기술원장 협의",
+        "reason": "전국 단위 벼멸구 급증 대응으로 지역 재선충 기사보다 파급력이 크다.",
+        "suggested_action": "서천 재선충 기사와 교체해 전국 대응을 우선한다."
       }
     ]
   },
   "editorial_suggested_guardrails": {
     "driver_tags": [
-      "commodity_board",
       "editorial_noise_filter",
       "editorial_duplicate_topic",
       "editorial_core_pick"
@@ -258,8 +245,8 @@
     "disable_relaxed_core_fill": true,
     "final_low_tier_max_per_section": 1,
     "final_low_tier_max_total": 4,
-    "commodity_active_min_rank": 2,
-    "commodity_program_core_min_rank": 3,
+    "commodity_active_min_rank": 1,
+    "commodity_program_core_min_rank": 1,
     "commodity_require_issue_signal": false,
     "commodity_require_direct_item_focus": false,
     "commodity_strict_primary_only": true,
@@ -270,8 +257,8 @@
     "mode": "shadow_replay_loop",
     "proposal_only": true,
     "target_score": 82.0,
-    "current_editorial_score": 69.7,
-    "model_reported_score": 70.1,
+    "current_editorial_score": 74.65,
+    "model_reported_score": 76.0,
     "quality_tier": "needs_major_iteration",
     "target_status": "needs_major_iteration",
     "iteration_budget": 3,
@@ -293,7 +280,7 @@
         "supply": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 238,
+          "raw_candidates": 320,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -305,7 +292,7 @@
         "policy": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 128,
+          "raw_candidates": 160,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -317,7 +304,7 @@
         "dist": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 73,
+          "raw_candidates": 64,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -329,12 +316,12 @@
         "pest": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 68,
+          "raw_candidates": 30,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
           "count_floor": 3,
-          "core_count": 1,
+          "core_count": 2,
           "fill_ratio": 1.0,
           "score": 100.0
         }
@@ -382,9 +369,7 @@
       }
     ],
     "current_selection_guardrails": {
-      "driver_tags": [
-        "commodity_board"
-      ],
+      "driver_tags": [],
       "section_card_min_fit": {
         "default": 0.8,
         "supply": 0.82,
@@ -412,8 +397,8 @@
       "disable_relaxed_core_fill": false,
       "final_low_tier_max_per_section": 1,
       "final_low_tier_max_total": 4,
-      "commodity_active_min_rank": 2,
-      "commodity_program_core_min_rank": 3,
+      "commodity_active_min_rank": 1,
+      "commodity_program_core_min_rank": 1,
       "commodity_require_issue_signal": false,
       "commodity_require_direct_item_focus": false,
       "commodity_strict_primary_only": true,
