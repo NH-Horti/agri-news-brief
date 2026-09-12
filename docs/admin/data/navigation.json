@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-12T02:45:49+09:00",
+  "generated_at": "2026-09-13T02:13:22+09:00",
   "section_jump": [
     {
       "date": "2026-07-01",
@@ -1384,6 +1384,20 @@
       "nav_type": "prev_date",
       "from_date": "2026-09-11",
       "to_date": "2026-09-10"
+    },
+    {
+      "date": "2026-09-12",
+      "count": 1,
+      "nav_type": "next_date",
+      "from_date": "2026-09-09",
+      "to_date": "2026-09-10"
+    },
+    {
+      "date": "2026-09-12",
+      "count": 1,
+      "nav_type": "next_date",
+      "from_date": "2026-09-10",
+      "to_date": "2026-09-11"
     }
   ]
 }
