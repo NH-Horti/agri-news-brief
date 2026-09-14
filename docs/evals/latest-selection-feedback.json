@@ -1,10 +1,10 @@
 {
-  "report_date": "2026-09-14",
-  "generated_at_kst": "2026-09-14T06:19:08+09:00",
+  "report_date": "2026-09-15",
+  "generated_at_kst": "2026-09-15T06:20:08+09:00",
   "scores": {
     "section_alignment": 100.0,
-    "core_quality": 90.0,
-    "commodity_board_quality": 90.57
+    "core_quality": 100.0,
+    "commodity_board_quality": 100.0
   },
   "metrics": {
     "section_alignment_low_fit_rate": 0.0,
@@ -12,16 +12,16 @@
     "content_false_positive_rate": 0.0,
     "reader_hard_issue_count": 0,
     "reader_hard_issue_rate": 0.0,
-    "reader_quality_penalty": 10.11,
+    "reader_quality_penalty": 11.2654,
     "reader_quality_cap": 90.0,
     "weak_core_rate": 0.0,
     "policy_wrong_section_rate": 0.0,
-    "promotional_filler_rate": 0.15,
-    "promotional_core_rate": 0.125,
-    "weak_core_editorial_rate": 0.125,
-    "pest_theme_duplicate_rate": 0.05,
+    "promotional_filler_rate": 0.1053,
+    "promotional_core_rate": 0.1429,
+    "weak_core_editorial_rate": 0.1429,
+    "pest_theme_duplicate_rate": 0.0526,
     "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 2.95,
+    "editorial_quality_penalty": 3.203,
     "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0,
@@ -29,24 +29,22 @@
     "commodity_primary_title_issue_signal_rate": 1.0,
     "commodity_primary_strict_link_rate": 1.0,
     "commodity_primary_low_rank_rate": 0.0,
-    "commodity_primary_count": 10,
-    "commodity_active_today_total": 22,
-    "commodity_active_today_unlinked_total": 12,
-    "commodity_managed_unlinked_total": 23,
+    "commodity_primary_count": 9,
+    "commodity_active_today_total": 14,
+    "commodity_active_today_unlinked_total": 5,
+    "commodity_managed_unlinked_total": 24,
     "commodity_board_daily_min_primary_count": 6,
     "commodity_board_low_coverage": false,
-    "commodity_board_coverage_rate": 0.303,
+    "commodity_board_coverage_rate": 0.2727,
     "commodity_primary_title_item_missing_rate": 0.0,
     "commodity_primary_body_only_rate": 0.0,
     "commodity_primary_false_link_rate": 0.0,
-    "commodity_pool_count": 15,
-    "commodity_pool_false_link_rate": 0.0667,
-    "commodity_primary_dominant_section_rate": 0.7
+    "commodity_pool_count": 14,
+    "commodity_pool_false_link_rate": 0.0,
+    "commodity_primary_dominant_section_rate": 0.4444
   },
   "selection_guardrails": {
-    "driver_tags": [
-      "commodity_board"
-    ],
+    "driver_tags": [],
     "section_card_min_fit": {
       "default": 0.8,
       "supply": 0.82,
@@ -74,8 +72,8 @@
     "disable_relaxed_core_fill": false,
     "final_low_tier_max_per_section": 1,
     "final_low_tier_max_total": 4,
-    "commodity_active_min_rank": 2,
-    "commodity_program_core_min_rank": 3,
+    "commodity_active_min_rank": 1,
+    "commodity_program_core_min_rank": 1,
     "commodity_require_issue_signal": false,
     "commodity_require_direct_item_focus": false,
     "commodity_strict_primary_only": true,
@@ -83,17 +81,8 @@
   },
   "editorial_quality_samples": [
     {
-      "title": "추석 성수품 가격 은…'금사과'는 없지만 축산물은 여전히 비싸",
-      "href": "https://www.yna.co.kr/view/AKR20260912017200030?input=1195m",
-      "section": "supply",
-      "is_core": true,
-      "reasons": [
-        "promotional_or_event_filler"
-      ]
-    },
-    {
-      "title": "당정, 추석맞이 성수품 공급 확대·대규모 할인 등 최대 규모 지원 예고",
-      "href": "https://www.ajunews.com/view/20260913190833644",
+      "title": "짧은 추석 연휴, 여행 대신 고향 찾는다…부모님 용돈 평균 30만원",
+      "href": "https://www.segye.com/newsView/20260914510183",
       "section": "policy",
       "is_core": false,
       "reasons": [
@@ -101,17 +90,17 @@
       ]
     },
     {
-      "title": "한국 청과 , 농업 현장 공무원 유통 업무 역량 강화",
-      "href": "https://www.aflnews.co.kr/news/articleView.html?idxno=327806",
+      "title": "신북 농협 , 배 수출 확대로 농가소득 증대 기여",
+      "href": "https://www.nongmin.com/article/20260914500213",
       "section": "dist",
-      "is_core": false,
+      "is_core": true,
       "reasons": [
         "promotional_or_event_filler"
       ]
     },
     {
-      "title": "농진원, 화상병 저항성 사과 대목 ‘G.11’ 보급",
-      "href": "https://www.farmnmarket.com/news/article.html?no=27772",
+      "title": "화상병 저항성 사과 대목 'Geneva 11' 보급 시작",
+      "href": "http://www.nongup.net/news/articleView.html?idxno=33713",
       "section": "pest",
       "is_core": false,
       "reasons": [
@@ -120,5 +109,324 @@
     }
   ],
   "reader_hard_issue_samples": [],
-  "editorial_improvement_plan": {}
+  "editorial": {
+    "score": 65.9,
+    "model_reported_score": 67.0,
+    "score_method": "weighted_components_v1",
+    "quality_tier": "needs_major_iteration",
+    "target_score": 82.0,
+    "target_status": "needs_major_iteration",
+    "acceptance_gate": {
+      "status": "needs_major_iteration",
+      "passed": false,
+      "target_score": 82.0,
+      "excellent_score": 92.0,
+      "stretch_score": 95.0,
+      "blocking_issue_count": 1,
+      "major_issue_count": 1,
+      "critical_component_min": 80.0,
+      "all_component_min": 75.0,
+      "checks": {
+        "editorial_score_min": false,
+        "no_blocking_issues": false,
+        "no_major_issues": false,
+        "critical_components_min": false,
+        "all_components_min": false,
+        "operational_score_min": true,
+        "section_count_score_min": true,
+        "no_section_underfill": false,
+        "commodity_board_score_min": true
+      },
+      "failure_reasons": [
+        "editorial_score_min",
+        "no_blocking_issues",
+        "no_major_issues",
+        "critical_components_min",
+        "all_components_min",
+        "no_section_underfill"
+      ]
+    },
+    "section_count_score": 98.0,
+    "section_count_status": "soft_fallback",
+    "scores": {
+      "article_selection": 68.0,
+      "section_fit": 78.0,
+      "core_pick_quality": 58.0,
+      "summary_usefulness": 72.0,
+      "missed_opportunity": 60.0,
+      "noise_control": 58.0
+    },
+    "issues": [
+      {
+        "type": "duplicate_story",
+        "severity": "major",
+        "section": "policy",
+        "title": "정부, 추석 할인 지원 예산 2.5배로…성수품도 초과 공급",
+        "reason": "앞 카드와 동일한 성수품 초과 공급·1490억원 할인 정책이며 둘 다 핵심이다.",
+        "suggested_action": "한 건만 남기고 농산물가격안정제를 핵심으로 승격한다."
+      },
+      {
+        "type": "off_topic",
+        "severity": "blocking",
+        "section": "policy",
+        "title": "짧은 추석 연휴, 여행 대신 고향 찾는다…부모님 용돈 평균 30만원",
+        "reason": "명절 소비 설문이 중심이고 농업정책 내용은 부수적이다.",
+        "suggested_action": "제외하고 가격 담합·바가지요금 단속 기사로 교체한다."
+      },
+      {
+        "type": "weak_core",
+        "severity": "moderate",
+        "section": "policy",
+        "title": "농산물가격안정제 발동 기준, 평년 도매 가격 의 80% 수준으로",
+        "reason": "농가 경영안전망의 구체적 제도 변화로 중복된 추석 대책보다 핵심성이 높다.",
+        "suggested_action": "핵심으로 승격한다."
+      },
+      {
+        "type": "weak_core",
+        "severity": "moderate",
+        "section": "dist",
+        "title": "175억 성공모델 남부권으로…달성 로컬푸드 직거래망 넓힌다",
+        "reason": "지역 직매장 개장 기사로 전국적 파급력과 운영 정보가 제한적이다.",
+        "suggested_action": "핵심에서 강등하고 도매시장 운영 또는 저장기술 기사를 핵심으로 올린다."
+      },
+      {
+        "type": "wrong_section",
+        "severity": "moderate",
+        "section": "dist",
+        "title": "[단독]농식품 규제샌드박스 83건 승인했는데…제도개선 완료 '단 1건'",
+        "reason": "유통·물류보다 제도 운영 부진을 다룬 정책 기사다.",
+        "suggested_action": "정책으로 이동하거나 유통 운영 기사로 교체한다."
+      },
+      {
+        "type": "promotional_filler",
+        "severity": "moderate",
+        "section": "dist",
+        "title": "화성 송산농협, 아태 15개국에 포도 생산·수출 현장 소개",
+        "reason": "견학과 기관 발언 중심으로 실제 수출 실적이나 물류 변화가 부족하다.",
+        "suggested_action": "배추 장기저장 실증 또는 남촌도매시장 공급·영업 연장 기사로 교체한다."
+      },
+      {
+        "type": "promotional_filler",
+        "severity": "moderate",
+        "section": "dist",
+        "title": "\"농산물값 변동 이유 알고 구매하세요\"",
+        "reason": "일회성 소비자 캠페인으로 유통 현장의 실질적 변화가 적다.",
+        "suggested_action": "구체적인 시장 운영·저장·수출 실적 기사로 교체한다."
+      },
+      {
+        "type": "bad_summary",
+        "severity": "minor",
+        "section": "supply",
+        "title": "[2026년 9월 3주] 주요 농산물 경락가 상승·하락 품목 - 토마토 완숙·토...",
+        "reason": "“66.”에서 수치가 끊기고 비교 기준 설명도 불완전하다.",
+        "suggested_action": "토마토 가격 상승률과 비교 기간을 완전한 문장으로 명시한다."
+      }
+    ]
+  },
+  "editorial_suggested_guardrails": {
+    "driver_tags": [
+      "editorial_section_fit",
+      "editorial_noise_filter",
+      "editorial_duplicate_topic",
+      "editorial_core_pick"
+    ],
+    "section_card_min_fit": {
+      "default": 0.9,
+      "supply": 0.95,
+      "policy": 0.95,
+      "dist": 1.1,
+      "pest": 0.89
+    },
+    "section_low_fit_rescue_min": 0.35,
+    "high_score_low_fit_rescue_margin": 4.2,
+    "tail_score_floor_delta": 0.8,
+    "core_fit_min": {
+      "default": 1.3,
+      "supply": 1.5,
+      "policy": 1.5,
+      "dist": 1.7,
+      "pest": 1.3
+    },
+    "core_relaxed_min_fit": {
+      "default": 1.0,
+      "supply": 1.18,
+      "policy": 1.15,
+      "dist": 1.35,
+      "pest": 1.0
+    },
+    "disable_relaxed_core_fill": true,
+    "final_low_tier_max_per_section": 1,
+    "final_low_tier_max_total": 4,
+    "commodity_active_min_rank": 1,
+    "commodity_program_core_min_rank": 1,
+    "commodity_require_issue_signal": false,
+    "commodity_require_direct_item_focus": false,
+    "commodity_strict_primary_only": true,
+    "commodity_disable_primary_fallback": true
+  },
+  "editorial_guardrail_mode": "advisory_only",
+  "editorial_improvement_plan": {
+    "mode": "shadow_replay_loop",
+    "proposal_only": true,
+    "target_score": 82.0,
+    "current_editorial_score": 65.9,
+    "model_reported_score": 67.0,
+    "quality_tier": "needs_major_iteration",
+    "target_status": "needs_major_iteration",
+    "iteration_budget": 3,
+    "promotion_gates": {
+      "editorial_score_min": 82.0,
+      "critical_component_min": 80.0,
+      "all_component_min": 75.0,
+      "no_blocking_issues": true,
+      "no_major_issues": true,
+      "operational_score_min": 85.0,
+      "section_count_score_min": 95.0,
+      "commodity_board_score_min": 90.0,
+      "no_section_underfill": true
+    },
+    "section_count_context": {
+      "score": 98.0,
+      "status": "soft_fallback",
+      "sections": {
+        "supply": {
+          "actual": 5,
+          "expected": 5,
+          "raw_candidates": 215,
+          "preferred_count": 5,
+          "soft_fallback_count": 4,
+          "minimum_fallback_count": 3,
+          "count_floor": 3,
+          "core_count": 2,
+          "fill_ratio": 1.0,
+          "score": 100.0
+        },
+        "policy": {
+          "actual": 5,
+          "expected": 5,
+          "raw_candidates": 115,
+          "preferred_count": 5,
+          "soft_fallback_count": 4,
+          "minimum_fallback_count": 3,
+          "count_floor": 3,
+          "core_count": 2,
+          "fill_ratio": 1.0,
+          "score": 100.0
+        },
+        "dist": {
+          "actual": 5,
+          "expected": 5,
+          "raw_candidates": 69,
+          "preferred_count": 5,
+          "soft_fallback_count": 4,
+          "minimum_fallback_count": 3,
+          "count_floor": 3,
+          "core_count": 2,
+          "fill_ratio": 1.0,
+          "score": 100.0
+        },
+        "pest": {
+          "actual": 4,
+          "expected": 5,
+          "raw_candidates": 25,
+          "preferred_count": 5,
+          "soft_fallback_count": 4,
+          "minimum_fallback_count": 3,
+          "count_floor": 3,
+          "core_count": 1,
+          "fill_ratio": 0.8,
+          "score": 92.0
+        }
+      },
+      "underfilled_sections": [
+        "pest"
+      ],
+      "soft_fallback_sections": [
+        "pest"
+      ],
+      "minimum_fallback_sections": [],
+      "severe_underfilled_sections": [],
+      "preferred_count": 5,
+      "soft_fallback_count": 4,
+      "minimum_fallback_count": 3,
+      "target_score": 95.0,
+      "scoring_rule": "Each section should try to carry 5 briefing cards when raw candidates exist. 4 cards is a soft fallback below target, 3 cards is a minimum fallback, and broad fallback use caps editorial shadow below 95."
+    },
+    "guardrail_focus": [
+      "core_quality",
+      "article_selection",
+      "noise_control",
+      "section_fit",
+      "summary_usefulness"
+    ],
+    "recommended_actions": [
+      {
+        "kind": "selection_guardrail",
+        "target": "core_fit_min",
+        "direction": "tighten",
+        "reason": "Core cards should not be filled by merely available articles."
+      },
+      {
+        "kind": "story_dedupe",
+        "target": "story_signature_gate",
+        "direction": "tighten",
+        "reason": "Multiple cards covered the same issue and reduced briefing breadth."
+      },
+      {
+        "kind": "noise_filter",
+        "target": "semantic_false_positive_gate",
+        "direction": "tighten",
+        "reason": "Selected cards included low editorial-value noise."
+      },
+      {
+        "kind": "section_fit",
+        "target": "section_card_min_fit",
+        "direction": "tighten",
+        "reason": "A selected card appears to fit another section better."
+      },
+      {
+        "kind": "summary_prompt",
+        "target": "latest-feedback.txt",
+        "direction": "add_editorial_feedback",
+        "reason": "Summaries should explain impact and decision value, not just restate titles."
+      }
+    ],
+    "current_selection_guardrails": {
+      "driver_tags": [],
+      "section_card_min_fit": {
+        "default": 0.8,
+        "supply": 0.82,
+        "policy": 0.82,
+        "dist": 0.95,
+        "pest": 0.78
+      },
+      "section_low_fit_rescue_min": 0.15,
+      "high_score_low_fit_rescue_margin": 3.0,
+      "tail_score_floor_delta": 0.0,
+      "core_fit_min": {
+        "default": 1.2,
+        "supply": 1.4,
+        "policy": 1.4,
+        "dist": 1.6,
+        "pest": 1.2
+      },
+      "core_relaxed_min_fit": {
+        "default": 1.0,
+        "supply": 1.18,
+        "policy": 1.15,
+        "dist": 1.35,
+        "pest": 1.0
+      },
+      "disable_relaxed_core_fill": false,
+      "final_low_tier_max_per_section": 1,
+      "final_low_tier_max_total": 4,
+      "commodity_active_min_rank": 1,
+      "commodity_program_core_min_rank": 1,
+      "commodity_require_issue_signal": false,
+      "commodity_require_direct_item_focus": false,
+      "commodity_strict_primary_only": true,
+      "commodity_disable_primary_fallback": true
+    },
+    "notes": "Use this as the replay loop contract: iterate guardrails and ranking changes, then promote only when editorial, operational, preferred section-count, and commodity-board gates all pass."
+  }
 }
