@@ -37,6 +37,11 @@ on:
         required: false
         default: '55'
         type: string
+      replay_allow_openai:
+        description: 'Allow OpenAI summaries for newly selected cards during replay (true/false)'
+        required: false
+        default: 'false'
+        type: string
 
 permissions:
   contents: write
@@ -201,7 +206,7 @@ jobs:
           DELIVERY_RECEIPT_DIR: docs/delivery
           REPLAY_SNAPSHOT_PATH: ${{ steps.vars.outputs.replay_snapshot_path }}
           REPLAY_WRITE_SNAPSHOT: ${{ steps.vars.outputs.replay_write_snapshot }}
-          REPLAY_ALLOW_OPENAI: 'false'
+          REPLAY_ALLOW_OPENAI: ${{ inputs.replay_allow_openai == 'true' && 'true' || 'false' }}
           REPLAY_SNAPSHOT_DIR: .agri_replay
           MAX_PER_SECTION: ${{ steps.vars.outputs.max_per_section }}
 

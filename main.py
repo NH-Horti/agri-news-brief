@@ -4901,6 +4901,256 @@ def _title_token_jaccard(title_a: str, title_b: str) -> float:
     return len(tok_a & tok_b) / len(union)
 
 
+
+# ---------------------------------------------------------------------------
+# 같은 기관의 같은 발표를 여러 매체가 서로 다른 제목·리드로 내보낸 경우
+# (2026-09-16: 인천농협 남촌공판장 추석 수급점검 3건, NHN KCP 경매대금 카드결제 2건이
+#  품목·정부행위자 시그니처에 잡히지 않아 한 지면에 나란히 실렸다).
+# 제목 앞머리 "기관, ..." 의 기관이 같고(농협 지역본부·원예농협 별칭 통합), 48시간 안에 나왔으며,
+# 제목 본문이 2개 이상의 어절(접두 일치)과 3개 이상의 음절 바이그램을 공유하면 같은 발표로 본다.
+# 정부·지자체·농업기술센터 주체는 제외한다 — 같은 날 여러 발표를 내는 주체라 사건 시그니처·
+# agency_advisory 규칙에 맡긴다.
+# ---------------------------------------------------------------------------
+_ORG_SUBJECT_GOV_RX = re.compile(
+    r"(정부|청와대|국회|총리|장관|차관|대통령|의회|위원회|농식품부|농림|해수부|기재부|중기부|산업부|"
+    r"공정위|식약처|관세청|통계청|기상청|농진청|농촌진흥청|검역본부|농업기술원|농기원|농업기술센터|농관원|"
+    r"[가-힣]{1,6}(?:특별시|광역시|특별자치시|특별자치도|도|시|군|구)(?:청|의회)?$)"
+)
+_ORG_TITLE_TAG_RX = re.compile(r"^\s*[\[\(【][^\]\)】]{0,20}[\]\)】]\s*")
+_ORG_TITLE_PARTICLE_RX = re.compile(
+    r"(?<=[가-힣]{2})(?:에서는|으로는|에서|으로|에게|부터|까지|에는|은|는|이|가|을|를|의|에|로|과|와|도|만|서)$"
+)
+_ORG_TITLE_STOP_SEGMENTS = frozenset((
+    "앞두고", "맞아", "맞이", "위해", "위한", "통해", "통한", "대비", "실시", "추진", "개최", "나서", "나선다",
+    "밝혀", "진행", "오는", "지난", "이번", "올해", "내년", "오늘", "내일", "한다", "된다", "대한", "관련",
+    "함께", "있는", "없는", "등", "및", "총", "최대", "전국", "본격", "속도",
+))
+_ORG_TITLE_STOP_BIGRAMS = frozenset((
+    "앞두", "두고", "위해", "통해", "대비", "맞아", "맞이", "실시", "추진", "개최", "나서", "나선", "밝혀",
+    "진행", "하고", "하는", "으로", "에서", "에게", "부터", "까지", "관련", "대한", "오는", "지난", "올해",
+    "내년", "이번", "오늘", "내일", "대해", "위한", "함께", "통한", "있는", "없는", "것으", "등을", "등에",
+    "등의", "로부", "에도", "마련", "한다", "된다", "이다",
+))
+_ORG_NH_SUFFIX_RX = re.compile(r"(농협중앙회|농협경제지주|경제지주|중앙회|지역본부|본부|원예|과수|축산|농협|축협)")
+
+
+def _title_org_subject(title: str) -> str:
+    """제목 앞머리 '기관, ...'의 기관명. 없거나 기관명으로 보기 어려우면 빈 문자열."""
+    text = _ORG_TITLE_TAG_RX.sub("", _nfkc_lower(title or ""))
+    head, sep, rest = text.partition(",")
+    if not sep or len(head) > 32:
+        return ""
+    subject = head.strip().strip("\"'“”‘’")
+    if not (2 <= len(subject) <= 30) or len(rest.strip()) < 4:
+        return ""
+    if re.search(r"[\"'“”‘’…]", subject):
+        return ""
+    return subject
+
+
+def _org_subject_keys(subject: str) -> frozenset[str]:
+    """기관명 정규화 키. 농협 지역본부·원예농협은 '농협:지역'으로 묶는다. 정부·지자체는 빈 집합."""
+    keys: set[str] = set()
+    for part in re.split(r"[·,&/]|\s+and\s+", _nfkc_lower(subject or "")):
+        compact = re.sub(r"\s+", "", part)
+        if not compact:
+            continue
+        if _ORG_SUBJECT_GOV_RX.search(compact):
+            return frozenset()
+        if "농협" in compact or "축협" in compact:
+            region = _ORG_NH_SUFFIX_RX.sub("", compact)
+            keys.add("농협:" + (region or "중앙"))
+        else:
+            keys.add(compact)
+    return frozenset(keys)
+
+
+def _org_title_segments(body: str) -> frozenset[str]:
+    out: set[str] = set()
+    for seg in re.findall(r"[가-힣]{2,}|[a-z0-9]{2,}", body):
+        seg = _ORG_TITLE_PARTICLE_RX.sub("", seg) if len(seg) >= 3 else seg
+        if len(seg) >= 2 and seg not in _ORG_TITLE_STOP_SEGMENTS:
+            out.add(seg)
+    return frozenset(out)
+
+
+def _org_text_bigrams(text: str) -> frozenset[str]:
+    body = re.sub(r"[^가-힣a-z0-9]", "", _nfkc_lower(text or ""))
+    out: set[str] = set()
+    for run in re.findall(r"[가-힣]+", body):
+        for i in range(len(run) - 1):
+            bigram = run[i:i + 2]
+            if bigram not in _ORG_TITLE_STOP_BIGRAMS:
+                out.add(bigram)
+    out.update(re.findall(r"[a-z0-9]{2,}", body))
+    return frozenset(out)
+
+
+@lru_cache(maxsize=8192)
+def _org_announcement_signature(
+    title: str, desc: str
+) -> tuple[frozenset[str], frozenset[str], frozenset[str], frozenset[str]]:
+    subject = _title_org_subject(title)
+    if not subject:
+        return (frozenset(), frozenset(), frozenset(), frozenset())
+    keys = _org_subject_keys(subject)
+    if not keys:
+        return (frozenset(), frozenset(), frozenset(), frozenset())
+    text = _ORG_TITLE_TAG_RX.sub("", _nfkc_lower(title or ""))
+    body = text.partition(",")[2]
+    title_bigrams = _org_text_bigrams(body)
+    combined = title_bigrams | _org_text_bigrams((desc or "")[:240])
+    return (keys, _org_title_segments(body), title_bigrams, combined)
+
+
+def _shared_prefix_segment_count(seg_a: frozenset[str], seg_b: frozenset[str]) -> int:
+    return sum(
+        1 for s in seg_a
+        if any(s == t or s.startswith(t) or t.startswith(s) for t in seg_b)
+    )
+
+
+def _same_org_announcement_reason(a: "Article", b: "Article") -> str:
+    """같은 기관의 같은 발표(보도자료)를 다른 매체가 다른 제목으로 낸 경우."""
+    pub_a = getattr(a, "pub_dt_kst", None)
+    pub_b = getattr(b, "pub_dt_kst", None)
+    if (
+        isinstance(pub_a, datetime)
+        and isinstance(pub_b, datetime)
+        and abs((pub_a - pub_b).total_seconds()) > 48 * 3600
+    ):
+        return ""
+    keys_a, seg_a, bg_a, all_a = _org_announcement_signature(
+        getattr(a, "title", "") or "", getattr(a, "description", "") or ""
+    )
+    keys_b, seg_b, bg_b, all_b = _org_announcement_signature(
+        getattr(b, "title", "") or "", getattr(b, "description", "") or ""
+    )
+    if not keys_a or not keys_b or not (keys_a & keys_b):
+        return ""
+    if _shared_prefix_segment_count(seg_a, seg_b) < 2:
+        return ""
+    if len(bg_a & bg_b) >= 3:
+        return "same_org_announcement"
+    if len(all_a & all_b) >= 8:
+        return "same_org_announcement_lead"
+    return ""
+
+
+
+# ---------------------------------------------------------------------------
+# 리드 문장 유사도 백스톱: 같은 보도자료를 받아쓴 기사들은 제목이 달라도 리드 문장의
+# 음절 4-gram을 절반 이상 공유한다 (2026-09-16 '가락시장 파렛트 의무출하' 기사가 매체별
+# 제목 변형으로 공급·유통 지면에 나란히 실렸다). 공유 버튼·관련기사 같은 군더더기는
+# '…다.'로 끝나는 문장이 아니라서 제외되고, 같은 매체끼리는 템플릿 문구가 겹쳐 오탐이
+# 나므로 서로 다른 매체일 때만 적용한다. 5개 날짜 스냅샷 전수 검사에서 0.5/12 기준의
+# 교차 매체 플래그는 전부 실제 동일 보도였다.
+# ---------------------------------------------------------------------------
+_LEAD_SENTENCE_RX = re.compile(r"[^.。!?\n]*?다(?:\.|\s|$)")
+_LEAD_SHINGLE_MIN_SHARED = 12
+_LEAD_SHINGLE_MIN_CONTAINMENT = 0.5
+
+
+def _lead_sentences(desc: str, max_sentences: int = 3) -> str:
+    text = unicodedata.normalize("NFKC", desc or "")[:700]
+    out: list[str] = []
+    for m in _LEAD_SENTENCE_RX.finditer(text):
+        sentence = m.group(0).strip()
+        if len(re.findall(r"[가-힣]", sentence)) < 15:
+            continue
+        out.append(sentence)
+        if len(out) >= max_sentences:
+            break
+    return " ".join(out)
+
+
+@lru_cache(maxsize=8192)
+def _lead_text_shingles(title: str, desc: str) -> frozenset[str]:
+    lead = _lead_sentences(desc)
+    if not lead:
+        return frozenset()
+    text = _nfkc_lower(f"{title or ''} {lead}")
+    out: set[str] = set()
+    for run in re.findall(r"[가-힣a-z0-9]+", text):
+        for i in range(len(run) - 3):
+            out.add(run[i:i + 4])
+    return frozenset(out)
+
+
+def _same_lead_text_reason(a: "Article", b: "Article") -> str:
+    domain_a = normalize_host(getattr(a, "domain", "") or domain_of(getattr(a, "url", "") or ""))
+    domain_b = normalize_host(getattr(b, "domain", "") or domain_of(getattr(b, "url", "") or ""))
+    if not domain_a or not domain_b or domain_a == domain_b:
+        return ""
+    pub_a = getattr(a, "pub_dt_kst", None)
+    pub_b = getattr(b, "pub_dt_kst", None)
+    if (
+        isinstance(pub_a, datetime)
+        and isinstance(pub_b, datetime)
+        and abs((pub_a - pub_b).total_seconds()) > 96 * 3600
+    ):
+        return ""
+    sh_a = _lead_text_shingles(getattr(a, "title", "") or "", getattr(a, "description", "") or "")
+    sh_b = _lead_text_shingles(getattr(b, "title", "") or "", getattr(b, "description", "") or "")
+    if not sh_a or not sh_b:
+        return ""
+    shared = len(sh_a & sh_b)
+    if shared < _LEAD_SHINGLE_MIN_SHARED:
+        return ""
+    if shared / min(len(sh_a), len(sh_b)) < _LEAD_SHINGLE_MIN_CONTAINMENT:
+        return ""
+    return "same_lead_text"
+
+
+
+# ---------------------------------------------------------------------------
+# 제목 어절 포함 백스톱: 짧은 제목의 내용 어절(조사·상투어 제거, 4개 이상)이 80% 이상 다른
+# 제목에 그대로 들어 있으면 같은 사건이다 ('봄동·당근 파렛트 출하 의무화' ⊂ '느타리·봄동·
+# 제주당근까지…가락시장 파렛트 의무출하 가속'). 리드가 짧게 잘린 검색 API 기사에는 리드
+# 규칙이 듣지 않아 제목만으로 판정한다. 5개 날짜 스냅샷 전수 검사에서 플래그된 쌍은 전부
+# 같은 발표·행사였다.
+# ---------------------------------------------------------------------------
+_TITLE_CONTAIN_STOP_SEGMENTS = _ORG_TITLE_STOP_SEGMENTS | frozenset((
+    "추석", "명절", "연휴", "설날", "확대", "강화", "지원", "가속", "본격", "개선", "마련", "운영",
+))
+_TITLE_CONTAIN_MIN_SEGMENTS = 4
+_TITLE_CONTAIN_MIN_RATIO = 0.8
+
+
+@lru_cache(maxsize=8192)
+def _title_content_segments(title: str) -> tuple[tuple[str, ...], str]:
+    text = _ORG_TITLE_TAG_RX.sub("", _nfkc_lower(title or ""))
+    segments: list[str] = []
+    for seg in re.findall(r"[가-힣]{2,}|[a-z0-9]{2,}", text):
+        seg = _ORG_TITLE_PARTICLE_RX.sub("", seg) if len(seg) >= 3 else seg
+        if len(seg) >= 2 and seg not in _TITLE_CONTAIN_STOP_SEGMENTS and seg not in segments:
+            segments.append(seg)
+    return tuple(segments), re.sub(r"[^가-힣a-z0-9]", "", text)
+
+
+def _same_title_containment_reason(a: "Article", b: "Article") -> str:
+    pub_a = getattr(a, "pub_dt_kst", None)
+    pub_b = getattr(b, "pub_dt_kst", None)
+    if (
+        isinstance(pub_a, datetime)
+        and isinstance(pub_b, datetime)
+        and abs((pub_a - pub_b).total_seconds()) > 48 * 3600
+    ):
+        return ""
+    seg_a, compact_a = _title_content_segments(getattr(a, "title", "") or "")
+    seg_b, compact_b = _title_content_segments(getattr(b, "title", "") or "")
+    if len(seg_a) <= len(seg_b):
+        short, other = seg_a, compact_b
+    else:
+        short, other = seg_b, compact_a
+    if len(short) < _TITLE_CONTAIN_MIN_SEGMENTS:
+        return ""
+    hits = sum(1 for seg in short if seg in other)
+    if hits >= _TITLE_CONTAIN_MIN_SEGMENTS and hits / len(short) >= _TITLE_CONTAIN_MIN_RATIO:
+        return "same_title_containment"
+    return ""
+
+
 def _duplicate_story_pair_reason(a: "Article", b: "Article") -> str:
     """URL·제목 유사도·사건 시그니처를 통합한 스토리 중복 판정."""
     url_a = str(getattr(a, "canon_url", "") or "")
@@ -4922,6 +5172,15 @@ def _duplicate_story_pair_reason(a: "Article", b: "Article") -> str:
         pass
     if _title_token_jaccard(getattr(a, "title", "") or "", getattr(b, "title", "") or "") >= 0.6:
         return "similar_title_tokens"
+    org_reason = _same_org_announcement_reason(a, b)
+    if org_reason:
+        return org_reason
+    lead_reason = _same_lead_text_reason(a, b)
+    if lead_reason:
+        return lead_reason
+    contain_reason = _same_title_containment_reason(a, b)
+    if contain_reason:
+        return contain_reason
     event_reason = _same_event_articles_reason(a, b)
     if event_reason:
         return event_reason
@@ -24634,12 +24893,54 @@ def _is_community_welfare_service_story(title: str, desc: str) -> bool:
     return count_any(lead, [w.lower() for w in _COMMUNITY_WELFARE_OPS_ANCHORS]) < 1
 
 
+
+# 지자체 명절 종합대책(귀성·안전·의료·쓰레기·공직기강 등 행정 전 분야 묶음)은
+# 농업 정책이 아니다. 2026-09-16 '대구 동구, 추석맞이 종합 대책 추진'이 정책 지면 카드로
+# 실려 편집 평가 off_topic(blocking)으로 발행이 막혔다. 제목·리드에 농산물 앵커가 있으면
+# (성수품 수급대책 등) 판단을 보류한다.
+_HOLIDAY_TERM_RX = re.compile(r"(?<![가-힣])(추석|설날|설맞이|설\s?명절|명절|연휴)")
+_HOLIDAY_OMNIBUS_RX = re.compile(
+    r"종합\s*대책|종합\s*상황실|(?:민생|생활)\s*안정\s*대책|연휴\s*대책|명절\s*대책|"
+    r"대책\s*(?:추진|수립|마련|시행|가동)"
+)
+_HOLIDAY_LOCAL_GOV_RX = re.compile(
+    r"(?:^|[\s,·\[])[가-힣]{1,6}(?:특별시|광역시|특별자치시|특별자치도|도|시|군|구)(?:청|의회)?(?:,|\s|은|는|이|가|에서|$)"
+)
+_HOLIDAY_CENTRAL_GOV_TERMS = ("정부", "농식품부", "농림", "총리", "장관", "대통령", "국회", "농진청", "해수부", "기재부")
+_HOLIDAY_AGRI_ANCHORS = (
+    "농산물", "농축산물", "농축산", "농수산물 수급", "성수품", "농가", "농업인", "농민", "농협", "농업", "농정",
+    "영농", "축산", "수확", "수급", "출하", "산지", "작황", "재배", "원예", "과일", "채소", "과수", "도매시장",
+    "공판장", "물가",
+)
+
+
+def is_municipal_holiday_omnibus_plan_context(title: str, desc: str) -> bool:
+    """지자체의 명절 종합대책 기사인가 (농산물 앵커 없음)."""
+    title_l = _nfkc_lower(title or "")
+    if not title_l:
+        return False
+    if not (_HOLIDAY_TERM_RX.search(title_l) and _HOLIDAY_OMNIBUS_RX.search(title_l)):
+        return False
+    if any(term in title_l for term in _HOLIDAY_CENTRAL_GOV_TERMS):
+        return False
+    if not _HOLIDAY_LOCAL_GOV_RX.search(title_l):
+        return False
+    if count_any(title_l, [w.lower() for w in _HOLIDAY_AGRI_ANCHORS]) >= 1:
+        return False
+    lead = _nfkc_lower((desc or "")[:240])
+    return count_any(lead, [w.lower() for w in _HOLIDAY_AGRI_ANCHORS]) < 1
+
+
 def _postbuild_article_reject_reason(a: "Article", section_key: str, *, apply_selection_fit: bool = True) -> str:
     # 운영자 피드백 배제(exclude_url_fragments/exclude_title_terms)는 선정 입구뿐 아니라
     # 후반 rescue/swap/refill이 raw 풀에서 직접 끌어오는 경로에서도 강제되어야 한다.
     feedback_reason = _selection_feedback_block_reason(a, section_key)
     if feedback_reason:
         return feedback_reason
+    if section_key in ("supply", "policy", "dist") and is_municipal_holiday_omnibus_plan_context(
+        a.title or "", a.description or ""
+    ):
+        return "municipal_holiday_omnibus_plan"
     text = ((a.title or "") + " " + (a.description or "")).lower()
     if is_garbled_article_text(a.title or "", a.description or ""):
         return "garbled_article_text"
@@ -43940,6 +44241,8 @@ def _is_policy_reader_filler(article: Article) -> bool:
     if is_generic_policy_schedule_context(article.title or "", article.description or ""):
         return True
     if is_local_council_multi_issue_digest_context(article.title or "", article.description or ""):
+        return True
+    if is_municipal_holiday_omnibus_plan_context(article.title or "", article.description or ""):
         return True
     if is_supply_production_crisis_context(article.title or "", article.description or ""):
         return True
