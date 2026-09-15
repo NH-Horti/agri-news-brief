@@ -2,8 +2,8 @@
   "schema_version": 1,
   "version": 1,
   "report_date": "2026-09-16",
-  "created_at_kst": "2026-09-16T06:19:32+09:00",
-  "build_tag": "2a194ad",
+  "created_at_kst": "2026-09-16T06:34:14+09:00",
+  "build_tag": "4286ac3",
   "content_ref": "main",
   "content_branch": "main",
   "window": {
@@ -258,7 +258,7 @@
         "selection_stage": "",
         "selection_note": "",
         "reassigned_from": "",
-        "score": 35.06,
+        "score": 34.66,
         "selection_fit_score": 0.0,
         "is_core": false
       },
@@ -4116,7 +4116,7 @@
         "pub_dt_kst": "2026-09-15T17:00:00+09:00",
         "section": "supply",
         "title": "거창군, 추석 앞두고 지역 농·특산물 소비촉진 나선다",
-        "description": "이번 장터에는 푸드센터 입점농가 12곳 정도가 참여해 사과 , 포도·샤인머스캣, 표고버섯, 잡곡, 유정란 등... 합리적인 가격 에 구매할 수 있도록 할 예정이다. 장터에서는 판매행사와 함께 다양한 부대행사도 마련된다....",
+        "description": "이번 장터에는 푸드센터 입점농가 12곳 정도가 참여해 사과, 포도 ·샤인머스캣, 표고버섯, 잡곡, 유정란 등... 합리적인 가격 에 구매할 수 있도록 할 예정이다. 장터에서는 판매행사와 함께 다양한 부대행사도 마련된다....",
         "link": "https://www.newsgn.com/news/articleView.html?idxno=573937",
         "originallink": "https://www.newsgn.com/news/articleView.html?idxno=573937",
         "domain": "newsgn.com",
@@ -4128,7 +4128,7 @@
         "summary": "",
         "forced_section": "",
         "origin_section": "supply",
-        "source_query": "사과 가격",
+        "source_query": "포도 가격",
         "source_channel": "naver_api",
         "selection_stage": "",
         "selection_note": "",
@@ -5263,31 +5263,6 @@
         "is_core": false
       },
       {
-        "pub_dt_kst": "2026-09-15T22:14:00+09:00",
-        "section": "supply",
-        "title": "용인시 농특산물, 잠수교-강남 백화점서 서울 판로 넓힌다",
-        "description": "용인시는 지역 농가 와 식품업체 5곳이 오는 10월 11일 서울에서 열리는 '잠수교 뚜벅뚜벅 축제'에 참여해... 감스베이크는 동결건조 딸기와 불용성 단백질 혼합물을 넣지 않은 감자 빵·고구마빵으로 소비자들의 입맛을...",
-        "link": "https://www.cnbnews.com/news/articleView.html?idxno=1015839",
-        "originallink": "https://www.cnbnews.com/news/articleView.html?idxno=1015839",
-        "domain": "cnbnews.com",
-        "press": "CNB뉴스",
-        "norm_key": "url:f073afe57c97c46802da8e1b139e8f25",
-        "title_key": "용인시농특산물잠수교강남백화점서서울판로넓힌다",
-        "canon_url": "https://cnbnews.com/news/articleView.html?idxno=1015839",
-        "topic": "기타",
-        "summary": "",
-        "forced_section": "",
-        "origin_section": "supply",
-        "source_query": "감자 농가",
-        "source_channel": "naver_api",
-        "selection_stage": "",
-        "selection_note": "",
-        "reassigned_from": "",
-        "score": 0.73,
-        "selection_fit_score": 0.0,
-        "is_core": false
-      },
-      {
         "pub_dt_kst": "2026-09-15T15:22:00+09:00",
         "section": "supply",
         "title": "신세계푸드, 가을 제철 ‘생무화과’ 케이크 선봬",
@@ -5488,6 +5463,31 @@
         "is_core": false
       },
       {
+        "pub_dt_kst": "2026-09-15T22:14:00+09:00",
+        "section": "supply",
+        "title": "용인시 농특산물, 잠수교-강남 백화점서 서울 판로 넓힌다",
+        "description": "용인시는 지역 농가 와 식품업체 5곳이 오는 10월 11일 서울에서 열리는 '잠수교 뚜벅뚜벅 축제'에 참여해... 감스베이크는 동결건조 딸기와 불용성 단백질 혼합물을 넣지 않은 감자 빵·고구마빵으로 소비자들의 입맛을...",
+        "link": "https://www.cnbnews.com/news/articleView.html?idxno=1015839",
+        "originallink": "https://www.cnbnews.com/news/articleView.html?idxno=1015839",
+        "domain": "cnbnews.com",
+        "press": "CNB뉴스",
+        "norm_key": "url:f073afe57c97c46802da8e1b139e8f25",
+        "title_key": "용인시농특산물잠수교강남백화점서서울판로넓힌다",
+        "canon_url": "https://cnbnews.com/news/articleView.html?idxno=1015839",
+        "topic": "기타",
+        "summary": "",
+        "forced_section": "",
+        "origin_section": "supply",
+        "source_query": "감자 농가",
+        "source_channel": "naver_api",
+        "selection_stage": "",
+        "selection_note": "",
+        "reassigned_from": "",
+        "score": 0.73,
+        "selection_fit_score": 0.0,
+        "is_core": false
+      },
+      {
         "pub_dt_kst": "2026-09-15T16:56:00+09:00",
         "section": "supply",
         "title": "경북농기원, '2026년 원예작물분야 담당자 워크숍' 개최",
@@ -5638,31 +5638,6 @@
         "is_core": false
       },
       {
-        "pub_dt_kst": "2026-09-15T22:14:00+09:00",
-        "section": "supply",
-        "title": "[나는 청년입니다-박미나 농업회사법인 보름 대표]플로리스트서 라이프...",
-        "description": "화예연출을 공부하며 백화점 명품매장의 화훼 디스플레이와 VIP 화훼 상품, 웨딩플라워 등 다양한 현장을... 그린부츠가 지향하는 것은 단순히 꽃을 재배 하고 판매하는 농장이 아니다. 청도의 자연과 계절을 직접 경험하고...",
-        "link": "https://www.idaegu.co.kr/news/articleView.html?idxno=559805",
-        "originallink": "https://www.idaegu.co.kr/news/articleView.html?idxno=559805",
-        "domain": "idaegu.co.kr",
-        "press": "아이대구",
-        "norm_key": "url:1d10adc2977c1cf0ec07b1700acdc575",
-        "title_key": "플로리스트서라이프",
-        "canon_url": "https://idaegu.co.kr/news/articleView.html?idxno=559805",
-        "topic": "기타",
-        "summary": "",
-        "forced_section": "",
-        "origin_section": "supply",
-        "source_query": "화훼 재배",
-        "source_channel": "naver_api",
-        "selection_stage": "",
-        "selection_note": "",
-        "reassigned_from": "",
-        "score": -0.42,
-        "selection_fit_score": 0.0,
-        "is_core": false
-      },
-      {
         "pub_dt_kst": "2026-09-15T14:08:00+09:00",
         "section": "supply",
         "title": "[단독] 고추장 스낵·간장맛 캐러멜 나온다…대상, ‘옹브로스’ 韓·美...",
@@ -5809,6 +5784,31 @@
         "selection_note": "",
         "reassigned_from": "",
         "score": -0.39,
+        "selection_fit_score": 0.0,
+        "is_core": false
+      },
+      {
+        "pub_dt_kst": "2026-09-15T22:14:00+09:00",
+        "section": "supply",
+        "title": "[나는 청년입니다-박미나 농업회사법인 보름 대표]플로리스트서 라이프...",
+        "description": "화예연출을 공부하며 백화점 명품매장의 화훼 디스플레이와 VIP 화훼 상품, 웨딩플라워 등 다양한 현장을... 그린부츠가 지향하는 것은 단순히 꽃을 재배 하고 판매하는 농장이 아니다. 청도의 자연과 계절을 직접 경험하고...",
+        "link": "https://www.idaegu.co.kr/news/articleView.html?idxno=559805",
+        "originallink": "https://www.idaegu.co.kr/news/articleView.html?idxno=559805",
+        "domain": "idaegu.co.kr",
+        "press": "아이대구",
+        "norm_key": "url:1d10adc2977c1cf0ec07b1700acdc575",
+        "title_key": "플로리스트서라이프",
+        "canon_url": "https://idaegu.co.kr/news/articleView.html?idxno=559805",
+        "topic": "기타",
+        "summary": "",
+        "forced_section": "",
+        "origin_section": "supply",
+        "source_query": "화훼 재배",
+        "source_channel": "naver_api",
+        "selection_stage": "",
+        "selection_note": "",
+        "reassigned_from": "",
+        "score": -0.42,
         "selection_fit_score": 0.0,
         "is_core": false
       },
@@ -6358,7 +6358,7 @@
         "selection_stage": "",
         "selection_note": "",
         "reassigned_from": "",
-        "score": -4.67,
+        "score": -4.87,
         "selection_fit_score": 0.0,
         "is_core": false
       },
@@ -6832,11 +6832,11 @@
         "origin_section": "policy",
         "source_query": "성수품 가격 안정 대책",
         "source_channel": "naver_api",
-        "selection_stage": "",
-        "selection_note": "",
+        "selection_stage": "policy_underfill_recovery",
+        "selection_note": "major_policy_underfill",
         "reassigned_from": "",
         "score": 38.55,
-        "selection_fit_score": 0.0,
+        "selection_fit_score": 5.69,
         "is_core": false
       },
       {
@@ -6968,7 +6968,7 @@
         "pub_dt_kst": "2026-09-15T15:42:00+09:00",
         "section": "policy",
         "title": "한 총리 \"메가프로젝트 성공, 송전망 조기 구축 등에 달려 있어\"",
-        "description": "추석물가 안정 에 최선을 다하고 있다\"고 밝혔다. 아울러 \"재정경제부, 농림축산식품부 등 관계부처는 정부 대책 을 소상히 알리고, 성수품 이 제때 공급되는지, 표시 가격 위반 등 불공정행위는 없는지 현장 상황을 세심하게...",
+        "description": "한성숙 국무총리는 추석 성수품이 제때 공급되는지, 표시 가격 위반 등 불공정행위는 없는지 현장 상황을 세심하게 점검하라고 강조했다. 또송전망 조기 구축이 메가프로젝트 성공의 핵심  - 정책브리핑 | 뉴스 | 정책뉴스 한성숙 국무총리는 추석 성수품이 제때 공급되는지, 표시 가격 위반 등 불공정행위는 없는지 현장 상황을 세심하게 점검하라고 강조했다. 또 송전망 조기 구축이 메가프로젝트 성공의 핵심 열쇠라며 지역주민 부담을 최소화하고 실질적인 혜택을 줄 수 있는 방안을 강구하고 있다고 밝혔다. 국무조정실은 15일 한성숙 국무총리가 서울과 세종청사 간 이원 영상회의로 진행된 제40회 국무회의에서 이같이 말했다고 밝혔다. 한성숙 국무총리가 15일 서울 종로구 정부서울청사에서 열린 국무회의를 주재하고 있다. 2026.9.15. (ⓒ뉴스1, 무단 전재-재배포 금지)",
         "link": "https://www.korea.kr/news/policyNewsView.do?newsId=148971905&call_from=naver_news",
         "originallink": "https://www.korea.kr/news/policyNewsView.do?newsId=148971905&call_from=naver_news",
         "domain": "korea.kr",
@@ -6982,18 +6982,18 @@
         "origin_section": "policy",
         "source_query": "성수품 가격 안정 대책",
         "source_channel": "naver_api",
-        "selection_stage": "policy_underfill_recovery",
-        "selection_note": "major_policy_underfill",
+        "selection_stage": "",
+        "selection_note": "",
         "reassigned_from": "",
-        "score": 29.68,
-        "selection_fit_score": 2.12,
+        "score": 25.13,
+        "selection_fit_score": 0.0,
         "is_core": false
       },
       {
         "pub_dt_kst": "2026-09-15T09:42:00+09:00",
         "section": "policy",
         "title": "한성숙 총리 “추석물가 안정 에 최선… 성수품 공급 차질 없도록”",
-        "description": "한성숙 국무총리는 추석을 앞두고 성수품 공급 상황과 가격 표시 위반 등 불공정행위를 집중 점검하라고 관계부처에 지시했다.  한성숙 국무총리가 15일 서울 종로구 정부서울청사에서 열린 국무회의에서 발언하고 있다.(사진=연합뉴스)한 총리는 15일 정부서울청사에서 열린 제... [단독]25년 외환보유액 순위표, 회의도 문서도 없이 없앤 한은",
+        "description": "한성숙 국무총리는 추석을 앞두고 성수품 공급 상황과 가격 표시 위반 등 불공정행위를 집중 점검하라고 관계부처에 지시했다.  한성숙 국무총리가 15일 서울 종로구 정부서울청사에서 열린 국무회의에서 발언하고 있다.(사진=연합뉴스)한 총리는 15일 정부서울청사에서 열린 제... 직장인 출근길 교통대란 피했다…서울 시내버스 파업 철회(종합)",
         "link": "https://n.news.naver.com/mnews/article/018/0006369484?sid=101",
         "originallink": "https://www.edaily.co.kr/News/Read?newsId=02827366645580448&mediaCodeNo=257",
         "domain": "edaily.co.kr",
@@ -7110,7 +7110,7 @@
         "selection_stage": "",
         "selection_note": "",
         "reassigned_from": "",
-        "score": 57.48,
+        "score": 57.08,
         "selection_fit_score": 0.0,
         "is_core": false
       },
@@ -7243,7 +7243,7 @@
         "pub_dt_kst": "2026-09-15T11:21:00+09:00",
         "section": "policy",
         "title": "성수품은 넉넉하게, 장바구니 부담은 가볍게…올 추석 민생대책",
-        "description": "국산 농축수산물 구매 영수증을 환급 부스에 제출하면 구매액의 최대 30%를 1인당 2만 원 한도로... 올 추석, 장바구니 부담이 가벼워질수록 더 넉넉하고 풍성한 명절이 될 것으로 기대된다. 정책브리핑 김두리",
+        "description": "추석을 앞두고 장바구니를 채우는 손길이 조심스러워지는 시기다. 사과 한 알, 배추 한 포기를 집었다 내려놓기를 반복하게 되는 계절, 정부가 명절 장바구니의부담을 덜기 위한 대책을  - 정책브리핑 | 뉴스 | 정책뉴스 추석을 앞두고 장바구니를 채우는 손길이 조심스러워지는 시기다. 사과 한 알, 배추 한 포기를 집었다 내려놓기를 반복하게 되는 계절, 정부가 명절 장바구니의 부담을 덜기 위한 대책을 내놨다. 정부는 지난 1일 국무회의에서 '2026 추석 민생안정대책'을 확정했다. 성수품 물가안정, 민생부담 경감, 내수 활력 제고, 국민 안전 등 네 분야의 대책이 담겼다. 목표는 하나다. 명절 장을 보면서 '올해는 좀 낫다'고 실제 체감할 수 있게 하는 것. 추석 연휴를 앞두고 14일 부산 해운대구 반여농산물도매시장을 찾은 시민들이 명절 선물용과 제수용 과일을 고르고 있다. 2026.9.14 (사진=저작권자(c) 연합뉴스, 무단 전재-재배포 금지)",
         "link": "https://www.korea.kr/news/policyNewsView.do?newsId=148971877&call_from=naver_news",
         "originallink": "https://www.korea.kr/news/policyNewsView.do?newsId=148971877&call_from=naver_news",
         "domain": "korea.kr",
@@ -7260,7 +7260,7 @@
         "selection_stage": "",
         "selection_note": "",
         "reassigned_from": "",
-        "score": 24.33,
+        "score": 40.74,
         "selection_fit_score": 0.0,
         "is_core": false
       },
@@ -7865,31 +7865,6 @@
         "is_core": false
       },
       {
-        "pub_dt_kst": "2026-09-15T22:10:00+09:00",
-        "section": "policy",
-        "title": "추석 축산물 공급 늘린다…소고기 1.3배·돼지고기 1.4배 확대",
-        "description": "송미령 농식품부 장관은 9월 14일 충북 음성군 농협 축산물공판장을 찾아 소와 돼지 등 축산물의 수급 상황을 점검 했다. 추석을 앞두고 도축 작업량이 늘어나는 현장을 살펴보고 축산물 공급 확대가 계획대로 진행되고...",
-        "link": "https://www.youngnong.co.kr/news/articleView.html?idxno=70307",
-        "originallink": "https://www.youngnong.co.kr/news/articleView.html?idxno=70307",
-        "domain": "youngnong.co.kr",
-        "press": "한국영농신문",
-        "norm_key": "url:da595bc5ef1cdc1a2b42ebfa63c6df85",
-        "title_key": "추석축산물공급늘린다소고기13배돼지고기14배확대",
-        "canon_url": "https://youngnong.co.kr/news/articleView.html?idxno=70307",
-        "topic": "정책",
-        "summary": "",
-        "forced_section": "",
-        "origin_section": "policy",
-        "source_query": "농식품부 수급 점검",
-        "source_channel": "naver_api",
-        "selection_stage": "",
-        "selection_note": "",
-        "reassigned_from": "",
-        "score": 14.85,
-        "selection_fit_score": 0.0,
-        "is_core": false
-      },
-      {
         "pub_dt_kst": "2026-09-15T10:28:00+09:00",
         "section": "policy",
         "title": "[경제돋보기] 차례상 비용 30만 원 넘어...추석 장바구니 부담에 정부 '...",
@@ -7936,6 +7911,31 @@
         "selection_note": "",
         "reassigned_from": "",
         "score": 15.04,
+        "selection_fit_score": 0.0,
+        "is_core": false
+      },
+      {
+        "pub_dt_kst": "2026-09-15T22:10:00+09:00",
+        "section": "policy",
+        "title": "추석 축산물 공급 늘린다…소고기 1.3배·돼지고기 1.4배 확대",
+        "description": "송미령 농식품부 장관은 9월 14일 충북 음성군 농협 축산물공판장을 찾아 소와 돼지 등 축산물의 수급 상황을 점검 했다. 추석을 앞두고 도축 작업량이 늘어나는 현장을 살펴보고 축산물 공급 확대가 계획대로 진행되고...",
+        "link": "https://www.youngnong.co.kr/news/articleView.html?idxno=70307",
+        "originallink": "https://www.youngnong.co.kr/news/articleView.html?idxno=70307",
+        "domain": "youngnong.co.kr",
+        "press": "한국영농신문",
+        "norm_key": "url:da595bc5ef1cdc1a2b42ebfa63c6df85",
+        "title_key": "추석축산물공급늘린다소고기13배돼지고기14배확대",
+        "canon_url": "https://youngnong.co.kr/news/articleView.html?idxno=70307",
+        "topic": "정책",
+        "summary": "",
+        "forced_section": "",
+        "origin_section": "policy",
+        "source_query": "농식품부 수급 점검",
+        "source_channel": "naver_api",
+        "selection_stage": "",
+        "selection_note": "",
+        "reassigned_from": "",
+        "score": 14.85,
         "selection_fit_score": 0.0,
         "is_core": false
       },
@@ -10370,7 +10370,7 @@
         "pub_dt_kst": "2026-09-15T14:26:00+09:00",
         "section": "dist",
         "title": "농협, 도시-농촌 직거래모델 각 지부 확산 독려",
-        "description": "농협경제지주가 도시와 농촌 간 직거래 촉진을 위한 새 모델을 제시하고 각 지역 농협의 참여를 독려하고 있다. 현재 전국 지역농협 26곳이 참여 중인데, 우선 연말까지 40개소로 늘린다는 목표다. 농협은 최근 남서울농협 직거래장터에서 '농협 도농상생장터 활성화 선포식'을 개최하고 산지와 소비지가 동반 성장할 수 있는 상생 유통체계 마련을 다짐했다. 올해 처음 선보인 농협 도농상생장터는 도시농협이 장터 공간을 제공하고, 자매결연을 맺은 농촌농협이 산지 농산물을 직접 공급하는 직거래 유통 모델이다. 유통 단계를 줄여 농업인에게 안정적인 판로를 제공한다. 또 도시 소비자에게는 신선한 농산물을 합리적인 가격에 공급하는 것이 특징이다. 현재 도농상생장터에는 남서울농협을 비롯한 도시농협 8개소와 농촌농협 18개소 등 총 26개 농협이 참여하고 있다. 농협경제지주는, 참여를 희망하는 농협을 지속적으로 발굴해 올해 말 40개소까지 확대한다는 계획이다. 지난 11일 열린 선포식에는 김주양 농업경제대표이사와 참여농협 조합장들이 참석했다. 이들은 도농상생장터 추진 현황을 공유하고 직거래장터 수급동향 등을 살폈다. 김주양 농업경제대표이사는 \"도농상생장터가 도시와 농촌을 잇는 새로운 직거래 모델로 자리 잡기를 기대한다\"며 \"농협은 산지와 소비지가 함께 성장할 수 있는 상생 유통체계가 전국으로 확대할 수 있도록 최선의 노력을 다하겠다\"고 말했다. 메트로미디어는 독자의 권익 보호와 신장을 위해 노력하고 있습니다. Copyright ⓒ Metro. All rights reserved. (주)메트로미디어의 모든 기사 또는 컨텐츠에 대한 무단 전재ㆍ복사ㆍ배포를 금합니다. 주식회사 메트로미디어 · 서울특별시 종로구 자하문로17길 18 ㅣ Tel : 02. 721. 9800 / Fax : 02. 730. 2882 문의메일 : webmaster@metroseoul.co.kr ㅣ 대표이사 · 발행인 · 편집인 : 이장규 ㅣ 신문사업 등록번호 : 서울, 가00206 인터넷신문 등록번호 : 서울, 아02546 ㅣ 등록일 : 2013년 3월 20일 ㅣ 제호 : 메트로신문 사업자등록번호 : 242-88-00131 ISSN : 2635-9219 ㅣ 청소년 보호책임자 및 고충처리인 : 안대성",
+        "description": "또 도시 소비자에게는 신선한 농산물 을 합리적인 가격 에 공급하는 것이 특징이다. 현재 도농상생장터에는... 이들은 도농상생장터 추진 현황을 공유하고 직거래장터 수급 동향 등을 살폈다. 김주양 농업경제대표이사는...",
         "link": "http://www.metroseoul.co.kr/article/20260915500315",
         "originallink": "http://www.metroseoul.co.kr/article/20260915500315",
         "domain": "metroseoul.co.kr",
@@ -10387,7 +10387,7 @@
         "selection_stage": "",
         "selection_note": "",
         "reassigned_from": "supply",
-        "score": 16.37,
+        "score": 19.62,
         "selection_fit_score": 0.0,
         "is_core": false
       },
@@ -10770,7 +10770,7 @@
         "pub_dt_kst": "2026-09-15T17:42:00+09:00",
         "section": "dist",
         "title": "대구시, 추석 앞두고 성수품 물가 관리 강화…직거래장터·할인행사 마...",
-        "description": "【브레이크뉴스 대구】이성현 기자=대구시가 추석 명절을 앞두고 농축수산물 수급 상황을 점검하고 성수품 가격 안정을 위한 대응에 들어갔다.  추석 시작페이지로 l 즐겨찾기 l RSS l 편집 2026.09.16 [06:00] 【브레이크뉴스 대구】이성현 기자=대구시가 추석 명절을 앞두고 농축수산물 수급 상황을 점검하고 성수품 가격 안정을 위한 대응에 들어갔다. ▲ 추석 명절 성수품 수급관리 및 가격 안정대책 회의 © 대구시 대구시는 지난 11일 산격청사에서 ‘추석 명절 성수품 수급관리 및 가격 안정대책 회의’를 열고 명절 물가 동향과 주요 성수품 공급 상황을 점검했다고 밝혔다. 이날 회의에는 대구시와 9개 구·군을 비롯해 대구농수산물유통관리공사, 농수산물 유통·품질관리 및 공정거래 관련 기관, 도매법인, 백화점과 대형마트 등 24개 기관이 참석했다. 참석 기관들은 추석을 앞두고 수요가 늘어나는 품목의 공급 상황과 가격 흐름을 공유하고 기관별 대응 방안을 논의했다. 대구시는 우선 성수품 공급량을 상황에 따라 조절하기로 했다. 대구농수산물유통관리공사와 농협, 도매법인 등은 도매시장 거래 동향과 주요 품목의 수급 상황을 지속적으로 살피면서 소비가 집중되는 품목을 중심으로 공급 물량을 탄력적으로 관리할 예정이다. 시민들의 명절 장보기 부담을 줄이기 위한 할인 행사도 잇따라 마련된다. 대구로컬푸드직매장 주차장에서는 오는 15일부터 19일까지 농축수산물 직거래장터가 운영된다. 이곳에서는 추석 성수품을 시중 가격보다 30~50% 저렴하게 판매할 예정이다. 농협 지역본부도 주요 품목을 10~30% 할인하고, 대구축협은 12일부터 13일까지 한우 할인판매 행사를 진행한다. 지역 백화점과 대형마트 역시 명절을 겨냥한 할인 행사를 준비했다. 대구백화점은 구매 금액에 따라 5% 상당의 상품권을 제공하고 핸디캐리 상품을 10~30% 할인한다. 동아백화점에서는 농축수산물을 대상으로 20~30% 할인 행사를 진행한다. 롯데백화점과 현대백화점은 제수용품을 20~30% 할인된 가격에 판매하고 실속형 선물세트도 선보인다. 신세계백화점과 이마트에서는 명절 선물 사전예약 고객을 대상으로 품목에 따라 최대 50% 할인 혜택을 제공할 예정이다. 전통시장 이용 활성화를 위한 지원책도 함께 시행된다. 대구시는 11일부터 27일까지 전통시장 주변 도로에 주차허용구간을 운영해 명절 기간 시장 방문객의 이용 편의를 높인다. 또 16일부터 20일까지는 농·수·축산물 구매액의 최대 30%를 온누리상품권으로 환급하는 행사를 진행한다. 물가 감시와 소비자 보호를 위한 현장 점검도 강화한다. 농산물품질관리원과 공정거래 관련 기관은 추석을 앞두고 원산지 표시 위반이나 부당한 가격 책정, 거래 과정에서의 불공정 행위 등을 집중적으로 살필 계획이다. 대구시와 9개 구·군은 물가종합상황실을 가동해 명절 기간까지 성수품 가격과 지역 물가 흐름을 지속적으로 확인한다. 전통시장과 대형 유통업체 등 주요 판매 현장의 가격 동향도 점검 대상에 포함된다. 특정 품목의 가격이 급격히 오르거나 공급에 차질이 발생할 경우에는 관계기관 간 정보를 즉시 공유하고 상황에 맞는 대응책을 마련할 방침이다. 대구시는 이번 회의에서 논의된 기관별 대책을 추석 명절까지 지속적으로 추진하고, 수급 불안이나 가격 급등 등 이상 징후가 나타날 경우 유관기관과 공동 대응해 물가 안정에 나선다는 계획이다. 박기환 대구시 경제국장은 “추석을 앞두고 성수품 수급과 가격 움직임을 면밀하게 살펴 시민들의 장보기 부담을 줄이는 데 힘쓰겠다”며 “가격 상승이나 공급 불안 요인이 발생하면 선제적으로 대응하고, 유통업계에는 적극적인 할인 판매와 관계기관에는 철저한 지도·단속을 당부한다”고 말했다. <구글 번역으로 번역한 영문 기사의 전문 입니다. 번역에 오류가 있을 수 있음을 밝힙니다.> Daegu City Steps Up Price Management for Chuseok Holiday Goods; Organizes Direct Markets and Discount Events Ahead of the Chuseok holiday, D",
+        "description": "【브레이크뉴스 대구】이성현 기자=대구시가 추석 명절을 앞두고 농축수산물 수급 상황을 점검하고 성수품 가격 안정을 위한 대응에 들어갔다.  추석 시작페이지로 l 즐겨찾기 l RSS l 편집 2026.09.16 [06:19] 【브레이크뉴스 대구】이성현 기자=대구시가 추석 명절을 앞두고 농축수산물 수급 상황을 점검하고 성수품 가격 안정을 위한 대응에 들어갔다. ▲ 추석 명절 성수품 수급관리 및 가격 안정대책 회의 © 대구시 대구시는 지난 11일 산격청사에서 ‘추석 명절 성수품 수급관리 및 가격 안정대책 회의’를 열고 명절 물가 동향과 주요 성수품 공급 상황을 점검했다고 밝혔다. 이날 회의에는 대구시와 9개 구·군을 비롯해 대구농수산물유통관리공사, 농수산물 유통·품질관리 및 공정거래 관련 기관, 도매법인, 백화점과 대형마트 등 24개 기관이 참석했다. 참석 기관들은 추석을 앞두고 수요가 늘어나는 품목의 공급 상황과 가격 흐름을 공유하고 기관별 대응 방안을 논의했다. 대구시는 우선 성수품 공급량을 상황에 따라 조절하기로 했다. 대구농수산물유통관리공사와 농협, 도매법인 등은 도매시장 거래 동향과 주요 품목의 수급 상황을 지속적으로 살피면서 소비가 집중되는 품목을 중심으로 공급 물량을 탄력적으로 관리할 예정이다. 시민들의 명절 장보기 부담을 줄이기 위한 할인 행사도 잇따라 마련된다. 대구로컬푸드직매장 주차장에서는 오는 15일부터 19일까지 농축수산물 직거래장터가 운영된다. 이곳에서는 추석 성수품을 시중 가격보다 30~50% 저렴하게 판매할 예정이다. 농협 지역본부도 주요 품목을 10~30% 할인하고, 대구축협은 12일부터 13일까지 한우 할인판매 행사를 진행한다. 지역 백화점과 대형마트 역시 명절을 겨냥한 할인 행사를 준비했다. 대구백화점은 구매 금액에 따라 5% 상당의 상품권을 제공하고 핸디캐리 상품을 10~30% 할인한다. 동아백화점에서는 농축수산물을 대상으로 20~30% 할인 행사를 진행한다. 롯데백화점과 현대백화점은 제수용품을 20~30% 할인된 가격에 판매하고 실속형 선물세트도 선보인다. 신세계백화점과 이마트에서는 명절 선물 사전예약 고객을 대상으로 품목에 따라 최대 50% 할인 혜택을 제공할 예정이다. 전통시장 이용 활성화를 위한 지원책도 함께 시행된다. 대구시는 11일부터 27일까지 전통시장 주변 도로에 주차허용구간을 운영해 명절 기간 시장 방문객의 이용 편의를 높인다. 또 16일부터 20일까지는 농·수·축산물 구매액의 최대 30%를 온누리상품권으로 환급하는 행사를 진행한다. 물가 감시와 소비자 보호를 위한 현장 점검도 강화한다. 농산물품질관리원과 공정거래 관련 기관은 추석을 앞두고 원산지 표시 위반이나 부당한 가격 책정, 거래 과정에서의 불공정 행위 등을 집중적으로 살필 계획이다. 대구시와 9개 구·군은 물가종합상황실을 가동해 명절 기간까지 성수품 가격과 지역 물가 흐름을 지속적으로 확인한다. 전통시장과 대형 유통업체 등 주요 판매 현장의 가격 동향도 점검 대상에 포함된다. 특정 품목의 가격이 급격히 오르거나 공급에 차질이 발생할 경우에는 관계기관 간 정보를 즉시 공유하고 상황에 맞는 대응책을 마련할 방침이다. 대구시는 이번 회의에서 논의된 기관별 대책을 추석 명절까지 지속적으로 추진하고, 수급 불안이나 가격 급등 등 이상 징후가 나타날 경우 유관기관과 공동 대응해 물가 안정에 나선다는 계획이다. 박기환 대구시 경제국장은 “추석을 앞두고 성수품 수급과 가격 움직임을 면밀하게 살펴 시민들의 장보기 부담을 줄이는 데 힘쓰겠다”며 “가격 상승이나 공급 불안 요인이 발생하면 선제적으로 대응하고, 유통업계에는 적극적인 할인 판매와 관계기관에는 철저한 지도·단속을 당부한다”고 말했다. <구글 번역으로 번역한 영문 기사의 전문 입니다. 번역에 오류가 있을 수 있음을 밝힙니다.> Daegu City Steps Up Price Management for Chuseok Holiday Goods; Organizes Direct Markets and Discount Events Ahead of the Chuseok holiday, D",
         "link": "http://www.breaknews.com/1236763",
         "originallink": "http://www.breaknews.com/1236763",
         "domain": "breaknews.com",
@@ -10845,7 +10845,7 @@
         "pub_dt_kst": "2026-09-15T09:32:00+09:00",
         "section": "dist",
         "title": "농산물 경매대금도 카드로…NHN KCP, B2B 결제 확대",
-        "description": "사진=NHN KCP NHN KCP가 농산물 도매시장 경매대금의 카드 납부를 지원하는 결제 인프라를 구축하며 B2B 유통 결제 영역을 확대한다. NHN KCP는 IT 기업 '엔부스트'와 협업해 도매시장 경매대금 결제·납부 결제대행 솔루션 'NDPAY'에 카드결제 인프라를 연동했다. 중도매인은 경매대금을 전용 카드로 납부하고 카드대금 결제일까지 최장 30일을 확보할 수 있다. 도매시장법인은 카드결제 완료일로부터 2영업일 후 대금을 받을 수 있다. NDPAY는 신한카드의 중도매인 전용 카드를 활용해 중도매인의 경매대금 카드 납부와 도매시장법인의 대금 수취를 연결하는 서비스다. NHN KCP는 카드결제 처리와 납부·정산에 필요한 결제 인프라를 지원하고, 신한카드는 중도매인 전용 카드를 제공한다. 엔부스트는 NDPAY의 서비스 제공과 운영을 담당한다. 그동안 농산물 도매시장에서는 중도매인이 경매로 농산물을 매입한 후 현금이나 계좌이체로 대금을 납부하는 방식으로 이뤄졌다. 중도매인은 정해진 기한에 경매대금을 납부해야 하지만, 매입한 농산물을 소매상이나 식당 등에 판매하고 대금을 회수하기까지는 시간이 필요하다. NDPAY를 이용하면 중도매인은 판매대금이 회수되기 전에도 전용 카드로 필요한 농산물을 매입할 수 있다. 경매대금을 현금으로 즉시 납부하는 대신 카드대금 결제일까지 최장 30일을 확보해 현금 선납에 따른 자금 운용 부담을 낮출 수 있는 것이다. 도매시장법인은 중도매인의 개별 납부 일정과 관계없이 카드결제 완료 후 영업일 이틀 후에 경매대금을 받을 수 있다. 자금을 안정적으로 운용할 수 있다. 이번 구축은 NHN KCP가 온라인 결제와 정산 인프라 운영을 바탕으로 농산물 도매시장의 B2B 거래 구조에 적용한 사례다. NHN KCP 관계자는 “현금과 계좌이체가 중심이던 농산물 도매시장에 카드 납부 방식을 더해 중도매인과 도매시장법인이 겪던 자금 운용과 대금 회수 부담을 낮췄다”며 “사업자 간 반복적인 납부와 정산이 발생하는 다양한 산업을 대상으로 KCP의 결제 인프라 적용 범위를 넓혀가겠다”고 말했다.",
+        "description": "경제 금융 농산물 경매대금도 카드로…NHN KCP, B2B 결제 확대 발행일 : 2026-09-15 09:31 전자신문을 선호 매체로 추가 공유하기 페이스북 X(트위터) 메일 URL 복사 글자크기 설정 가 작게 가 보통 가 크게 사진=NHN KCP NHN KCP가 농산물 도매시장 경매대금의 카드 납부를 지원하는 결제 인프라를 구축하며 B2B 유통 결제 영역을 확대한다. NHN KCP는 IT 기업 '엔부스트'와 협업해 도매시장 경매대금 결제·납부 결제대행 솔루션 'NDPAY'에 카드결제 인프라를 연동했다. 중도매인은 경매대금을 전용 카드로 납부하고 카드대금 결제일까지 최장 30일을 확보할 수 있다. 도매시장법인은 카드결제 완료일로부터 2영업일 후 대금을 받을 수 있다. NDPAY는 신한카드의 중도매인 전용 카드를 활용해 중도매인의 경매대금 카드 납부와 도매시장법인의 대금 수취를 연결하는 서비스다. NHN KCP는 카드결제 처리와 납부·정산에 필요한 결제 인프라를 지원하고, 신한카드는 중도매인 전용 카드를 제공한다. 엔부스트는 NDPAY의 서비스 제공과 운영을 담당한다. 그동안 농산물 도매시장에서는 중도매인이 경매로 농산물을 매입한 후 현금이나 계좌이체로 대금을 납부하는 방식으로 이뤄졌다. 중도매인은 정해진 기한에 경매대금을 납부해야 하지만, 매입한 농산물을 소매상이나 식당 등에 판매하고 대금을 회수하기까지는 시간이 필요하다. NDPAY를 이용하면 중도매인은 판매대금이 회수되기 전에도 전용 카드로 필요한 농산물을 매입할 수 있다. 경매대금을 현금으로 즉시 납부하는 대신 카드대금 결제일까지 최장 30일을 확보해 현금 선납에 따른 자금 운용 부담을 낮출 수 있는 것이다. 도매시장법인은 중도매인의 개별 납부 일정과 관계없이 카드결제 완료 후 영업일 이틀 후에 경매대금을 받을 수 있다. 자금을 안정적으로 운용할 수 있다. 이번 구축은 NHN KCP가 온라인 결제와 정산 인프라 운영을 바탕으로 농산물 도매시장의 B2B 거래 구조에 적용한 사례다. NHN KCP 관계자는 “현금과 계좌이체가 중심이던 농산물 도매시장에 카드 납부 방식을 더해 중도매인과 도매시장법인이 겪던 자금 운용과 대금 회수 부담을 낮췄다”며 “사업자 간 반복적인 납부와 정산이 발생하는 다양한 산업을 대상으로 KCP의 결제 인프라 적용 범위를 넓혀가겠다”고 말했다. 박두호 기자 walnut_park@etnews.com",
         "link": "https://n.news.naver.com/mnews/article/030/0003466725?sid=101",
         "originallink": "https://www.etnews.com/20260915000045",
         "domain": "etnews.com",
@@ -10859,11 +10859,11 @@
         "origin_section": "dist",
         "source_query": "농산물 온라인도매시장 거래",
         "source_channel": "naver_api",
-        "selection_stage": "final_domain_diversity_repair",
-        "selection_note": "replaced_over_concentrated:wonyesanup.co.kr",
+        "selection_stage": "",
+        "selection_note": "",
         "reassigned_from": "",
-        "score": 23.66,
-        "selection_fit_score": 2.59,
+        "score": 21.71,
+        "selection_fit_score": 0.0,
         "is_core": false
       },
       {
@@ -11059,11 +11059,11 @@
         "origin_section": "dist",
         "source_query": "도매시장 휴장",
         "source_channel": "naver_api",
-        "selection_stage": "",
-        "selection_note": "",
+        "selection_stage": "final_cross_day_dist_upgrade",
+        "selection_note": "replace_recurring_weak_or_wrong_role_article",
         "reassigned_from": "",
         "score": 32.7,
-        "selection_fit_score": 0.0,
+        "selection_fit_score": -1.0,
         "is_core": false
       },
       {
@@ -11262,7 +11262,7 @@
         "selection_stage": "",
         "selection_note": "",
         "reassigned_from": "dist",
-        "score": 57.48,
+        "score": 57.08,
         "selection_fit_score": 0.0,
         "is_core": false
       },
@@ -11384,11 +11384,11 @@
         "origin_section": "dist",
         "source_query": "농산물 판로 확대",
         "source_channel": "naver_api",
-        "selection_stage": "",
-        "selection_note": "",
+        "selection_stage": "final_domain_diversity_repair",
+        "selection_note": "replaced_over_concentrated:wonyesanup.co.kr",
         "reassigned_from": "",
         "score": 11.77,
-        "selection_fit_score": 0.0,
+        "selection_fit_score": 1.78,
         "is_core": false
       },
       {
@@ -12347,7 +12347,7 @@
         "pub_dt_kst": "2026-09-15T17:58:00+09:00",
         "section": "pest",
         "title": "진천군, 사과·배 재배 현황 정비 통해 '27년 과수화상병 예방서비스 구...",
-        "description": "시작페이지로 l 즐겨찾기 l RSS l 편집 2026.09.16 [06:00] 【충북 브레이크뉴스】김봉수 기자=진천군이 국가관리 병해충인 과수화상병의 선제적 예방과 효율적인 방제 체계 구축을 위해 지역 내 과수 재배 농가를 대상으로 농업경영체 정보 정비 촉구에 나섰다. 진천군 농업기술센터는 관내 사과 및 배 재배 농가를 대상으로 실제 재배 현황과 일치하도록 농업경영체 등록 정보를 신규 등록하거나 변경해 줄 것을 당부했다고 밝혔다. 농업경영체 등록 정보는 과수화상병 예방 약제 배부와 정기 예찰, 농가별 위험 정보 안내 등 정교한 방제 정책을 수립하기 위한 핵심 기초자료로 쓰인다. 이에 따라 사과나 배를 실제 재배하면서도 경영체에 관련 품목이 빠져 있는 농가는 신규 등록을 진행해야 하며, 기존 등록 내용이 실제 현황과 다른 경우에는 변경 신청을 마쳐야 한다. 판매 목적이 아닌 자가 소비용으로 1주 이상 소규모 재배하는 가구 역시 등록 대상에 포함된다. 아울러 기존 재배 품목이 '과실류 기타' 등 불명확하게 기재되어 있는 경우에는 '사과' 또는 '배'로 명확히 수정해야 한다. 현재 과수를 재배하지 않는 농지의 경우에도 미이용이나 휴경, 폐경 등으로 정보를 현행화해야 한다. 농업경영체 등록 및 변경은 국립농산물품질관리원 진천사무소를 직접 방문하거나 전화 통화를 통해 신청할 수 있다. 진천군은 이번에 수집·정비된 정보를 바탕으로 오는 2027년부터 과수화상병 위험 예측 농가 알림 서비스를 본격 제공하고, 연 4회 정기 예찰과 예방 약제 지원 등 농가 보호 대책을 지속 확대할 방침이다. 진천군 농업기술센터 관계자는 과수화상병은 발생하기 전 철저한 사전 예방과 신속한 대응 체계를 구축하는 것이 무엇보다 중요하다고 강조하며, 관내 사과 및 배 재배 농가에서는 누락되는 정보가 없도록 농업경영체 등록 현황을 반드시 확인하고 정비해 달라고 당부했다. 아래는 위 기사를 '구글 번역'으로 번역한 영문 기사의 [전문]입니다. '구글번역'은 이해도 높이기를 위해 노력하고 있습니다. 영문 번역에 오류가 있을 수 있음을 전제로 합니다. The following is [the full text] of the English article translated by 'Google Translate'. 'Google Translate' is working hard to improve understanding. It is assumed that there may be errors in the English translation.) Jincheon County Lays Foundation for 2027 Fire Blight Prevention Notification Service by Updating Apple and Pear Cultivation Status Jincheon County has urged local fruit-growing farms to update their agricultural business entity information in order to establish a system for the preemptive prevention and efficient control of fire blight, a nationally managed pest. The Jincheon County Agricultural Technology Center announced that it has requested apple and pear-growing farms within the county to either newly register or update their agricultural business entity registration information to ensure it aligns with their actual cultivation status. Agricultural business entity registration information serves as core foundational data for establishing s",
+        "description": "시작페이지로 l 즐겨찾기 l RSS l 편집 2026.09.16 [06:19] 【충북 브레이크뉴스】김봉수 기자=진천군이 국가관리 병해충인 과수화상병의 선제적 예방과 효율적인 방제 체계 구축을 위해 지역 내 과수 재배 농가를 대상으로 농업경영체 정보 정비 촉구에 나섰다. 진천군 농업기술센터는 관내 사과 및 배 재배 농가를 대상으로 실제 재배 현황과 일치하도록 농업경영체 등록 정보를 신규 등록하거나 변경해 줄 것을 당부했다고 밝혔다. 농업경영체 등록 정보는 과수화상병 예방 약제 배부와 정기 예찰, 농가별 위험 정보 안내 등 정교한 방제 정책을 수립하기 위한 핵심 기초자료로 쓰인다. 이에 따라 사과나 배를 실제 재배하면서도 경영체에 관련 품목이 빠져 있는 농가는 신규 등록을 진행해야 하며, 기존 등록 내용이 실제 현황과 다른 경우에는 변경 신청을 마쳐야 한다. 판매 목적이 아닌 자가 소비용으로 1주 이상 소규모 재배하는 가구 역시 등록 대상에 포함된다. 아울러 기존 재배 품목이 '과실류 기타' 등 불명확하게 기재되어 있는 경우에는 '사과' 또는 '배'로 명확히 수정해야 한다. 현재 과수를 재배하지 않는 농지의 경우에도 미이용이나 휴경, 폐경 등으로 정보를 현행화해야 한다. 농업경영체 등록 및 변경은 국립농산물품질관리원 진천사무소를 직접 방문하거나 전화 통화를 통해 신청할 수 있다. 진천군은 이번에 수집·정비된 정보를 바탕으로 오는 2027년부터 과수화상병 위험 예측 농가 알림 서비스를 본격 제공하고, 연 4회 정기 예찰과 예방 약제 지원 등 농가 보호 대책을 지속 확대할 방침이다. 진천군 농업기술센터 관계자는 과수화상병은 발생하기 전 철저한 사전 예방과 신속한 대응 체계를 구축하는 것이 무엇보다 중요하다고 강조하며, 관내 사과 및 배 재배 농가에서는 누락되는 정보가 없도록 농업경영체 등록 현황을 반드시 확인하고 정비해 달라고 당부했다. 아래는 위 기사를 '구글 번역'으로 번역한 영문 기사의 [전문]입니다. '구글번역'은 이해도 높이기를 위해 노력하고 있습니다. 영문 번역에 오류가 있을 수 있음을 전제로 합니다. The following is [the full text] of the English article translated by 'Google Translate'. 'Google Translate' is working hard to improve understanding. It is assumed that there may be errors in the English translation.) Jincheon County Lays Foundation for 2027 Fire Blight Prevention Notification Service by Updating Apple and Pear Cultivation Status Jincheon County has urged local fruit-growing farms to update their agricultural business entity information in order to establish a system for the preemptive prevention and efficient control of fire blight, a nationally managed pest. The Jincheon County Agricultural Technology Center announced that it has requested apple and pear-growing farms within the county to either newly register or update their agricultural business entity registration information to ensure it aligns with their actual cultivation status. Agricultural business entity registration information serves as core foundational data for establishing s",
         "link": "http://www.breaknews.com/1236806",
         "originallink": "http://www.breaknews.com/1236806",
         "domain": "breaknews.com",
@@ -13317,16 +13317,16 @@
             17
           ],
           [
+            "포도 가격",
+            15
+          ],
+          [
             "양파 수급",
             15
           ],
           [
             "사과 가격",
-            14
-          ],
-          [
-            "포도 가격",
-            14
+            13
           ],
           [
             "토마토 가격",
@@ -17085,16 +17085,6 @@
       },
       {
         "section": "supply",
-        "reason": "supply_macro_price_watch",
-        "press": "동양일보",
-        "domain": "dynews.co.kr",
-        "title": "고물가·E커머스에 바뀐 명절 풍경… 사라진 '추석 특수'에 전통시장·마...",
-        "url": "https://www.dynews.co.kr/news/articleView.html?idxno=866082",
-        "source_query": "사과 가격",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
         "reason": "apple_apology_context",
         "press": "SR타임스",
         "domain": "srtimes.kr",
@@ -17105,11 +17095,11 @@
       },
       {
         "section": "supply",
-        "reason": "commodity_corporate_stock_context",
-        "press": "thepublic",
-        "domain": "thepublic.kr",
-        "title": "롯데마트, 추석 선물세트 사전예약 14.9%↑…본판매도 가성비 강화",
-        "url": "https://www.thepublic.kr/news/articleView.html?idxno=318856",
+        "reason": "supply_macro_price_watch",
+        "press": "동양일보",
+        "domain": "dynews.co.kr",
+        "title": "고물가·E커머스에 바뀐 명절 풍경… 사라진 '추석 특수'에 전통시장·마...",
+        "url": "https://www.dynews.co.kr/news/articleView.html?idxno=866082",
         "source_query": "사과 가격",
         "source_channel": "naver_api"
       },
@@ -17125,11 +17115,11 @@
       },
       {
         "section": "supply",
-        "reason": "remote_foreign_horti",
-        "press": "enetnews",
-        "domain": "enetnews.co.kr",
-        "title": "추석선물 20만 원은 부담···5만 원대가 대세",
-        "url": "https://www.enetnews.co.kr/news/articleView.html?idxno=54440",
+        "reason": "commodity_corporate_stock_context",
+        "press": "thepublic",
+        "domain": "thepublic.kr",
+        "title": "롯데마트, 추석 선물세트 사전예약 14.9%↑…본판매도 가성비 강화",
+        "url": "https://www.thepublic.kr/news/articleView.html?idxno=318856",
         "source_query": "사과 가격",
         "source_channel": "naver_api"
       },
@@ -17140,6 +17130,16 @@
         "domain": "donga.com",
         "title": "이형일 “이유 막론하고 주택 비거주 송구”…野 “부동산 내로남불”",
         "url": "https://www.donga.com/news/Economy/article/all/20260915/134673243/1",
+        "source_query": "사과 가격",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "remote_foreign_horti",
+        "press": "enetnews",
+        "domain": "enetnews.co.kr",
+        "title": "추석선물 20만 원은 부담···5만 원대가 대세",
+        "url": "https://www.enetnews.co.kr/news/articleView.html?idxno=54440",
         "source_query": "사과 가격",
         "source_channel": "naver_api"
       },
@@ -17768,8 +17768,8 @@
         "reason": "wine_lifestyle_noise",
         "press": "더팩트",
         "domain": "news.tf.co.kr",
-        "title": "이마트 '추석 선물 세트' 본 판매 돌입 [TF사진관]",
-        "url": "https://news.tf.co.kr/read/photomovie/2366060.htm",
+        "title": "추석 선물, 마지막까지 알뜰하게 [포토]",
+        "url": "https://news.tf.co.kr/read/photomovie/2366059.htm",
         "source_query": "배 과일 가격",
         "source_channel": "naver_api"
       },
@@ -17778,8 +17778,8 @@
         "reason": "wine_lifestyle_noise",
         "press": "더팩트",
         "domain": "news.tf.co.kr",
-        "title": "추석 선물, 마지막까지 알뜰하게 [포토]",
-        "url": "https://news.tf.co.kr/read/photomovie/2366059.htm",
+        "title": "이마트 '추석 선물 세트' 본 판매 돌입 [TF사진관]",
+        "url": "https://news.tf.co.kr/read/photomovie/2366060.htm",
         "source_query": "배 과일 가격",
         "source_channel": "naver_api"
       },
@@ -18165,21 +18165,21 @@
       },
       {
         "section": "supply",
-        "reason": "supply_macro_price_watch",
-        "press": "경기뉴스",
-        "domain": "kgnews.co.kr",
-        "title": "경기도, 명절 연휴 장바구니 부담 덜 ‘한가위 특별판촉전’ 개최",
-        "url": "https://www.kgnews.co.kr/news/article.html?no=911687",
-        "source_query": "포도 가격",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
         "reason": "apple_non_edible_context",
         "press": "한국농어민신문",
         "domain": "agrinet.co.kr",
         "title": "경북도, 추석 앞두고 농특산물 판촉행사 추진",
         "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=407193",
+        "source_query": "포도 가격",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "supply_macro_price_watch",
+        "press": "경기뉴스",
+        "domain": "kgnews.co.kr",
+        "title": "경기도, 명절 연휴 장바구니 부담 덜 ‘한가위 특별판촉전’ 개최",
+        "url": "https://www.kgnews.co.kr/news/article.html?no=911687",
         "source_query": "포도 가격",
         "source_channel": "naver_api"
       },
@@ -18280,16 +18280,6 @@
         "domain": "news1.kr",
         "title": "경북도, 추석 앞두고 건설현장 안전 점검…농수산물 할인·환급",
         "url": "https://www.news1.kr/local/daegu-gyeongbuk/6291172",
-        "source_query": "포도 가격",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "melon_non_edible_context",
-        "press": "쿠키뉴스",
-        "domain": "kukinews.com",
-        "title": "충남 농특산물 추석 앞두고 한 달간 할인 판매 집중 운영",
-        "url": "https://www.kukinews.com/article/view/kuk202609150134",
         "source_query": "포도 가격",
         "source_channel": "naver_api"
       },
@@ -21115,21 +21105,21 @@
       },
       {
         "section": "supply",
-        "reason": "fishery_title_only",
-        "press": "고코리아",
-        "domain": "gokorea.kr",
-        "title": "추석 밥상 물가 잡는 농수산물 온라인 도매법 국회 쟁점 점검",
-        "url": "https://www.gokorea.kr/news/articleView.html?idxno=878432",
-        "source_query": "배추 소비 대책",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
         "reason": "apple_non_edible_context",
         "press": "고코리아",
         "domain": "gokorea.kr",
         "title": "추석 밥상머리 민심 선점 여야 민생 입법 총력전",
         "url": "https://www.gokorea.kr/news/articleView.html?idxno=878442",
+        "source_query": "배추 소비 대책",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "fishery_title_only",
+        "press": "고코리아",
+        "domain": "gokorea.kr",
+        "title": "추석 밥상 물가 잡는 농수산물 온라인 도매법 국회 쟁점 점검",
+        "url": "https://www.gokorea.kr/news/articleView.html?idxno=878432",
         "source_query": "배추 소비 대책",
         "source_channel": "naver_api"
       },
@@ -21795,21 +21785,21 @@
       },
       {
         "section": "supply",
-        "reason": "potato_non_fresh_context",
-        "press": "에너지경제신문",
-        "domain": "ekn.kr",
-        "title": "[똑똑한신상] 샘표, 오뚜기, 풀무원, 컴포즈커피, 맘스터치, 롯데웰푸드",
-        "url": "https://www.ekn.kr/web/view.php?key=20260915022524698",
-        "source_query": "감자 가격",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
         "reason": "carrot_non_edible_context",
         "press": "피노미",
         "domain": "finomy.com",
         "title": "세븐일레븐, 겨울 장사 '시동'···군고구마·어묵 출격",
         "url": "http://www.finomy.com/news/articleView.html?idxno=261564",
+        "source_query": "감자 가격",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "potato_non_fresh_context",
+        "press": "에너지경제신문",
+        "domain": "ekn.kr",
+        "title": "[똑똑한신상] 샘표, 오뚜기, 풀무원, 컴포즈커피, 맘스터치, 롯데웰푸드",
+        "url": "https://www.ekn.kr/web/view.php?key=20260915022524698",
         "source_query": "감자 가격",
         "source_channel": "naver_api"
       },
@@ -21826,20 +21816,20 @@
       {
         "section": "supply",
         "reason": "carrot_non_edible_context",
-        "press": "financialpost",
-        "domain": "financialpost.co.kr",
-        "title": "세븐일레븐, 군고구마·어묵 앞세워 겨울 간식 시장 공략 스타트",
-        "url": "https://www.financialpost.co.kr/news/articleView.html?idxno=275587",
+        "press": "이슈앤비즈",
+        "domain": "issuenbiz.com",
+        "title": "[편의점 브리핑] CU 리센느 베이커리·GS25 삼포깐포도 하이볼·세븐일레...",
+        "url": "http://www.issuenbiz.com/news/articleView.html?idxno=79754",
         "source_query": "감자 가격",
         "source_channel": "naver_api"
       },
       {
         "section": "supply",
         "reason": "carrot_non_edible_context",
-        "press": "이슈앤비즈",
-        "domain": "issuenbiz.com",
-        "title": "[편의점 브리핑] CU 리센느 베이커리·GS25 삼포깐포도 하이볼·세븐일레...",
-        "url": "http://www.issuenbiz.com/news/articleView.html?idxno=79754",
+        "press": "financialpost",
+        "domain": "financialpost.co.kr",
+        "title": "세븐일레븐, 군고구마·어묵 앞세워 겨울 간식 시장 공략 스타트",
+        "url": "https://www.financialpost.co.kr/news/articleView.html?idxno=275587",
         "source_query": "감자 가격",
         "source_channel": "naver_api"
       },
@@ -22216,20 +22206,20 @@
       {
         "section": "supply",
         "reason": "potato_non_fresh_context",
-        "press": "식품안전뉴스",
-        "domain": "fsnews.co.kr",
-        "title": "늘편푸드, 유통망 넓힌다",
-        "url": "http://www.fsnews.co.kr/news/articleView.html?idxno=62171",
+        "press": "서울파이낸스",
+        "domain": "seoulfn.com",
+        "title": "[창간24/넥스트 K푸드①] \"잘 팔리는데 새 얼굴은 없다\"···장수 브랜드...",
+        "url": "https://www.seoulfn.com/news/articleView.html?idxno=637878",
         "source_query": "감자 산업",
         "source_channel": "naver_api"
       },
       {
         "section": "supply",
         "reason": "potato_non_fresh_context",
-        "press": "서울파이낸스",
-        "domain": "seoulfn.com",
-        "title": "[창간24/넥스트 K푸드①] \"잘 팔리는데 새 얼굴은 없다\"···장수 브랜드...",
-        "url": "https://www.seoulfn.com/news/articleView.html?idxno=637878",
+        "press": "식품안전뉴스",
+        "domain": "fsnews.co.kr",
+        "title": "늘편푸드, 유통망 넓힌다",
+        "url": "http://www.fsnews.co.kr/news/articleView.html?idxno=62171",
         "source_query": "감자 산업",
         "source_channel": "naver_api"
       },
@@ -22286,16 +22276,6 @@
       {
         "section": "supply",
         "reason": "potato_non_fresh_context",
-        "press": "데일리안",
-        "domain": "dailian.co.kr",
-        "title": "고령친화식품 늘편푸드 16종 품평…대형마트·홈쇼핑 판로 모색",
-        "url": "https://www.dailian.co.kr/news/view/1690119/?sc=Naver",
-        "source_query": "감자 산업",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "potato_non_fresh_context",
         "press": "뉴스1",
         "domain": "news1.kr",
         "title": "\"씹기 편하고 영양까지\"…농식품부, '늘편푸드' 판로 확대 나선다",
@@ -22310,6 +22290,16 @@
         "domain": "newsis.com",
         "title": "씹기 편하고 영양 맞춘 '늘편푸드' 16종 품평회…판로 확대",
         "url": "https://www.newsis.com/view/NISX20260914_0003788879",
+        "source_query": "감자 산업",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "potato_non_fresh_context",
+        "press": "데일리안",
+        "domain": "dailian.co.kr",
+        "title": "고령친화식품 늘편푸드 16종 품평…대형마트·홈쇼핑 판로 모색",
+        "url": "https://www.dailian.co.kr/news/view/1690119/?sc=Naver",
         "source_query": "감자 산업",
         "source_channel": "naver_api"
       },
@@ -24635,21 +24625,21 @@
       },
       {
         "section": "supply",
-        "reason": "livestock_only",
-        "press": "중앙일보",
-        "domain": "joongang.co.kr",
-        "title": "서울 촌놈 무조건 충격 받는다…찹쌀떡 같은 ‘강해영 생고기’ 맛",
-        "url": "https://www.joongang.co.kr/article/25462222",
-        "source_query": "가지 가격",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
         "reason": "supply_context_gate",
         "press": "이투데이",
         "domain": "etoday.co.kr",
         "title": "찍을 땐 무료, 원본은 유료…촬영 뒤 날아든 ‘숨은 청구서’[생애 첫사...",
         "url": "https://www.etoday.co.kr/news/view/2625436",
+        "source_query": "가지 가격",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "livestock_only",
+        "press": "중앙일보",
+        "domain": "joongang.co.kr",
+        "title": "서울 촌놈 무조건 충격 받는다…찹쌀떡 같은 ‘강해영 생고기’ 맛",
+        "url": "https://www.joongang.co.kr/article/25462222",
         "source_query": "가지 가격",
         "source_channel": "naver_api"
       },
@@ -26228,8 +26218,8 @@
         "reason": "must_terms_fail",
         "press": "오마이뉴스",
         "domain": "ohmynews.com",
-        "title": "소값에 웃은 우시장, 사료비 줄일 길 찾는 옥수수밭",
-        "url": "https://www.ohmynews.com/NWS_Web/View/at_pg.aspx?CNTN_CD=A0003267264&CMPT_CD=P0010",
+        "title": "광주·전남 농민단체 \"호르무즈 파병 반대, 국민 생명·주권 우선해야\"",
+        "url": "https://www.ohmynews.com/NWS_Web/View/at_pg.aspx?CNTN_CD=A0003267274&CMPT_CD=P0010",
         "source_query": "농가 생산비 부담",
         "source_channel": "naver_api"
       },
@@ -26238,8 +26228,8 @@
         "reason": "must_terms_fail",
         "press": "오마이뉴스",
         "domain": "ohmynews.com",
-        "title": "광주·전남 농민단체 \"호르무즈 파병 반대, 국민 생명·주권 우선해야\"",
-        "url": "https://www.ohmynews.com/NWS_Web/View/at_pg.aspx?CNTN_CD=A0003267274&CMPT_CD=P0010",
+        "title": "소값에 웃은 우시장, 사료비 줄일 길 찾는 옥수수밭",
+        "url": "https://www.ohmynews.com/NWS_Web/View/at_pg.aspx?CNTN_CD=A0003267264&CMPT_CD=P0010",
         "source_query": "농가 생산비 부담",
         "source_channel": "naver_api"
       },
@@ -26515,21 +26505,21 @@
       },
       {
         "section": "supply",
-        "reason": "local_political_campaign_noise",
-        "press": "이투데이",
-        "domain": "etoday.co.kr",
-        "title": "사우디 원유 다시 호르무즈로⋯“글로벌 연료 위기 시작” [호르무즈發...",
-        "url": "https://www.etoday.co.kr/news/view/2625860",
-        "source_query": "농가 물가 부담",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
         "reason": "supply_context_gate",
         "press": "잡포스트",
         "domain": "job-post.co.kr",
         "title": "임만균 서울시의회 의장, 추석맞이 '서로장터' 찾아 농가 격려",
         "url": "https://www.job-post.co.kr/news/articleView.html?idxno=227667",
+        "source_query": "농가 물가 부담",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "local_political_campaign_noise",
+        "press": "이투데이",
+        "domain": "etoday.co.kr",
+        "title": "사우디 원유 다시 호르무즈로⋯“글로벌 연료 위기 시작” [호르무즈發...",
+        "url": "https://www.etoday.co.kr/news/view/2625860",
         "source_query": "농가 물가 부담",
         "source_channel": "naver_api"
       },
@@ -26768,8 +26758,8 @@
         "reason": "supply_context_gate",
         "press": "원예산업신문",
         "domain": "wonyesanup.co.kr",
-        "title": "농사포인트 - 저장고 균사체 많은 곳 물 솔질로 균사체 제거해야 저장고...",
-        "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=65759",
+        "title": "' 과수 화상병 적기 약제 방제 기술' 현장 목소리 들어",
+        "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=65771",
         "source_query": "과수 농가",
         "source_channel": "naver_api"
       },
@@ -26778,8 +26768,8 @@
         "reason": "supply_context_gate",
         "press": "원예산업신문",
         "domain": "wonyesanup.co.kr",
-        "title": "' 과수 화상병 적기 약제 방제 기술' 현장 목소리 들어",
-        "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=65771",
+        "title": "농사포인트 - 저장고 균사체 많은 곳 물 솔질로 균사체 제거해야 저장고...",
+        "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=65759",
         "source_query": "과수 농가",
         "source_channel": "naver_api"
       },
@@ -27105,21 +27095,21 @@
       },
       {
         "section": "supply",
-        "reason": "low_value_local_promo",
-        "press": "한국농어민신문",
-        "domain": "agrinet.co.kr",
-        "title": "경북도, 추석 앞두고 농특산물 판촉행사 추진",
-        "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=407193",
-        "source_query": "사과 소비 촉진",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
         "reason": "supply_dist_export_field",
         "press": "한국농어민신문",
         "domain": "agrinet.co.kr",
         "title": "경북도, 한가위 과일 특별전 현장 점검… 소비 자·농가 상생 강조",
         "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=407192",
+        "source_query": "사과 소비 촉진",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "low_value_local_promo",
+        "press": "한국농어민신문",
+        "domain": "agrinet.co.kr",
+        "title": "경북도, 추석 앞두고 농특산물 판촉행사 추진",
+        "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=407193",
         "source_query": "사과 소비 촉진",
         "source_channel": "naver_api"
       },
@@ -27206,20 +27196,20 @@
       {
         "section": "supply",
         "reason": "low_value_local_promo",
-        "press": "데일리한국",
-        "domain": "weekly.hankooki.com",
-        "title": "경기도 G마크 사과 ·배·포도 30% 할인…고양·성남·수원서 한가위 판촉...",
-        "url": "https://weekly.hankooki.com/news/articleView.html?idxno=7184232",
+        "press": "경상일보",
+        "domain": "ksilbo.co.kr",
+        "title": "울산농협 추석맞이 직거래장터 개장... 농산물 최대 20% 할인",
+        "url": "https://www.ksilbo.co.kr/news/articleView.html?idxno=1067324",
         "source_query": "사과 소비 촉진",
         "source_channel": "naver_api"
       },
       {
         "section": "supply",
         "reason": "low_value_local_promo",
-        "press": "경상일보",
-        "domain": "ksilbo.co.kr",
-        "title": "울산농협 추석맞이 직거래장터 개장... 농산물 최대 20% 할인",
-        "url": "https://www.ksilbo.co.kr/news/articleView.html?idxno=1067324",
+        "press": "데일리한국",
+        "domain": "weekly.hankooki.com",
+        "title": "경기도 G마크 사과 ·배·포도 30% 할인…고양·성남·수원서 한가위 판촉...",
+        "url": "https://weekly.hankooki.com/news/articleView.html?idxno=7184232",
         "source_query": "사과 소비 촉진",
         "source_channel": "naver_api"
       },
@@ -28675,21 +28665,21 @@
       },
       {
         "section": "dist",
-        "reason": "dist_retail_promo_no_wholesale",
-        "press": "농민신문",
-        "domain": "nongmin.com",
-        "title": "영등포농협, 일본 동경농업대 방문단에 우리 농산물 유통 현장 소개",
-        "url": "https://www.nongmin.com/article/20260915500489",
-        "source_query": "농산물 판로 확대",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "dist",
         "reason": "dist_program_event_noise",
         "press": "대경일보",
         "domain": "dkilbo.com",
         "title": "영양 청기면, 대구서 농특산물 직거래 행사",
         "url": "https://www.dkilbo.com/news/articleView.html?idxno=554474",
+        "source_query": "농산물 판로 확대",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "dist",
+        "reason": "dist_retail_promo_no_wholesale",
+        "press": "농민신문",
+        "domain": "nongmin.com",
+        "title": "영등포농협, 일본 동경농업대 방문단에 우리 농산물 유통 현장 소개",
+        "url": "https://www.nongmin.com/article/20260915500489",
         "source_query": "농산물 판로 확대",
         "source_channel": "naver_api"
       },
@@ -28775,21 +28765,21 @@
       },
       {
         "section": "dist",
-        "reason": "dist_context_gate",
-        "press": "충청일보",
-        "domain": "ccdailynews.com",
-        "title": "고향주부모임 충북도지회, 단양서 양파 1200㎏ 나눔",
-        "url": "https://www.ccdailynews.com/news/articleView.html?idxno=2440998",
-        "source_query": "농산물 판로 확대",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "dist",
         "reason": "dist_low_value_donation",
         "press": "충청일보",
         "domain": "ccdailynews.com",
         "title": "충북도, 사회복지시설·취약가구에 1억원 상당 먹거리·생활용품 지원",
         "url": "https://www.ccdailynews.com/news/articleView.html?idxno=2441006",
+        "source_query": "농산물 판로 확대",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "dist",
+        "reason": "dist_context_gate",
+        "press": "충청일보",
+        "domain": "ccdailynews.com",
+        "title": "고향주부모임 충북도지회, 단양서 양파 1200㎏ 나눔",
+        "url": "https://www.ccdailynews.com/news/articleView.html?idxno=2440998",
         "source_query": "농산물 판로 확대",
         "source_channel": "naver_api"
       },
@@ -28945,21 +28935,21 @@
       },
       {
         "section": "dist",
-        "reason": "dist_program_event_noise",
-        "press": "국제뉴스",
-        "domain": "gukjenews.com",
-        "title": "동서발전 당진발전본부, 추석맞이 로컬푸드 장터 개최…18개 농가 특산...",
-        "url": "https://www.gukjenews.com/news/articleView.html?idxno=3696175",
-        "source_query": "농산물 직거래 장터",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "dist",
         "reason": "fishery_title_only",
         "press": "직썰",
         "domain": "ziksir.com",
         "title": "대구 추석 장보기 할인 확대…농축수산물 최대 50% 할인",
         "url": "https://www.ziksir.com/news/articleView.html?idxno=146549",
+        "source_query": "농산물 직거래 장터",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "dist",
+        "reason": "dist_program_event_noise",
+        "press": "국제뉴스",
+        "domain": "gukjenews.com",
+        "title": "동서발전 당진발전본부, 추석맞이 로컬푸드 장터 개최…18개 농가 특산...",
+        "url": "https://www.gukjenews.com/news/articleView.html?idxno=3696175",
         "source_query": "농산물 직거래 장터",
         "source_channel": "naver_api"
       },
@@ -29135,21 +29125,21 @@
       },
       {
         "section": "dist",
-        "reason": "dist_context_gate",
-        "press": "더파워뉴스",
-        "domain": "thepowernews.co.kr",
-        "title": "완주 로컬푸드, 서울광장서 수도권 소비자 만난다",
-        "url": "https://www.thepowernews.co.kr/view.php?ud=2026091516302065713dfcd109a8_7",
-        "source_query": "농산물 직거래 장터",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "dist",
         "reason": "dist_program_event_noise",
         "press": "잡포스트",
         "domain": "job-post.co.kr",
         "title": "임만균 서울시의회 의장, 추석맞이 '서로 장터 ' 찾아 농가 격려",
         "url": "https://www.job-post.co.kr/news/articleView.html?idxno=227667",
+        "source_query": "농산물 직거래 장터",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "dist",
+        "reason": "dist_context_gate",
+        "press": "더파워뉴스",
+        "domain": "thepowernews.co.kr",
+        "title": "완주 로컬푸드, 서울광장서 수도권 소비자 만난다",
+        "url": "https://www.thepowernews.co.kr/view.php?ud=2026091516302065713dfcd109a8_7",
         "source_query": "농산물 직거래 장터",
         "source_channel": "naver_api"
       },
@@ -29196,10 +29186,10 @@
       {
         "section": "dist",
         "reason": "dist_program_event_noise",
-        "press": "뉴스핌",
-        "domain": "newspim.com",
-        "title": "임만균 서울시의장, 도농상생 기회 확대 다짐…서울시민과 생산 농가 교...",
-        "url": "https://www.newspim.com/news/view/20260915001156",
+        "press": "데일리한국",
+        "domain": "daily.hankooki.com",
+        "title": "임만균 서울시의회 의장, 추석맞이 '서로 장터 ' 방문…농가 격려",
+        "url": "https://daily.hankooki.com/news/articleView.html?idxno=1406404",
         "source_query": "농산물 직거래 장터",
         "source_channel": "naver_api"
       },
@@ -29216,10 +29206,10 @@
       {
         "section": "dist",
         "reason": "dist_program_event_noise",
-        "press": "데일리한국",
-        "domain": "daily.hankooki.com",
-        "title": "임만균 서울시의회 의장, 추석맞이 '서로 장터 ' 방문…농가 격려",
-        "url": "https://daily.hankooki.com/news/articleView.html?idxno=1406404",
+        "press": "뉴스핌",
+        "domain": "newspim.com",
+        "title": "임만균 서울시의장, 도농상생 기회 확대 다짐…서울시민과 생산 농가 교...",
+        "url": "https://www.newspim.com/news/view/20260915001156",
         "source_query": "농산물 직거래 장터",
         "source_channel": "naver_api"
       },
@@ -29245,11 +29235,11 @@
       },
       {
         "section": "dist",
-        "reason": "dist_context_gate",
-        "press": "프레시안",
-        "domain": "pressian.com",
-        "title": "구미의 맛, 서울에서 통했다...- 첫날 준비 물량 조기 소진에 긴급 공수...",
-        "url": "https://www.pressian.com/pages/articles/2026091511424729592",
+        "reason": "dist_program_event_noise",
+        "press": "이뉴스투데이",
+        "domain": "enewstoday.co.kr",
+        "title": "오세훈 서울시장, 추석 '서로 장터 '서 지역 상생 강조",
+        "url": "http://www.enewstoday.co.kr/news/articleView.html?idxno=2470813",
         "source_query": "농산물 직거래 장터",
         "source_channel": "naver_api"
       },
@@ -29335,21 +29325,21 @@
       },
       {
         "section": "dist",
-        "reason": "dist_retail_promo_no_wholesale",
-        "press": "보건신문",
-        "domain": "bokuennews.com",
-        "title": "농협창업농지원센터, 롯데백화점과 손잡고 청년농업인 육성",
-        "url": "http://www.bokuennews.com/news/article.html?no=284217",
-        "source_query": "농산물 유통 거점",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "dist",
         "reason": "dist_program_event_noise",
         "press": "팜&마켓",
         "domain": "farmnmarket.com",
         "title": "농협, 청년농 판로 확대 나선다",
         "url": "https://www.farmnmarket.com/news/article.html?no=27846",
+        "source_query": "농산물 유통 거점",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "dist",
+        "reason": "dist_retail_promo_no_wholesale",
+        "press": "보건신문",
+        "domain": "bokuennews.com",
+        "title": "농협창업농지원센터, 롯데백화점과 손잡고 청년농업인 육성",
+        "url": "http://www.bokuennews.com/news/article.html?no=284217",
         "source_query": "농산물 유통 거점",
         "source_channel": "naver_api"
       },
@@ -30245,21 +30235,21 @@
       },
       {
         "section": "dist",
-        "reason": "dist_soft_without_infra",
-        "press": "한국농업신문",
-        "domain": "newsfarm.co.kr",
-        "title": "마늘·양파 생산자단체 \"새 농안법, 실질적 가격안전망 돼야\"",
-        "url": "http://www.newsfarm.co.kr/news/articleView.html?idxno=102367",
-        "source_query": "농산물 유통 현장",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "dist",
         "reason": "fishery_title_only",
         "press": "직썰",
         "domain": "ziksir.com",
         "title": "대구 추석 장보기 할인 확대…농축수산물 최대 50% 할인",
         "url": "https://www.ziksir.com/news/articleView.html?idxno=146549",
+        "source_query": "농산물 유통 현장",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "dist",
+        "reason": "dist_soft_without_infra",
+        "press": "한국농업신문",
+        "domain": "newsfarm.co.kr",
+        "title": "마늘·양파 생산자단체 \"새 농안법, 실질적 가격안전망 돼야\"",
+        "url": "http://www.newsfarm.co.kr/news/articleView.html?idxno=102367",
         "source_query": "농산물 유통 현장",
         "source_channel": "naver_api"
       },
@@ -30275,21 +30265,21 @@
       },
       {
         "section": "dist",
-        "reason": "dist_low_value_donation",
-        "press": "cctoday",
-        "domain": "cctoday.co.kr",
-        "title": "농업·건설 잇는 '유기적 변화'",
-        "url": "https://www.cctoday.co.kr/news/articleView.html?idxno=2236823",
-        "source_query": "농산물 유통 현장",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "dist",
         "reason": "dist_program_event_noise",
         "press": "브레이크뉴스",
         "domain": "breaknews.com",
         "title": "대구시, 추석 앞두고 성수품 물가 관리 강화…직거래장터·할인행사 마...",
         "url": "http://www.breaknews.com/1236763",
+        "source_query": "농산물 유통 현장",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "dist",
+        "reason": "dist_low_value_donation",
+        "press": "cctoday",
+        "domain": "cctoday.co.kr",
+        "title": "농업·건설 잇는 '유기적 변화'",
+        "url": "https://www.cctoday.co.kr/news/articleView.html?idxno=2236823",
         "source_query": "농산물 유통 현장",
         "source_channel": "naver_api"
       },
@@ -30325,21 +30315,21 @@
       },
       {
         "section": "dist",
-        "reason": "dist_soft_without_infra",
-        "press": "데일리팝",
-        "domain": "dailypop.kr",
-        "title": "강호동 농협중앙회장, ICAO 회장 연임…한국 농협의 국제협력 역할 이어...",
-        "url": "http://www.dailypop.kr/news/articleView.html?idxno=102598",
-        "source_query": "농산물 유통 현장",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "dist",
         "reason": "dist_county_local_weak_dist_signal",
         "press": "서울신문",
         "domain": "seoul.co.kr",
         "title": "영암군, 국회서 지역 농특산물 완판",
         "url": "https://www.seoul.co.kr/news/publicnews/2026/09/15/20260915500247?wlog_tag3=naver",
+        "source_query": "농산물 유통 현장",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "dist",
+        "reason": "dist_soft_without_infra",
+        "press": "데일리팝",
+        "domain": "dailypop.kr",
+        "title": "강호동 농협중앙회장, ICAO 회장 연임…한국 농협의 국제협력 역할 이어...",
+        "url": "http://www.dailypop.kr/news/articleView.html?idxno=102598",
         "source_query": "농산물 유통 현장",
         "source_channel": "naver_api"
       },
@@ -30375,21 +30365,21 @@
       },
       {
         "section": "dist",
-        "reason": "livestock_title_dominant",
-        "press": "weeklytoday",
-        "domain": "weeklytoday.com",
-        "title": "[위클리오늘] 교육정책부터 물놀이·축산물까지…횡성군 현장 행정 강화",
-        "url": "http://www.weeklytoday.com/news/articleView.html?idxno=794613",
-        "source_query": "농산물 유통 현장",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "dist",
         "reason": "must_terms_fail",
         "press": "진일보",
         "domain": "jnilbo.com",
         "title": "세느강 건넌 '붉은 술'…진도홍주, 세계시장 문 두드린다",
         "url": "https://www.jnilbo.com/news/articleView.html?idxno=90000065796",
+        "source_query": "농산물 유통 현장",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "dist",
+        "reason": "livestock_title_dominant",
+        "press": "weeklytoday",
+        "domain": "weeklytoday.com",
+        "title": "[위클리오늘] 교육정책부터 물놀이·축산물까지…횡성군 현장 행정 강화",
+        "url": "http://www.weeklytoday.com/news/articleView.html?idxno=794613",
         "source_query": "농산물 유통 현장",
         "source_channel": "naver_api"
       },
@@ -30668,8 +30658,8 @@
         "reason": "dist_soft_without_infra",
         "press": "농민신문",
         "domain": "nongmin.com",
-        "title": "반토막 난 농업소득…“농정 성과지표, 농업 실질소득으로 전환해야”",
-        "url": "https://www.nongmin.com/article/20260914500728",
+        "title": "농업소득 짓누르는 경영비…농가 ‘경영안전망’ 실효성 시험대",
+        "url": "https://www.nongmin.com/article/20260914500730",
         "source_query": "농산물 도매가격",
         "source_channel": "naver_api"
       },
@@ -30678,8 +30668,8 @@
         "reason": "dist_soft_without_infra",
         "press": "농민신문",
         "domain": "nongmin.com",
-        "title": "농업소득 짓누르는 경영비…농가 ‘경영안전망’ 실효성 시험대",
-        "url": "https://www.nongmin.com/article/20260914500730",
+        "title": "반토막 난 농업소득…“농정 성과지표, 농업 실질소득으로 전환해야”",
+        "url": "https://www.nongmin.com/article/20260914500728",
         "source_query": "농산물 도매가격",
         "source_channel": "naver_api"
       },
@@ -30708,8 +30698,8 @@
         "reason": "dist_soft_without_infra",
         "press": "원예산업신문",
         "domain": "wonyesanup.co.kr",
-        "title": "박노봉(익산원예농협 멜론공선회장) - 농사경력 40년 베테랑, 배움엔 끝...",
-        "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=65768",
+        "title": "인천원예농협·농협 인천본부, 추석 맞아 남촌 농산물도매 시장 현장 점검",
+        "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=65766",
         "source_query": "농산물 도매가격",
         "source_channel": "naver_api"
       },
@@ -30718,8 +30708,8 @@
         "reason": "dist_soft_without_infra",
         "press": "원예산업신문",
         "domain": "wonyesanup.co.kr",
-        "title": "인천원예농협·농협 인천본부, 추석 맞아 남촌 농산물도매 시장 현장 점검",
-        "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=65766",
+        "title": "박노봉(익산원예농협 멜론공선회장) - 농사경력 40년 베테랑, 배움엔 끝...",
+        "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=65768",
         "source_query": "농산물 도매가격",
         "source_channel": "naver_api"
       },
@@ -31175,21 +31165,21 @@
       },
       {
         "section": "dist",
-        "reason": "dist_soft_without_infra",
-        "press": "원예산업신문",
-        "domain": "wonyesanup.co.kr",
-        "title": "평택원예농협, 추석 맞이 경기도 우수농산물 특판전 참가",
-        "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=65765",
-        "source_query": "사과 산지유통센터",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "dist",
         "reason": "dist_retail_promo_no_wholesale",
         "press": "원예산업신문",
         "domain": "wonyesanup.co.kr",
         "title": "역대 최대 규모 농축산물 할인지원 추진",
         "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=65821",
+        "source_query": "사과 산지유통센터",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "dist",
+        "reason": "dist_soft_without_infra",
+        "press": "원예산업신문",
+        "domain": "wonyesanup.co.kr",
+        "title": "평택원예농협, 추석 맞이 경기도 우수농산물 특판전 참가",
+        "url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=65765",
         "source_query": "사과 산지유통센터",
         "source_channel": "naver_api"
       },
@@ -34352,10 +34342,20 @@
         "url": "https://youngnong.co.kr/news/articleView.html?idxno=70303",
         "source_query": "",
         "source_channel": ""
+      },
+      {
+        "section": "supply",
+        "reason": "low_value_labor_help",
+        "press": "강원일보",
+        "domain": "kwnews.co.kr",
+        "title": "양구군농협, 화훼농가 21곳에 600만원 상당 농자재 지원",
+        "url": "https://kwnews.co.kr/article/20260915501205",
+        "source_query": "",
+        "source_channel": ""
       }
     ],
     "runtime": {
-      "started_at_kst": "2026-09-16T06:09:42+09:00",
+      "started_at_kst": "2026-09-16T06:25:33+09:00",
       "local_dry_run": false,
       "placement_only": false
     },
