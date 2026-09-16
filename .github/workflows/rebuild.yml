@@ -42,6 +42,11 @@ on:
         required: false
         default: 'false'
         type: string
+      run_quality_gate:
+        description: 'Run the editorial quality gate (with deterministic excision) before publishing the rebuilt page even without Kakao (true/false)'
+        required: false
+        default: 'false'
+        type: string
 
 permissions:
   contents: write
@@ -207,6 +212,7 @@ jobs:
           REPLAY_SNAPSHOT_PATH: ${{ steps.vars.outputs.replay_snapshot_path }}
           REPLAY_WRITE_SNAPSHOT: ${{ steps.vars.outputs.replay_write_snapshot }}
           REPLAY_ALLOW_OPENAI: ${{ inputs.replay_allow_openai == 'true' && 'true' || 'false' }}
+          REPLAY_RUN_QUALITY_GATE: ${{ inputs.run_quality_gate == 'true' && 'true' || 'false' }}
           REPLAY_SNAPSHOT_DIR: .agri_replay
           MAX_PER_SECTION: ${{ steps.vars.outputs.max_per_section }}
 

@@ -151,6 +151,89 @@ def _post_openai_response_with_retry(
     raise RuntimeError("OpenAI response retry loop exhausted")
 
 
+def _response_hit_output_limit(payload: dict[str, Any]) -> bool:
+    if not isinstance(payload, dict):
+        return False
+    if str(payload.get("status") or "").strip().lower() != "incomplete":
+        return False
+    details = payload.get("incomplete_details", {})
+    reason = str(details.get("reason") or "").strip().lower() if isinstance(details, dict) else ""
+    return reason in ("", "max_output_tokens")
+
+
+def _merge_usage(first: dict[str, Any], second: dict[str, Any]) -> dict[str, Any]:
+    if not first:
+        return dict(second)
+    if not second:
+        return dict(first)
+    merged = dict(second)
+    for key in ("input_tokens", "output_tokens", "cached_input_tokens", "cache_write_input_tokens", "total_tokens"):
+        try:
+            merged[key] = int(first.get(key, 0) or 0) + int(second.get(key, 0) or 0)
+        except (TypeError, ValueError):
+            continue
+    try:
+        merged["estimated_cost_usd"] = round(
+            float(first.get("estimated_cost_usd", 0.0) or 0.0) + float(second.get("estimated_cost_usd", 0.0) or 0.0), 6
+        )
+    except (TypeError, ValueError):
+        pass
+    merged["retried_after_output_limit"] = True
+    return merged
+
+
+def _request_structured_json(
+    session: Any,
+    *,
+    headers: dict[str, str],
+    request_body: dict[str, Any],
+    timeout_sec: int,
+    max_output_tokens_cap: int,
+    model_for_usage: str,
+) -> tuple[dict[str, Any], str, dict[str, Any], dict[str, Any]]:
+    """Call the Responses API and parse the JSON body, growing the output budget once if cut off.
+
+    With reasoning models the reasoning tokens count against max_output_tokens, so a
+    modest budget intermittently truncates the JSON (2026-09-16: two of three editorial
+    calls failed with 'Expecting , delimiter' / 'Expecting value' after ~1.1k visible
+    characters). A truncated or unparsable structured response is retried once with a
+    doubled budget instead of surfacing as an editorial error that the recovery path
+    then has to publish around.
+    """
+    body = dict(request_body)
+    prior_usage: dict[str, Any] = {}
+    last_error: Exception | None = None
+    for attempt in range(2):
+        response = _post_openai_response_with_retry(
+            session,
+            headers=headers,
+            request_body=body,
+            timeout_sec=timeout_sec,
+        )
+        response_payload = response.json()
+        raw_text = _extract_response_text(response_payload)
+        model_snapshot = str(response_payload.get("model") or "").strip()
+        usage = normalize_openai_usage(response_payload, model_snapshot or model_for_usage)
+        hit_limit = _response_hit_output_limit(response_payload)
+        parsed: dict[str, Any] | None = None
+        if not hit_limit:
+            try:
+                parsed = extract_json_object(raw_text)
+            except (ValueError, json.JSONDecodeError) as exc:
+                last_error = exc
+        if parsed is not None:
+            return response_payload, raw_text, parsed, _merge_usage(prior_usage, usage)
+        prior_usage = _merge_usage(prior_usage, usage)
+        current_budget = int(body.get("max_output_tokens") or 0)
+        grown = min(max_output_tokens_cap, max(current_budget * 2, current_budget + 800))
+        if attempt >= 1 or grown <= current_budget:
+            break
+        body["max_output_tokens"] = grown
+    if last_error is not None:
+        raise last_error
+    raise ValueError("Editorial response was cut off at max_output_tokens.")
+
+
 def _score_schema() -> dict[str, Any]:
     return {"type": "number", "minimum": 0, "maximum": 100}
 
@@ -1101,7 +1184,7 @@ def evaluate_editorial_quality(
     session = session_factory()
     raw_text = ""
     try:
-        response = _post_openai_response_with_retry(
+        response_payload, raw_text, parsed, usage = _request_structured_json(
             session,
             headers={
                 "Authorization": f"Bearer {resolved_key}",
@@ -1109,10 +1192,9 @@ def evaluate_editorial_quality(
             },
             request_body=request_body,
             timeout_sec=timeout_sec,
+            max_output_tokens_cap=max(DEFAULT_EVAL_MAX_OUTPUT_TOKENS, 8000),
+            model_for_usage=resolved_model,
         )
-        response_payload = response.json()
-        raw_text = _extract_response_text(response_payload)
-        parsed = extract_json_object(raw_text)
         result = _normalize_editorial_response(
             parsed,
             model=resolved_model,
@@ -1122,7 +1204,6 @@ def evaluate_editorial_quality(
         model_snapshot = str(response_payload.get("model") or "").strip()
         if model_snapshot:
             result["model_snapshot"] = model_snapshot
-        usage = normalize_openai_usage(response_payload, model_snapshot or resolved_model)
         if usage:
             result["usage"] = usage
         return result
@@ -1229,7 +1310,7 @@ def propose_editorial_repair(
     session = session_factory()
     raw_text = ""
     try:
-        response = _post_openai_response_with_retry(
+        response_payload, raw_text, parsed, repair_usage = _request_structured_json(
             session,
             headers={
                 "Authorization": f"Bearer {resolved_key}",
@@ -1237,10 +1318,9 @@ def propose_editorial_repair(
             },
             request_body=request_body,
             timeout_sec=timeout_sec,
+            max_output_tokens_cap=max(DEFAULT_REPAIR_MAX_OUTPUT_TOKENS, 6000),
+            model_for_usage=resolved_model,
         )
-        response_payload = response.json()
-        raw_text = _extract_response_text(response_payload)
-        parsed = extract_json_object(raw_text)
         sections = parsed.get("sections", {})
         if not isinstance(sections, dict):
             raise ValueError("Editorial repair response did not contain sections.")

@@ -16,6 +16,7 @@ agri-news-brief main.py (production)
 """
 
 import os
+import copy
 import re
 import unicodedata
 from pathlib import Path
@@ -1128,6 +1129,11 @@ PREPUBLISH_QUALITY_MIN_OPERATIONAL_SCORE = max(
 PREPUBLISH_SLA_FALLBACK_ENABLED = os.getenv(
     "PREPUBLISH_SLA_FALLBACK_ENABLED", "true"
 ).strip().lower() in ("1", "true", "yes", "y")
+# 편집 평가가 지목한 hard issue·중복·필러 카드를 LLM 교체안 없이 결정적으로 잘라내고
+# 재충원하는 최대 라운드 수. 0이면 끈다.
+PREPUBLISH_MAX_HARD_ISSUE_EXCISIONS = max(
+    0, min(4, int((os.getenv("PREPUBLISH_MAX_HARD_ISSUE_EXCISIONS", "2") or "2").strip() or 2))
+)
 PREPUBLISH_FORCE_SLA_FALLBACK = os.getenv(
     "PREPUBLISH_FORCE_SLA_FALLBACK", "false"
 ).strip().lower() in ("1", "true", "yes", "y")
@@ -14695,6 +14701,10 @@ def _replay_snapshot_write_enabled() -> bool:
     return _env_flag("REPLAY_WRITE_SNAPSHOT", default=is_local_dry_run())
 
 
+# 페이지 전용 재빌드(카톡 미발송)에서도 발행 전 편집 게이트를 돌릴지.
+REPLAY_RUN_QUALITY_GATE = (os.getenv("REPLAY_RUN_QUALITY_GATE", "false") or "false").strip().lower() in ("1", "true", "yes", "y")
+
+
 def _replay_allow_openai() -> bool:
     return _env_flag("REPLAY_ALLOW_OPENAI", default=False)
 
@@ -24914,6 +24924,50 @@ _HOLIDAY_AGRI_ANCHORS = (
 )
 
 
+
+# 인물 소개·견학성 기사(2026-09-16 재발행 지면에서 편집 평가가 promotional_filler major로 지목):
+#  - '박노봉(익산원예농협 멜론 공선회장) - 농사경력 40년 베테랑…' 같은 개별 농가 인물 소개
+#  - '영등포농협, 일본 동경농업대 방문단에 우리 농산물 유통 현장 소개' 같은 방문단 견학
+# 당일 수급·유통 판단에 기여하지 않는다. 협약·계약·물량·가격 같은 결과 앵커가 있으면 보류한다.
+_PERSON_PROFILE_TITLE_RX = re.compile(r"^\s*[가-힣]{2,4}\s*\([^)]{2,40}\)\s*[-–—:]")
+_PERSON_PROFILE_TAG_RX = re.compile(r"\[(?:인터뷰|사람|이 사람|인물|피플|만난 사람|현장 사람들)\]")
+_PERSON_PROFILE_TERMS = (
+    "농사경력", "베테랑", "외길", "년차 농부", "농부의 하루", "성공 스토리", "성공스토리", "농업인 이야기",
+    "인생 2막", "인생2막", "제2의 인생", "귀농 성공", "귀농인 이야기",
+)
+_VISIT_TOUR_TERMS = ("방문단", "견학", "시찰단", "탐방단", "답사단", "연수단", "벤치마킹")
+# 거래 결과 앵커: '판매 전략 소개'·'수출 현황 설명' 같은 견학 설명문에도 나오는 판매·수출·가격은 제외한다.
+_VISIT_TOUR_OUTCOME_ANCHORS = (
+    "협약", "계약", "체결", "물량", "납품", "투자", "mou", "주문", "구매", "발주", "수출길", "수출 성사",
+)
+
+
+def is_person_profile_feature_context(title: str, desc: str) -> bool:
+    """개별 인물 소개 기사인가."""
+    title_l = _nfkc_lower(title or "")
+    if not title_l:
+        return False
+    lead = _nfkc_lower(f"{title or ''} {(desc or '')[:240]}")
+    if _PERSON_PROFILE_TAG_RX.search(title_l):
+        # 장관·과장 등 정책 당사자 인터뷰는 제도 내용을 담으므로 인물 소개로 보지 않는다.
+        return not re.search(r"장관|차관|국장|과장|청장|처장|원장|농식품부|농진청|농촌진흥청|본부장", title_l)
+    if count_any(title_l, [w.lower() for w in _PERSON_PROFILE_TERMS]) >= 1:
+        return True
+    return bool(
+        _PERSON_PROFILE_TITLE_RX.search(title_l)
+        and count_any(lead, [w.lower() for w in _PERSON_PROFILE_TERMS + ("농가", "재배", "농장", "조합원")]) >= 1
+    )
+
+
+def is_visiting_delegation_tour_context(title: str, desc: str) -> bool:
+    """방문단 견학·시찰 소개 기사인가 (거래 결과 없음)."""
+    title_l = _nfkc_lower(title or "")
+    if not title_l or count_any(title_l, [w.lower() for w in _VISIT_TOUR_TERMS]) < 1:
+        return False
+    lead = _nfkc_lower(f"{title or ''} {(desc or '')[:240]}")
+    return count_any(lead, [w.lower() for w in _VISIT_TOUR_OUTCOME_ANCHORS]) < 1
+
+
 def is_municipal_holiday_omnibus_plan_context(title: str, desc: str) -> bool:
     """지자체의 명절 종합대책 기사인가 (농산물 앵커 없음)."""
     title_l = _nfkc_lower(title or "")
@@ -24937,10 +24991,23 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str, *, apply_se
     feedback_reason = _selection_feedback_block_reason(a, section_key)
     if feedback_reason:
         return feedback_reason
+    # 발행 전 게이트가 편집 평가 결과로 잘라낸 카드는 어떤 refill·swap·교체안으로도 되돌아오면 안 된다.
+    if _GATE_EXCISED_LINK_KEYS and (_repair_article_link_keys(a) & _GATE_EXCISED_LINK_KEYS):
+        return "editorial_issue_excised"
+    if (
+        _GATE_EXCISED_ARTICLES
+        and not (_repair_article_link_keys(a) & _GATE_EXCISION_KEEP_LINK_KEYS)
+        and any(_duplicate_story_pair_reason(a, excised) for excised in _GATE_EXCISED_ARTICLES)
+    ):
+        return "editorial_issue_excised_duplicate"
     if section_key in ("supply", "policy", "dist") and is_municipal_holiday_omnibus_plan_context(
         a.title or "", a.description or ""
     ):
         return "municipal_holiday_omnibus_plan"
+    if section_key in ("supply", "policy", "dist") and is_person_profile_feature_context(a.title or "", a.description or ""):
+        return "person_profile_feature"
+    if section_key in ("supply", "policy", "dist") and is_visiting_delegation_tour_context(a.title or "", a.description or ""):
+        return "visiting_delegation_tour"
     text = ((a.title or "") + " " + (a.description or "")).lower()
     if is_garbled_article_text(a.title or "", a.description or ""):
         return "garbled_article_text"
@@ -52284,7 +52351,9 @@ def maintenance_replay_date(repo: str, token: str, report_date: str, site_path: 
     # A subscriber-facing replay is the last-resort recovery path.  It must not
     # repeat the 2026-08-03 failure mode where Kakao delivery completed before
     # the external editorial evaluation found a low-quality selection.
-    if MAINTENANCE_SEND_KAKAO:
+    # A page-only rebuild (no Kakao) can opt into the same gate so an already
+    # delivered edition is replaced by a reviewed page, not just a re-rendered one.
+    if MAINTENANCE_SEND_KAKAO or REPLAY_RUN_QUALITY_GATE:
         raw_by_section, _snap_start, _snap_end, _snap_cache, _snap_debug, snapshot_path = load_replay_snapshot(report_date)
         avail = _list_dev_preview_archive_dates(repo, token) if DEV_SINGLE_PAGE_MODE else _list_archive_dates(repo, token)
         avail.add(report_date)
@@ -52314,6 +52383,12 @@ def maintenance_replay_date(repo: str, token: str, report_date: str, site_path: 
         gate = quality_result.get("prepublish_quality_gate", {}) if isinstance(quality_result, dict) else {}
         if not isinstance(gate, dict) or not gate.get("publishable"):
             raise RuntimeError("Subscriber-facing replay did not pass the mandatory pre-send quality gate.")
+        log.info(
+            "[MAINT] replay_date %s passed the quality gate (mode=%s, excisions=%d)",
+            report_date,
+            gate.get("publication_mode"),
+            len(gate.get("hard_issue_excisions") or []),
+        )
 
     _publish_maintenance_report(
         repo,
@@ -52565,16 +52640,21 @@ def _prepublish_sla_minimum_per_section() -> int:
     return MIN_FALLBACK_PER_SECTION if PREPUBLISH_FORCE_SLA_FALLBACK else SOFT_MIN_PER_SECTION
 
 
-def _daily_summary_allow_openai() -> bool:
-    """Keep a forced SLA recovery on the deterministic fast path.
+def _daily_summary_allow_openai(report_date: str = "") -> bool:
+    """Forced SLA recovery uses OpenAI summaries only while its deadline allows.
 
-    A watchdog recovery is dispatched only after the normal path has already
-    failed or is no longer likely to finish before 07:00. Repeating the OpenAI
-    summary batch at that point can consume the entire remaining SLA window.
-    The non-model summary fallback still normalizes crawler descriptions and is
-    checked by the same prepublish safety gate before anything is delivered.
+    A watchdog recovery is dispatched after the normal path has already failed.
+    Skipping the summary batch unconditionally (as before 2026-09-16) shipped
+    deterministic crawler-description summaries to every subscriber even though
+    the recovery run had hours of deadline left. Per-call timeouts bound the
+    batch; only a recovery that has already reached its deadline stays on the
+    deterministic fast path.
     """
-    return not PREPUBLISH_FORCE_SLA_FALLBACK
+    if not PREPUBLISH_FORCE_SLA_FALLBACK:
+        return True
+    if not report_date:
+        return False
+    return not _prepublish_deadline_reached(report_date)
 
 
 def _prepublish_sla_fallback_blockers(result: JsonDict) -> list[str]:
@@ -53091,6 +53171,227 @@ def _notify_quality_hold(report_date: str, result: JsonDict, daily_url: str) -> 
         log.warning("[QUALITY GATE] hold notification failed: %s", exc)
 
 
+
+# ---------------------------------------------------------------------------
+# 편집 평가가 지목한 카드의 결정적 절제(excision)
+#
+# 2026-09-16: 편집 평가가 blocking off_topic 1건·duplicate_story major 2건을 정확히 지목했지만,
+# 게이트가 할 수 있는 일은 비싼 LLM 교체안(22k 토큰, 자주 기각)뿐이어서 예산 소진 후 차단됐고,
+# 워치독의 강제 SLA 복구는 편집 평가를 아예 건너뛰어 같은 카드를 그대로 발행했다.
+# 평가가 제목까지 지목한 카드를 빼고 기존 결정적 refill 체인으로 재충원하는 일은 모델 없이도
+# 할 수 있다. 절제된 카드는 _GATE_EXCISED_LINK_KEYS 로 초크포인트에서 영구 차단된다.
+# ---------------------------------------------------------------------------
+_GATE_EXCISED_LINK_KEYS: set[str] = set()
+# 절제된 카드 원본. refill 이 같은 사건의 다른 매체판을 끌어오면(2026-09-16 하네스: 파렛트
+# 의무화 기사 3개 매체판이 라운드마다 하나씩 재유입) 초크포인트에서 쌍 중복 판정으로 막는다.
+_GATE_EXCISED_ARTICLES: list["Article"] = []
+# 절제 시점에 지면에 남아 있던 카드(중복의 "남는 쪽" 포함)와 재충원 카드. 이 카드들은 절제 카드와의
+# 쌍 중복 판정에서 제외한다 — 그렇지 않으면 최종 감사가 남는 쪽까지 잘라 섹션이 비게 된다.
+_GATE_EXCISION_KEEP_LINK_KEYS: set[str] = set()
+_EXCISABLE_MAJOR_ISSUE_TYPES = frozenset(
+    {"duplicate_story", "promotional_filler", "noise", "wrong_section", "off_topic", "false_positive"}
+)
+_EXCISION_MAX_PER_SECTION_ROUND = 2
+
+
+def _editorial_issue_is_excisable(issue: JsonDict) -> bool:
+    severity = str(issue.get("severity") or "").strip().lower()
+    issue_type = str(issue.get("type") or "").strip().lower()
+    if severity == "blocking" or issue_type in _PREPUBLISH_HARD_EDITORIAL_ISSUE_TYPES:
+        return True
+    # 중복은 한 장을 빼면 끝나는 결정적 결함이라 moderate 여도 잘라낸다.
+    if issue_type == "duplicate_story" and severity in ("major", "moderate"):
+        return True
+    return severity == "major" and issue_type in _EXCISABLE_MAJOR_ISSUE_TYPES
+
+
+def _editorial_issue_priority(issue: JsonDict) -> int:
+    severity = str(issue.get("severity") or "").strip().lower()
+    issue_type = str(issue.get("type") or "").strip().lower()
+    if severity == "blocking":
+        return 0
+    if issue_type in _PREPUBLISH_HARD_EDITORIAL_ISSUE_TYPES:
+        return 1
+    if issue_type == "duplicate_story":
+        return 2
+    return 3
+
+
+def _editorial_issue_title_matches(issue_title_key: str, article: "Article") -> bool:
+    article_key = norm_title_key(article.title or "") or (article.title_key or "")
+    if not issue_title_key or not article_key:
+        return False
+    return (
+        issue_title_key == article_key
+        or (len(issue_title_key) >= 12 and issue_title_key in article_key)
+        or (len(article_key) >= 12 and article_key in issue_title_key)
+    )
+
+
+def _editorial_excision_targets(
+    editorial_result: JsonDict,
+    sections: dict[str, list["Article"]],
+) -> list[JsonDict]:
+    """편집 평가 이슈를 현재 지면 카드에 대응시켜 잘라낼 대상을 고른다."""
+    issues = editorial_result.get("issues", []) if isinstance(editorial_result, dict) else []
+    if not isinstance(issues, list):
+        return []
+    candidates = sorted(
+        (issue for issue in issues if isinstance(issue, dict) and _editorial_issue_is_excisable(issue)),
+        key=_editorial_issue_priority,
+    )
+    targets: list[JsonDict] = []
+    taken: set[int] = set()
+    per_section: dict[str, int] = {}
+    for issue in candidates:
+        title_key = norm_title_key(str(issue.get("title") or "").replace("...", "").replace("…", ""))
+        if not title_key:
+            continue
+        hinted = [
+            part.strip().lower()
+            for part in re.split(r"[/,|]", str(issue.get("section") or ""))
+            if part.strip().lower() in _section_keys()
+        ]
+        search_order = hinted + [s for s in _section_keys() if s not in hinted]
+        for section in search_order:
+            found = None
+            for article in sections.get(section, []) or []:
+                if not isinstance(article, Article) or id(article) in taken:
+                    continue
+                if _editorial_issue_title_matches(title_key, article):
+                    found = article
+                    break
+            if found is None:
+                continue
+            if per_section.get(section, 0) >= _EXCISION_MAX_PER_SECTION_ROUND:
+                break
+            taken.add(id(found))
+            per_section[section] = per_section.get(section, 0) + 1
+            targets.append(
+                {
+                    "section": section,
+                    "article": found,
+                    "title": found.title,
+                    "link": found.canon_url or found.link,
+                    "issue_type": str(issue.get("type") or ""),
+                    "severity": str(issue.get("severity") or ""),
+                    "reason": str(issue.get("reason") or "")[:200],
+                }
+            )
+            break
+    return targets
+
+
+def _normalize_section_core_badges(articles: list["Article"]) -> None:
+    core_count = sum(1 for article in articles if article.is_core)
+    if core_count < 2:
+        for article in sorted(articles, key=lambda a: float(a.score or 0.0), reverse=True):
+            if core_count >= 2:
+                break
+            if not article.is_core:
+                article.is_core = True
+                core_count += 1
+    elif core_count > 3:
+        seen = 0
+        for article in articles:
+            if article.is_core:
+                seen += 1
+                if seen > 3:
+                    article.is_core = False
+
+
+def _excise_flagged_cards_and_refill(
+    sections: dict[str, list["Article"]],
+    raw_by_section: dict[str, list["Article"]],
+    targets: list[JsonDict],
+    summary_cache: dict[str, SummaryCacheEntry | str],
+    *,
+    allow_openai_summaries: bool = True,
+) -> dict[str, list["Article"]] | None:
+    """지목된 카드를 빼고 결정적 refill 체인으로 재충원한다. 하한 미달이면 None."""
+    if not targets:
+        return None
+    working: dict[str, list[Article]] = {
+        section: [a for a in (sections.get(section) or []) if isinstance(a, Article)]
+        for section in _section_keys()
+    }
+    excised_ids = {id(t["article"]) for t in targets}
+    for target in targets:
+        _GATE_EXCISED_LINK_KEYS.update(_repair_article_link_keys(target["article"]))
+        _GATE_EXCISED_ARTICLES.append(target["article"])
+    for section in _section_keys():
+        working[section] = [a for a in working[section] if id(a) not in excised_ids]
+        for kept in working[section]:
+            _GATE_EXCISION_KEEP_LINK_KEYS.update(_repair_article_link_keys(kept))
+    try:
+        refilled = _recover_preferred_section_counts_from_raw(working, raw_by_section, max_items=MAX_PER_SECTION)
+        dedupe_removed, dedupe_refilled = _final_global_story_dedupe(working, raw_by_section, max_passes=3)
+        source_changed = _cap_final_low_tier_sources(working, raw_by_section)
+        _ensure_final_selection_fit(working)
+        _demote_soft_news_final_cores(working, raw_by_section)
+    except Exception as exc:
+        log.warning("[QUALITY GATE] excision refill failed: %s", exc)
+        return None
+    for section in _section_keys():
+        working[section] = working[section][:MAX_PER_SECTION]
+        _normalize_section_core_badges(working[section])
+    candidate = fill_summaries(working, cache=summary_cache, allow_openai=allow_openai_summaries)
+    _finalize_sections_for_render(candidate)
+    for section in _section_keys():
+        rows = candidate.get(section, []) or []
+        if len(rows) < MIN_FALLBACK_PER_SECTION:
+            log.warning(
+                "[QUALITY GATE] excision left section=%s at %d/%d; keeping previous selection",
+                section, len(rows), MIN_FALLBACK_PER_SECTION,
+            )
+            return None
+        if any(id(a) in excised_ids or (_repair_article_link_keys(a) & _GATE_EXCISED_LINK_KEYS) for a in rows):
+            log.warning("[QUALITY GATE] excised card resurfaced in section=%s; keeping previous selection", section)
+            return None
+    for section in _section_keys():
+        for kept in candidate.get(section, []) or []:
+            _GATE_EXCISION_KEEP_LINK_KEYS.update(_repair_article_link_keys(kept))
+    log.info(
+        "[QUALITY GATE] excised %d flagged card(s); refilled=%d dedupe=%d/%d source=%d",
+        len(targets), refilled, dedupe_removed, dedupe_refilled, source_changed,
+    )
+    return candidate
+
+
+def _editorial_result_without_excised(
+    editorial_result: JsonDict,
+    targets: list[JsonDict],
+    operational_result: JsonDict,
+) -> JsonDict:
+    """재평가 예산이 없을 때: 잘라낸 카드의 이슈만 제거한 편집 결과를 이어 쓴다."""
+    from editorial_eval import _apply_editorial_acceptance_gate
+
+    carried = copy.deepcopy(editorial_result) if isinstance(editorial_result, dict) else {}
+    removed_keys = [norm_title_key(str(t.get("title") or "")) for t in targets]
+    kept: list[JsonDict] = []
+    dropped = 0
+    for issue in carried.get("issues", []) or []:
+        if not isinstance(issue, dict):
+            continue
+        issue_key = norm_title_key(str(issue.get("title") or "").replace("...", "").replace("…", ""))
+        if issue_key and any(
+            issue_key == key or (len(issue_key) >= 12 and issue_key in key) or (len(key) >= 12 and key in issue_key)
+            for key in removed_keys
+            if key
+        ):
+            dropped += 1
+            continue
+        kept.append(issue)
+    carried["issues"] = kept
+    carried["carried_forward_after_excision"] = True
+    carried["excised_issue_count"] = dropped
+    try:
+        _apply_editorial_acceptance_gate(carried, operational_result)
+    except Exception as exc:
+        log.warning("[QUALITY GATE] acceptance gate recompute failed: %s", exc)
+    return carried
+
+
 def _run_prepublish_quality_gate(
     repo: str,
     token: str,
@@ -53136,11 +53437,12 @@ def _run_prepublish_quality_gate(
         run_editorial, adaptive_reason = False, "openai_quota_unavailable"
     elif _prepublish_deadline_reached(report_date):
         run_editorial, adaptive_reason = False, "deadline_reached"
-    elif PREPUBLISH_FORCE_SLA_FALLBACK and not _weekly_editorial_audit_due(report_date):
-        # SLA 복구 모드는 비싼 단계를 건너뛰지만, 주간 감사일까지 건너뛰면
-        # 그 주 편집 평가가 한 번도 돌지 않는다(2026-08-10 월요일이 그랬다).
-        # 마감·쿼터 조건은 위에서 이미 걸러졌으므로 감사일은 통과시킨다.
-        run_editorial, adaptive_reason = False, "forced_sla_recovery"
+    elif PREPUBLISH_FORCE_SLA_FALLBACK:
+        # 강제 SLA 복구는 정상 런이 실패한 뒤에 오므로 지면에 문제 카드가 있을 가능성이
+        # 가장 높은 순간이다. 예전에는 비싼 단계를 건너뛰었지만, 그 결과 2026-09-16에
+        # 정상 런이 차단한 off_topic·중복 카드가 그대로 발행됐다. 마감·쿼터 조건은
+        # 위에서 걸러졌으므로 편집 평가를 돌리고, 지목된 카드는 결정적으로 잘라낸다.
+        run_editorial, adaptive_reason = True, "forced_sla_recovery_review"
     else:
         run_editorial, adaptive_reason = _should_run_full_editorial_eval(
             repo,
@@ -53162,6 +53464,87 @@ def _run_prepublish_quality_gate(
     excluded_counts = {section: len(links) for section, links in repair_excluded_links.items() if links}
     if excluded_counts:
         log.info("[QUALITY GATE] prefiltered locally invalid repair candidates: %s", excluded_counts)
+
+    excision_attempts: list[JsonDict] = []
+
+    def _run_hard_issue_excisions() -> None:
+        """평가가 지목한 카드를 잘라내고 재충원한다. 예산이 있으면 재평가, 없으면 이슈만 덜어 이어 쓴다."""
+        nonlocal current_sections, current_html, result
+        while len(excision_attempts) < PREPUBLISH_MAX_HARD_ISSUE_EXCISIONS:
+            editorial_now = result.get("editorial", {}) if isinstance(result, dict) else {}
+            if not isinstance(editorial_now, dict) or editorial_now.get("status") != "success":
+                return
+            if _prepublish_evaluation_passed(result):
+                return
+            targets = _editorial_excision_targets(editorial_now, current_sections)
+            if not targets:
+                return
+            excised = _excise_flagged_cards_and_refill(
+                current_sections,
+                raw_by_section,
+                targets,
+                summary_cache,
+                allow_openai_summaries=_daily_summary_allow_openai(report_date),
+            )
+            attempt = {
+                "attempt": len(excision_attempts) + 1,
+                "targets": [
+                    {k: v for k, v in target.items() if k != "article"} for target in targets
+                ],
+                "status": "applied" if excised is not None else "rejected_refill_floor",
+            }
+            excision_attempts.append(attempt)
+            if excised is None:
+                return
+            for target in targets:
+                section = str(target.get("section") or "")
+                if section in repair_excluded_links:
+                    repair_excluded_links[section].update(_repair_article_link_keys(target["article"]))
+            current_sections = excised
+            current_html = render_daily_page(
+                report_date,
+                start_kst,
+                end_kst,
+                current_sections,
+                archive_dates_desc,
+                site_path,
+            )
+            reevaluate = bool(
+                run_editorial
+                and _prepublish_editorial_budget_available()
+                and (force_editorial or not _prepublish_deadline_reached(report_date))
+            )
+            if reevaluate:
+                attempt["verification"] = "model_reevaluated"
+                result = _compose_prepublish_evaluation(
+                    report_date,
+                    current_html,
+                    snapshot_payload,
+                    run_editorial=True,
+                    adaptive_reason=f"hard_issue_excision_{attempt['attempt']}",
+                )
+                continue
+            attempt["verification"] = "deterministic_carry_forward"
+            previous_editorial = editorial_now
+            result = _compose_prepublish_evaluation(
+                report_date,
+                current_html,
+                snapshot_payload,
+                run_editorial=False,
+                adaptive_reason=f"hard_issue_excision_{attempt['attempt']}_unverified",
+            )
+            carried = _editorial_result_without_excised(previous_editorial, targets, result)
+            result["editorial"] = carried
+            result["editorial_score"] = carried.get("score")
+            try:
+                from scripts.evaluate_daily_report import apply_editorial_quality_gate
+
+                apply_editorial_quality_gate(result, carried)
+            except Exception as exc:
+                log.warning("[QUALITY GATE] carried-forward editorial gate failed: %s", exc)
+            return
+
+    _run_hard_issue_excisions()
 
     repair_proposal_limit = min(
         PREPUBLISH_QUALITY_MAX_PROPOSALS,
@@ -53367,6 +53750,9 @@ def _run_prepublish_quality_gate(
                 adaptive_reason="editorial_budget_exhausted_after_repair",
             )
 
+    # LLM 교체안이 새 hard issue를 남겼거나 예산 때문에 손대지 못했다면 한 번 더 잘라낸다.
+    _run_hard_issue_excisions()
+
     final_editorial = result.get("editorial", {}) if isinstance(result, dict) else {}
     editorial_required_satisfied = bool(
         not force_editorial
@@ -53415,6 +53801,8 @@ def _run_prepublish_quality_gate(
         "applied_repair_count": applied_repair_count,
         "repair_proposal_limit": repair_proposal_limit,
         "repair_attempts": repair_attempts,
+        "hard_issue_excisions": excision_attempts,
+        "hard_issue_excision_limit": PREPUBLISH_MAX_HARD_ISSUE_EXCISIONS,
         "deadline_kst": PREPUBLISH_QUALITY_DEADLINE_KST,
         "deadline_reached": _prepublish_deadline_reached(report_date),
         "minimum_operational_score": PREPUBLISH_QUALITY_MIN_OPERATIONAL_SCORE,
@@ -53452,10 +53840,13 @@ def _run_prepublish_quality_gate(
     elif fallback_passed:
         log.warning(
             "[QUALITY GATE] publishing the standard four-section briefing via SLA fallback "
-            "(forced=%s, minimum_score=%.1f, minimum_per_section=%d, hard_issues=0)",
+            "(forced=%s, minimum_score=%.1f, minimum_per_section=%d, hard_issues=%d, excisions=%d, editorial=%s)",
             PREPUBLISH_FORCE_SLA_FALLBACK,
             PREPUBLISH_SLA_FALLBACK_MIN_SCORE,
             fallback_minimum_per_section,
+            len(_prepublish_hard_editorial_issues(result)),
+            len(excision_attempts),
+            str(final_editorial.get("status") if isinstance(final_editorial, dict) else "unknown"),
         )
     return current_sections, current_html, result
 
@@ -53712,7 +54103,7 @@ def main() -> None:
     by_section = fill_summaries(
         by_section,
         cache=summary_cache,
-        allow_openai=_daily_summary_allow_openai(),
+        allow_openai=_daily_summary_allow_openai(report_date),
     )
     try:
         save_summary_cache(repo, GH_TOKEN, summary_cache)
