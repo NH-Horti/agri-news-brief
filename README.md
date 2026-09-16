@@ -59,8 +59,10 @@ It refuses a nonempty output directory to prevent accidental repeated runs.
 The saved editorial scores are historical evidence; the new offline scores
 are not new model editorial reviews. Original published files are preserved.
 An unsuccessful editorial acceptance gate now reports `warn` (or `fail` for a
-low score), even when the numeric headline remains high. Paid repair proposals
-start only when the run budget can also fund their final editorial review.
+low score), even when the numeric headline remains high. The per-run model
+budget bounds how many paid proposals and evaluations may start; a repair or
+excision that was applied is still verified by one model call within the call
+cap even when the token budget is already spent.
 
 Local example:
 

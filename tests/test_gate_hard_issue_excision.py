@@ -3,6 +3,7 @@ import sys
 import unittest
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from contextlib import ExitStack
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -194,7 +195,7 @@ class GateFlowTests(unittest.TestCase):
         main._GATE_EXCISION_KEEP_LINK_KEYS.clear()
         main.OPENAI_USAGE_EVENTS.clear()
 
-    def _run_gate(self, evaluations, *, forced=False):
+    def _run_gate(self, evaluations, *, forced=False, verification_allowed=False):
         calls = []
 
         def fake_compose(report_date, html_text, snapshot_payload, *, run_editorial, adaptive_reason):
@@ -225,6 +226,7 @@ class GateFlowTests(unittest.TestCase):
             patch.object(main, "_enrich_editorial_snapshot_source_tiers", return_value=0),
             patch.object(main, "_initial_editorial_repair_exclusions", return_value={s: set() for s in main._section_keys()}),
             patch.object(main, "_prepublish_editorial_budget_available", return_value=False),
+            patch.object(main, "_prepublish_verification_call_allowed", return_value=verification_allowed),
             patch.object(main, "_write_prepublish_evaluation_artifacts"),
             patch.object(main, "_notify_quality_hold"),
             patch("report_eval.load_snapshot_payload", return_value={}),
@@ -254,6 +256,92 @@ class GateFlowTests(unittest.TestCase):
         self.assertNotIn(victim, out_sections["policy"])
         self.assertIn(refilled, out_sections["policy"])
         self.assertTrue(result["editorial"]["carried_forward_after_excision"])
+
+    def test_excision_is_model_verified_when_a_call_remains_even_if_tokens_are_spent(self):
+        blocking = {"type": "off_topic", "severity": "blocking", "section": "policy",
+                    "title": "대구 동구, 추석맞이 종합 대책 추진", "reason": "비농업"}
+        clean = _editorial([], score=84.0)
+        clean["acceptance_gate"] = {"passed": True, "status": "target_met"}
+        evaluations = [
+            _result({"status": "skipped"}),
+            _result(_editorial([blocking])),
+            _result(clean),                                       # model re-evaluation after excision
+        ]
+        out_sections, result, calls, victim, _refilled = self._run_gate(evaluations, verification_allowed=True)
+        gate = result["prepublish_quality_gate"]
+        self.assertEqual(gate["hard_issue_excisions"][0]["verification"], "model_reevaluated")
+        self.assertIn((True, "hard_issue_excision_1"), calls)
+        self.assertEqual(gate["publication_mode"], "normal")
+        self.assertNotIn(victim, out_sections["policy"])
+
+    def test_repair_proposal_starts_even_when_its_verification_is_not_prefunded(self):
+        """예산은 무한 반복 방지용이다. 제안 호출이 예산에 들어가면 검증 선지급 여부와 무관하게 시작한다."""
+        major = {"type": "weak_core", "severity": "major", "section": "policy",
+                 "title": "청주 내수농협, 계약 재배 농가에 영농자재 지원", "reason": "약한 core"}
+        clean = _editorial([], score=84.0)
+        clean["acceptance_gate"] = {"passed": True, "status": "target_met"}
+        evaluations = [
+            _result({"status": "skipped"}),
+            _result(_editorial([major])),        # 절제 대상이 아닌 major → LLM 교체안으로만 고칠 수 있다
+            _result(clean),                        # 교체안 적용 후 검증
+        ]
+        proposals = []
+
+        def fake_compose(report_date, html_text, snapshot_payload, *, run_editorial, adaptive_reason):
+            return evaluations.pop(0)
+
+        def fake_propose(*args, **kwargs):
+            proposals.append(kwargs.get("excluded_links_by_section"))
+            return {"status": "success", "sections": {}, "usage": {"total_tokens": 20000}}
+
+        sections = _sections()
+        repaired = {k: list(v) for k, v in sections.items()}
+        patches = [
+            patch.object(main, "PREPUBLISH_FORCE_SLA_FALLBACK", False),
+            patch.object(main, "PREPUBLISH_SLA_FALLBACK_ENABLED", True),
+            patch.object(main, "PREPUBLISH_QUALITY_FAIL_CLOSED", False),
+            patch.object(main, "PREPUBLISH_QUALITY_MAX_REPAIRS", 1),
+            patch.object(main, "PREPUBLISH_QUALITY_MAX_PROPOSALS", 2),
+            patch.object(main, "_OPENAI_QUOTA_EXHAUSTED", False),
+            patch.object(main, "_prepublish_deadline_reached", return_value=False),
+            patch.object(main, "_should_run_full_editorial_eval", return_value=(True, "deterministic_anomaly")),
+            patch.object(main, "_compose_prepublish_evaluation", side_effect=fake_compose),
+            patch.object(main, "_prepublish_editorial_budget_available", side_effect=lambda *, reserve_calls=0: reserve_calls == 0),
+            patch.object(main, "_prepublish_verification_call_allowed", return_value=True),
+            patch.object(main, "_apply_model_editorial_repair", return_value=repaired),
+            patch.object(main, "_invalidate_editorial_bad_summary_cache", return_value=[]),
+            patch.object(main, "fill_summaries", side_effect=lambda s, **kw: s),
+            patch.object(main, "_finalize_sections_for_render", return_value=0),
+            patch.object(main, "render_daily_page", return_value="<html>"),
+            patch.object(main, "_enrich_editorial_snapshot_source_tiers", return_value=0),
+            patch.object(main, "_initial_editorial_repair_exclusions", return_value={s: set() for s in main._section_keys()}),
+            patch.object(main, "_write_prepublish_evaluation_artifacts"),
+            patch.object(main, "_notify_quality_hold"),
+            patch("report_eval.load_snapshot_payload", return_value={}),
+            patch("editorial_eval.propose_editorial_repair", side_effect=fake_propose),
+        ]
+        with ExitStack() as stack:
+            for cm in patches:
+                stack.enter_context(cm)
+            _sections_out, _html, result = main._run_prepublish_quality_gate(
+                "repo", "token", "2026-09-16", datetime(2026, 9, 15, 6, tzinfo=KST), datetime(2026, 9, 16, 6, tzinfo=KST),
+                "https://example.test/", ["2026-09-16"], "docs", {}, sections, {}, Path("snapshot.json"),
+            )
+        self.assertEqual(len(proposals), 1)
+        gate = result["prepublish_quality_gate"]
+        self.assertEqual(gate["applied_repair_count"], 1)
+        self.assertFalse(gate["repair_attempts"][0]["model_verification_funded"])
+        self.assertEqual(gate["publication_mode"], "normal")
+
+    def test_verification_call_allowance_uses_only_the_call_cap(self):
+        main.OPENAI_USAGE_EVENTS.clear()
+        with patch.object(main, "PREPUBLISH_EDITORIAL_MAX_CALLS", 2), patch.object(main, "PREPUBLISH_EDITORIAL_TOKEN_BUDGET", 100):
+            main.OPENAI_USAGE_EVENTS.append({"stage": "editorial_eval", "total_tokens": 5000})
+            self.assertFalse(main._prepublish_editorial_budget_available())
+            self.assertTrue(main._prepublish_verification_call_allowed())
+            main.OPENAI_USAGE_EVENTS.append({"stage": "editorial_repair", "total_tokens": 5000})
+            self.assertFalse(main._prepublish_verification_call_allowed())
+        main.OPENAI_USAGE_EVENTS.clear()
 
     def test_forced_recovery_runs_editorial_review_instead_of_skipping(self):
         blocking = {"type": "off_topic", "severity": "blocking", "section": "policy",

@@ -52856,6 +52856,17 @@ def _prepublish_editorial_budget_available(*, reserve_calls: int = 0) -> bool:
     return tokens + average_call_tokens * needed_calls <= PREPUBLISH_EDITORIAL_TOKEN_BUDGET
 
 
+def _prepublish_verification_call_allowed() -> bool:
+    """지면을 바꾼 뒤의 검증 호출을 허용할지 — 호출 횟수 상한만 본다.
+
+    런당 토큰 예산은 새 교체안·평가를 '시작'할지 정하는 기준이지 계정 잔액이 아니다.
+    이미 적용한 교체·절제를 검증 없이 발행하는 것이 토큰 예산을 한 호출만큼 넘기는 것보다
+    나쁘다(2026-08-13, 2026-09-16). 무한 반복은 호출 상한·교체안 상한·절제 라운드 상한이 막는다.
+    """
+    calls, _tokens = _prepublish_editorial_usage_totals()
+    return calls < PREPUBLISH_EDITORIAL_MAX_CALLS
+
+
 def _repair_article_link_keys(article: Article) -> set[str]:
     keys: set[str] = set()
     for value in (article.canon_url, article.originallink, article.link, article.url):
@@ -53526,7 +53537,7 @@ def _run_prepublish_quality_gate(
             )
             reevaluate = bool(
                 run_editorial
-                and _prepublish_editorial_budget_available()
+                and _prepublish_verification_call_allowed()
                 and (force_editorial or not _prepublish_deadline_reached(report_date))
             )
             if reevaluate:
@@ -53578,11 +53589,11 @@ def _run_prepublish_quality_gate(
         editorial_result = result.get("editorial", {})
         if not isinstance(editorial_result, dict) or editorial_result.get("status") != "success":
             break
-        # 교체안 제안(1회)과 그 결과 재평가(1회)를 모두 감당할 수 있는지 미리 본다.
-        # 최종 검증 예산이 없으면 유료 교체안을 시작하지 않는다.
-        # 이미 얻은 평가와 결정적 검증 결과를 보존한다.
+        # 교체안 제안 자체가 런 예산에 들어가면 시작한다. 검증 호출은 예산과 무관하게 호출
+        # 상한 안에서 허용되므로(_prepublish_verification_call_allowed), 검증을 못 댄다는 이유로
+        # 교체안을 포기하지 않는다 — 예산의 목적은 무한 반복 방지이지 품질 개선 차단이 아니다.
         repair_verification_funded = _prepublish_editorial_budget_available(reserve_calls=1)
-        if not repair_verification_funded:
+        if not _prepublish_editorial_budget_available():
             calls, tokens = _prepublish_editorial_usage_totals()
             log.warning(
                 "[QUALITY GATE] editorial repair skipped by run budget "
@@ -53742,7 +53753,7 @@ def _run_prepublish_quality_gate(
             archive_dates_desc,
             site_path,
         )
-        if _prepublish_editorial_budget_available():
+        if _prepublish_verification_call_allowed():
             result = _compose_prepublish_evaluation(
                 report_date,
                 current_html,
@@ -53752,7 +53763,7 @@ def _run_prepublish_quality_gate(
             )
         else:
             log.warning(
-                "[QUALITY GATE] editorial token/call budget reached after repair; "
+                "[QUALITY GATE] editorial call cap reached after repair; "
                 "using deterministic verification"
             )
             result = _compose_prepublish_evaluation(
