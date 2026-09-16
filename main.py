@@ -52378,7 +52378,9 @@ def maintenance_replay_date(repo: str, token: str, report_date: str, site_path: 
             summary_cache,
             snapshot_path,
             force_editorial=True,
-            allow_sla_fallback=False,
+            # 카톡을 보내는 복구는 정상 통과만 허용한다. 페이지만 교체하는 재빌드는 일일 발행과
+            # 같은 SLA 폴백 기준(hard issue 0·결정적 점수 하한)이면 이미 나간 지면보다 낫다.
+            allow_sla_fallback=not MAINTENANCE_SEND_KAKAO,
         )
         gate = quality_result.get("prepublish_quality_gate", {}) if isinstance(quality_result, dict) else {}
         if not isinstance(gate, dict) or not gate.get("publishable"):
@@ -53351,6 +53353,11 @@ def _excise_flagged_cards_and_refill(
     for section in _section_keys():
         for kept in candidate.get(section, []) or []:
             _GATE_EXCISION_KEEP_LINK_KEYS.update(_repair_article_link_keys(kept))
+    for target in targets:
+        log.info(
+            "[QUALITY GATE] excised section=%s issue=%s/%s title=%s",
+            target.get("section"), target.get("issue_type"), target.get("severity"), str(target.get("title") or "")[:100],
+        )
     log.info(
         "[QUALITY GATE] excised %d flagged card(s); refilled=%d dedupe=%d/%d source=%d",
         len(targets), refilled, dedupe_removed, dedupe_refilled, source_changed,

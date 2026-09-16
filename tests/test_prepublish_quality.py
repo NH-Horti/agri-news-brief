@@ -481,6 +481,33 @@ class PrepublishQualityGateTests(unittest.TestCase):
 
         self.assertEqual(events, ["quality", "publish"])
 
+    def test_page_only_replay_can_opt_into_the_gate_with_sla_fallback(self):
+        selected = self._raw_sections()
+        start_kst = datetime(2026, 9, 15, 6, 0, tzinfo=main.KST)
+        end_kst = datetime(2026, 9, 16, 6, 0, tzinfo=main.KST)
+        seen: list[dict] = []
+
+        def run_gate(*args, **kwargs):
+            seen.append(kwargs)
+            return selected, "<html></html>", {"prepublish_quality_gate": {"publishable": True, "publication_mode": "sla_fallback"}}
+
+        with (
+            patch.object(main, "MAINTENANCE_SEND_KAKAO", False),
+            patch.object(main, "REPLAY_RUN_QUALITY_GATE", True),
+            patch.object(main, "PLACEMENT_ONLY", False),
+            patch.object(main, "_build_sections_for_report", return_value=(selected, {}, start_kst, end_kst)),
+            patch.object(main, "load_replay_snapshot", return_value=(selected, start_kst, end_kst, {}, {}, Path("snapshot.json"))),
+            patch.object(main, "_list_archive_dates", return_value={"2026-09-15"}),
+            patch.object(main, "get_pages_base_url", return_value="https://example.com/brief"),
+            patch.object(main, "_run_prepublish_quality_gate", side_effect=run_gate),
+            patch.object(main, "_publish_maintenance_report"),
+        ):
+            main.maintenance_replay_date("owner/repo", "token", "2026-09-16", "docs", allow_openai=True)
+
+        self.assertEqual(len(seen), 1)
+        self.assertTrue(seen[0]["force_editorial"])
+        self.assertTrue(seen[0]["allow_sla_fallback"])
+
 
 if __name__ == "__main__":
     unittest.main()
