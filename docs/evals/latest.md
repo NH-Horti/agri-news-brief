@@ -1,31 +1,33 @@
-## Daily Eval (2026-09-16)
-- Overall: **83.17** (warn)
-- Operational: **93.37**
-- Reader quality: **84.42** (capped; penalty=8.9, cap=90.0, reasons=pest_theme_duplicate)
-- Quality gate: **83.17** (needs_major_iteration, editorial_acceptance_gate_failed; editorial=77.0, operational=93.4)
-- Scores: completeness=100.0, diversity=92.4, source=80.0, summary=100.0, freshness=100.0, retrieval=87.9, section_fit=91.7, core=92.1, commodity=100.0
-- Briefing cards: 20 / Commodity cards: 34
-- Sections: supply:5/5 raw=267, policy:5/5 raw=130, dist:5/5 raw=91, pest:5/5 raw=27
-- Metrics: title_unique=1.00, domain_diversity=0.65, low_tier=0.20, summary_presence=1.00, summary_numeric=0.70, fresh_72h=1.00, fit_avg=3.84, false_positive=0.00, hard_reader_issues=0, weak_core=0.12, editorial_penalty=2.8, commodity_weak=0.00, commodity_items=7, commodity_active_today=17, commodity_active_today_unlinked=10, commodity_coverage=0.21, commodity_strict_link=1.00, commodity_false_link=0.00, commodity_pool_false_link=0.00, commodity_dominant_section=0.43, semantic_penalty=0.0
+## Daily Eval (2026-09-17)
+- Overall: **81.05** (warn)
+- Operational: **92.13**
+- Reader quality: **88.73** (capped; penalty=3.4, cap=95.0, reasons=preferred_slot_underfill)
+- Quality gate: **81.05** (needs_major_iteration, editorial_major_issue; editorial=66.3, operational=92.1)
+- Scores: completeness=92.8, diversity=94.2, source=71.1, summary=100.0, freshness=100.0, retrieval=78.5, section_fit=100.0, core=90.7, commodity=88.0
+- Briefing cards: 18 / Commodity cards: 44
+- Sections: supply:5/5 raw=237, policy:4/5 raw=113, dist:5/5 raw=57, pest:4/5 raw=19
+- Metrics: title_unique=1.00, domain_diversity=0.89, low_tier=0.22, summary_presence=1.00, summary_numeric=0.94, fresh_72h=1.00, fit_avg=3.26, false_positive=0.00, hard_reader_issues=0, weak_core=0.12, editorial_penalty=0.2, commodity_weak=0.00, commodity_items=8, commodity_active_today=15, commodity_active_today_unlinked=7, commodity_coverage=0.24, commodity_strict_link=1.00, commodity_false_link=0.00, commodity_pool_false_link=0.00, commodity_dominant_section=0.88, semantic_penalty=0.0
 
 
 ### Editorial Shadow Eval
-- Editorial: **77.00** (daily target 82, tier=needs_major_iteration, needs_major_iteration)
+- Editorial: **66.30** (daily target 82, tier=needs_major_iteration, needs_major_iteration)
 - Model: gpt-5.6-sol (resolved gpt-5.6-sol)
-- Model-reported score: 78.20; authoritative method=weighted_components_v1
-- Acceptance: needs_iteration (blocking=0, major=0, reasons=editorial_score_min, critical_components_min, all_components_min)
-- Section count gate: 100.0 (target_met)
-- Components: article_selection=75.0, section_fit=75.0, core=74.0, summary=90.0, missed=70.0, noise=82.0
-- Summary: 20장 구성과 요약은 충실하지만, 공급·정책·유통에서 섹션 오배치와 약한 지역성 카드가 강한 후보를 밀어냈다. 특히 파렛트 물류 중복과 워크숍의 핵심 지정이 편집 완성도를 낮춘다.
-- [moderate] wrong_section: 마늘·양파 생산자단체 "새 농안법, 실질적 가격 안전망 돼야" - 가격안정제와 농안법 개선 요구가 중심인 정책 기사다.
-- [moderate] duplicate_theme: 봄동·당근 파렛트 출하 의무화 - 유통의 ‘가락시장 파렛트 물류 전환’과 사실상 같은 정책·품목을 반복한다.
-- [moderate] promotional_filler: 청주 내수농협, 계약 재배 농가에 영농자재 지원 - 76명 대상 지역 농협 지원 사례로 전국 정책 가치가 낮다.
-- [moderate] missed_candidate: 모처럼 농축산물 가격 안정...추석 차례상 비용도 '뚝' - 품목별 가격 변동 수치가 풍부해 지역 지원·회의 기사보다 정책 독자에게 유용하다.
-- [moderate] weak_core: 경남 원예조공법인, 온라인도매시장 대응·연합판매 경쟁력 강화 - 워크숍 개최 중심이라 핵심 유통 변화로 보기 어렵다. core에서 demote해야 한다.
+- Model-reported score: 67.30; authoritative method=weighted_components_v1
+- Acceptance: needs_iteration (blocking=0, major=3, reasons=editorial_score_min, no_major_issues, critical_components_min, all_components_min, no_section_underfill, commodity_board_score_min)
+- Section count gate: 96.0 (soft_fallback)
+- Components: article_selection=64.0, section_fit=65.0, core=68.0, summary=78.0, missed=61.0, noise=61.0
+- Summary: 형식과 시의성은 양호하지만 감귤 기사 중복, 정책면의 추석 물가 편중, 유통면의 홍보성·주변부 기사 때문에 편집 품질이 크게 낮아졌다. 원자료에는 가락시장 물류대책과 수출 선적 등 더 강한 대체재가 있다.
+- [major] duplicate_story: 제주감귤 상품 기준, 지난해와 동일...가공용수매단가 결정 - 2번 카드와 동일한 감귤위원회 결정 기사다.
+- [major] duplicate_theme: 추석 차례상, 전통시장이 더 저렴해 - 정책면 3개 카드가 추석 차례상 물가에 집중되고 공급면 기사와도 겹친다.
+- [moderate] wrong_section: 추석 차례상 비용 1년 새 4% 상승…전통시장이 대형마트보다 저렴 - 정책 조치보다 소비자가격 조사 중심의 공급·시장 동향 기사다.
+- [moderate] weak_core: 추석 차례상 비용 1년 새 4% 상승…전통시장이 대형마트보다 저렴 - 반복적인 가격조사 기사여서 정책면 핵심성이 약하다. 코어에서 내려야 한다.
+- [major] promotional_filler: 제주 감귤 농협 창립 66주년…지속 가능한 미래 다짐 - 창립 기념과 포괄적 다짐이 중심이라 당일 유통 변화나 운영 정보가 부족하다.
 
 ### Improvement Hints
-- 편집 품질상 약한 기사 선택이 감지되었습니다 (promotional_filler=5%, pest_theme_duplicate=5%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요.
-- 농업과 무관한 기사가 브리핑에 포함되어 있습니다 (비율 5%). 해외 경제지표, 관광 홍보, 비농업 기사가 선정되지 않도록 is_relevant 게이트를 점검하세요.
+- 품목 보드 대표기사가 품목 핵심 이슈를 충분히 대변하지 못합니다. 제목에서 품목명과 수급·가격·병해충 신호가 함께 보이는 기사, representative rank 상위 후보, 비수급 섹션의 직접 이슈 후보를 우선하세요.
+- 리콜 시드 결손이 보입니다: supply. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요.
+- raw 후보가 충분한데 선호 카드 수(섹션당 5개)에 못 미친 섹션이 있습니다: policy(-1), pest(-1). 빈 5번째 슬롯에는 고품질 수급·유통 cross-fill 후보를 재검토하세요.
+- 편집 품질상 약한 기사 선택이 감지되었습니다 (promotional_filler=11%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요.
 
 ### Next Summary Feedback
 - 각 기사 요약은 2문장으로 유지하고 첫 문장에 품목·지역·핵심 이슈를 바로 적는다.
