@@ -18,6 +18,7 @@ from crop_risk_vocab import (
     classify_pest_theme,
 )
 from story_dedup import duplicate_event_reason
+from editorial_rules import export_ceremony_filler, policy_issue_key, remote_weather_feature
 
 
 KST = timezone(timedelta(hours=9))
@@ -598,6 +599,8 @@ def _editorial_policy_wrong_section_reason(article: SurfaceArticle, snapshot_bod
 def _editorial_promotional_filler_reason(article: SurfaceArticle, snapshot_body: str) -> str:
     if article.section not in {"supply", "dist", "policy"}:
         return ""
+    if export_ceremony_filler(article.title, snapshot_body):
+        return "promotional_or_event_filler"
     text = _editorial_text(article, snapshot_body)
     title_l = str(article.title or "").lower()
     if article.section == "dist" and _editorial_dist_hard_logistics_metric(text):
@@ -709,6 +712,8 @@ def _semantic_false_positive_reason(article: SurfaceArticle, snapshot_body: str)
 
 
 def _reader_hard_issue_reason(article: SurfaceArticle, snapshot_body: str) -> str:
+    if article.section in {"supply", "dist"} and remote_weather_feature(article.title, snapshot_body):
+        return "remote_weather_feature"
     source_text = _normalize_spaces(f"{article.title or ''} {snapshot_body or ''}").lower()
     text = _normalize_spaces(f"{article.title or ''} {article.summary or ''} {snapshot_body or ''}").lower()
     if not text:
@@ -1473,6 +1478,23 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
             }
         )
 
+    policy_theme_counts = Counter(
+        key for article in briefing_articles
+        if article.section == "policy" and (key := policy_issue_key(article.title))
+    )
+    policy_theme_duplicate_count = sum(max(0, count - 1) for count in policy_theme_counts.values())
+    policy_matched_counts: Counter[str] = Counter()
+    for record in briefing_match_records:
+        if str(record.get("section") or "") != "policy":
+            continue
+        theme = policy_issue_key(str(record.get("title") or ""))
+        if not theme:
+            continue
+        policy_matched_counts[theme] += 1
+        if policy_matched_counts[theme] > 1:
+            record.setdefault("editorial_issue_reasons", []).append(f"policy_theme_duplicate:{theme}")
+    policy_theme_duplicate_rate = _rate(policy_theme_duplicate_count, len(briefing_articles), default=0.0)
+
     pest_theme_counts: Counter[str] = Counter()
     for record in briefing_match_records:
         if str(record.get("section") or "") != "pest":
@@ -1998,6 +2020,7 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
         + promotional_filler_rate * 2.0
         + dist_weak_ops_rate * 8.0
         + pest_theme_duplicate_rate * 8.0
+        + policy_theme_duplicate_rate * 8.0
         + weak_core_editorial_rate * 10.0,
     )
     low_tier_allowed_count = min(4, max(1, int((len(source_tier_articles) * 0.20) + 0.999))) if source_tier_articles else 0
@@ -2034,6 +2057,7 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
         and content_false_positive_count == 0
         and len(story_duplicate_indices) == 0
         and pest_theme_duplicate_count == 0
+        and policy_theme_duplicate_count == 0
         and commodity_primary_false_link_rate == 0.0
         and commodity_pool_false_link_rate == 0.0
         and editorial_quality_penalty <= 0.0
@@ -2047,6 +2071,7 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
         + max(0, content_false_positive_count - hard_reader_issue_count) * 5.0
         + len(story_duplicate_indices) * 4.0
         + pest_theme_duplicate_count * 4.0
+        + policy_theme_duplicate_count * 4.0
         + editorial_quality_penalty * 1.8
         + source_quality_penalty
         + preferred_slot_gap_total * preferred_slot_reader_penalty_weight
@@ -2077,6 +2102,8 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
         _cap(88.0, "story_duplicate")
     if pest_theme_duplicate_count >= 1:
         _cap(90.0, "pest_theme_duplicate")
+    if policy_theme_duplicate_count >= 1:
+        _cap(90.0, "policy_theme_duplicate")
     if commodity_primary_false_link_rate > 0.0:
         _cap(88.0, "commodity_false_link")
     if commodity_primary_false_link_rate >= 0.10:
@@ -2179,6 +2206,8 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
             issue_bits.append(f"dist_weak_ops={dist_weak_ops_rate:.0%}")
         if pest_theme_duplicate_rate > 0.0:
             issue_bits.append(f"pest_theme_duplicate={pest_theme_duplicate_rate:.0%}")
+        if policy_theme_duplicate_rate > 0.0:
+            issue_bits.append(f"policy_theme_duplicate={policy_theme_duplicate_rate:.0%}")
         improvement_hints.append(
             "편집 품질상 약한 기사 선택이 감지되었습니다"
             + (f" ({', '.join(issue_bits)})." if issue_bits else ".")
@@ -2284,6 +2313,8 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
             "promotional_core_rate": round(promotional_core_rate, 4),
             "weak_core_editorial_rate": round(weak_core_editorial_rate, 4),
             "pest_theme_duplicate_rate": round(pest_theme_duplicate_rate, 4),
+            "policy_theme_duplicate_rate": round(policy_theme_duplicate_rate, 4),
+            "policy_theme_duplicate_count": policy_theme_duplicate_count,
             "dist_weak_ops_rate": round(dist_weak_ops_rate, 4),
             "editorial_quality_penalty": round(editorial_quality_penalty, 4),
             "preferred_slot_gap_rate": round(preferred_slot_gap_rate, 4),

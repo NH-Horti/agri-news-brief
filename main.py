@@ -85,6 +85,7 @@ from io_github import (
     github_put_file as _io_github_put_file,
 )
 from observability import metric_inc
+from editorial_rules import export_ceremony_filler, policy_issue_key, remote_weather_feature
 from orchestrator import OrchestratorContext, OrchestratorHandlers, execute_orchestration
 from ranking import sort_key_major_first as _ranking_sort_key_major_first
 from retry_utils import exponential_backoff, retry_after_or_backoff
@@ -24986,6 +24987,10 @@ def is_municipal_holiday_omnibus_plan_context(title: str, desc: str) -> bool:
 
 
 def _postbuild_article_reject_reason(a: "Article", section_key: str, *, apply_selection_fit: bool = True) -> str:
+    if section_key in ("supply", "dist") and remote_weather_feature(a.title, a.description):
+        return "remote_weather_feature"
+    if section_key in ("supply", "dist", "policy") and export_ceremony_filler(a.title, a.description):
+        return "promotional_or_event_filler"
     # 운영자 피드백 배제(exclude_url_fragments/exclude_title_terms)는 선정 입구뿐 아니라
     # 후반 rescue/swap/refill이 raw 풀에서 직접 끌어오는 경로에서도 강제되어야 한다.
     feedback_reason = _selection_feedback_block_reason(a, section_key)
@@ -36011,14 +36016,16 @@ def _article_ident_key(article: "Article") -> str:
 
 def _section_theme_cap_groups(article: "Article") -> list[tuple[str, str]]:
     """(품목, 반복 상한 대상 행위그룹) 조합 — 같은 테마 카드 과다 방지용."""
+    policy_key = policy_issue_key(getattr(article, "title", ""))
+    policy_groups = [("policy_issue", policy_key)] if policy_key else []
     try:
         comm, actions, _actors, _regions, _qty = _event_story_signature(
             getattr(article, "title", "") or "", getattr(article, "description", "") or ""
         )
     except Exception:
-        return []
+        return policy_groups
     capped = actions & _THEME_CAP_ACTION_GROUPS
-    return [(c, g) for c in comm for g in capped]
+    return policy_groups + [(c, g) for c in comm for g in capped]
 
 
 def _final_global_story_dedupe(
@@ -52571,6 +52578,7 @@ def _operational_quality_anomaly(result: JsonDict) -> bool:
         or float(metrics.get("content_false_positive_rate", 0.0) or 0.0) > 0.0
         or float(metrics.get("promotional_filler_rate", 0.0) or 0.0) > 0.0
         or float(metrics.get("pest_theme_duplicate_rate", 0.0) or 0.0) > 0.0
+        or float(metrics.get("policy_theme_duplicate_rate", 0.0) or 0.0) > 0.0
         or any(int(section_counts.get(section, 0) or 0) < MAX_PER_SECTION for section in _section_keys())
     )
 
@@ -53571,12 +53579,10 @@ def _run_prepublish_quality_gate(
         if not isinstance(editorial_result, dict) or editorial_result.get("status") != "success":
             break
         # 교체안 제안(1회)과 그 결과 재평가(1회)를 모두 감당할 수 있는지 미리 본다.
-        # 감당하지 못해도 교체안 자체는 시도한다 — 결정적 검증(postbuild·저티어
-        # 예산·점수 게이트)은 그대로 걸리고, 2026-08-13 처럼 교체가 지면을 실제로
-        # 개선하는 경우가 있기 때문이다. 다만 모델 재평가 없이 반영됐다는 사실을
-        # 기록해, 그날 점수를 다른 날과 같은 잣대로 오해하지 않게 한다.
+        # 최종 검증 예산이 없으면 유료 교체안을 시작하지 않는다.
+        # 이미 얻은 평가와 결정적 검증 결과를 보존한다.
         repair_verification_funded = _prepublish_editorial_budget_available(reserve_calls=1)
-        if not _prepublish_editorial_budget_available():
+        if not repair_verification_funded:
             calls, tokens = _prepublish_editorial_usage_totals()
             log.warning(
                 "[QUALITY GATE] editorial repair skipped by run budget "

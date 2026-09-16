@@ -76,7 +76,7 @@ class ReportEvalTests(unittest.TestCase):
 
         self.assertEqual(result["overall_score"], 94.38)
         self.assertEqual(result["operational_score"], 98.13)
-        self.assertEqual(result["status"], "pass")
+        self.assertEqual(result["status"], "warn")
         self.assertEqual(result["quality_gate"]["reason"], "editorial_acceptance_gate_failed")
         self.assertEqual(result["quality_gate"]["bounded_penalty"], 3.75)
         rendered = report_eval.render_evaluation_markdown(

@@ -45,6 +45,23 @@ The repo now includes a daily report quality harness.
 - Daily editorial acceptance: weighted score >= 88, no blocking/major issue, critical components >= 85, all components >= 80, and deterministic publish gates passing
 - Quality tiers: 88 daily pass, 92 excellent, 95 stretch
 
+For a weekly improvement review, inspect saved `docs/evals/` results first,
+change selection rules, and run unit tests before rebuilding. Run the final
+comparison once with frozen historical candidates and cached summaries:
+
+```powershell
+python scripts/review_weekly_briefings.py --start 2026-08-24 --end 2026-08-28 --output reports/weekly-2026-08-24 --finalize
+```
+
+This command blocks network connections, makes no paid calls, and saves one
+replay per date plus before/after deterministic scores under the same rubric.
+It refuses a nonempty output directory to prevent accidental repeated runs.
+The saved editorial scores are historical evidence; the new offline scores
+are not new model editorial reviews. Original published files are preserved.
+An unsuccessful editorial acceptance gate now reports `warn` (or `fail` for a
+low score), even when the numeric headline remains high. Paid repair proposals
+start only when the run budget can also fund their final editorial review.
+
 Local example:
 
 ```powershell

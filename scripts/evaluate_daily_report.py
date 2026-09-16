@@ -212,7 +212,13 @@ def apply_editorial_quality_gate(result: dict[str, Any], editorial_result: dict[
     acceptance_gate = editorial_result.get("acceptance_gate", {})
     if not isinstance(acceptance_gate, dict):
         acceptance_gate = {}
-    editorial_failed = gate_status != "target_met"
+    editorial_failed = (
+        gate_status != "target_met"
+        or acceptance_gate.get("passed") is False
+        or bool(blocking_issues or major_issues)
+    )
+    if editorial_failed and gate_status == "target_met":
+        gate_status = "needs_iteration"
     penalty = 0.0
     reason = "all_targets_met"
     if editorial_failed:
@@ -248,7 +254,9 @@ def apply_editorial_quality_gate(result: dict[str, Any], editorial_result: dict[
     }
     if editorial_failed:
         result["overall_score"] = round(gated_score, 2)
-        result["status"] = _score_status(gated_score)
+        # Numeric health and editorial acceptance answer different questions.
+        # A high operational score cannot turn a failed editorial review into pass.
+        result["status"] = "fail" if _score_status(gated_score) == "fail" else "warn"
         notes = result.get("score_notes")
         if not isinstance(notes, dict):
             notes = {}
