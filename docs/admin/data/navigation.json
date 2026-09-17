@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-17T03:13:16+09:00",
+  "generated_at": "2026-09-18T03:16:49+09:00",
   "section_jump": [
     {
       "date": "2026-07-01",
@@ -258,6 +258,12 @@
       "count": 1,
       "section": "fruit_veg",
       "surface": "commodity_group_chip"
+    },
+    {
+      "date": "2026-09-17",
+      "count": 1,
+      "section": "fruit_flower",
+      "surface": "commodity_group_chip"
     }
   ],
   "view_switch": [
@@ -503,6 +509,12 @@
     },
     {
       "date": "2026-09-15",
+      "count": 2,
+      "from_view": "briefing",
+      "to_view": "commodity"
+    },
+    {
+      "date": "2026-09-17",
       "count": 2,
       "from_view": "briefing",
       "to_view": "commodity"
@@ -1346,6 +1358,13 @@
       "nav_type": "prev_date",
       "from_date": "2026-09-14",
       "to_date": "2026-09-11"
+    },
+    {
+      "date": "2026-09-17",
+      "count": 1,
+      "nav_type": "prev_date",
+      "from_date": "2026-09-17",
+      "to_date": "2026-09-16"
     }
   ]
 }
