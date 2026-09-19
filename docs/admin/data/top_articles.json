@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-19T02:42:30+09:00",
+  "generated_at": "2026-09-20T02:18:15+09:00",
   "rows": [
     {
       "date": "2026-09-01",
@@ -1404,19 +1404,6 @@
       "users": 2,
       "archive_url": "/agri-news-brief/archive/2026-09-18.html#sec-policy",
       "source_url": "https://www.aflnews.co.kr/news/articleView.html?idxno=328414"
-    },
-    {
-      "date": "2026-09-18",
-      "article_id": "ca65c8e6695d",
-      "title": "‘ 농산물가격안정제 ’ 마늘·양파 첫 적용 앞두고…‘기준 가격 ’ 공방...",
-      "report_date": "2026-09-18",
-      "section": "policy",
-      "surface": "briefing_open",
-      "target_domain": "www.nongmin.com",
-      "clicks": 3,
-      "users": 2,
-      "archive_url": "",
-      "source_url": ""
     },
     {
       "date": "2026-05-26",
@@ -4072,10 +4059,10 @@
     },
     {
       "date": "2026-09-18",
-      "article_id": "e976e6e5213f",
-      "title": "“전속출하 농산물 책임판매”… 농협 , 농업경제 발전전략 발표",
+      "article_id": "ca65c8e6695d",
+      "title": "‘ 농산물가격안정제 ’ 마늘·양파 첫 적용 앞두고…‘기준 가격 ’ 공방...",
       "report_date": "2026-09-18",
-      "section": "dist",
+      "section": "policy",
       "surface": "briefing_open",
       "target_domain": "www.nongmin.com",
       "clicks": 2,
@@ -4084,15 +4071,15 @@
       "source_url": ""
     },
     {
-      "date": "2026-05-23",
-      "article_id": "db7a17e80f72",
-      "title": "중동發 원자재 충격 현실화···4월 생산자물가 28년 만에 최대 상승",
-      "report_date": "2026-05-22",
-      "section": "policy",
+      "date": "2026-09-18",
+      "article_id": "e976e6e5213f",
+      "title": "“전속출하 농산물 책임판매”… 농협 , 농업경제 발전전략 발표",
+      "report_date": "2026-09-18",
+      "section": "dist",
       "surface": "briefing_open",
-      "target_domain": "www.enewstoday.co.kr",
-      "clicks": 1,
-      "users": 1,
+      "target_domain": "www.nongmin.com",
+      "clicks": 2,
+      "users": 2,
       "archive_url": "",
       "source_url": ""
     },
