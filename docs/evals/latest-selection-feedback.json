@@ -1,18 +1,18 @@
 {
   "report_date": "2026-09-21",
-  "generated_at_kst": "2026-09-21T06:21:06+09:00",
+  "generated_at_kst": "2026-09-21T06:34:34+09:00",
   "scores": {
-    "section_alignment": 100.0,
-    "core_quality": 96.68,
+    "section_alignment": 88.62,
+    "core_quality": 99.12,
     "commodity_board_quality": 88.0
   },
   "metrics": {
-    "section_alignment_low_fit_rate": 0.0588,
+    "section_alignment_low_fit_rate": 0.1111,
     "section_alignment_cross_gap_rate": 0.0,
     "content_false_positive_rate": 0.0,
     "reader_hard_issue_count": 0,
     "reader_hard_issue_rate": 0.0,
-    "reader_quality_penalty": 2.25,
+    "reader_quality_penalty": 1.5,
     "reader_quality_cap": 95.0,
     "weak_core_rate": 0.0,
     "policy_wrong_section_rate": 0.0,
@@ -84,8 +84,8 @@
   "editorial_quality_samples": [],
   "reader_hard_issue_samples": [],
   "editorial": {
-    "score": 74.0,
-    "model_reported_score": 75.2,
+    "score": 73.75,
+    "model_reported_score": 74.0,
     "score_method": "weighted_components_v1",
     "quality_tier": "needs_major_iteration",
     "target_score": 82.0,
@@ -120,80 +120,80 @@
         "commodity_board_score_min"
       ]
     },
-    "section_count_score": 95.5,
-    "section_count_status": "soft_fallback",
+    "section_count_score": 97.5,
+    "section_count_status": "minimum_fallback",
     "scores": {
-      "article_selection": 73.0,
-      "section_fit": 77.0,
-      "core_pick_quality": 69.0,
+      "article_selection": 72.0,
+      "section_fit": 84.0,
+      "core_pick_quality": 70.0,
       "summary_usefulness": 91.0,
-      "missed_opportunity": 61.0,
-      "noise_control": 76.0
+      "missed_opportunity": 60.0,
+      "noise_control": 65.0
     },
     "issues": [
       {
-        "type": "weak_core",
+        "type": "duplicate_theme",
         "severity": "major",
+        "section": "supply",
+        "title": "추석 차례상 물가 5.1% 올랐다… 폭염에 채소류 급등",
+        "reason": "공급 5건 대부분이 추석 장바구니 물가를 반복해 정보 확장성이 낮다.",
+        "suggested_action": "유사 차례상 기사들을 줄이고 과일 가격 하락·품목별 출하 동향 기사로 교체한다."
+      },
+      {
+        "type": "weak_core",
+        "severity": "moderate",
+        "section": "supply",
+        "title": "고깃값 오르고 과일은 내려, 추석 성수품 가격 '양극화'",
+        "reason": "울산 지역 조사로 전국 독자 대상 핵심 기사로는 범위가 좁다.",
+        "suggested_action": "코어에서 강등하고 전국 단위 가격·수급 기사를 코어로 승격한다."
+      },
+      {
+        "type": "promotional_filler",
+        "severity": "moderate",
+        "section": "supply",
+        "title": "[추석 장보기 풍경 上] \"많이 올랐어\"… 가격 표 보고 집었다 놓았다",
+        "reason": "현장 반응 중심의 정성 기사로 수급 판단에 필요한 수치와 운영 정보가 부족하다.",
+        "suggested_action": "전국 차례상 비용 하락 또는 사과·샤인머스캣 가격 하락 기사로 교체한다."
+      },
+      {
+        "type": "wrong_section",
+        "severity": "moderate",
         "section": "policy",
-        "title": "대전·세종·충남 \"가족과 함께 편안한 추석을\"…연휴 분야별 대책 마련",
-        "reason": "농업정책보다 지방정부 연휴 종합대책 성격이 강해 핵심 카드로 약하다.",
-        "suggested_action": "코어에서 강등하고 농안법 가격안전망 기사를 코어로 승격하라."
+        "title": "[티조챗] \"과일·채소 몇 개 담았는데 10만원\"…공포의 추석 물가, 지원 ...",
+        "reason": "정책보다 소비자 물가 풍경과 할인행사 소개가 중심이며 공급 기사들과도 겹친다.",
+        "suggested_action": "공급 비핵심으로 이동하거나 제외하고 농안법 시행 기사를 넣는다."
       },
       {
         "type": "missed_candidate",
         "severity": "major",
         "section": "policy",
         "title": "농안법 개정안 시행… 마늘·양파 단체 \"실질적 가격 안전망 구축하라\"",
-        "reason": "법 시행과 생산자 요구를 다룬 강한 전국 정책 후보가 지방 연휴대책보다 우선이다.",
-        "suggested_action": "연휴 종합대책 또는 추석 물가 카드와 교체하라."
-      },
-      {
-        "type": "duplicate_theme",
-        "severity": "moderate",
-        "section": "policy",
-        "title": "[티조챗] \"과일·채소 몇 개 담았는데 10만원\"…공포의 추석 물가, 지원 ...",
-        "reason": "공급 섹션의 추석 차례상 가격 기사들과 주제와 수치가 크게 겹친다.",
-        "suggested_action": "농안법, 기금 통합, CPTPP 등 독립 정책 의제로 대체하라."
-      },
-      {
-        "type": "wrong_section",
-        "severity": "moderate",
-        "section": "supply",
-        "title": "수확 끝난 과수원, 내년 농사 성패는 '감사비료'에 달렸다",
-        "reason": "수급·가격 동향이 아니라 재배관리 정보여서 공급 섹션 적합도가 낮다.",
-        "suggested_action": "과일 가격·작황 후보로 교체하거나 생육관리 영역으로 이동하라."
+        "reason": "법 시행과 생산자 요구를 함께 다룬 직접적인 정책 현안이 물가성 기사보다 중요하다.",
+        "suggested_action": "정책 섹션에 포함하고 코어 후보로 검토한다."
       },
       {
         "type": "duplicate_theme",
         "severity": "moderate",
         "section": "dist",
-        "title": "[918 농산물 유통구조 혁신 토론회] 농산물 제값 '1차 가격' 확보 중요·...",
-        "reason": "같은 유통구조 토론회의 가격결정력 논의를 앞 카드와 반복한다.",
-        "suggested_action": "온라인도매시장 규제 완화 기사를 코어로 승격해 대체하라."
-      },
-      {
-        "type": "underfill",
-        "severity": "moderate",
-        "section": "pest",
-        "title": "병해충 섹션 3건 편성",
-        "reason": "원시 후보에 딸기 탄저병·시들음병 기사가 있는데도 최소 3건에 그쳤다.",
-        "suggested_action": "딸기 정식철 병해충 예방 기사를 추가해 최소 4건으로 채워라."
+        "title": "\"단순 유통 단계 축소·폭리 프레임 벗어나야\"",
+        "reason": "앞선 유통구조 혁신 토론회 기사와 주장과 행사 맥락이 상당히 겹친다.",
+        "suggested_action": "둘 중 하나만 남기고 구체적 수출 물량이나 판로 운영 기사로 교체한다."
       },
       {
         "type": "duplicate_theme",
         "severity": "moderate",
         "section": "pest",
         "title": "창원특례시, 벼멸구 적기 방제 및 예찰 강화 당부",
-        "reason": "바로 앞 울산 벼멸구 증가 기사와 작목·해충·대응이 중복된다.",
-        "suggested_action": "딸기 병해충 후보로 교체해 작목과 위험을 다양화하라."
+        "reason": "울산 벼멸구·벼 병해충 기사와 위험 신호와 대응 내용이 중복된다.",
+        "suggested_action": "딸기 탄저병·시들음병·응애 등 정식철 복합 병해충 기사로 교체한다."
       },
       {
         "type": "underfill",
-        "severity": "minor",
-        "section": "supply",
-        "title": "공급 섹션 4건 편성",
-        "reason": "후보가 충분한데 5건 목표를 채우지 못했고 기존 4건 중 하나도 재배관리 기사다.",
-        "suggested_action": "전국 과일 가격 또는 작황 후보를 추가하라."
+        "severity": "moderate",
+        "section": "pest",
+        "title": "병해충 섹션 3건 편성",
+        "reason": "35개 후보가 있고 딸기 병해충 등 활용 가능한 후보도 있어 최소 4건 편성이 가능했다.",
+        "suggested_action": "딸기 정식철 예방관리 기사를 추가해 4건 이상으로 채운다."
       }
     ]
   },
@@ -201,18 +201,19 @@
     "driver_tags": [
       "commodity_board",
       "editorial_section_fit",
+      "editorial_noise_filter",
       "editorial_core_pick"
     ],
     "section_card_min_fit": {
-      "default": 0.85,
-      "supply": 0.9,
-      "policy": 0.9,
-      "dist": 1.05,
-      "pest": 0.84
+      "default": 0.9,
+      "supply": 0.95,
+      "policy": 0.95,
+      "dist": 1.1,
+      "pest": 0.89
     },
-    "section_low_fit_rescue_min": 0.15,
+    "section_low_fit_rescue_min": 0.35,
     "high_score_low_fit_rescue_margin": 4.2,
-    "tail_score_floor_delta": 0.0,
+    "tail_score_floor_delta": 0.4,
     "core_fit_min": {
       "default": 1.3,
       "supply": 1.5,
@@ -242,8 +243,8 @@
     "mode": "shadow_replay_loop",
     "proposal_only": true,
     "target_score": 82.0,
-    "current_editorial_score": 74.0,
-    "model_reported_score": 75.2,
+    "current_editorial_score": 73.75,
+    "model_reported_score": 74.0,
     "quality_tier": "needs_major_iteration",
     "target_status": "needs_major_iteration",
     "iteration_budget": 3,
@@ -259,25 +260,25 @@
       "no_section_underfill": true
     },
     "section_count_context": {
-      "score": 95.5,
-      "status": "soft_fallback",
+      "score": 97.5,
+      "status": "minimum_fallback",
       "sections": {
         "supply": {
-          "actual": 4,
+          "actual": 5,
           "expected": 5,
-          "raw_candidates": 302,
+          "raw_candidates": 301,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
           "count_floor": 3,
           "core_count": 2,
-          "fill_ratio": 0.8,
-          "score": 92.0
+          "fill_ratio": 1.0,
+          "score": 100.0
         },
         "policy": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 203,
+          "raw_candidates": 204,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -312,12 +313,9 @@
         }
       },
       "underfilled_sections": [
-        "supply",
         "pest"
       ],
-      "soft_fallback_sections": [
-        "supply"
-      ],
+      "soft_fallback_sections": [],
       "minimum_fallback_sections": [
         "pest"
       ],
@@ -332,6 +330,7 @@
       "core_quality",
       "missed_opportunity",
       "article_selection",
+      "noise_control",
       "section_fit",
       "section_count"
     ],
@@ -353,6 +352,12 @@
         "target": "story_signature_gate",
         "direction": "tighten",
         "reason": "Multiple cards covered the same issue and reduced briefing breadth."
+      },
+      {
+        "kind": "noise_filter",
+        "target": "semantic_false_positive_gate",
+        "direction": "tighten",
+        "reason": "Selected cards included low editorial-value noise."
       },
       {
         "kind": "section_fit",
