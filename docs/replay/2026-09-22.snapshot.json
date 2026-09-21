@@ -2,8 +2,8 @@
   "schema_version": 1,
   "version": 1,
   "report_date": "2026-09-22",
-  "created_at_kst": "2026-09-22T06:17:45+09:00",
-  "build_tag": "64224c7",
+  "created_at_kst": "2026-09-22T06:32:30+09:00",
+  "build_tag": "229f576",
   "content_ref": "main",
   "content_branch": "main",
   "window": {
@@ -566,7 +566,7 @@
         "pub_dt_kst": "2026-09-21T09:47:00+09:00",
         "section": "supply",
         "title": "우곡수박·군위 자두 매입량 껑충…쿠팡, 과일농가 소득 늘린다",
-        "description": "소종섭의 시사쇼 머니마니 실시간 뉴스 우곡수박·군위자두 매입량 껑충…쿠팡, 과일농가 소득 늘린다 UNIST, 반도체 EUV 소재 '맞춤형 설계' 기술 개발 난임 지원 확대했지만…주요 비급여 가격 최대 52.8% 상승 1년 걸리던 데이터센터 골조공사 두달만에…현대건설, 사전제작 방식 적용 다이소 \"자외선차단제 8종, 식약처 기준 충족\"…전문기관 임상 완료 딜로이트 안진, 용산 나진상가 12·13구역 복합개발 오피스동 임대자문 전속사 선정 외국인·기관 동반 매수에 코스피 6,800선 회복…김호영 대표가 주목한 다음 흐름은? KBSI \"음이온 회전과 리튬이온 이동 연계 원리 규명\" AI시대 인재상 찾는다…CJ제일제당, 첫 쌍방향 채용행사 \"통잠 자려면 이것부터 빼라\"…의사가 꼽은 침실 금지 1순위 국제 우곡수박·군위자두 매입량 껑충…쿠팡, 과일농가 소득 늘린다 const carouselInner = document.querySelector('.bx--rolling .carousel-inner'); const items = document.querySelectorAll('.bx--rolling .carousel-inner .item'); let currentIndex = 0; const firstClone = items[0].cloneNode(true); carouselInner.appendChild(firstClone); const itemHeight = 60; const totalItems = items.length; function moveCarousel() { currentIndex++; carouselInner.style.transform = `translateY(-${itemHeight * currentIndex}px)`; if (currentIndex === totalItems) { setTimeout(() => { carouselInner.style.transition = 'none'; carouselInner.style.transform = 'translateY(0)'; currentIndex = 0; setTimeout(() => { carouselInner.style.transition = 'transform 0.6s ease-in-out'; }, 50); }, 700); } } setInterval(moveCarousel, 3000); 뉴스 뉴스 증권 경제 부동산 산업·IT 정치 사회 국제 문화 오피니언 해외칼럼 골프 연예·스포츠 포토뉴스 전국 스페셜 기획·이슈 연재 프리미엄 콘텐츠 경제법률 완전정복 법률소식 Visual-News 인사이트 실시간 뉴스 오디오페이퍼 많이 본 뉴스 뉴스레터 전 종목 시세 플랩+ Game Hub if ($('.service-list__banner .swiper-container .item').length > 1) { const serviceRollingSwiper = new Swiper('.service-list__banner .swiper-container', { slidesPerView: 1, loop: true, resizeObserver: true, pagination: { clickable: true, el: '.service-list__banner .swiper-pagination', }, autoplay: { delay: 3000, disableOnInteraction: false, }, }); $('.btn_gnb').on('click', function () { setTimeout(() => { serviceRollingSwiper.update(); //250630-1 수정 serviceRollingSwiper.slideTo(1,0,true)//첫번째슬라이드로 이동 }, 10); }); } 아시아경제 서비스 운세 양낙규의 디펜스클럽 아시아경제CORE 알립니다 아시아경제 교육센터 E아시아경제 검색영역 뉴스검색 삭제아이콘 검색아이콘 function checkSearchSubmit(obj) { if( obj.sn.value && obj.sn.value != '뉴",
+        "description": "소종섭의 시사쇼 머니마니 실시간 뉴스 UNIST, 반도체 EUV 소재 '맞춤형 설계' 기술 개발 난임 지원 확대했지만…주요 비급여 가격 최대 52.8% 상승 1년 걸리던 데이터센터 골조공사 두달만에…현대건설, 사전제작 방식 적용 다이소 \"자외선차단제 8종, 식약처 기준 충족\"…전문기관 임상 완료 딜로이트 안진, 용산 나진상가 12·13구역 복합개발 오피스동 임대자문 전속사 선정 외국인·기관 동반 매수에 코스피 6,800선 회복…김호영 대표가 주목한 다음 흐름은? KBSI \"음이온 회전과 리튬이온 이동 연계 원리 규명\" AI시대 인재상 찾는다…CJ제일제당, 첫 쌍방향 채용행사 \"통잠 자려면 이것부터 빼라\"…의사가 꼽은 침실 금지 1순위 '부산 상어' 출몰에 '아기상어' 주가 10%대 급등…'밈 테마주' 어디까지 국제 우곡수박·군위자두 매입량 껑충…쿠팡, 과일농가 소득 늘린다 const carouselInner = document.querySelector('.bx--rolling .carousel-inner'); const items = document.querySelectorAll('.bx--rolling .carousel-inner .item'); let currentIndex = 0; const firstClone = items[0].cloneNode(true); carouselInner.appendChild(firstClone); const itemHeight = 60; const totalItems = items.length; function moveCarousel() { currentIndex++; carouselInner.style.transform = `translateY(-${itemHeight * currentIndex}px)`; if (currentIndex === totalItems) { setTimeout(() => { carouselInner.style.transition = 'none'; carouselInner.style.transform = 'translateY(0)'; currentIndex = 0; setTimeout(() => { carouselInner.style.transition = 'transform 0.6s ease-in-out'; }, 50); }, 700); } } setInterval(moveCarousel, 3000); 뉴스 뉴스 증권 경제 부동산 산업·IT 정치 사회 국제 문화 오피니언 해외칼럼 골프 연예·스포츠 포토뉴스 전국 스페셜 기획·이슈 연재 프리미엄 콘텐츠 경제법률 완전정복 법률소식 Visual-News 인사이트 실시간 뉴스 오디오페이퍼 많이 본 뉴스 뉴스레터 전 종목 시세 플랩+ Game Hub if ($('.service-list__banner .swiper-container .item').length > 1) { const serviceRollingSwiper = new Swiper('.service-list__banner .swiper-container', { slidesPerView: 1, loop: true, resizeObserver: true, pagination: { clickable: true, el: '.service-list__banner .swiper-pagination', }, autoplay: { delay: 3000, disableOnInteraction: false, }, }); $('.btn_gnb').on('click', function () { setTimeout(() => { serviceRollingSwiper.update(); //250630-1 수정 serviceRollingSwiper.slideTo(1,0,true)//첫번째슬라이드로 이동 }, 10); }); } 아시아경제 서비스 운세 양낙규의 디펜스클럽 아시아경제CORE 알립니다 아시아경제 교육센터 E아시아경제 검색영역 뉴스검색 삭제아이콘 검색아이콘 function checkSearchSubmit(obj) { if( obj.sn.value && obj.sn.v",
         "link": "https://n.news.naver.com/mnews/article/277/0005819113?sid=104",
         "originallink": "https://view.asiae.co.kr/article/2026092109435343514",
         "domain": "view.asiae.co.kr",
@@ -583,7 +583,7 @@
         "selection_stage": "",
         "selection_note": "",
         "reassigned_from": "",
-        "score": 10.37,
+        "score": 11.528,
         "selection_fit_score": 0.0,
         "is_core": false
       },
@@ -641,7 +641,7 @@
         "pub_dt_kst": "2026-09-21T16:26:00+09:00",
         "section": "supply",
         "title": "“3만원대 복숭아 , 6560원 할인 받았죠”…정부 지원에도 서울 장바구니...",
-        "description": "매일경제 60 Maeil Business News Korea 매일경제 60 나만의 AI 비서 매일경제 60 (function() { var stockData = '{\"_DATA\":[{\"date\":\"2026-09-21 20:05:40\",\"prepare_price\":\"7,007.72\",\"code\":\"KSP\",\"prepare_rate\":1.65,\"price\":\"7,007.72\",\"name\":\"코스피\",\"mark\":1},{\"date\":\"2026-09-21 20:05:39\",\"prepare_price\":\"836.27\",\"code\":\"KSQ\",\"prepare_rate\":1.11,\"price\":\"836.27\",\"name\":\"코스닥\",\"mark\":1},{\"date\":\"2026-09-21 20:05:33\",\"prepare_price\":\"1,112.16\",\"code\":\"K200\",\"prepare_rate\":2.01,\"price\":\"1,112.16\",\"name\":\"코스피200\",\"mark\":1},{\"date\":\"2026-09-21 20:59:46\",\"prepare_price\":\"45.9\",\"code\":\"MUSD\",\"prepare_rate\":-1.27,\"price\":\"1,372.40\",\"name\":\"미국 USD\",\"mark\":-1},{\"date\":\"2026-09-22 06:13:19\",\"prepare_price\":\"0\",\"code\":\"KRW-BTC\",\"prepare_rate\":5.99,\"price\":\"116,899,000\",\"name\":\"비트코인\",\"mark\":1},{\"date\":\"2026-09-22 06:13:19\",\"prepare_price\":\"0\",\"code\":\"KRW-ETH\",\"prepare_rate\":4.65,\"price\":\"3,738,000\",\"name\":\"이더리움\",\"mark\":1},{\"date\":\"2026-09-22 06:13:19\",\"prepare_price\":\"0\",\"code\":\"KRW-XRP\",\"prepare_rate\":7.44,\"price\":\"2,050\",\"name\":\"리플\",\"mark\":1}]}'; var stockList = JSON.parse(stockData); var stockRolling = document.querySelector('.stock_rolling'); var gaTag = ' data-category_1depth=\"뉴스\" data-category_2depth=\"뷰\"'; var html = ''; stockList._DATA.forEach(function(item) { var rateText = (item.mark > 0 ? '+ ' : '- ') + Math.abs(item.prepare_rate) + '%'; html += ' ' + ' ' + item.name + ' ' + ' 0 ? 'is_plus' : 'is_minus') + '\">' + rateText + ' 0 ? 'plus' : 'minus') + '\"> ' + ' ' + ' '; }); stockRolling.innerHTML = html; })(); 2026년 9월 22일 (화) 경제 금융 기업 증권 부동산 테크·과학 오피니언 정치 사회 국제 문화 스포츠 M 유튜브 경제 홈 경제 정책 지표 무역 생활 경제 이슈 #대출규제 풍선 효과 #전력망 비상 #삼성전자 성과급 후폭풍 #물가 비상 콘텐츠 Hub 디그 쉽지만 얕지 않게 파고드는 경제뉴스 재테크 #2030 자산 늘리기 #3040 자산 지키기 #4050 노후 준비하기 경제 많이 본 기사 1 “일본 가전인 줄 알고 샀는데”…뒤집어 보니 ‘Made in China’, 발뮤다는 왜? 2 “집도 있고 소득도 괜찮은데, 노후거지?”…4명 중 3명 노후 비상, 왜? 3 농지 27% 위법 의심 … 정부 \"처분절차는 내년부터\" 일단 진화 4 “메가·컴포즈 없는 골목 찾아서”…생활상권 파고드는 후발 저가커피 5 “설마 우리 부모님도 대상?”…통신비 감면 대상 210만명, 혜택 못 받아 금융 홈 금융 정책 외환 은행 보험 카드·캐피털 핀테크 이슈 #한은 기준금리 #간병보험 사기 기승 #환율∙금",
+        "description": "매일경제 60 Maeil Business News Korea 매일경제 60 나만의 AI 비서 매일경제 60 (function() { var stockData = '{\"_DATA\":[{\"date\":\"2026-09-21 20:05:40\",\"prepare_price\":\"7,007.72\",\"code\":\"KSP\",\"prepare_rate\":1.65,\"price\":\"7,007.72\",\"name\":\"코스피\",\"mark\":1},{\"date\":\"2026-09-21 20:05:39\",\"prepare_price\":\"836.27\",\"code\":\"KSQ\",\"prepare_rate\":1.11,\"price\":\"836.27\",\"name\":\"코스닥\",\"mark\":1},{\"date\":\"2026-09-21 20:05:33\",\"prepare_price\":\"1,112.16\",\"code\":\"K200\",\"prepare_rate\":2.01,\"price\":\"1,112.16\",\"name\":\"코스피200\",\"mark\":1},{\"date\":\"2026-09-21 20:59:46\",\"prepare_price\":\"45.9\",\"code\":\"MUSD\",\"prepare_rate\":-1.27,\"price\":\"1,372.40\",\"name\":\"미국 USD\",\"mark\":-1},{\"date\":\"2026-09-22 06:28:43\",\"prepare_price\":\"0\",\"code\":\"KRW-BTC\",\"prepare_rate\":5.87,\"price\":\"116,930,000\",\"name\":\"비트코인\",\"mark\":1},{\"date\":\"2026-09-22 06:28:43\",\"prepare_price\":\"0\",\"code\":\"KRW-ETH\",\"prepare_rate\":4.3,\"price\":\"3,735,000\",\"name\":\"이더리움\",\"mark\":1},{\"date\":\"2026-09-22 06:28:43\",\"prepare_price\":\"0\",\"code\":\"KRW-XRP\",\"prepare_rate\":7.33,\"price\":\"2,051\",\"name\":\"리플\",\"mark\":1}]}'; var stockList = JSON.parse(stockData); var stockRolling = document.querySelector('.stock_rolling'); var gaTag = ' data-category_1depth=\"뉴스\" data-category_2depth=\"뷰\"'; var html = ''; stockList._DATA.forEach(function(item) { var rateText = (item.mark > 0 ? '+ ' : '- ') + Math.abs(item.prepare_rate) + '%'; html += ' ' + ' ' + item.name + ' ' + ' 0 ? 'is_plus' : 'is_minus') + '\">' + rateText + ' 0 ? 'plus' : 'minus') + '\"> ' + ' ' + ' '; }); stockRolling.innerHTML = html; })(); 2026년 9월 22일 (화) 경제 금융 기업 증권 부동산 테크·과학 오피니언 정치 사회 국제 문화 스포츠 M 유튜브 경제 홈 경제 정책 지표 무역 생활 경제 이슈 #대출규제 풍선 효과 #전력망 비상 #삼성전자 성과급 후폭풍 #물가 비상 콘텐츠 Hub 디그 쉽지만 얕지 않게 파고드는 경제뉴스 재테크 #2030 자산 늘리기 #3040 자산 지키기 #4050 노후 준비하기 경제 많이 본 기사 1 “일본 가전인 줄 알고 샀는데”…뒤집어 보니 ‘Made in China’, 발뮤다는 왜? 2 “집도 있고 소득도 괜찮은데, 노후거지?”…4명 중 3명 노후 비상, 왜? 3 농지 27% 위법 의심 … 정부 \"처분절차는 내년부터\" 일단 진화 4 “절반이 900점대, 변별력 있나요?”…무늬만 고신용자 걸러내는 은행 5 “설마 우리 부모님도 대상?”…통신비 감면 대상 210만명, 혜택 못 받아 금융 홈 금융 정책 외환 은행 보험 카드·캐피털 핀테크 이슈 #한은 기준금리 #간병보험 사기 기승 #환율∙",
         "link": "https://n.news.naver.com/mnews/article/009/0005738452?sid=103",
         "originallink": "https://www.mk.co.kr/article/12158355",
         "domain": "mk.co.kr",
@@ -916,7 +916,7 @@
         "pub_dt_kst": "2026-09-21T10:52:00+09:00",
         "section": "supply",
         "title": "절반이 마시다가, 10명 중 1명도 안 마신다…프랑스 포도 밭에서 벌어지...",
-        "description": "폭염·가뭄에 부르고뉴 최고등급품 수확 반토막 수요 감소에 인플레·美관세 겹쳐 업체수 급감 올해 생산량 스페인에 뒤져 세계 3위 하락 전망 매일경제 60 Maeil Business News Korea 매일경제 60 나만의 AI 비서 매일경제 60 (function() { var stockData = '{\"_DATA\":[{\"date\":\"2026-09-21 20:05:40\",\"prepare_price\":\"7,007.72\",\"code\":\"KSP\",\"prepare_rate\":1.65,\"price\":\"7,007.72\",\"name\":\"코스피\",\"mark\":1},{\"date\":\"2026-09-21 20:05:39\",\"prepare_price\":\"836.27\",\"code\":\"KSQ\",\"prepare_rate\":1.11,\"price\":\"836.27\",\"name\":\"코스닥\",\"mark\":1},{\"date\":\"2026-09-21 20:05:33\",\"prepare_price\":\"1,112.16\",\"code\":\"K200\",\"prepare_rate\":2.01,\"price\":\"1,112.16\",\"name\":\"코스피200\",\"mark\":1},{\"date\":\"2026-09-21 20:59:46\",\"prepare_price\":\"45.9\",\"code\":\"MUSD\",\"prepare_rate\":-1.27,\"price\":\"1,372.40\",\"name\":\"미국 USD\",\"mark\":-1},{\"date\":\"2026-09-22 06:13:19\",\"prepare_price\":\"0\",\"code\":\"KRW-BTC\",\"prepare_rate\":5.99,\"price\":\"116,899,000\",\"name\":\"비트코인\",\"mark\":1},{\"date\":\"2026-09-22 06:13:19\",\"prepare_price\":\"0\",\"code\":\"KRW-ETH\",\"prepare_rate\":4.65,\"price\":\"3,738,000\",\"name\":\"이더리움\",\"mark\":1},{\"date\":\"2026-09-22 06:13:19\",\"prepare_price\":\"0\",\"code\":\"KRW-XRP\",\"prepare_rate\":7.44,\"price\":\"2,050\",\"name\":\"리플\",\"mark\":1}]}'; var stockList = JSON.parse(stockData); var stockRolling = document.querySelector('.stock_rolling'); var gaTag = ' data-category_1depth=\"뉴스\" data-category_2depth=\"뷰\"'; var html = ''; stockList._DATA.forEach(function(item) { var rateText = (item.mark > 0 ? '+ ' : '- ') + Math.abs(item.prepare_rate) + '%'; html += ' ' + ' ' + item.name + ' ' + ' 0 ? 'is_plus' : 'is_minus') + '\">' + rateText + ' 0 ? 'plus' : 'minus') + '\"> ' + ' ' + ' '; }); stockRolling.innerHTML = html; })(); 2026년 9월 22일 (화) 경제 금융 기업 증권 부동산 테크·과학 오피니언 정치 사회 국제 문화 스포츠 M 유튜브 경제 홈 경제 정책 지표 무역 생활 경제 이슈 #대출규제 풍선 효과 #전력망 비상 #삼성전자 성과급 후폭풍 #물가 비상 콘텐츠 Hub 디그 쉽지만 얕지 않게 파고드는 경제뉴스 재테크 #2030 자산 늘리기 #3040 자산 지키기 #4050 노후 준비하기 경제 많이 본 기사 1 “일본 가전인 줄 알고 샀는데”…뒤집어 보니 ‘Made in China’, 발뮤다는 왜? 2 “집도 있고 소득도 괜찮은데, 노후거지?”…4명 중 3명 노후 비상, 왜? 3 농지 27% 위법 의심 … 정부 \"처분절차는 내년부터\" 일단 진화 4 “메가·컴포즈 없는 골목 찾아서”…생활상권 파고드는 후발 저가커피 5 “설마 우리 부모님도 대상?”…통신비 감면 대",
+        "description": "폭염·가뭄에 부르고뉴 최고등급품 수확 반토막 수요 감소에 인플레·美관세 겹쳐 업체수 급감 올해 생산량 스페인에 뒤져 세계 3위 하락 전망 매일경제 60 Maeil Business News Korea 매일경제 60 나만의 AI 비서 매일경제 60 (function() { var stockData = '{\"_DATA\":[{\"date\":\"2026-09-21 20:05:40\",\"prepare_price\":\"7,007.72\",\"code\":\"KSP\",\"prepare_rate\":1.65,\"price\":\"7,007.72\",\"name\":\"코스피\",\"mark\":1},{\"date\":\"2026-09-21 20:05:39\",\"prepare_price\":\"836.27\",\"code\":\"KSQ\",\"prepare_rate\":1.11,\"price\":\"836.27\",\"name\":\"코스닥\",\"mark\":1},{\"date\":\"2026-09-21 20:05:33\",\"prepare_price\":\"1,112.16\",\"code\":\"K200\",\"prepare_rate\":2.01,\"price\":\"1,112.16\",\"name\":\"코스피200\",\"mark\":1},{\"date\":\"2026-09-21 20:59:46\",\"prepare_price\":\"45.9\",\"code\":\"MUSD\",\"prepare_rate\":-1.27,\"price\":\"1,372.40\",\"name\":\"미국 USD\",\"mark\":-1},{\"date\":\"2026-09-22 06:28:43\",\"prepare_price\":\"0\",\"code\":\"KRW-BTC\",\"prepare_rate\":5.87,\"price\":\"116,930,000\",\"name\":\"비트코인\",\"mark\":1},{\"date\":\"2026-09-22 06:28:43\",\"prepare_price\":\"0\",\"code\":\"KRW-ETH\",\"prepare_rate\":4.3,\"price\":\"3,735,000\",\"name\":\"이더리움\",\"mark\":1},{\"date\":\"2026-09-22 06:28:43\",\"prepare_price\":\"0\",\"code\":\"KRW-XRP\",\"prepare_rate\":7.33,\"price\":\"2,051\",\"name\":\"리플\",\"mark\":1}]}'; var stockList = JSON.parse(stockData); var stockRolling = document.querySelector('.stock_rolling'); var gaTag = ' data-category_1depth=\"뉴스\" data-category_2depth=\"뷰\"'; var html = ''; stockList._DATA.forEach(function(item) { var rateText = (item.mark > 0 ? '+ ' : '- ') + Math.abs(item.prepare_rate) + '%'; html += ' ' + ' ' + item.name + ' ' + ' 0 ? 'is_plus' : 'is_minus') + '\">' + rateText + ' 0 ? 'plus' : 'minus') + '\"> ' + ' ' + ' '; }); stockRolling.innerHTML = html; })(); 2026년 9월 22일 (화) 경제 금융 기업 증권 부동산 테크·과학 오피니언 정치 사회 국제 문화 스포츠 M 유튜브 경제 홈 경제 정책 지표 무역 생활 경제 이슈 #대출규제 풍선 효과 #전력망 비상 #삼성전자 성과급 후폭풍 #물가 비상 콘텐츠 Hub 디그 쉽지만 얕지 않게 파고드는 경제뉴스 재테크 #2030 자산 늘리기 #3040 자산 지키기 #4050 노후 준비하기 경제 많이 본 기사 1 “일본 가전인 줄 알고 샀는데”…뒤집어 보니 ‘Made in China’, 발뮤다는 왜? 2 “집도 있고 소득도 괜찮은데, 노후거지?”…4명 중 3명 노후 비상, 왜? 3 농지 27% 위법 의심 … 정부 \"처분절차는 내년부터\" 일단 진화 4 “절반이 900점대, 변별력 있나요?”…무늬만 고신용자 걸러내는 은행 5 “설마 우리 부모님도 대상?”…통신비 감면",
         "link": "https://n.news.naver.com/mnews/article/009/0005738178?sid=104",
         "originallink": "https://www.mk.co.kr/article/12157968",
         "domain": "mk.co.kr",
@@ -1388,31 +1388,6 @@
         "is_core": false
       },
       {
-        "pub_dt_kst": "2026-09-21T22:16:00+09:00",
-        "section": "supply",
-        "title": "[업체소식] 조비 \" 사과 ·배 이듬해 농사는 지금부터\"",
-        "description": "사과 ·배·포도·복숭아·감 등 주요 과수의 수확 작업이 마무리되는 가을을 맞아 ㈜조비가 수확 직후 과수의... 단단함과 저장 성을 증진시킨다. 아울러 엽록소 형성 필수 성분인 마그네슘(고토 2%)과 꽃눈 형성 및 수정에...",
-        "link": "http://www.ikpnews.net/news/articleView.html?idxno=71511",
-        "originallink": "http://www.ikpnews.net/news/articleView.html?idxno=71511",
-        "domain": "ikpnews.net",
-        "press": "한국농정신문",
-        "norm_key": "url:f45786ca82eb5e18b970f556420140ff",
-        "title_key": "조비사과배이듬해농사는지금부터",
-        "canon_url": "https://ikpnews.net/news/articleView.html?idxno=71511",
-        "topic": "배",
-        "summary": "",
-        "forced_section": "",
-        "origin_section": "supply",
-        "source_query": "사과 저장",
-        "source_channel": "naver_api",
-        "selection_stage": "",
-        "selection_note": "",
-        "reassigned_from": "",
-        "score": 12.32,
-        "selection_fit_score": 0.0,
-        "is_core": false
-      },
-      {
         "pub_dt_kst": "2026-09-21T11:24:00+09:00",
         "section": "supply",
         "title": "\"자연이 빚고 기술이 키웠다\"… 청송 사과 , 전국 최고 품질 명품 브랜드...",
@@ -1484,6 +1459,31 @@
         "selection_note": "",
         "reassigned_from": "",
         "score": 12.12,
+        "selection_fit_score": 0.0,
+        "is_core": false
+      },
+      {
+        "pub_dt_kst": "2026-09-21T22:16:00+09:00",
+        "section": "supply",
+        "title": "[업체소식] 조비 \" 사과 ·배 이듬해 농사는 지금부터\"",
+        "description": "사과 ·배·포도·복숭아·감 등 주요 과수의 수확 작업이 마무리되는 가을을 맞아 ㈜조비가 수확 직후 과수의... 단단함과 저장 성을 증진시킨다. 아울러 엽록소 형성 필수 성분인 마그네슘(고토 2%)과 꽃눈 형성 및 수정에...",
+        "link": "http://www.ikpnews.net/news/articleView.html?idxno=71511",
+        "originallink": "http://www.ikpnews.net/news/articleView.html?idxno=71511",
+        "domain": "ikpnews.net",
+        "press": "한국농정신문",
+        "norm_key": "url:f45786ca82eb5e18b970f556420140ff",
+        "title_key": "조비사과배이듬해농사는지금부터",
+        "canon_url": "https://ikpnews.net/news/articleView.html?idxno=71511",
+        "topic": "배",
+        "summary": "",
+        "forced_section": "",
+        "origin_section": "supply",
+        "source_query": "사과 저장",
+        "source_channel": "naver_api",
+        "selection_stage": "",
+        "selection_note": "",
+        "reassigned_from": "",
+        "score": 11.92,
         "selection_fit_score": 0.0,
         "is_core": false
       },
@@ -2488,31 +2488,6 @@
         "is_core": false
       },
       {
-        "pub_dt_kst": "2026-09-21T06:10:00+09:00",
-        "section": "supply",
-        "title": "추석 과일·채소 보관, ‘온도·수분·에틸렌’이 신선도 좌우",
-        "description": "◆ 사과 는 ‘따로’, 배·포도·단감은 ‘차갑게’ ▲ 사과 수확 후 에틸렌을 비교적 많이 내뿜기 때문에 다른... 상처가 있거나 눌린 과일, 물러진 채소는 저장 중 부패가 빠르게 진행될 수 있으므로 따로 분리해 먼저...",
-        "link": "https://medicalworldnews.co.kr/news/view.php?idx=1510977347",
-        "originallink": "https://medicalworldnews.co.kr/news/view.php?idx=1510977347",
-        "domain": "medicalworldnews.co.kr",
-        "press": "medicalworldnews",
-        "norm_key": "url:5b26b2f95b3f642c6df8b22269f3d843",
-        "title_key": "추석과일채소보관온도수분에틸렌이신선도좌우",
-        "canon_url": "https://medicalworldnews.co.kr/news/view.php?idx=1510977347",
-        "topic": "배",
-        "summary": "",
-        "forced_section": "",
-        "origin_section": "supply",
-        "source_query": "사과 저장",
-        "source_channel": "naver_api",
-        "selection_stage": "",
-        "selection_note": "",
-        "reassigned_from": "",
-        "score": 6.754,
-        "selection_fit_score": 0.0,
-        "is_core": false
-      },
-      {
         "pub_dt_kst": "2026-09-21T22:38:00+09:00",
         "section": "supply",
         "title": "[천지일보] 가로세로 낱말 퀴즈 [138], [137] 답 및 스벅쿠폰 당첨자 발...",
@@ -2584,6 +2559,31 @@
         "selection_note": "",
         "reassigned_from": "",
         "score": 6.77,
+        "selection_fit_score": 0.0,
+        "is_core": false
+      },
+      {
+        "pub_dt_kst": "2026-09-21T06:10:00+09:00",
+        "section": "supply",
+        "title": "추석 과일·채소 보관, ‘온도·수분·에틸렌’이 신선도 좌우",
+        "description": "◆ 사과 는 ‘따로’, 배·포도·단감은 ‘차갑게’ ▲ 사과 수확 후 에틸렌을 비교적 많이 내뿜기 때문에 다른... 상처가 있거나 눌린 과일, 물러진 채소는 저장 중 부패가 빠르게 진행될 수 있으므로 따로 분리해 먼저...",
+        "link": "https://medicalworldnews.co.kr/news/view.php?idx=1510977347",
+        "originallink": "https://medicalworldnews.co.kr/news/view.php?idx=1510977347",
+        "domain": "medicalworldnews.co.kr",
+        "press": "medicalworldnews",
+        "norm_key": "url:5b26b2f95b3f642c6df8b22269f3d843",
+        "title_key": "추석과일채소보관온도수분에틸렌이신선도좌우",
+        "canon_url": "https://medicalworldnews.co.kr/news/view.php?idx=1510977347",
+        "topic": "배",
+        "summary": "",
+        "forced_section": "",
+        "origin_section": "supply",
+        "source_query": "사과 저장",
+        "source_channel": "naver_api",
+        "selection_stage": "",
+        "selection_note": "",
+        "reassigned_from": "",
+        "score": 6.754,
         "selection_fit_score": 0.0,
         "is_core": false
       },
@@ -3463,31 +3463,6 @@
         "is_core": false
       },
       {
-        "pub_dt_kst": "2026-09-21T22:14:00+09:00",
-        "section": "supply",
-        "title": "함양군, 로컬푸드로 청년 잇다",
-        "description": "참가자들은 군의 귀농귀촌 정책을 알아본 뒤 지역 농가 를 찾아 다품종 양파 와 함 양파 생산 과정을 살펴보고 직접 함 양파 를 심었다. 이어 지역 농산물을 활용해 양파 만두를 만드는 등 농산물 생산부터 요리까지...",
-        "link": "http://www.gnmaeil.com/news/articleView.html?idxno=595310",
-        "originallink": "http://www.gnmaeil.com/news/articleView.html?idxno=595310",
-        "domain": "gnmaeil.com",
-        "press": "경남매일",
-        "norm_key": "url:00e926a612a77ee8b2c8d49f4bb7a6c3",
-        "title_key": "함양군로컬푸드로청년잇다",
-        "canon_url": "https://gnmaeil.com/news/articleView.html?idxno=595310",
-        "topic": "기타",
-        "summary": "",
-        "forced_section": "",
-        "origin_section": "supply",
-        "source_query": "양파 농가",
-        "source_channel": "naver_api",
-        "selection_stage": "",
-        "selection_note": "",
-        "reassigned_from": "",
-        "score": 3.41,
-        "selection_fit_score": 0.0,
-        "is_core": false
-      },
-      {
         "pub_dt_kst": "2026-09-22T04:58:00+09:00",
         "section": "supply",
         "title": "'관리비 탓' 꽃 뽑아낸 태안, 예산 43억 늘리는 논산… 검증 빠진 공공 ...",
@@ -3583,7 +3558,32 @@
         "selection_stage": "",
         "selection_note": "",
         "reassigned_from": "",
-        "score": 3.55,
+        "score": 3.35,
+        "selection_fit_score": 0.0,
+        "is_core": false
+      },
+      {
+        "pub_dt_kst": "2026-09-21T22:14:00+09:00",
+        "section": "supply",
+        "title": "함양군, 로컬푸드로 청년 잇다",
+        "description": "참가자들은 군의 귀농귀촌 정책을 알아본 뒤 지역 농가 를 찾아 다품종 양파 와 함 양파 생산 과정을 살펴보고 직접 함 양파 를 심었다. 이어 지역 농산물을 활용해 양파 만두를 만드는 등 농산물 생산부터 요리까지...",
+        "link": "http://www.gnmaeil.com/news/articleView.html?idxno=595310",
+        "originallink": "http://www.gnmaeil.com/news/articleView.html?idxno=595310",
+        "domain": "gnmaeil.com",
+        "press": "경남매일",
+        "norm_key": "url:00e926a612a77ee8b2c8d49f4bb7a6c3",
+        "title_key": "함양군로컬푸드로청년잇다",
+        "canon_url": "https://gnmaeil.com/news/articleView.html?idxno=595310",
+        "topic": "기타",
+        "summary": "",
+        "forced_section": "",
+        "origin_section": "supply",
+        "source_query": "양파 농가",
+        "source_channel": "naver_api",
+        "selection_stage": "",
+        "selection_note": "",
+        "reassigned_from": "",
+        "score": 3.41,
         "selection_fit_score": 0.0,
         "is_core": false
       },
@@ -3938,31 +3938,6 @@
         "is_core": false
       },
       {
-        "pub_dt_kst": "2026-09-21T22:22:00+09:00",
-        "section": "supply",
-        "title": "\"지역사회와 동행\" 한전원자력연료, 추석 맞아 지역사회 나눔 실천",
-        "description": "한전원자력연료는 결연을 맺은 자매마을과 전통시장에서 배와 사과 를 직접 사들여 과수 농가 와 골목 소상공인의 판로를 열어줬으며 실질적인 가계 생계에 보탬이 되도록 온누리상품권을 함께 후원해 전통시장 소비 진작을...",
-        "link": "https://www.cstimes.com/news/articleView.html?idxno=721563",
-        "originallink": "https://www.cstimes.com/news/articleView.html?idxno=721563",
-        "domain": "cstimes.com",
-        "press": "소비자경제",
-        "norm_key": "url:4b40e4d5a09f0509b501eeefa4b4b357",
-        "title_key": "지역사회와동행한전원자력연료추석맞아지역사회나눔실천",
-        "canon_url": "https://cstimes.com/news/articleView.html?idxno=721563",
-        "topic": "기타",
-        "summary": "",
-        "forced_section": "",
-        "origin_section": "supply",
-        "source_query": "사과 농가",
-        "source_channel": "naver_api",
-        "selection_stage": "",
-        "selection_note": "",
-        "reassigned_from": "",
-        "score": 2.48,
-        "selection_fit_score": 0.0,
-        "is_core": false
-      },
-      {
         "pub_dt_kst": "2026-09-21T15:06:00+09:00",
         "section": "supply",
         "title": "낙엽 튀겨 먹는 일본… ‘단풍잎 튀김’의 반전 미식",
@@ -4009,6 +3984,31 @@
         "selection_note": "",
         "reassigned_from": "",
         "score": 2.11,
+        "selection_fit_score": 0.0,
+        "is_core": false
+      },
+      {
+        "pub_dt_kst": "2026-09-21T22:22:00+09:00",
+        "section": "supply",
+        "title": "\"지역사회와 동행\" 한전원자력연료, 추석 맞아 지역사회 나눔 실천",
+        "description": "한전원자력연료는 결연을 맺은 자매마을과 전통시장에서 배와 사과 를 직접 사들여 과수 농가 와 골목 소상공인의 판로를 열어줬으며 실질적인 가계 생계에 보탬이 되도록 온누리상품권을 함께 후원해 전통시장 소비 진작을...",
+        "link": "https://www.cstimes.com/news/articleView.html?idxno=721563",
+        "originallink": "https://www.cstimes.com/news/articleView.html?idxno=721563",
+        "domain": "cstimes.com",
+        "press": "소비자경제",
+        "norm_key": "url:4b40e4d5a09f0509b501eeefa4b4b357",
+        "title_key": "지역사회와동행한전원자력연료추석맞아지역사회나눔실천",
+        "canon_url": "https://cstimes.com/news/articleView.html?idxno=721563",
+        "topic": "기타",
+        "summary": "",
+        "forced_section": "",
+        "origin_section": "supply",
+        "source_query": "사과 농가",
+        "source_channel": "naver_api",
+        "selection_stage": "",
+        "selection_note": "",
+        "reassigned_from": "",
+        "score": 2.08,
         "selection_fit_score": 0.0,
         "is_core": false
       },
@@ -5891,7 +5891,7 @@
         "pub_dt_kst": "2026-09-21T20:00:00+09:00",
         "section": "dist",
         "title": "충북농협, 추석 명절 맞이 괴산 사과 선별·출하 상황 점검 및 농가 애로...",
-        "description": "【충북 브레이크뉴스】임창용 기자=충북농협이 추석 명절을 앞두고 농산물 수급 안정과 차질 없는 출하를 지원하기 위해 현장 행보에 나섰다. 충북농 시작페이지로 l 즐겨찾기 l RSS l 편집 2026.09.22 [06:00] 【충북 브레이크뉴스】임창용 기자=충북농협이 추석 명절을 앞두고 농산물 수급 안정과 차질 없는 출하를 지원하기 위해 현장 행보에 나섰다. 충북농협은 괴산군 연풍면에 있는 군자농협 산지유통센터(APC)를 방문해 명절 성수기를 맞은 괴산 사과의 출하 작업 상황을 종합적으로 점검했다고 밝혔다. 현장을 찾은 충북농협 관계자들은 출하가 본격화된 괴산 사과의 품질 및 상태를 점검하고, 선별과 포장에 이르는 상품화 전 과정을 세심히 살폈다. 아울러 물량이 집중되는 시기에 농업인들이 겪는 현장 애로사항을 청취하며 안정적인 농산물 공급 방안에 대해 의견을 나누었다. 군자농협은 괴산의 대표적인 사과 산지유통조직으로, 지자체 지원을 통해 선별 시설을 증설하는 등 농산물 상품화 경쟁력을 크게 높여왔다. 수확한 사과의 선별부터 유통까지 일괄 처리하는 시스템을 갖춰 농가 일손 부족을 해소하고 안정적인 판로를 제공하고 있으며, 이에 따라 사과 취급 물량도 전년 대비 2배가량 증가했다. 또한 농림축산식품부 주관 스마트APC 지원사업 대상자로 선정되어 시설 현대화와 디지털화를 추진 중으로, 향후 지역 사과 유통 거점 역할을 더욱 강화할 것으로 기대를 모으고 있다. 충북농협 관계자는 추석을 앞두고 고품질 괴산 사과가 적기에 출하될 수 있도록 현장의 선별과 상품화 과정을 꼼꼼히 살피는 것이 중요하다며, 산지유통시설의 역량을 끌어올리고 농업인이 정성껏 생산한 농산물이 제값을 받고 안정적으로 유통될 수 있도록 현장 지원에 만전을 기하겠다고 전했다. 개인정보취급방침 ㅣ 회사소개 ㅣ 청소년보호정책 ㅣ 고충처리 ㅣ 윤리 강령 ㅣ 기사제보 ㅣ 기사검색 (주)브레이크뉴스 / 편집국 :서울시 서대문구 서소문로 55-7(옛 주소 : 서울시 서대문구 합동 21-27) 우편번호 03741 9편집국 전화 : (02)363-9546 ㅣ 팩스 : (02)363-9547 등록번호(발행일/등록일) : 서울 아00093(2003.04.19/2005.10.25) 제호 : 브레이크뉴스 / 대표이사(발행인 겸 편집인) : 문일석 /편집국장 : 문흥수 /청소년보호책임자 : 문흥수 / 사업자등록번호 : 110-81-61230 ㅣ 통신판매업신고번호 : 서대문 제485호 Copyright ⓒ 1999-2017 브레이크뉴스. All rights reserved. Contact 119@breaknews.com",
+        "description": "【충북 브레이크뉴스】임창용 기자=충북농협이 추석 명절을 앞두고 농산물 수급 안정과 차질 없는 출하를 지원하기 위해 현장 행보에 나섰다. 충북농 시작페이지로 l 즐겨찾기 l RSS l 편집 2026.09.22 [06:19] 【충북 브레이크뉴스】임창용 기자=충북농협이 추석 명절을 앞두고 농산물 수급 안정과 차질 없는 출하를 지원하기 위해 현장 행보에 나섰다. 충북농협은 괴산군 연풍면에 있는 군자농협 산지유통센터(APC)를 방문해 명절 성수기를 맞은 괴산 사과의 출하 작업 상황을 종합적으로 점검했다고 밝혔다. 현장을 찾은 충북농협 관계자들은 출하가 본격화된 괴산 사과의 품질 및 상태를 점검하고, 선별과 포장에 이르는 상품화 전 과정을 세심히 살폈다. 아울러 물량이 집중되는 시기에 농업인들이 겪는 현장 애로사항을 청취하며 안정적인 농산물 공급 방안에 대해 의견을 나누었다. 군자농협은 괴산의 대표적인 사과 산지유통조직으로, 지자체 지원을 통해 선별 시설을 증설하는 등 농산물 상품화 경쟁력을 크게 높여왔다. 수확한 사과의 선별부터 유통까지 일괄 처리하는 시스템을 갖춰 농가 일손 부족을 해소하고 안정적인 판로를 제공하고 있으며, 이에 따라 사과 취급 물량도 전년 대비 2배가량 증가했다. 또한 농림축산식품부 주관 스마트APC 지원사업 대상자로 선정되어 시설 현대화와 디지털화를 추진 중으로, 향후 지역 사과 유통 거점 역할을 더욱 강화할 것으로 기대를 모으고 있다. 충북농협 관계자는 추석을 앞두고 고품질 괴산 사과가 적기에 출하될 수 있도록 현장의 선별과 상품화 과정을 꼼꼼히 살피는 것이 중요하다며, 산지유통시설의 역량을 끌어올리고 농업인이 정성껏 생산한 농산물이 제값을 받고 안정적으로 유통될 수 있도록 현장 지원에 만전을 기하겠다고 전했다. 개인정보취급방침 ㅣ 회사소개 ㅣ 청소년보호정책 ㅣ 고충처리 ㅣ 윤리 강령 ㅣ 기사제보 ㅣ 기사검색 (주)브레이크뉴스 / 편집국 :서울시 서대문구 서소문로 55-7(옛 주소 : 서울시 서대문구 합동 21-27) 우편번호 03741 9편집국 전화 : (02)363-9546 ㅣ 팩스 : (02)363-9547 등록번호(발행일/등록일) : 서울 아00093(2003.04.19/2005.10.25) 제호 : 브레이크뉴스 / 대표이사(발행인 겸 편집인) : 문일석 /편집국장 : 문흥수 /청소년보호책임자 : 문흥수 / 사업자등록번호 : 110-81-61230 ㅣ 통신판매업신고번호 : 서대문 제485호 Copyright ⓒ 1999-2017 브레이크뉴스. All rights reserved. Contact 119@breaknews.com",
         "link": "http://www.breaknews.com/1238384",
         "originallink": "http://www.breaknews.com/1238384",
         "domain": "breaknews.com",
@@ -6360,7 +6360,7 @@
         "selection_stage": "",
         "selection_note": "",
         "reassigned_from": "",
-        "score": 42.61,
+        "score": 42.21,
         "selection_fit_score": 0.0,
         "is_core": false
       },
@@ -6818,7 +6818,7 @@
         "pub_dt_kst": "2026-09-21T16:26:00+09:00",
         "section": "policy",
         "title": "“3만원대 복숭아, 6560원 할인 받았죠”…정부 지원 에도 서울 장바구니...",
-        "description": "매일경제 60 Maeil Business News Korea 매일경제 60 나만의 AI 비서 매일경제 60 (function() { var stockData = '{\"_DATA\":[{\"date\":\"2026-09-21 20:05:40\",\"prepare_price\":\"7,007.72\",\"code\":\"KSP\",\"prepare_rate\":1.65,\"price\":\"7,007.72\",\"name\":\"코스피\",\"mark\":1},{\"date\":\"2026-09-21 20:05:39\",\"prepare_price\":\"836.27\",\"code\":\"KSQ\",\"prepare_rate\":1.11,\"price\":\"836.27\",\"name\":\"코스닥\",\"mark\":1},{\"date\":\"2026-09-21 20:05:33\",\"prepare_price\":\"1,112.16\",\"code\":\"K200\",\"prepare_rate\":2.01,\"price\":\"1,112.16\",\"name\":\"코스피200\",\"mark\":1},{\"date\":\"2026-09-21 20:59:46\",\"prepare_price\":\"45.9\",\"code\":\"MUSD\",\"prepare_rate\":-1.27,\"price\":\"1,372.40\",\"name\":\"미국 USD\",\"mark\":-1},{\"date\":\"2026-09-22 06:13:19\",\"prepare_price\":\"0\",\"code\":\"KRW-BTC\",\"prepare_rate\":5.99,\"price\":\"116,899,000\",\"name\":\"비트코인\",\"mark\":1},{\"date\":\"2026-09-22 06:13:19\",\"prepare_price\":\"0\",\"code\":\"KRW-ETH\",\"prepare_rate\":4.65,\"price\":\"3,738,000\",\"name\":\"이더리움\",\"mark\":1},{\"date\":\"2026-09-22 06:13:19\",\"prepare_price\":\"0\",\"code\":\"KRW-XRP\",\"prepare_rate\":7.44,\"price\":\"2,050\",\"name\":\"리플\",\"mark\":1}]}'; var stockList = JSON.parse(stockData); var stockRolling = document.querySelector('.stock_rolling'); var gaTag = ' data-category_1depth=\"뉴스\" data-category_2depth=\"뷰\"'; var html = ''; stockList._DATA.forEach(function(item) { var rateText = (item.mark > 0 ? '+ ' : '- ') + Math.abs(item.prepare_rate) + '%'; html += ' ' + ' ' + item.name + ' ' + ' 0 ? 'is_plus' : 'is_minus') + '\">' + rateText + ' 0 ? 'plus' : 'minus') + '\"> ' + ' ' + ' '; }); stockRolling.innerHTML = html; })(); 2026년 9월 22일 (화) 경제 금융 기업 증권 부동산 테크·과학 오피니언 정치 사회 국제 문화 스포츠 M 유튜브 경제 홈 경제 정책 지표 무역 생활 경제 이슈 #대출규제 풍선 효과 #전력망 비상 #삼성전자 성과급 후폭풍 #물가 비상 콘텐츠 Hub 디그 쉽지만 얕지 않게 파고드는 경제뉴스 재테크 #2030 자산 늘리기 #3040 자산 지키기 #4050 노후 준비하기 경제 많이 본 기사 1 “일본 가전인 줄 알고 샀는데”…뒤집어 보니 ‘Made in China’, 발뮤다는 왜? 2 “집도 있고 소득도 괜찮은데, 노후거지?”…4명 중 3명 노후 비상, 왜? 3 농지 27% 위법 의심 … 정부 \"처분절차는 내년부터\" 일단 진화 4 “메가·컴포즈 없는 골목 찾아서”…생활상권 파고드는 후발 저가커피 5 “설마 우리 부모님도 대상?”…통신비 감면 대상 210만명, 혜택 못 받아 금융 홈 금융 정책 외환 은행 보험 카드·캐피털 핀테크 이슈 #한은 기준금리 #간병보험 사기 기승 #환율∙금",
+        "description": "매일경제 60 Maeil Business News Korea 매일경제 60 나만의 AI 비서 매일경제 60 (function() { var stockData = '{\"_DATA\":[{\"date\":\"2026-09-21 20:05:40\",\"prepare_price\":\"7,007.72\",\"code\":\"KSP\",\"prepare_rate\":1.65,\"price\":\"7,007.72\",\"name\":\"코스피\",\"mark\":1},{\"date\":\"2026-09-21 20:05:39\",\"prepare_price\":\"836.27\",\"code\":\"KSQ\",\"prepare_rate\":1.11,\"price\":\"836.27\",\"name\":\"코스닥\",\"mark\":1},{\"date\":\"2026-09-21 20:05:33\",\"prepare_price\":\"1,112.16\",\"code\":\"K200\",\"prepare_rate\":2.01,\"price\":\"1,112.16\",\"name\":\"코스피200\",\"mark\":1},{\"date\":\"2026-09-21 20:59:46\",\"prepare_price\":\"45.9\",\"code\":\"MUSD\",\"prepare_rate\":-1.27,\"price\":\"1,372.40\",\"name\":\"미국 USD\",\"mark\":-1},{\"date\":\"2026-09-22 06:28:43\",\"prepare_price\":\"0\",\"code\":\"KRW-BTC\",\"prepare_rate\":5.87,\"price\":\"116,930,000\",\"name\":\"비트코인\",\"mark\":1},{\"date\":\"2026-09-22 06:28:43\",\"prepare_price\":\"0\",\"code\":\"KRW-ETH\",\"prepare_rate\":4.3,\"price\":\"3,735,000\",\"name\":\"이더리움\",\"mark\":1},{\"date\":\"2026-09-22 06:28:43\",\"prepare_price\":\"0\",\"code\":\"KRW-XRP\",\"prepare_rate\":7.33,\"price\":\"2,051\",\"name\":\"리플\",\"mark\":1}]}'; var stockList = JSON.parse(stockData); var stockRolling = document.querySelector('.stock_rolling'); var gaTag = ' data-category_1depth=\"뉴스\" data-category_2depth=\"뷰\"'; var html = ''; stockList._DATA.forEach(function(item) { var rateText = (item.mark > 0 ? '+ ' : '- ') + Math.abs(item.prepare_rate) + '%'; html += ' ' + ' ' + item.name + ' ' + ' 0 ? 'is_plus' : 'is_minus') + '\">' + rateText + ' 0 ? 'plus' : 'minus') + '\"> ' + ' ' + ' '; }); stockRolling.innerHTML = html; })(); 2026년 9월 22일 (화) 경제 금융 기업 증권 부동산 테크·과학 오피니언 정치 사회 국제 문화 스포츠 M 유튜브 경제 홈 경제 정책 지표 무역 생활 경제 이슈 #대출규제 풍선 효과 #전력망 비상 #삼성전자 성과급 후폭풍 #물가 비상 콘텐츠 Hub 디그 쉽지만 얕지 않게 파고드는 경제뉴스 재테크 #2030 자산 늘리기 #3040 자산 지키기 #4050 노후 준비하기 경제 많이 본 기사 1 “일본 가전인 줄 알고 샀는데”…뒤집어 보니 ‘Made in China’, 발뮤다는 왜? 2 “집도 있고 소득도 괜찮은데, 노후거지?”…4명 중 3명 노후 비상, 왜? 3 농지 27% 위법 의심 … 정부 \"처분절차는 내년부터\" 일단 진화 4 “절반이 900점대, 변별력 있나요?”…무늬만 고신용자 걸러내는 은행 5 “설마 우리 부모님도 대상?”…통신비 감면 대상 210만명, 혜택 못 받아 금융 홈 금융 정책 외환 은행 보험 카드·캐피털 핀테크 이슈 #한은 기준금리 #간병보험 사기 기승 #환율∙",
         "link": "https://n.news.naver.com/mnews/article/009/0005738452?sid=103",
         "originallink": "https://www.mk.co.kr/article/12158355",
         "domain": "mk.co.kr",
@@ -8240,6 +8240,31 @@
         "is_core": false
       },
       {
+        "pub_dt_kst": "2026-09-21T18:22:00+09:00",
+        "section": "policy",
+        "title": "온라인도매시장 판매자 거래규모 요건 폐지...품질관리는 더 철저히",
+        "description": "[농수축산신문=박세준 기자]농수산물 온라인도매시장의 판매자 자격 요건 중 거래액수 기준이 페지되면서 온라인도매시장 거래 주체가 더욱 확대될 것으로 예상된다.농림축산식품부와 한국농수산식품유통공사(aT)는 지난 18일 서울 양재동 소재 aT센터에서 ‘2026년 제2차 시장관리운영위원회’를 개최하고 온라인도매시장 판매자 가입요건인 ‘전년도 거래규모 10억 원 이상’ 기준 다음달 1일부터 폐지하기로 결정했다.aT 측은 이번 조치가 지난해부터 추진해 온 온라인도매시장 판매자 가입 규정 완화의 후속조치라고 설명했다. 이미 지난해 9월 시장관리 잠깐! 현재 Internet Explorer 8이하 버전을 이용중이십니다. 최신 브라우저(Browser) 사용을 권장드립니다! 농수산물 온라인도매시장의 판매자 자격 요건 중 거래액수 기준이 페지되면서 온라인도매시장 거래 주체가 더욱 확대될 것으로 예상된다. 농림축산식품부와 한국농수산식품유통공사(aT)는 지난 18일 서울 양재동 소재 aT센터에서 ‘2026년 제2차 시장관리운영위원회’를 개최하고 온라인도매시장 판매자 가입요건인 ‘전년도 거래규모 10억 원 이상’ 기준 다음달 1일부터 폐지하기로 결정했다. aT 측은 이번 조치가 지난해부터 추진해 온 온라인도매시장 판매자 가입 규정 완화의 후속조치라고 설명했다. 이미 지난해 9월 시장관리운영위원회를 통해 농식품부와 aT는 판매자 가입 거래규모 요건을 기존 20억 원에서 10억 원으로 낮춘 바 있다. 이번 판매자 거래 규모 요건을 폐지한 대신 aT는 비대면 거래의 특성을 고려하고 거래신뢰성을 향상하기 위해 품질관리 체계를 강화한다. 올해 aT는 국립농산물품질관리원과 협력체계를 구축하고 온라인도매시장 품질관리사 49명을 위촉, 판매자 약 700개소를 직접 방문해 품질관리 현황을 점검하고 있다. 또 앞으로 구매자에게 상품정보를 충분히 제공할 수 있도록 ‘상품정보 입력 표쥰 가이드라인’을 배포하고판매자의 품질관리 수준을 평가해 검증된 판매자에겐 인증을 부여하는 등 품질관리 체계를 지속적으로 고도화할 계획이다. 김창국 aT 부사장은 “이번 거래규모 요건 폐지로 경쟁력 있는 중소 산지조직과 유통인의 온라인도매시장 진입이 확대되고 신규 판로 확보에도 도움이 될 것으로 기대한다”며 “참여 문턱은 낮추면서 거래 신뢰도는 더욱 높여 누구나 안심하고 거래할 수 있는 시장 환경을 조성하겠다”고 전했다. 「열린보도원칙」 당 매체는 독자와 취재원 등 뉴스이용자의 권리 보장을 위해 반론이나 정정보도, 추후보도를 요청할 수 있는 창구를 열어두고 있음을 알려드립니다. 고충처리인 최상희 02-585-0091 aflnews@aflnews.co.kr",
+        "link": "https://www.aflnews.co.kr/news/articleView.html?idxno=328689",
+        "originallink": "https://www.aflnews.co.kr/news/articleView.html?idxno=328689",
+        "domain": "aflnews.co.kr",
+        "press": "농수축산신문",
+        "norm_key": "url:2181444bc644b16ae82d80eaafee98d6",
+        "title_key": "온라인도매시장판매자거래규모요건폐지품질관리는더철저히",
+        "canon_url": "https://aflnews.co.kr/news/articleView.html?idxno=328689",
+        "topic": "정책",
+        "summary": "",
+        "forced_section": "",
+        "origin_section": "policy",
+        "source_query": "온라인 도매시장 농식품부",
+        "source_channel": "naver_api",
+        "selection_stage": "",
+        "selection_note": "",
+        "reassigned_from": "",
+        "score": -3.48,
+        "selection_fit_score": 0.0,
+        "is_core": false
+      },
+      {
         "pub_dt_kst": "2026-09-21T12:32:00+09:00",
         "section": "policy",
         "title": "추석 차례상, 가락시장서 사면 대형마트보다 21.6% 저렴",
@@ -8769,13 +8794,13 @@
         "section": "policy",
         "title": "[더밸류 브리핑] 오늘의 금융계 소식…NH농협캐피탈, 한국거래소, 예금...",
         "description": "이번 행사에는 엄선된 18개 농축수산가와 사회적기업이 참가해 사과 와 배 등 제철 과일을 시중가 대비 최대 18~30% 저렴하게 선보였으며 청년 농가 부스와 보령시 고향사랑기부제 홍보 코너도 새롭게 운영됐다. 예보는...",
-        "link": "http://www.thevaluenews.co.kr/news/view.php?idx=201791",
-        "originallink": "http://www.thevaluenews.co.kr/news/view.php?idx=201791",
+        "link": "http://www.thevaluenews.co.kr/news/view.php?idx=201790",
+        "originallink": "http://www.thevaluenews.co.kr/news/view.php?idx=201790",
         "domain": "thevaluenews.co.kr",
         "press": "thevaluenews",
-        "norm_key": "url:f53cc3710120d13babf60a269b840a14",
+        "norm_key": "url:3e20829f02448b9553d2d4c680ea2e3f",
         "title_key": "오늘의금융계소식nh농협캐피탈한국거래소예금",
-        "canon_url": "https://thevaluenews.co.kr/news/view.php?idx=201791",
+        "canon_url": "https://thevaluenews.co.kr/news/view.php?idx=201790",
         "topic": "정책",
         "summary": "",
         "forced_section": "",
@@ -8943,7 +8968,7 @@
         "pub_dt_kst": "2026-09-21T06:01:00+09:00",
         "section": "policy",
         "title": "농산물 제값받기 핵심은? “산지 출하창구 일원화”",
-        "description": "‘농산물 유통구조 혁신’ 국회 토론회 서삼석 농해수위원장 등 공동 주최 농업단체협의회·식품유통학회 주관 “생산비·농가수입 보장 받으려면... 산지 전속출하·공동출하 체계 필수” “도매법인은 위탁수수료 인하보다 경매가 등락폭 줄이기 노력 더 중요” 매일경제 60 Maeil Business News Korea 매일경제 60 나만의 AI 비서 매일경제 60 (function() { var stockData = '{\"_DATA\":[{\"date\":\"2026-09-21 20:05:40\",\"prepare_price\":\"7,007.72\",\"code\":\"KSP\",\"prepare_rate\":1.65,\"price\":\"7,007.72\",\"name\":\"코스피\",\"mark\":1},{\"date\":\"2026-09-21 20:05:39\",\"prepare_price\":\"836.27\",\"code\":\"KSQ\",\"prepare_rate\":1.11,\"price\":\"836.27\",\"name\":\"코스닥\",\"mark\":1},{\"date\":\"2026-09-21 20:05:33\",\"prepare_price\":\"1,112.16\",\"code\":\"K200\",\"prepare_rate\":2.01,\"price\":\"1,112.16\",\"name\":\"코스피200\",\"mark\":1},{\"date\":\"2026-09-21 20:59:46\",\"prepare_price\":\"45.9\",\"code\":\"MUSD\",\"prepare_rate\":-1.27,\"price\":\"1,372.40\",\"name\":\"미국 USD\",\"mark\":-1},{\"date\":\"2026-09-22 06:13:19\",\"prepare_price\":\"0\",\"code\":\"KRW-BTC\",\"prepare_rate\":5.99,\"price\":\"116,899,000\",\"name\":\"비트코인\",\"mark\":1},{\"date\":\"2026-09-22 06:13:19\",\"prepare_price\":\"0\",\"code\":\"KRW-ETH\",\"prepare_rate\":4.65,\"price\":\"3,738,000\",\"name\":\"이더리움\",\"mark\":1},{\"date\":\"2026-09-22 06:13:19\",\"prepare_price\":\"0\",\"code\":\"KRW-XRP\",\"prepare_rate\":7.44,\"price\":\"2,050\",\"name\":\"리플\",\"mark\":1}]}'; var stockList = JSON.parse(stockData); var stockRolling = document.querySelector('.stock_rolling'); var gaTag = ' data-category_1depth=\"뉴스\" data-category_2depth=\"뷰\"'; var html = ''; stockList._DATA.forEach(function(item) { var rateText = (item.mark > 0 ? '+ ' : '- ') + Math.abs(item.prepare_rate) + '%'; html += ' ' + ' ' + item.name + ' ' + ' 0 ? 'is_plus' : 'is_minus') + '\">' + rateText + ' 0 ? 'plus' : 'minus') + '\"> ' + ' ' + ' '; }); stockRolling.innerHTML = html; })(); 2026년 9월 22일 (화) 경제 금융 기업 증권 부동산 테크·과학 오피니언 정치 사회 국제 문화 스포츠 M 유튜브 경제 홈 경제 정책 지표 무역 생활 경제 이슈 #대출규제 풍선 효과 #전력망 비상 #삼성전자 성과급 후폭풍 #물가 비상 콘텐츠 Hub 디그 쉽지만 얕지 않게 파고드는 경제뉴스 재테크 #2030 자산 늘리기 #3040 자산 지키기 #4050 노후 준비하기 경제 많이 본 기사 1 “일본 가전인 줄 알고 샀는데”…뒤집어 보니 ‘Made in China’, 발뮤다는 왜? 2 “집도 있고 소득도 괜찮은데, 노후거지?”…4명 중 3명 노후 비상, 왜? 3 농지 27% 위법 의심 … 정부 \"처분절차는 내년부터\" 일단 진화 4 “메가",
+        "description": "‘농산물 유통구조 혁신’ 국회 토론회 서삼석 농해수위원장 등 공동 주최 농업단체협의회·식품유통학회 주관 “생산비·농가수입 보장 받으려면... 산지 전속출하·공동출하 체계 필수” “도매법인은 위탁수수료 인하보다 경매가 등락폭 줄이기 노력 더 중요” 매일경제 60 Maeil Business News Korea 매일경제 60 나만의 AI 비서 매일경제 60 (function() { var stockData = '{\"_DATA\":[{\"date\":\"2026-09-21 20:05:40\",\"prepare_price\":\"7,007.72\",\"code\":\"KSP\",\"prepare_rate\":1.65,\"price\":\"7,007.72\",\"name\":\"코스피\",\"mark\":1},{\"date\":\"2026-09-21 20:05:39\",\"prepare_price\":\"836.27\",\"code\":\"KSQ\",\"prepare_rate\":1.11,\"price\":\"836.27\",\"name\":\"코스닥\",\"mark\":1},{\"date\":\"2026-09-21 20:05:33\",\"prepare_price\":\"1,112.16\",\"code\":\"K200\",\"prepare_rate\":2.01,\"price\":\"1,112.16\",\"name\":\"코스피200\",\"mark\":1},{\"date\":\"2026-09-21 20:59:46\",\"prepare_price\":\"45.9\",\"code\":\"MUSD\",\"prepare_rate\":-1.27,\"price\":\"1,372.40\",\"name\":\"미국 USD\",\"mark\":-1},{\"date\":\"2026-09-22 06:28:43\",\"prepare_price\":\"0\",\"code\":\"KRW-BTC\",\"prepare_rate\":5.87,\"price\":\"116,930,000\",\"name\":\"비트코인\",\"mark\":1},{\"date\":\"2026-09-22 06:28:43\",\"prepare_price\":\"0\",\"code\":\"KRW-ETH\",\"prepare_rate\":4.3,\"price\":\"3,735,000\",\"name\":\"이더리움\",\"mark\":1},{\"date\":\"2026-09-22 06:28:43\",\"prepare_price\":\"0\",\"code\":\"KRW-XRP\",\"prepare_rate\":7.33,\"price\":\"2,051\",\"name\":\"리플\",\"mark\":1}]}'; var stockList = JSON.parse(stockData); var stockRolling = document.querySelector('.stock_rolling'); var gaTag = ' data-category_1depth=\"뉴스\" data-category_2depth=\"뷰\"'; var html = ''; stockList._DATA.forEach(function(item) { var rateText = (item.mark > 0 ? '+ ' : '- ') + Math.abs(item.prepare_rate) + '%'; html += ' ' + ' ' + item.name + ' ' + ' 0 ? 'is_plus' : 'is_minus') + '\">' + rateText + ' 0 ? 'plus' : 'minus') + '\"> ' + ' ' + ' '; }); stockRolling.innerHTML = html; })(); 2026년 9월 22일 (화) 경제 금융 기업 증권 부동산 테크·과학 오피니언 정치 사회 국제 문화 스포츠 M 유튜브 경제 홈 경제 정책 지표 무역 생활 경제 이슈 #대출규제 풍선 효과 #전력망 비상 #삼성전자 성과급 후폭풍 #물가 비상 콘텐츠 Hub 디그 쉽지만 얕지 않게 파고드는 경제뉴스 재테크 #2030 자산 늘리기 #3040 자산 지키기 #4050 노후 준비하기 경제 많이 본 기사 1 “일본 가전인 줄 알고 샀는데”…뒤집어 보니 ‘Made in China’, 발뮤다는 왜? 2 “집도 있고 소득도 괜찮은데, 노후거지?”…4명 중 3명 노후 비상, 왜? 3 농지 27% 위법 의심 … 정부 \"처분절차는 내년부터\" 일단 진화 4 “절반이",
         "link": "https://n.news.naver.com/mnews/article/009/0005738021?sid=101",
         "originallink": "https://www.mk.co.kr/article/12157690",
         "domain": "mk.co.kr",
@@ -9417,31 +9442,6 @@
         "is_core": false
       },
       {
-        "pub_dt_kst": "2026-09-21T18:22:00+09:00",
-        "section": "dist",
-        "title": "온라인도매시장 판매자 거래규모 요건 폐지...품질관리는 더 철저히",
-        "description": "aT 측은 이번 조치가 지난해부터 추진해 온 온라인도매시장 판매자 가입 규정 완화의 후속조치라고 설명했다. 이미 지난해 9월 시장 관리운영위원회를 통해 농식품부 와 aT는 판매자 가입 거래규모 요건을 기존 20억 원에서...",
-        "link": "https://www.aflnews.co.kr/news/articleView.html?idxno=328689",
-        "originallink": "https://www.aflnews.co.kr/news/articleView.html?idxno=328689",
-        "domain": "aflnews.co.kr",
-        "press": "농수축산신문",
-        "norm_key": "url:2181444bc644b16ae82d80eaafee98d6",
-        "title_key": "온라인도매시장판매자거래규모요건폐지품질관리는더철저히",
-        "canon_url": "https://aflnews.co.kr/news/articleView.html?idxno=328689",
-        "topic": "정책",
-        "summary": "",
-        "forced_section": "",
-        "origin_section": "policy",
-        "source_query": "온라인 도매시장 농식품부",
-        "source_channel": "naver_api",
-        "selection_stage": "dist_publish_editorial_core",
-        "selection_note": "replace_low_tier:삼다일보",
-        "reassigned_from": "policy",
-        "score": 34.87,
-        "selection_fit_score": 2.13,
-        "is_core": true
-      },
-      {
         "pub_dt_kst": "2026-09-21T16:08:00+09:00",
         "section": "dist",
         "title": "“이 가격, 어디서 붙었나”… 소비자 3명 중 1명 “농산물 유통비용 알...",
@@ -9495,7 +9495,7 @@
         "pub_dt_kst": "2026-09-21T20:00:00+09:00",
         "section": "dist",
         "title": "충북농협, 추석 명절 맞이 괴산 사과 선별·출하 상황 점검 및 농가 애로...",
-        "description": "【충북 브레이크뉴스】임창용 기자=충북농협이 추석 명절을 앞두고 농산물 수급 안정과 차질 없는 출하를 지원하기 위해 현장 행보에 나섰다. 충북농 시작페이지로 l 즐겨찾기 l RSS l 편집 2026.09.22 [06:00] 【충북 브레이크뉴스】임창용 기자=충북농협이 추석 명절을 앞두고 농산물 수급 안정과 차질 없는 출하를 지원하기 위해 현장 행보에 나섰다. 충북농협은 괴산군 연풍면에 있는 군자농협 산지유통센터(APC)를 방문해 명절 성수기를 맞은 괴산 사과의 출하 작업 상황을 종합적으로 점검했다고 밝혔다. 현장을 찾은 충북농협 관계자들은 출하가 본격화된 괴산 사과의 품질 및 상태를 점검하고, 선별과 포장에 이르는 상품화 전 과정을 세심히 살폈다. 아울러 물량이 집중되는 시기에 농업인들이 겪는 현장 애로사항을 청취하며 안정적인 농산물 공급 방안에 대해 의견을 나누었다. 군자농협은 괴산의 대표적인 사과 산지유통조직으로, 지자체 지원을 통해 선별 시설을 증설하는 등 농산물 상품화 경쟁력을 크게 높여왔다. 수확한 사과의 선별부터 유통까지 일괄 처리하는 시스템을 갖춰 농가 일손 부족을 해소하고 안정적인 판로를 제공하고 있으며, 이에 따라 사과 취급 물량도 전년 대비 2배가량 증가했다. 또한 농림축산식품부 주관 스마트APC 지원사업 대상자로 선정되어 시설 현대화와 디지털화를 추진 중으로, 향후 지역 사과 유통 거점 역할을 더욱 강화할 것으로 기대를 모으고 있다. 충북농협 관계자는 추석을 앞두고 고품질 괴산 사과가 적기에 출하될 수 있도록 현장의 선별과 상품화 과정을 꼼꼼히 살피는 것이 중요하다며, 산지유통시설의 역량을 끌어올리고 농업인이 정성껏 생산한 농산물이 제값을 받고 안정적으로 유통될 수 있도록 현장 지원에 만전을 기하겠다고 전했다. 개인정보취급방침 ㅣ 회사소개 ㅣ 청소년보호정책 ㅣ 고충처리 ㅣ 윤리 강령 ㅣ 기사제보 ㅣ 기사검색 (주)브레이크뉴스 / 편집국 :서울시 서대문구 서소문로 55-7(옛 주소 : 서울시 서대문구 합동 21-27) 우편번호 03741 9편집국 전화 : (02)363-9546 ㅣ 팩스 : (02)363-9547 등록번호(발행일/등록일) : 서울 아00093(2003.04.19/2005.10.25) 제호 : 브레이크뉴스 / 대표이사(발행인 겸 편집인) : 문일석 /편집국장 : 문흥수 /청소년보호책임자 : 문흥수 / 사업자등록번호 : 110-81-61230 ㅣ 통신판매업신고번호 : 서대문 제485호 Copyright ⓒ 1999-2017 브레이크뉴스. All rights reserved. Contact 119@breaknews.com",
+        "description": "【충북 브레이크뉴스】임창용 기자=충북농협이 추석 명절을 앞두고 농산물 수급 안정과 차질 없는 출하를 지원하기 위해 현장 행보에 나섰다. 충북농 시작페이지로 l 즐겨찾기 l RSS l 편집 2026.09.22 [06:19] 【충북 브레이크뉴스】임창용 기자=충북농협이 추석 명절을 앞두고 농산물 수급 안정과 차질 없는 출하를 지원하기 위해 현장 행보에 나섰다. 충북농협은 괴산군 연풍면에 있는 군자농협 산지유통센터(APC)를 방문해 명절 성수기를 맞은 괴산 사과의 출하 작업 상황을 종합적으로 점검했다고 밝혔다. 현장을 찾은 충북농협 관계자들은 출하가 본격화된 괴산 사과의 품질 및 상태를 점검하고, 선별과 포장에 이르는 상품화 전 과정을 세심히 살폈다. 아울러 물량이 집중되는 시기에 농업인들이 겪는 현장 애로사항을 청취하며 안정적인 농산물 공급 방안에 대해 의견을 나누었다. 군자농협은 괴산의 대표적인 사과 산지유통조직으로, 지자체 지원을 통해 선별 시설을 증설하는 등 농산물 상품화 경쟁력을 크게 높여왔다. 수확한 사과의 선별부터 유통까지 일괄 처리하는 시스템을 갖춰 농가 일손 부족을 해소하고 안정적인 판로를 제공하고 있으며, 이에 따라 사과 취급 물량도 전년 대비 2배가량 증가했다. 또한 농림축산식품부 주관 스마트APC 지원사업 대상자로 선정되어 시설 현대화와 디지털화를 추진 중으로, 향후 지역 사과 유통 거점 역할을 더욱 강화할 것으로 기대를 모으고 있다. 충북농협 관계자는 추석을 앞두고 고품질 괴산 사과가 적기에 출하될 수 있도록 현장의 선별과 상품화 과정을 꼼꼼히 살피는 것이 중요하다며, 산지유통시설의 역량을 끌어올리고 농업인이 정성껏 생산한 농산물이 제값을 받고 안정적으로 유통될 수 있도록 현장 지원에 만전을 기하겠다고 전했다. 개인정보취급방침 ㅣ 회사소개 ㅣ 청소년보호정책 ㅣ 고충처리 ㅣ 윤리 강령 ㅣ 기사제보 ㅣ 기사검색 (주)브레이크뉴스 / 편집국 :서울시 서대문구 서소문로 55-7(옛 주소 : 서울시 서대문구 합동 21-27) 우편번호 03741 9편집국 전화 : (02)363-9546 ㅣ 팩스 : (02)363-9547 등록번호(발행일/등록일) : 서울 아00093(2003.04.19/2005.10.25) 제호 : 브레이크뉴스 / 대표이사(발행인 겸 편집인) : 문일석 /편집국장 : 문흥수 /청소년보호책임자 : 문흥수 / 사업자등록번호 : 110-81-61230 ㅣ 통신판매업신고번호 : 서대문 제485호 Copyright ⓒ 1999-2017 브레이크뉴스. All rights reserved. Contact 119@breaknews.com",
         "link": "http://www.breaknews.com/1238384",
         "originallink": "http://www.breaknews.com/1238384",
         "domain": "breaknews.com",
@@ -9589,7 +9589,7 @@
         "reassigned_from": "supply",
         "score": 53.44,
         "selection_fit_score": 5.81,
-        "is_core": false
+        "is_core": true
       },
       {
         "pub_dt_kst": "2026-09-21T16:24:00+09:00",
@@ -10217,6 +10217,31 @@
         "is_core": false
       },
       {
+        "pub_dt_kst": "2026-09-21T18:22:00+09:00",
+        "section": "dist",
+        "title": "온라인도매시장 판매자 거래규모 요건 폐지...품질관리는 더 철저히",
+        "description": "[농수축산신문=박세준 기자]농수산물 온라인도매시장의 판매자 자격 요건 중 거래액수 기준이 페지되면서 온라인도매시장 거래 주체가 더욱 확대될 것으로 예상된다.농림축산식품부와 한국농수산식품유통공사(aT)는 지난 18일 서울 양재동 소재 aT센터에서 ‘2026년 제2차 시장관리운영위원회’를 개최하고 온라인도매시장 판매자 가입요건인 ‘전년도 거래규모 10억 원 이상’ 기준 다음달 1일부터 폐지하기로 결정했다.aT 측은 이번 조치가 지난해부터 추진해 온 온라인도매시장 판매자 가입 규정 완화의 후속조치라고 설명했다. 이미 지난해 9월 시장관리 잠깐! 현재 Internet Explorer 8이하 버전을 이용중이십니다. 최신 브라우저(Browser) 사용을 권장드립니다! 농수산물 온라인도매시장의 판매자 자격 요건 중 거래액수 기준이 페지되면서 온라인도매시장 거래 주체가 더욱 확대될 것으로 예상된다. 농림축산식품부와 한국농수산식품유통공사(aT)는 지난 18일 서울 양재동 소재 aT센터에서 ‘2026년 제2차 시장관리운영위원회’를 개최하고 온라인도매시장 판매자 가입요건인 ‘전년도 거래규모 10억 원 이상’ 기준 다음달 1일부터 폐지하기로 결정했다. aT 측은 이번 조치가 지난해부터 추진해 온 온라인도매시장 판매자 가입 규정 완화의 후속조치라고 설명했다. 이미 지난해 9월 시장관리운영위원회를 통해 농식품부와 aT는 판매자 가입 거래규모 요건을 기존 20억 원에서 10억 원으로 낮춘 바 있다. 이번 판매자 거래 규모 요건을 폐지한 대신 aT는 비대면 거래의 특성을 고려하고 거래신뢰성을 향상하기 위해 품질관리 체계를 강화한다. 올해 aT는 국립농산물품질관리원과 협력체계를 구축하고 온라인도매시장 품질관리사 49명을 위촉, 판매자 약 700개소를 직접 방문해 품질관리 현황을 점검하고 있다. 또 앞으로 구매자에게 상품정보를 충분히 제공할 수 있도록 ‘상품정보 입력 표쥰 가이드라인’을 배포하고판매자의 품질관리 수준을 평가해 검증된 판매자에겐 인증을 부여하는 등 품질관리 체계를 지속적으로 고도화할 계획이다. 김창국 aT 부사장은 “이번 거래규모 요건 폐지로 경쟁력 있는 중소 산지조직과 유통인의 온라인도매시장 진입이 확대되고 신규 판로 확보에도 도움이 될 것으로 기대한다”며 “참여 문턱은 낮추면서 거래 신뢰도는 더욱 높여 누구나 안심하고 거래할 수 있는 시장 환경을 조성하겠다”고 전했다. 「열린보도원칙」 당 매체는 독자와 취재원 등 뉴스이용자의 권리 보장을 위해 반론이나 정정보도, 추후보도를 요청할 수 있는 창구를 열어두고 있음을 알려드립니다. 고충처리인 최상희 02-585-0091 aflnews@aflnews.co.kr",
+        "link": "https://www.aflnews.co.kr/news/articleView.html?idxno=328689",
+        "originallink": "https://www.aflnews.co.kr/news/articleView.html?idxno=328689",
+        "domain": "aflnews.co.kr",
+        "press": "농수축산신문",
+        "norm_key": "url:2181444bc644b16ae82d80eaafee98d6",
+        "title_key": "온라인도매시장판매자거래규모요건폐지품질관리는더철저히",
+        "canon_url": "https://aflnews.co.kr/news/articleView.html?idxno=328689",
+        "topic": "도매시장",
+        "summary": "",
+        "forced_section": "",
+        "origin_section": "dist",
+        "source_query": "농산물 판로 확대",
+        "source_channel": "naver_api",
+        "selection_stage": "",
+        "selection_note": "",
+        "reassigned_from": "",
+        "score": 42.57,
+        "selection_fit_score": 0.0,
+        "is_core": false
+      },
+      {
         "pub_dt_kst": "2026-09-21T12:30:00+09:00",
         "section": "dist",
         "title": "[2026년 9월 4주] 주요 농산물 경락가 상승·하락 품목 - 양배추·참외(일...",
@@ -10245,7 +10270,7 @@
         "pub_dt_kst": "2026-09-21T09:49:00+09:00",
         "section": "dist",
         "title": "“손님 없었는데 1년치를 주문하네요”…인구감소 농가 과일 7천톤 사들...",
-        "description": "쿠팡 직매입에 지역농가들 숨통 올해 말까지 8400톤 넘을 전망 “지역농가 지속성장 돕는 차원” 매일경제 60 Maeil Business News Korea 매일경제 60 나만의 AI 비서 매일경제 60 (function() { var stockData = '{\"_DATA\":[{\"date\":\"2026-09-21 20:05:40\",\"prepare_price\":\"7,007.72\",\"code\":\"KSP\",\"prepare_rate\":1.65,\"price\":\"7,007.72\",\"name\":\"코스피\",\"mark\":1},{\"date\":\"2026-09-21 20:05:39\",\"prepare_price\":\"836.27\",\"code\":\"KSQ\",\"prepare_rate\":1.11,\"price\":\"836.27\",\"name\":\"코스닥\",\"mark\":1},{\"date\":\"2026-09-21 20:05:33\",\"prepare_price\":\"1,112.16\",\"code\":\"K200\",\"prepare_rate\":2.01,\"price\":\"1,112.16\",\"name\":\"코스피200\",\"mark\":1},{\"date\":\"2026-09-21 20:59:46\",\"prepare_price\":\"45.9\",\"code\":\"MUSD\",\"prepare_rate\":-1.27,\"price\":\"1,372.40\",\"name\":\"미국 USD\",\"mark\":-1},{\"date\":\"2026-09-22 06:13:19\",\"prepare_price\":\"0\",\"code\":\"KRW-BTC\",\"prepare_rate\":5.99,\"price\":\"116,899,000\",\"name\":\"비트코인\",\"mark\":1},{\"date\":\"2026-09-22 06:13:19\",\"prepare_price\":\"0\",\"code\":\"KRW-ETH\",\"prepare_rate\":4.65,\"price\":\"3,738,000\",\"name\":\"이더리움\",\"mark\":1},{\"date\":\"2026-09-22 06:13:19\",\"prepare_price\":\"0\",\"code\":\"KRW-XRP\",\"prepare_rate\":7.44,\"price\":\"2,050\",\"name\":\"리플\",\"mark\":1}]}'; var stockList = JSON.parse(stockData); var stockRolling = document.querySelector('.stock_rolling'); var gaTag = ' data-category_1depth=\"뉴스\" data-category_2depth=\"뷰\"'; var html = ''; stockList._DATA.forEach(function(item) { var rateText = (item.mark > 0 ? '+ ' : '- ') + Math.abs(item.prepare_rate) + '%'; html += ' ' + ' ' + item.name + ' ' + ' 0 ? 'is_plus' : 'is_minus') + '\">' + rateText + ' 0 ? 'plus' : 'minus') + '\"> ' + ' ' + ' '; }); stockRolling.innerHTML = html; })(); 2026년 9월 22일 (화) 경제 금융 기업 증권 부동산 테크·과학 오피니언 정치 사회 국제 문화 스포츠 M 유튜브 경제 홈 경제 정책 지표 무역 생활 경제 이슈 #대출규제 풍선 효과 #전력망 비상 #삼성전자 성과급 후폭풍 #물가 비상 콘텐츠 Hub 디그 쉽지만 얕지 않게 파고드는 경제뉴스 재테크 #2030 자산 늘리기 #3040 자산 지키기 #4050 노후 준비하기 경제 많이 본 기사 1 “일본 가전인 줄 알고 샀는데”…뒤집어 보니 ‘Made in China’, 발뮤다는 왜? 2 “집도 있고 소득도 괜찮은데, 노후거지?”…4명 중 3명 노후 비상, 왜? 3 농지 27% 위법 의심 … 정부 \"처분절차는 내년부터\" 일단 진화 4 “메가·컴포즈 없는 골목 찾아서”…생활상권 파고드는 후발 저가커피 5 “설마 우리 부모님도 대상?”…통신비 감면 대상 210만명, 혜택 못 받아 금융 홈 금",
+        "description": "쿠팡 직매입에 지역농가들 숨통 올해 말까지 8400톤 넘을 전망 “지역농가 지속성장 돕는 차원” 매일경제 60 Maeil Business News Korea 매일경제 60 나만의 AI 비서 매일경제 60 (function() { var stockData = '{\"_DATA\":[{\"date\":\"2026-09-21 20:05:40\",\"prepare_price\":\"7,007.72\",\"code\":\"KSP\",\"prepare_rate\":1.65,\"price\":\"7,007.72\",\"name\":\"코스피\",\"mark\":1},{\"date\":\"2026-09-21 20:05:39\",\"prepare_price\":\"836.27\",\"code\":\"KSQ\",\"prepare_rate\":1.11,\"price\":\"836.27\",\"name\":\"코스닥\",\"mark\":1},{\"date\":\"2026-09-21 20:05:33\",\"prepare_price\":\"1,112.16\",\"code\":\"K200\",\"prepare_rate\":2.01,\"price\":\"1,112.16\",\"name\":\"코스피200\",\"mark\":1},{\"date\":\"2026-09-21 20:59:46\",\"prepare_price\":\"45.9\",\"code\":\"MUSD\",\"prepare_rate\":-1.27,\"price\":\"1,372.40\",\"name\":\"미국 USD\",\"mark\":-1},{\"date\":\"2026-09-22 06:28:43\",\"prepare_price\":\"0\",\"code\":\"KRW-BTC\",\"prepare_rate\":5.87,\"price\":\"116,930,000\",\"name\":\"비트코인\",\"mark\":1},{\"date\":\"2026-09-22 06:28:43\",\"prepare_price\":\"0\",\"code\":\"KRW-ETH\",\"prepare_rate\":4.3,\"price\":\"3,735,000\",\"name\":\"이더리움\",\"mark\":1},{\"date\":\"2026-09-22 06:28:43\",\"prepare_price\":\"0\",\"code\":\"KRW-XRP\",\"prepare_rate\":7.33,\"price\":\"2,051\",\"name\":\"리플\",\"mark\":1}]}'; var stockList = JSON.parse(stockData); var stockRolling = document.querySelector('.stock_rolling'); var gaTag = ' data-category_1depth=\"뉴스\" data-category_2depth=\"뷰\"'; var html = ''; stockList._DATA.forEach(function(item) { var rateText = (item.mark > 0 ? '+ ' : '- ') + Math.abs(item.prepare_rate) + '%'; html += ' ' + ' ' + item.name + ' ' + ' 0 ? 'is_plus' : 'is_minus') + '\">' + rateText + ' 0 ? 'plus' : 'minus') + '\"> ' + ' ' + ' '; }); stockRolling.innerHTML = html; })(); 2026년 9월 22일 (화) 경제 금융 기업 증권 부동산 테크·과학 오피니언 정치 사회 국제 문화 스포츠 M 유튜브 경제 홈 경제 정책 지표 무역 생활 경제 이슈 #대출규제 풍선 효과 #전력망 비상 #삼성전자 성과급 후폭풍 #물가 비상 콘텐츠 Hub 디그 쉽지만 얕지 않게 파고드는 경제뉴스 재테크 #2030 자산 늘리기 #3040 자산 지키기 #4050 노후 준비하기 경제 많이 본 기사 1 “일본 가전인 줄 알고 샀는데”…뒤집어 보니 ‘Made in China’, 발뮤다는 왜? 2 “집도 있고 소득도 괜찮은데, 노후거지?”…4명 중 3명 노후 비상, 왜? 3 농지 27% 위법 의심 … 정부 \"처분절차는 내년부터\" 일단 진화 4 “절반이 900점대, 변별력 있나요?”…무늬만 고신용자 걸러내는 은행 5 “설마 우리 부모님도 대상?”…통신비 감면 대상 210만명, 혜택 못 받아 금융 홈",
         "link": "https://n.news.naver.com/mnews/article/009/0005738116?sid=103",
         "originallink": "https://www.mk.co.kr/article/12157861",
         "domain": "mk.co.kr",
@@ -10634,11 +10659,11 @@
         "origin_section": "dist",
         "source_query": "도매시장 수급",
         "source_channel": "naver_api",
-        "selection_stage": "",
-        "selection_note": "",
+        "selection_stage": "final_source_quality_replacement",
+        "selection_note": "replace_low_tier:삼다일보",
         "reassigned_from": "dist",
         "score": 23.208,
-        "selection_fit_score": 0.0,
+        "selection_fit_score": 1.22,
         "is_core": false
       },
       {
@@ -10671,13 +10696,13 @@
         "section": "dist",
         "title": "추석 앞두고 인파 북적이는 과일 경매 장",
         "description": "추석 연휴를 앞둔 21일 전북 전주시 덕진구 송천동 전주원예농산물 공판장 을 찾은 상인들이 과일을 구매하고 있다. 2026.09.21. pmkeul@newsis.com",
-        "link": "https://n.news.naver.com/mnews/article/003/0014203386?sid=102",
-        "originallink": "https://www.newsis.com/view/NISI20260921_0002244672",
+        "link": "https://n.news.naver.com/mnews/article/003/0014203384?sid=102",
+        "originallink": "https://www.newsis.com/view/NISI20260921_0002244676",
         "domain": "newsis.com",
         "press": "뉴시스",
-        "norm_key": "url:75cc07ee89836a0d5343d07c4af94953",
+        "norm_key": "url:b715730928a77ea84b42b992ca1d6645",
         "title_key": "추석앞두고인파북적이는과일경매장",
-        "canon_url": "https://newsis.com/view/NISI20260921_0002244672",
+        "canon_url": "https://newsis.com/view/NISI20260921_0002244676",
         "topic": "도매시장",
         "summary": "",
         "forced_section": "",
@@ -10719,15 +10744,15 @@
       {
         "pub_dt_kst": "2026-09-21T08:42:00+09:00",
         "section": "dist",
-        "title": "추석 앞두고 분주한 과일 경매 장",
+        "title": "추석 앞두고 과일 경매 나선 상인들",
         "description": "추석 연휴를 앞둔 21일 전북 전주시 덕진구 송천동 전주원예농산물 공판장 을 찾은 상인들이 과일을 구매하고 있다. 2026.09.21. pmkeul@newsis.com",
-        "link": "https://n.news.naver.com/mnews/article/003/0014203385?sid=102",
-        "originallink": "https://www.newsis.com/view/NISI20260921_0002244671",
+        "link": "https://n.news.naver.com/mnews/article/003/0014203382?sid=102",
+        "originallink": "https://www.newsis.com/view/NISI20260921_0002244679",
         "domain": "newsis.com",
         "press": "뉴시스",
-        "norm_key": "url:f8c42c87c283c5551376f71d6ee847b1",
-        "title_key": "추석앞두고분주한과일경매장",
-        "canon_url": "https://newsis.com/view/NISI20260921_0002244671",
+        "norm_key": "url:2dc4f02ee2551c885b4c9f207ba6961d",
+        "title_key": "추석앞두고과일경매나선상인들",
+        "canon_url": "https://newsis.com/view/NISI20260921_0002244679",
         "topic": "도매시장",
         "summary": "",
         "forced_section": "",
@@ -10744,15 +10769,15 @@
       {
         "pub_dt_kst": "2026-09-21T08:42:00+09:00",
         "section": "dist",
-        "title": "추석 앞두고 과일 경매 나선 상인들",
+        "title": "추석 앞두고 분주한 과일 경매 장",
         "description": "추석 연휴를 앞둔 21일 전북 전주시 덕진구 송천동 전주원예농산물 공판장 을 찾은 상인들이 과일을 구매하고 있다. 2026.09.21. pmkeul@newsis.com",
-        "link": "https://n.news.naver.com/mnews/article/003/0014203382?sid=102",
-        "originallink": "https://www.newsis.com/view/NISI20260921_0002244679",
+        "link": "https://n.news.naver.com/mnews/article/003/0014203385?sid=102",
+        "originallink": "https://www.newsis.com/view/NISI20260921_0002244671",
         "domain": "newsis.com",
         "press": "뉴시스",
-        "norm_key": "url:2dc4f02ee2551c885b4c9f207ba6961d",
-        "title_key": "추석앞두고과일경매나선상인들",
-        "canon_url": "https://newsis.com/view/NISI20260921_0002244679",
+        "norm_key": "url:f8c42c87c283c5551376f71d6ee847b1",
+        "title_key": "추석앞두고분주한과일경매장",
+        "canon_url": "https://newsis.com/view/NISI20260921_0002244671",
         "topic": "도매시장",
         "summary": "",
         "forced_section": "",
@@ -11942,6 +11967,31 @@
         "is_core": false
       },
       {
+        "pub_dt_kst": "2026-09-21T15:18:00+09:00",
+        "section": "dist",
+        "title": "CJ프레시웨이, CJ ENM과 손잡고 김포금쌀 소비 확대…지역 농가 판로 지...",
+        "description": "CJ프레시웨이는 앞으로도 식자재 유통 인프라와 단체급식 사업 역량을 기반으로 지역 농산물 소비 활성화를... CJ프레시웨이 관계자는 “콘텐츠를 통해 조명된 지역 농산물 을 단체급식 현장 에서 직접 경험할 수 있도록...",
+        "link": "https://www.megaeconomy.co.kr/news/newsview.php?ncode=1065593750033799",
+        "originallink": "https://www.megaeconomy.co.kr/news/newsview.php?ncode=1065593750033799",
+        "domain": "megaeconomy.co.kr",
+        "press": "megaeconomy",
+        "norm_key": "url:7de5f9bcf4fd9d8ad5b02ed7cd60fe74",
+        "title_key": "cj프레시웨이cjenm과손잡고김포금쌀소비확대지역농가판로지",
+        "canon_url": "https://megaeconomy.co.kr/news/newsview.php?ncode=1065593750033799",
+        "topic": "기타",
+        "summary": "",
+        "forced_section": "",
+        "origin_section": "dist",
+        "source_query": "농산물 유통 현장",
+        "source_channel": "naver_api",
+        "selection_stage": "",
+        "selection_note": "",
+        "reassigned_from": "",
+        "score": -3.55,
+        "selection_fit_score": 0.0,
+        "is_core": false
+      },
+      {
         "pub_dt_kst": "2026-09-21T21:24:00+09:00",
         "section": "dist",
         "title": "경북도, 농업-기업 결합 'K-푸드 세계화'",
@@ -12338,11 +12388,11 @@
         ],
         "api_items_top": [
           [
-            "농식품부 정책브리핑",
+            "농식품부 보도자료 농산물",
             50
           ],
           [
-            "농식품부 보도자료 농산물",
+            "농식품부 정책브리핑",
             50
           ],
           [
@@ -12354,19 +12404,19 @@
             50
           ],
           [
-            "성수품 가격 안정 대책",
-            50
-          ],
-          [
             "원산지 단속 농산물",
             50
           ],
           [
-            "할당관세 과일 검역",
+            "성수품 가격 안정 대책",
             50
           ],
           [
             "온라인 도매시장 농식품부",
+            50
+          ],
+          [
+            "할당관세 과일 검역",
             50
           ],
           [
@@ -12667,11 +12717,11 @@
             50
           ],
           [
-            "배 과일 수급",
+            "배 과일 작황",
             50
           ],
           [
-            "배 과일 작황",
+            "배 과일 수급",
             50
           ],
           [
@@ -12717,12 +12767,12 @@
             14
           ],
           [
-            "사과 가격",
+            "사과 농가",
             13
           ],
           [
-            "사과 농가",
-            13
+            "사과 가격",
+            12
           ],
           [
             "배 과일 가격",
@@ -13036,7 +13086,7 @@
             "곶감"
           ]
         },
-        "items_total": 301,
+        "items_total": 300,
         "seed_coverage": [
           {
             "seed": "건고추",
@@ -13282,7 +13332,7 @@
           ],
           [
             "농산물 유통 현장",
-            4
+            5
           ],
           [
             "농산물 직거래 장터",
@@ -13353,7 +13403,7 @@
           "editorial_quality_google_added": 0,
           "editorial_quality_after": 0
         },
-        "items_total": 114,
+        "items_total": 115,
         "seed_coverage": [
           {
             "seed": "가락시장",
@@ -13374,7 +13424,7 @@
           {
             "seed": "판로",
             "rep": "판로",
-            "hits": 27,
+            "hits": 28,
             "selected_hits": 0,
             "missing": false,
             "sample_title": "충북농협, 괴산 군자농협 사과 출하 현장 점검"
@@ -13516,11 +13566,11 @@
             50
           ],
           [
-            "병해충 예찰 방제",
+            "과수화상병 매몰 농가",
             50
           ],
           [
-            "과수화상병 매몰 농가",
+            "병해충 예찰 방제",
             50
           ],
           [
@@ -14043,6 +14093,196 @@
       },
       {
         "section": "policy",
+        "reason": "origin_fraud_enforcement",
+        "press": "한국농정신문",
+        "domain": "ikpnews.net",
+        "title": "농관원, 햅쌀 출하기 부정유통 특별 단속 실시",
+        "url": "http://www.ikpnews.net/news/articleView.html?idxno=71514",
+        "source_query": "원산지 단속 농산물",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "policy",
+        "reason": "origin_fraud_enforcement",
+        "press": "문화일보",
+        "domain": "munhwa.com",
+        "title": "명절 노린 축산물 원산지 속임 여전…5건 중 1건 명절에 적발",
+        "url": "https://www.munhwa.com/article/11618700",
+        "source_query": "원산지 단속 농산물",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "policy",
+        "reason": "origin_fraud_enforcement",
+        "press": "새전북신문",
+        "domain": "sjbnews.com",
+        "title": "햅쌀 출하 시기 양곡 부정유통 특별 단속 실시",
+        "url": "https://sjbnews.com/news/news.php?number=888421",
+        "source_query": "원산지 단속 농산물",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "policy",
+        "reason": "must_terms_fail_policy",
+        "press": "SBS",
+        "domain": "biz.sbs.co.kr",
+        "title": "거짓 '햅쌀' 표시, 5배 벌금",
+        "url": "https://biz.sbs.co.kr/article_hub/20000335982?division=NAVER",
+        "source_query": "원산지 단속 농산물",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "policy",
+        "reason": "origin_fraud_enforcement",
+        "press": "기호일보",
+        "domain": "kihoilbo.co.kr",
+        "title": "[사설] 원산지 표시법 위반행위, 강력 의법 조치를",
+        "url": "https://www.kihoilbo.co.kr/news/articleView.html?idxno=3035404",
+        "source_query": "원산지 단속 농산물",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "policy",
+        "reason": "origin_fraud_enforcement",
+        "press": "SBS",
+        "domain": "news.sbs.co.kr",
+        "title": "농관원, 햅쌀 출하기 양곡표시 특별 단속 …거짓 표시 5배 벌금",
+        "url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008763874&plink=ORI&cooper=NAVER",
+        "source_query": "원산지 단속 농산물",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "policy",
+        "reason": "origin_fraud_enforcement",
+        "press": "한국경제",
+        "domain": "hankyung.com",
+        "title": "국내산이라 자신하더니…5분 만에 \"알바 실수였다\" 돌변",
+        "url": "https://www.hankyung.com/article/202609218216i",
+        "source_query": "원산지 단속 농산물",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "policy",
+        "reason": "origin_fraud_enforcement",
+        "press": "식품음료신문",
+        "domain": "foodnews.co.kr",
+        "title": "구곡, 햅쌀로 둔갑 판매 막는다…농관원, 부정유통 특별 단속",
+        "url": "http://www.foodnews.co.kr/news/articleView.html?idxno=120260",
+        "source_query": "원산지 단속 농산물",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "policy",
+        "reason": "origin_fraud_enforcement",
+        "press": "아주경제",
+        "domain": "ajunews.com",
+        "title": "농관원, 햅쌀 출하 맞춰 양곡 부정유통 64일간 집중 단속",
+        "url": "https://www.ajunews.com/view/20260921112315548",
+        "source_query": "원산지 단속 농산물",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "policy",
+        "reason": "origin_fraud_enforcement",
+        "press": "한국농어민신문",
+        "domain": "agrinet.co.kr",
+        "title": "묵은 쌀 '햅쌀 둔갑' 막는다…농관원, 양곡표시 특별 단속 실시",
+        "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=407395",
+        "source_query": "원산지 단속 농산물",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "policy",
+        "reason": "origin_fraud_enforcement",
+        "press": "아시아경제",
+        "domain": "view.asiae.co.kr",
+        "title": "'묵은쌀→햅쌀' 둔갑 특별 단속 …\"의심시 부정유통 신고센터로 신고하세...",
+        "url": "https://view.asiae.co.kr/article/2026092111031061009",
+        "source_query": "원산지 단속 농산물",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "policy",
+        "reason": "origin_fraud_enforcement",
+        "press": "이데일리",
+        "domain": "edaily.co.kr",
+        "title": "묵은쌀을 햅쌀로 둔갑…농관원, 양곡 부정유통 특별 단속",
+        "url": "https://www.edaily.co.kr/News/Read?newsId=02643686645582416&mediaCodeNo=257",
+        "source_query": "원산지 단속 농산물",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "policy",
+        "reason": "origin_fraud_enforcement",
+        "press": "노컷뉴스",
+        "domain": "nocutnews.co.kr",
+        "title": "농관원, 햅쌀 본격 출하 맞아 양곡 부정유통 특별 단속",
+        "url": "https://www.nocutnews.co.kr/news/6581040",
+        "source_query": "원산지 단속 농산물",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "policy",
+        "reason": "origin_fraud_enforcement",
+        "press": "헤럴드경제",
+        "domain": "biz.heraldcorp.com",
+        "title": "햅쌀 나오는 철에 ‘묵은 쌀 둔갑’ 잡는다…DNA 분석까지 동원",
+        "url": "https://biz.heraldcorp.com/article/10879908",
+        "source_query": "원산지 단속 농산물",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "policy",
+        "reason": "origin_fraud_enforcement",
+        "press": "뉴스1",
+        "domain": "news1.kr",
+        "title": "\"묵은쌀 햅쌀 둔갑 막는다\"…농관원, 28일부터 양곡 표시 특별 단속",
+        "url": "https://www.news1.kr/economy/agri-food/6297189",
+        "source_query": "원산지 단속 농산물",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "policy",
+        "reason": "origin_fraud_enforcement",
+        "press": "뉴시스",
+        "domain": "newsis.com",
+        "title": "묵은쌀을 햅쌀로 속여 팔면 형사 처벌…농관원, 특별 단속",
+        "url": "https://www.newsis.com/view/NISX20260921_0003797563",
+        "source_query": "원산지 단속 농산물",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "policy",
+        "reason": "must_terms_fail_policy",
+        "press": "연합뉴스",
+        "domain": "yna.co.kr",
+        "title": "농관원, 햅쌀 출하기 양곡표시 특별 단속 …거짓 표시 5배 벌금",
+        "url": "https://www.yna.co.kr/view/AKR20260921052400030?input=1195m",
+        "source_query": "원산지 단속 농산물",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "policy",
+        "reason": "origin_fraud_enforcement",
+        "press": "뉴데일리경제",
+        "domain": "gj.newdaily.co.kr",
+        "title": "문금주 국회의원 “명절 원산지 위반 반복… 상시 관리 강화해야”",
+        "url": "https://gj.newdaily.co.kr/site/data/html/2026/09/20/2026092000026.html",
+        "source_query": "원산지 단속 농산물",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "policy",
+        "reason": "origin_fraud_enforcement",
+        "press": "농축유통신문",
+        "domain": "amnews.co.kr",
+        "title": "명절 대목 노린 축산물 원산지 표시 위반 '활개'",
+        "url": "http://www.amnews.co.kr/news/articleView.html?idxno=74637",
+        "source_query": "원산지 단속 농산물",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "policy",
         "reason": "policy_macro_general_economy",
         "press": "뉴스후플러스",
         "domain": "newswhoplus.com",
@@ -14353,196 +14593,6 @@
       },
       {
         "section": "policy",
-        "reason": "origin_fraud_enforcement",
-        "press": "한국농정신문",
-        "domain": "ikpnews.net",
-        "title": "농관원, 햅쌀 출하기 부정유통 특별 단속 실시",
-        "url": "http://www.ikpnews.net/news/articleView.html?idxno=71514",
-        "source_query": "원산지 단속 농산물",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "policy",
-        "reason": "origin_fraud_enforcement",
-        "press": "문화일보",
-        "domain": "munhwa.com",
-        "title": "명절 노린 축산물 원산지 속임 여전…5건 중 1건 명절에 적발",
-        "url": "https://www.munhwa.com/article/11618700",
-        "source_query": "원산지 단속 농산물",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "policy",
-        "reason": "origin_fraud_enforcement",
-        "press": "새전북신문",
-        "domain": "sjbnews.com",
-        "title": "햅쌀 출하 시기 양곡 부정유통 특별 단속 실시",
-        "url": "https://sjbnews.com/news/news.php?number=888421",
-        "source_query": "원산지 단속 농산물",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "policy",
-        "reason": "must_terms_fail_policy",
-        "press": "SBS",
-        "domain": "biz.sbs.co.kr",
-        "title": "거짓 '햅쌀' 표시, 5배 벌금",
-        "url": "https://biz.sbs.co.kr/article_hub/20000335982?division=NAVER",
-        "source_query": "원산지 단속 농산물",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "policy",
-        "reason": "origin_fraud_enforcement",
-        "press": "기호일보",
-        "domain": "kihoilbo.co.kr",
-        "title": "[사설] 원산지 표시법 위반행위, 강력 의법 조치를",
-        "url": "https://www.kihoilbo.co.kr/news/articleView.html?idxno=3035404",
-        "source_query": "원산지 단속 농산물",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "policy",
-        "reason": "origin_fraud_enforcement",
-        "press": "SBS",
-        "domain": "news.sbs.co.kr",
-        "title": "농관원, 햅쌀 출하기 양곡표시 특별 단속 …거짓 표시 5배 벌금",
-        "url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008763874&plink=ORI&cooper=NAVER",
-        "source_query": "원산지 단속 농산물",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "policy",
-        "reason": "origin_fraud_enforcement",
-        "press": "한국경제",
-        "domain": "hankyung.com",
-        "title": "국내산이라 자신하더니…5분 만에 \"알바 실수였다\" 돌변",
-        "url": "https://www.hankyung.com/article/202609218216i",
-        "source_query": "원산지 단속 농산물",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "policy",
-        "reason": "origin_fraud_enforcement",
-        "press": "식품음료신문",
-        "domain": "foodnews.co.kr",
-        "title": "구곡, 햅쌀로 둔갑 판매 막는다…농관원, 부정유통 특별 단속",
-        "url": "http://www.foodnews.co.kr/news/articleView.html?idxno=120260",
-        "source_query": "원산지 단속 농산물",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "policy",
-        "reason": "origin_fraud_enforcement",
-        "press": "아주경제",
-        "domain": "ajunews.com",
-        "title": "농관원, 햅쌀 출하 맞춰 양곡 부정유통 64일간 집중 단속",
-        "url": "https://www.ajunews.com/view/20260921112315548",
-        "source_query": "원산지 단속 농산물",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "policy",
-        "reason": "origin_fraud_enforcement",
-        "press": "한국농어민신문",
-        "domain": "agrinet.co.kr",
-        "title": "묵은 쌀 '햅쌀 둔갑' 막는다…농관원, 양곡표시 특별 단속 실시",
-        "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=407395",
-        "source_query": "원산지 단속 농산물",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "policy",
-        "reason": "origin_fraud_enforcement",
-        "press": "아시아경제",
-        "domain": "view.asiae.co.kr",
-        "title": "'묵은쌀→햅쌀' 둔갑 특별 단속 …\"의심시 부정유통 신고센터로 신고하세...",
-        "url": "https://view.asiae.co.kr/article/2026092111031061009",
-        "source_query": "원산지 단속 농산물",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "policy",
-        "reason": "origin_fraud_enforcement",
-        "press": "이데일리",
-        "domain": "edaily.co.kr",
-        "title": "묵은쌀을 햅쌀로 둔갑…농관원, 양곡 부정유통 특별 단속",
-        "url": "https://www.edaily.co.kr/News/Read?newsId=02643686645582416&mediaCodeNo=257",
-        "source_query": "원산지 단속 농산물",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "policy",
-        "reason": "origin_fraud_enforcement",
-        "press": "노컷뉴스",
-        "domain": "nocutnews.co.kr",
-        "title": "농관원, 햅쌀 본격 출하 맞아 양곡 부정유통 특별 단속",
-        "url": "https://www.nocutnews.co.kr/news/6581040",
-        "source_query": "원산지 단속 농산물",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "policy",
-        "reason": "origin_fraud_enforcement",
-        "press": "헤럴드경제",
-        "domain": "biz.heraldcorp.com",
-        "title": "햅쌀 나오는 철에 ‘묵은 쌀 둔갑’ 잡는다…DNA 분석까지 동원",
-        "url": "https://biz.heraldcorp.com/article/10879908",
-        "source_query": "원산지 단속 농산물",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "policy",
-        "reason": "origin_fraud_enforcement",
-        "press": "뉴시스",
-        "domain": "newsis.com",
-        "title": "묵은쌀을 햅쌀로 속여 팔면 형사 처벌…농관원, 특별 단속",
-        "url": "https://www.newsis.com/view/NISX20260921_0003797563",
-        "source_query": "원산지 단속 농산물",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "policy",
-        "reason": "origin_fraud_enforcement",
-        "press": "뉴스1",
-        "domain": "news1.kr",
-        "title": "\"묵은쌀 햅쌀 둔갑 막는다\"…농관원, 28일부터 양곡 표시 특별 단속",
-        "url": "https://www.news1.kr/economy/agri-food/6297189",
-        "source_query": "원산지 단속 농산물",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "policy",
-        "reason": "must_terms_fail_policy",
-        "press": "연합뉴스",
-        "domain": "yna.co.kr",
-        "title": "농관원, 햅쌀 출하기 양곡표시 특별 단속 …거짓 표시 5배 벌금",
-        "url": "https://www.yna.co.kr/view/AKR20260921052400030?input=1195m",
-        "source_query": "원산지 단속 농산물",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "policy",
-        "reason": "origin_fraud_enforcement",
-        "press": "뉴데일리경제",
-        "domain": "gj.newdaily.co.kr",
-        "title": "문금주 국회의원 “명절 원산지 위반 반복… 상시 관리 강화해야”",
-        "url": "https://gj.newdaily.co.kr/site/data/html/2026/09/20/2026092000026.html",
-        "source_query": "원산지 단속 농산물",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "policy",
-        "reason": "origin_fraud_enforcement",
-        "press": "농축유통신문",
-        "domain": "amnews.co.kr",
-        "title": "명절 대목 노린 축산물 원산지 표시 위반 '활개'",
-        "url": "http://www.amnews.co.kr/news/articleView.html?idxno=74637",
-        "source_query": "원산지 단속 농산물",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "policy",
         "reason": "fishery_title_only",
         "press": "보건신문",
         "domain": "bokuennews.com",
@@ -14674,20 +14724,20 @@
       {
         "section": "policy",
         "reason": "policy_macro_general_economy",
-        "press": "프레시안",
-        "domain": "pressian.com",
-        "title": "경기도, 추석 연휴 종합대책 마련…민생·안전·의료·교통 총력 대응",
-        "url": "https://www.pressian.com/pages/articles/2026092116573894640",
+        "press": "기호일보",
+        "domain": "kihoilbo.co.kr",
+        "title": "경기도, 추석 종합대책 추진⋯도민 불편 최소화 방점",
+        "url": "https://www.kihoilbo.co.kr/news/articleView.html?idxno=3035475",
         "source_query": "성수품 물가 과일",
         "source_channel": "naver_api"
       },
       {
         "section": "policy",
         "reason": "policy_macro_general_economy",
-        "press": "기호일보",
-        "domain": "kihoilbo.co.kr",
-        "title": "경기도, 추석 종합대책 추진⋯도민 불편 최소화 방점",
-        "url": "https://www.kihoilbo.co.kr/news/articleView.html?idxno=3035475",
+        "press": "프레시안",
+        "domain": "pressian.com",
+        "title": "경기도, 추석 연휴 종합대책 마련…민생·안전·의료·교통 총력 대응",
+        "url": "https://www.pressian.com/pages/articles/2026092116573894640",
         "source_query": "성수품 물가 과일",
         "source_channel": "naver_api"
       },
@@ -17284,20 +17334,20 @@
       {
         "section": "supply",
         "reason": "apple_non_edible_context",
-        "press": "enetnews",
-        "domain": "enetnews.co.kr",
-        "title": "추석선물 '대량배송' 옛말···단건 주문 45%에 핸드캐리 급증",
-        "url": "https://www.enetnews.co.kr/news/articleView.html?idxno=54643",
+        "press": "newscham",
+        "domain": "newscham.net",
+        "title": "‘평탄화’ 사흘 뒤 공적주택 119만 호, 새 임대 62%는 2029년 이후다",
+        "url": "https://newscham.net/articles/117219",
         "source_query": "사과 가격",
         "source_channel": "naver_api"
       },
       {
         "section": "supply",
         "reason": "apple_non_edible_context",
-        "press": "newscham",
-        "domain": "newscham.net",
-        "title": "‘평탄화’ 사흘 뒤 공적주택 119만 호, 새 임대 62%는 2029년 이후다",
-        "url": "https://newscham.net/articles/117219",
+        "press": "enetnews",
+        "domain": "enetnews.co.kr",
+        "title": "추석선물 '대량배송' 옛말···단건 주문 45%에 핸드캐리 급증",
+        "url": "https://www.enetnews.co.kr/news/articleView.html?idxno=54643",
         "source_query": "사과 가격",
         "source_channel": "naver_api"
       },
@@ -17383,6 +17433,16 @@
       },
       {
         "section": "supply",
+        "reason": "apple_non_edible_context",
+        "press": "뉴스핌",
+        "domain": "newspim.com",
+        "title": "울산시, 추석 연휴 종합대책 추진…물가·의료·안전 관리 강화",
+        "url": "https://www.newspim.com/news/view/20260921001056",
+        "source_query": "사과 가격",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
         "reason": "opinion_or_editorial",
         "press": "niceeconomy",
         "domain": "niceeconomy.co.kr",
@@ -17394,10 +17454,10 @@
       {
         "section": "supply",
         "reason": "apple_non_edible_context",
-        "press": "뉴스핌",
-        "domain": "newspim.com",
-        "title": "울산시, 추석 연휴 종합대책 추진…물가·의료·안전 관리 강화",
-        "url": "https://www.newspim.com/news/view/20260921001056",
+        "press": "newslock",
+        "domain": "newslock.co.kr",
+        "title": "[마켓포토] 신세계百 \"올 추석 선물도 가볍게 들고 가세요\"",
+        "url": "http://www.newslock.co.kr/news/articleView.html?idxno=136707",
         "source_query": "사과 가격",
         "source_channel": "naver_api"
       },
@@ -17408,16 +17468,6 @@
         "domain": "newswatch.kr",
         "title": "[초점] 편의점 '이색' 추석선물 봇물…950만원 와인부터 3000만원 로봇까...",
         "url": "http://www.newswatch.kr/news/articleView.html?idxno=81234",
-        "source_query": "사과 가격",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "apple_non_edible_context",
-        "press": "newslock",
-        "domain": "newslock.co.kr",
-        "title": "[마켓포토] 신세계百 \"올 추석 선물도 가볍게 들고 가세요\"",
-        "url": "http://www.newslock.co.kr/news/articleView.html?idxno=136707",
         "source_query": "사과 가격",
         "source_channel": "naver_api"
       },
@@ -17854,20 +17904,20 @@
       {
         "section": "supply",
         "reason": "supply_social_policy_noise",
-        "press": "koreareport",
-        "domain": "koreareport.co.kr",
-        "title": "쿠팡, 올해 지방 과일 7000톤 매입 '역대 최대'...\"농가 소득 늘린다\"",
-        "url": "https://www.koreareport.co.kr/news/articleView.html?idxno=53110",
+        "press": "newslock",
+        "domain": "newslock.co.kr",
+        "title": "쿠팡, 인구감소지역 과일 7000톤 매입…올해 1~8월 역대 최대",
+        "url": "http://www.newslock.co.kr/news/articleView.html?idxno=136690",
         "source_query": "사과 출하",
         "source_channel": "naver_api"
       },
       {
         "section": "supply",
         "reason": "supply_social_policy_noise",
-        "press": "newslock",
-        "domain": "newslock.co.kr",
-        "title": "쿠팡, 인구감소지역 과일 7000톤 매입…올해 1~8월 역대 최대",
-        "url": "http://www.newslock.co.kr/news/articleView.html?idxno=136690",
+        "press": "koreareport",
+        "domain": "koreareport.co.kr",
+        "title": "쿠팡, 올해 지방 과일 7000톤 매입 '역대 최대'...\"농가 소득 늘린다\"",
+        "url": "https://www.koreareport.co.kr/news/articleView.html?idxno=53110",
         "source_query": "사과 출하",
         "source_channel": "naver_api"
       },
@@ -18113,21 +18163,21 @@
       },
       {
         "section": "supply",
-        "reason": "ban_keywords",
-        "press": "딜사이트TV",
-        "domain": "news.dealsitetv.com",
-        "title": "[보험·카드24시] 새마을금고중앙회, 한국평가데이터와 데이터 활용 MOU...",
-        "url": "https://news.dealsitetv.com/articles/176195",
-        "source_query": "배 과일 가격",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
         "reason": "supply_macro_price_watch",
         "press": "메트로신문",
         "domain": "metroseoul.co.kr",
         "title": "\"시금치 한 단 부르기도 겁나\"… 추석 장바구니도 '양극화'",
         "url": "http://www.metroseoul.co.kr/article/20260921500464",
+        "source_query": "배 과일 가격",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "ban_keywords",
+        "press": "딜사이트TV",
+        "domain": "news.dealsitetv.com",
+        "title": "[보험·카드24시] 새마을금고중앙회, 한국평가데이터와 데이터 활용 MOU...",
+        "url": "https://news.dealsitetv.com/articles/176195",
         "source_query": "배 과일 가격",
         "source_channel": "naver_api"
       },
@@ -18264,26 +18314,6 @@
       {
         "section": "supply",
         "reason": "supply_macro_price_watch",
-        "press": "TV조선",
-        "domain": "news.tvchosun.com",
-        "title": "재경부, 올해 추석 차례상 비용 9년 만에 꺾여",
-        "url": "https://news.tvchosun.com/site/data/html_dir/2026/09/21/2026092190190.html",
-        "source_query": "배 과일 수급",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "supply_macro_price_watch",
-        "press": "DAILYT",
-        "domain": "dailyt.co.kr",
-        "title": "추석 장보기, ‘최대 50% 할인’과 소비자에 맞는 조건들 확인이 필요",
-        "url": "https://www.dailyt.co.kr/newsView/dlt202609210007",
-        "source_query": "배 과일 수급",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "supply_macro_price_watch",
         "press": "매일경제",
         "domain": "mk.co.kr",
         "title": "“3만원대 복숭아, 6560원 할인 받았죠”…정부 지원에도 서울 장바구니...",
@@ -18309,6 +18339,26 @@
         "title": "서울시농수산식품공사, 추석 차례상 가락몰 22만8천원...\"가장 저렴\"",
         "url": "https://www.pinpointnews.co.kr/news/articleView.html?idxno=489025",
         "source_query": "배 과일 작황",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "supply_macro_price_watch",
+        "press": "TV조선",
+        "domain": "news.tvchosun.com",
+        "title": "재경부, 올해 추석 차례상 비용 9년 만에 꺾여",
+        "url": "https://news.tvchosun.com/site/data/html_dir/2026/09/21/2026092190190.html",
+        "source_query": "배 과일 수급",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "supply_macro_price_watch",
+        "press": "DAILYT",
+        "domain": "dailyt.co.kr",
+        "title": "추석 장보기, ‘최대 50% 할인’과 소비자에 맞는 조건들 확인이 필요",
+        "url": "https://www.dailyt.co.kr/newsView/dlt202609210007",
+        "source_query": "배 과일 수급",
         "source_channel": "naver_api"
       },
       {
@@ -19323,21 +19373,21 @@
       },
       {
         "section": "supply",
-        "reason": "commodity_corporate_stock_context",
-        "press": "EBN산업뉴스",
-        "domain": "ebn.co.kr",
-        "title": "[EBN 데이터센터] 기관 '사자'에 7천피 회복…반도체·대형주가 견인",
-        "url": "https://www.ebn.co.kr/news/articleView.html?idxno=1725159",
-        "source_query": "토마토 수급",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
         "reason": "finance_asset_policy_noise",
         "press": "the-biz",
         "domain": "the-biz.co.kr",
         "title": "돌아온 반도체 랠리… 코스피, 7거래일 만에 7000선 복귀",
         "url": "http://www.the-biz.co.kr/news/articleView.html?idxno=728197",
+        "source_query": "토마토 수급",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "commodity_corporate_stock_context",
+        "press": "EBN산업뉴스",
+        "domain": "ebn.co.kr",
+        "title": "[EBN 데이터센터] 기관 '사자'에 7천피 회복…반도체·대형주가 견인",
+        "url": "https://www.ebn.co.kr/news/articleView.html?idxno=1725159",
         "source_query": "토마토 수급",
         "source_channel": "naver_api"
       },
@@ -20554,20 +20604,20 @@
       {
         "section": "supply",
         "reason": "finance_strict_no_agri_context",
-        "press": "오마이뉴스",
-        "domain": "ohmynews.com",
-        "title": "'마드리드 더비' 승리 이끈 이강인... 퇴장 면한 '거친 태클'이 남긴 후...",
-        "url": "https://www.ohmynews.com/NWS_Web/View/at_pg.aspx?CNTN_CD=A0003269029&CMPT_CD=P0010",
+        "press": "뉴스1",
+        "domain": "news1.kr",
+        "title": "'이강인 태클'에 뿔난 모리뉴, 사진까지 꺼냈다…\"명백한 퇴장\"",
+        "url": "https://www.news1.kr/sports/overseas-soccer/6296954",
         "source_query": "무 가격",
         "source_channel": "naver_api"
       },
       {
         "section": "supply",
         "reason": "finance_strict_no_agri_context",
-        "press": "뉴스1",
-        "domain": "news1.kr",
-        "title": "'이강인 태클'에 뿔난 모리뉴, 사진까지 꺼냈다…\"명백한 퇴장\"",
-        "url": "https://www.news1.kr/sports/overseas-soccer/6296954",
+        "press": "오마이뉴스",
+        "domain": "ohmynews.com",
+        "title": "'마드리드 더비' 승리 이끈 이강인... 퇴장 면한 '거친 태클'이 남긴 후...",
+        "url": "https://www.ohmynews.com/NWS_Web/View/at_pg.aspx?CNTN_CD=A0003269029&CMPT_CD=P0010",
         "source_query": "무 가격",
         "source_channel": "naver_api"
       },
@@ -27053,21 +27103,21 @@
       },
       {
         "section": "dist",
-        "reason": "low_value_local_promo",
-        "press": "새전북신문",
-        "domain": "sjbnews.com",
-        "title": "정읍 어가푸드, 추석 앞두고 감자탕·족발 340개 기탁",
-        "url": "https://sjbnews.com/news/news.php?number=888312",
-        "source_query": "농산물 판로 확대",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "dist",
         "reason": "dist_county_local_weak_dist_signal",
         "press": "새전북신문",
         "domain": "sjbnews.com",
         "title": "완주군, 혁신도시 가족 초청 농촌체험 추진",
         "url": "https://sjbnews.com/news/news.php?number=888301",
+        "source_query": "농산물 판로 확대",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "dist",
+        "reason": "low_value_local_promo",
+        "press": "새전북신문",
+        "domain": "sjbnews.com",
+        "title": "정읍 어가푸드, 추석 앞두고 감자탕·족발 340개 기탁",
+        "url": "https://sjbnews.com/news/news.php?number=888312",
         "source_query": "농산물 판로 확대",
         "source_channel": "naver_api"
       },
@@ -27863,21 +27913,21 @@
       },
       {
         "section": "dist",
-        "reason": "dist_macro_export_noise",
-        "press": "서울경제TV",
-        "domain": "sentv.co.kr",
-        "title": "‘경제원팀’ 김천시, 미래 성장동력 해법 찾는다",
-        "url": "https://www.sentv.co.kr/article/view/sentv202609200022",
-        "source_query": "농산물 유통 거점",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "dist",
         "reason": "dist_county_local_weak_dist_signal",
         "press": "대한경제",
         "domain": "dnews.co.kr",
         "title": "[경남 브리핑 모음(9월21일)] 창녕군 지사협, 2026년 하반기 복지리더 인...",
         "url": "https://www.dnews.co.kr/uhtml/view.jsp?idxno=202609201211534140815",
+        "source_query": "농산물 유통 거점",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "dist",
+        "reason": "dist_macro_export_noise",
+        "press": "서울경제TV",
+        "domain": "sentv.co.kr",
+        "title": "‘경제원팀’ 김천시, 미래 성장동력 해법 찾는다",
+        "url": "https://www.sentv.co.kr/article/view/sentv202609200022",
         "source_query": "농산물 유통 거점",
         "source_channel": "naver_api"
       },
@@ -28273,21 +28323,21 @@
       },
       {
         "section": "dist",
-        "reason": "dist_county_local_weak_dist_signal",
-        "press": "tournews21",
-        "domain": "tournews21.com",
-        "title": "홍성군, 2천만 중국시장 정조준…\"지역기업 판로 뚫는다\"",
-        "url": "https://www.tournews21.com/news/articleView.html?idxno=144104",
-        "source_query": "농산물 유통 현장",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "dist",
         "reason": "dist_soft_without_infra",
         "press": "tournews21",
         "domain": "tournews21.com",
         "title": "\"치솟는 물가에 농가도 버겁다\"…세종 로컬푸드 현장 , 의회에 SOS 세종시...",
         "url": "https://www.tournews21.com/news/articleView.html?idxno=144097",
+        "source_query": "농산물 유통 현장",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "dist",
+        "reason": "dist_county_local_weak_dist_signal",
+        "press": "tournews21",
+        "domain": "tournews21.com",
+        "title": "홍성군, 2천만 중국시장 정조준…\"지역기업 판로 뚫는다\"",
+        "url": "https://www.tournews21.com/news/articleView.html?idxno=144104",
         "source_query": "농산물 유통 현장",
         "source_channel": "naver_api"
       },
@@ -28593,16 +28643,6 @@
       },
       {
         "section": "dist",
-        "reason": "dist_consumer_tail",
-        "press": "thefirstmedia",
-        "domain": "thefirstmedia.net",
-        "title": "CJ프레시웨이, '로컬콜링' 김포금쌀 6톤 매입…단체급식으로 지역농가 ...",
-        "url": "http://www.thefirstmedia.net/news/articleView.html?idxno=209183",
-        "source_query": "농산물 유통 현장",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "dist",
         "reason": "dist_context_gate",
         "press": "이데일리",
         "domain": "edaily.co.kr",
@@ -28653,21 +28693,21 @@
       },
       {
         "section": "dist",
-        "reason": "dist_county_local_weak_dist_signal",
-        "press": "뉴스경남",
-        "domain": "newsgn.com",
-        "title": "거창군 농특산물, 전국 유통 망 통한 판로 확대",
-        "url": "https://www.newsgn.com/news/articleView.html?idxno=575430",
-        "source_query": "농산물 산지 유통",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "dist",
         "reason": "dist_consumer_tail",
         "press": "megaeconomy",
         "domain": "megaeconomy.co.kr",
         "title": "쿠팡, 인구감소지역 과일 매입 7000톤 돌파…지역 농가 판로 확대",
         "url": "https://www.megaeconomy.co.kr/news/newsview.php?ncode=1065596831032011",
+        "source_query": "농산물 산지 유통",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "dist",
+        "reason": "dist_county_local_weak_dist_signal",
+        "press": "뉴스경남",
+        "domain": "newsgn.com",
+        "title": "거창군 농특산물, 전국 유통 망 통한 판로 확대",
+        "url": "https://www.newsgn.com/news/articleView.html?idxno=575430",
         "source_query": "농산물 산지 유통",
         "source_channel": "naver_api"
       },
@@ -28923,21 +28963,21 @@
       },
       {
         "section": "dist",
-        "reason": "dist_soft_without_infra",
-        "press": "무등일보",
-        "domain": "mdilbo.com",
-        "title": "[르포] \"미리 장 보러 왔어요”···추석 앞둔 시장·마트 북적",
-        "url": "http://www.mdilbo.com/detail/c3QycN/759017",
-        "source_query": "농산물 도매가격",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "dist",
         "reason": "dist_consumer_tail",
         "press": "기호일보",
         "domain": "kihoilbo.co.kr",
         "title": "박찬대 인천시장, 추석 앞두고 민생 앞으로…도시락싸고 농산물 사고",
         "url": "https://www.kihoilbo.co.kr/news/articleView.html?idxno=3035479",
+        "source_query": "농산물 도매가격",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "dist",
+        "reason": "dist_soft_without_infra",
+        "press": "무등일보",
+        "domain": "mdilbo.com",
+        "title": "[르포] \"미리 장 보러 왔어요”···추석 앞둔 시장·마트 북적",
+        "url": "http://www.mdilbo.com/detail/c3QycN/759017",
         "source_query": "농산물 도매가격",
         "source_channel": "naver_api"
       },
@@ -31953,6 +31993,16 @@
       },
       {
         "section": "policy",
+        "reason": "local_political_campaign_noise",
+        "press": "농수축산신문",
+        "domain": "aflnews.co.kr",
+        "title": "온라인도매시장 판매자 거래규모 요건 폐지...품질관리는 더 철저히",
+        "url": "https://www.aflnews.co.kr/news/articleView.html?idxno=328689",
+        "source_query": "",
+        "source_channel": ""
+      },
+      {
+        "section": "policy",
         "reason": "remote_foreign_trade_brief",
         "press": "TV조선",
         "domain": "news.tvchosun.com",
@@ -31997,7 +32047,7 @@
         "press": "thevaluenews",
         "domain": "thevaluenews.co.kr",
         "title": "[더밸류 브리핑] 오늘의 금융계 소식…NH농협캐피탈, 한국거래소, 예금...",
-        "url": "http://www.thevaluenews.co.kr/news/view.php?idx=201791",
+        "url": "http://www.thevaluenews.co.kr/news/view.php?idx=201790",
         "source_query": "",
         "source_channel": ""
       },
@@ -32098,6 +32148,16 @@
         "domain": "agrinet.co.kr",
         "title": "강원도·강원농협, 추석맞이 농심천심 찾아가는 직거래장터 성황",
         "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=407413",
+        "source_query": "",
+        "source_channel": ""
+      },
+      {
+        "section": "dist",
+        "reason": "local_political_campaign_noise",
+        "press": "농수축산신문",
+        "domain": "aflnews.co.kr",
+        "title": "온라인도매시장 판매자 거래규모 요건 폐지...품질관리는 더 철저히",
+        "url": "https://www.aflnews.co.kr/news/articleView.html?idxno=328689",
         "source_query": "",
         "source_channel": ""
       },
@@ -32353,6 +32413,16 @@
       },
       {
         "section": "policy",
+        "reason": "local_political_campaign_noise",
+        "press": "농수축산신문",
+        "domain": "aflnews.co.kr",
+        "title": "온라인도매시장 판매자 거래규모 요건 폐지...품질관리는 더 철저히",
+        "url": "https://www.aflnews.co.kr/news/articleView.html?idxno=328689",
+        "source_query": "",
+        "source_channel": ""
+      },
+      {
+        "section": "policy",
         "reason": "remote_foreign_trade_brief",
         "press": "TV조선",
         "domain": "news.tvchosun.com",
@@ -32417,7 +32487,7 @@
         "press": "thevaluenews",
         "domain": "thevaluenews.co.kr",
         "title": "[더밸류 브리핑] 오늘의 금융계 소식…NH농협캐피탈, 한국거래소, 예금...",
-        "url": "http://www.thevaluenews.co.kr/news/view.php?idx=201791",
+        "url": "http://www.thevaluenews.co.kr/news/view.php?idx=201790",
         "source_query": "",
         "source_channel": ""
       },
@@ -32683,6 +32753,16 @@
       },
       {
         "section": "policy",
+        "reason": "local_political_campaign_noise",
+        "press": "농수축산신문",
+        "domain": "aflnews.co.kr",
+        "title": "온라인도매시장 판매자 거래규모 요건 폐지...품질관리는 더 철저히",
+        "url": "https://www.aflnews.co.kr/news/articleView.html?idxno=328689",
+        "source_query": "",
+        "source_channel": ""
+      },
+      {
+        "section": "policy",
         "reason": "remote_foreign_trade_brief",
         "press": "TV조선",
         "domain": "news.tvchosun.com",
@@ -32747,7 +32827,7 @@
         "press": "thevaluenews",
         "domain": "thevaluenews.co.kr",
         "title": "[더밸류 브리핑] 오늘의 금융계 소식…NH농협캐피탈, 한국거래소, 예금...",
-        "url": "http://www.thevaluenews.co.kr/news/view.php?idx=201791",
+        "url": "http://www.thevaluenews.co.kr/news/view.php?idx=201790",
         "source_query": "",
         "source_channel": ""
       },
@@ -33013,6 +33093,16 @@
       },
       {
         "section": "policy",
+        "reason": "local_political_campaign_noise",
+        "press": "농수축산신문",
+        "domain": "aflnews.co.kr",
+        "title": "온라인도매시장 판매자 거래규모 요건 폐지...품질관리는 더 철저히",
+        "url": "https://www.aflnews.co.kr/news/articleView.html?idxno=328689",
+        "source_query": "",
+        "source_channel": ""
+      },
+      {
+        "section": "policy",
         "reason": "remote_foreign_trade_brief",
         "press": "TV조선",
         "domain": "news.tvchosun.com",
@@ -33077,7 +33167,7 @@
         "press": "thevaluenews",
         "domain": "thevaluenews.co.kr",
         "title": "[더밸류 브리핑] 오늘의 금융계 소식…NH농협캐피탈, 한국거래소, 예금...",
-        "url": "http://www.thevaluenews.co.kr/news/view.php?idx=201791",
+        "url": "http://www.thevaluenews.co.kr/news/view.php?idx=201790",
         "source_query": "",
         "source_channel": ""
       },
@@ -33343,6 +33433,16 @@
       },
       {
         "section": "policy",
+        "reason": "local_political_campaign_noise",
+        "press": "농수축산신문",
+        "domain": "aflnews.co.kr",
+        "title": "온라인도매시장 판매자 거래규모 요건 폐지...품질관리는 더 철저히",
+        "url": "https://www.aflnews.co.kr/news/articleView.html?idxno=328689",
+        "source_query": "",
+        "source_channel": ""
+      },
+      {
+        "section": "policy",
         "reason": "remote_foreign_trade_brief",
         "press": "TV조선",
         "domain": "news.tvchosun.com",
@@ -33407,7 +33507,7 @@
         "press": "thevaluenews",
         "domain": "thevaluenews.co.kr",
         "title": "[더밸류 브리핑] 오늘의 금융계 소식…NH농협캐피탈, 한국거래소, 예금...",
-        "url": "http://www.thevaluenews.co.kr/news/view.php?idx=201791",
+        "url": "http://www.thevaluenews.co.kr/news/view.php?idx=201790",
         "source_query": "",
         "source_channel": ""
       },
@@ -33493,7 +33593,7 @@
       }
     ],
     "runtime": {
-      "started_at_kst": "2026-09-22T06:08:50+09:00",
+      "started_at_kst": "2026-09-22T06:22:50+09:00",
       "local_dry_run": false,
       "placement_only": false
     },
