@@ -1,9 +1,9 @@
 {
   "report_date": "2026-09-22",
-  "generated_at_kst": "2026-09-22T06:32:39+09:00",
+  "generated_at_kst": "2026-09-22T07:33:50+09:00",
   "scores": {
     "section_alignment": 100.0,
-    "core_quality": 97.92,
+    "core_quality": 98.92,
     "commodity_board_quality": 89.96
   },
   "metrics": {
@@ -12,16 +12,16 @@
     "content_false_positive_rate": 0.0,
     "reader_hard_issue_count": 0,
     "reader_hard_issue_rate": 0.0,
-    "reader_quality_penalty": 10.8536,
+    "reader_quality_penalty": 5.7395,
     "reader_quality_cap": 95.0,
     "weak_core_rate": 0.0,
     "policy_wrong_section_rate": 0.0,
-    "promotional_filler_rate": 0.0625,
-    "promotional_core_rate": 0.1429,
-    "weak_core_editorial_rate": 0.1429,
+    "promotional_filler_rate": 0.0526,
+    "promotional_core_rate": 0.125,
+    "weak_core_editorial_rate": 0.125,
     "pest_theme_duplicate_rate": 0.0,
     "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 2.6964,
+    "editorial_quality_penalty": 2.3553,
     "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0,
@@ -39,7 +39,7 @@
     "commodity_primary_title_item_missing_rate": 0.0,
     "commodity_primary_body_only_rate": 0.0,
     "commodity_primary_false_link_rate": 0.0,
-    "commodity_pool_count": 7,
+    "commodity_pool_count": 8,
     "commodity_pool_false_link_rate": 0.0,
     "commodity_primary_dominant_section_rate": 0.7143
   },
@@ -94,8 +94,8 @@
   ],
   "reader_hard_issue_samples": [],
   "editorial": {
-    "score": 65.05,
-    "model_reported_score": 66.7,
+    "score": 70.1,
+    "model_reported_score": 72.3,
     "score_method": "weighted_components_v1",
     "quality_tier": "needs_major_iteration",
     "target_score": 82.0,
@@ -117,7 +117,7 @@
         "critical_components_min": false,
         "all_components_min": false,
         "operational_score_min": true,
-        "section_count_score_min": false,
+        "section_count_score_min": true,
         "no_section_underfill": false,
         "commodity_board_score_min": false
       },
@@ -126,45 +126,28 @@
         "no_major_issues",
         "critical_components_min",
         "all_components_min",
-        "section_count_score_min",
         "no_section_underfill",
         "commodity_board_score_min"
       ]
     },
-    "section_count_score": 81.25,
-    "section_count_status": "underfilled",
+    "section_count_score": 98.0,
+    "section_count_status": "soft_fallback",
     "scores": {
-      "article_selection": 66.0,
-      "section_fit": 74.0,
-      "core_pick_quality": 57.0,
-      "summary_usefulness": 82.0,
-      "missed_opportunity": 45.0,
-      "noise_control": 70.0
+      "article_selection": 73.0,
+      "section_fit": 70.0,
+      "core_pick_quality": 62.0,
+      "summary_usefulness": 77.0,
+      "missed_opportunity": 68.0,
+      "noise_control": 72.0
     },
     "issues": [
       {
-        "type": "underfill",
-        "severity": "major",
-        "section": "pest",
-        "title": "병해충·생육위험 섹션 1건 편성",
-        "reason": "고유 후보가 여러 건인데 목표 5건, 최소 3건에도 못 미쳤다.",
-        "suggested_action": "대파 무름병, 폭염·우박 피해, 돌발해충 방제 등으로 최소 4건까지 채운다."
-      },
-      {
         "type": "weak_core",
         "severity": "major",
-        "section": "pest",
-        "title": "뙤약볕에 타들어 가는 농심...과일도 화상 입는다 '일소현상'",
-        "reason": "저등급 매체의 일반 용어 해설로 당일 피해 규모나 대응 정보가 부족하다. 핵심에서 강등해야 한다.",
-        "suggested_action": "비핵심으로 강등하고 대파 무름병 또는 전국 재해피해·지원 기사를 핵심으로 승격한다."
-      },
-      {
-        "type": "missed_candidate",
-        "severity": "major",
-        "section": "pest",
-        "title": "박지원 \"진도 대파 무름병, 농업재해로 인정\"",
-        "reason": "529농가·61㏊ 피해가 제시된 구체적 병해 사례로 일반 일소 해설보다 우선순위가 높다.",
-        "suggested_action": "병해충 핵심 카드로 추가한다."
+        "section": "supply",
+        "title": "[Issue+] AI가 바꾸는 수확후 관리, 데이터·장비 연결이 관건",
+        "reason": "당일 수급 신호보다 중장기 기술 기획에 가까워 supply 코어로 약하다.",
+        "suggested_action": "코어에서 강등하고 고랭지 배추 수급 대응 기사를 코어로 승격한다."
       },
       {
         "type": "wrong_section",
@@ -172,39 +155,47 @@
         "section": "policy",
         "title": "‘애호박 1개 3,000원’ 추석 앞두고 채솟값 급등",
         "reason": "정책 조치보다 소매가격 급등이 중심인 수급 기사다.",
-        "suggested_action": "수급으로 이동하고 정책에는 할인 한도·기간 등 실행 정책 기사를 넣는다."
+        "suggested_action": "supply로 이동하고 정책에는 할인 지원 연장 기사를 넣는다."
       },
       {
         "type": "weak_core",
-        "severity": "moderate",
-        "section": "supply",
-        "title": "[Issue+] AI가 바꾸는 수확후 관리, 데이터·장비 연결이 관건",
-        "reason": "수급 변동보다 장기 기술·저장유통 논의에 가깝고 당일 핵심성도 낮다. 핵심에서 강등해야 한다.",
-        "suggested_action": "비핵심 또는 유통으로 이동하고 고랭지 배추 수급 대응을 핵심으로 승격한다."
+        "severity": "major",
+        "section": "pest",
+        "title": "뙤약볕에 타들어 가는 농심...과일도 화상 입는다 '일소현상' [지식용어...]",
+        "reason": "저품질 출처의 일반 용어 해설로 당일 피해 대응 코어가 되기 어렵다.",
+        "suggested_action": "코어에서 강등하고 대파 무름병 또는 구체적 레드향 열과 피해를 코어로 승격한다."
+      },
+      {
+        "type": "missed_candidate",
+        "severity": "major",
+        "section": "pest",
+        "title": "레드향 열과 피해 벌써 20%…올해도 되풀이",
+        "reason": "피해율과 품목이 명확한 KBS 현장 기사로 일반 일소 해설보다 강하다.",
+        "suggested_action": "일소 해설 또는 무병묘 간담회를 대체해 선별한다."
       },
       {
         "type": "promotional_filler",
         "severity": "moderate",
         "section": "dist",
         "title": "충북농협, 추석 명절 맞이 괴산 사과 선별·출하 상황 점검 및 농가 애로...",
-        "reason": "단순 현장 방문·격려 성격이 강하고 물량이나 운영 변화가 없다.",
-        "suggested_action": "제주 유통·물류 조직 토론회처럼 구조적 유통 이슈로 교체한다."
-      },
-      {
-        "type": "duplicate_theme",
-        "severity": "moderate",
-        "section": "supply",
-        "title": "이번 추석 과일값 괜찮네…선물 아직 안 샀다면 \"사과세트 어떠세요?\"",
-        "reason": "대추 가격 하락 기사와 함께 명절 과일 구매 권유·가격 안정 주제가 반복된다.",
-        "suggested_action": "한 건만 유지하고 배추 수급 또는 레드향 열과 피해로 다양화한다."
+        "reason": "기관 방문·격려 중심이며 유통 운영 변화나 물량 성과가 부족하다.",
+        "suggested_action": "제주 유통·물류 조직 토론회 등 구조적 유통 기사로 교체한다."
       },
       {
         "type": "bad_summary",
         "severity": "moderate",
         "section": "supply",
-        "title": "[2026년 9월 4주] 주요 농산물 경락가 상승·하락 품목",
-        "reason": "산지가격 비교 문장이 중복되고 서로 다른 비교 기준을 반복해 요지가 흐려진다.",
-        "suggested_action": "가락시장 주간 등락과 주요 원인만 한 번 명확히 정리한다."
+        "title": "[2026년 9월 4주] 주요 농산물 경락가 상승·하락 품목 - 양배추·참외(일...",
+        "reason": "산지가격 비교 문장이 중복되고 서로 다른 비교 기준 설명이 반복된다.",
+        "suggested_action": "가락시장 주간 경락가와 출하량 변동만 간결하게 요약한다."
+      },
+      {
+        "type": "underfill",
+        "severity": "minor",
+        "section": "pest",
+        "title": "pest 섹션 4건 편성",
+        "reason": "5건 목표에 못 미쳤고 레드향 열과라는 활용 가능한 후보가 있었다.",
+        "suggested_action": "레드향 열과 피해를 추가해 5건을 채운다."
       }
     ]
   },
@@ -254,8 +245,8 @@
     "mode": "shadow_replay_loop",
     "proposal_only": true,
     "target_score": 82.0,
-    "current_editorial_score": 65.05,
-    "model_reported_score": 66.7,
+    "current_editorial_score": 70.1,
+    "model_reported_score": 72.3,
     "quality_tier": "needs_major_iteration",
     "target_status": "needs_major_iteration",
     "iteration_budget": 3,
@@ -271,13 +262,13 @@
       "no_section_underfill": true
     },
     "section_count_context": {
-      "score": 81.25,
-      "status": "underfilled",
+      "score": 98.0,
+      "status": "soft_fallback",
       "sections": {
         "supply": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 239,
+          "raw_candidates": 238,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -311,26 +302,26 @@
           "score": 100.0
         },
         "pest": {
-          "actual": 1,
+          "actual": 4,
           "expected": 5,
           "raw_candidates": 11,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
           "count_floor": 3,
-          "core_count": 1,
-          "fill_ratio": 0.2,
-          "score": 25.0
+          "core_count": 2,
+          "fill_ratio": 0.8,
+          "score": 92.0
         }
       },
       "underfilled_sections": [
         "pest"
       ],
-      "soft_fallback_sections": [],
-      "minimum_fallback_sections": [],
-      "severe_underfilled_sections": [
+      "soft_fallback_sections": [
         "pest"
       ],
+      "minimum_fallback_sections": [],
+      "severe_underfilled_sections": [],
       "preferred_count": 5,
       "soft_fallback_count": 4,
       "minimum_fallback_count": 3,
@@ -340,7 +331,6 @@
     "guardrail_focus": [
       "core_quality",
       "missed_opportunity",
-      "article_selection",
       "noise_control",
       "section_fit",
       "summary_usefulness",
@@ -358,12 +348,6 @@
         "target": "raw_candidate_pool",
         "direction": "expand_or_rerank",
         "reason": "The raw pool contained stronger alternatives than selected cards."
-      },
-      {
-        "kind": "story_dedupe",
-        "target": "story_signature_gate",
-        "direction": "tighten",
-        "reason": "Multiple cards covered the same issue and reduced briefing breadth."
       },
       {
         "kind": "noise_filter",
