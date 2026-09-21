@@ -85,7 +85,7 @@ from io_github import (
     github_put_file as _io_github_put_file,
 )
 from observability import metric_inc
-from editorial_rules import export_ceremony_filler, policy_issue_key, remote_weather_feature
+from editorial_rules import export_ceremony_filler, policy_issue_key, remote_weather_crop_story, remote_weather_feature
 from orchestrator import OrchestratorContext, OrchestratorHandlers, execute_orchestration
 from ranking import sort_key_major_first as _ranking_sort_key_major_first
 from retry_utils import exponential_backoff, retry_after_or_backoff
@@ -24987,7 +24987,11 @@ def is_municipal_holiday_omnibus_plan_context(title: str, desc: str) -> bool:
 
 
 def _postbuild_article_reject_reason(a: "Article", section_key: str, *, apply_selection_fit: bool = True) -> str:
-    if section_key in ("supply", "dist") and remote_weather_feature(a.title, a.description):
+    if section_key in ("supply", "dist", "pest") and remote_weather_feature(a.title, a.description):
+        return "remote_weather_feature"
+    if section_key == "pest" and remote_weather_crop_story(a.title, a.description):
+        # 병해충·생육위험 지면은 국내 작물 위험이 대상이다. 2026-09-22 에는 프랑스 포도밭
+        # 폭염·가뭄 기사가 refill 로 pest 에 유입됐다.
         return "remote_weather_feature"
     if section_key in ("supply", "dist", "policy") and export_ceremony_filler(a.title, a.description):
         return "promotional_or_event_filler"
@@ -27248,6 +27252,17 @@ def _is_policy_keepable_macro_issue(title: str, desc: str) -> bool:
     return issue_context_hits >= 2 and response_hits >= 1
 
 
+_PEST_DISASTER_NOISE_NAMED_TERMS: tuple[str, ...] = tuple(
+    dict.fromkeys(
+        (
+            "과수화상병", "화상병", "탄저병", "역병", "흰가루병", "노균병",
+            "뿌리응애", "돌발해충", "토마토뿔나방", "총채벌레", "진딧물", "노린재", "응애",
+        )
+        + tuple(_PEST_NAMED_DISEASE_TERMS)
+    )
+)
+
+
 def _is_pest_weather_disaster_noise(article: "Article") -> bool:
     if not isinstance(article, Article):
         return False
@@ -27283,19 +27298,15 @@ def _is_pest_weather_disaster_noise(article: "Article") -> bool:
     )
     if weather_hits <= 0:
         return False
+    # 병해 고유명(무름병·시들음병 등)이 제목에 있으면 '농업재해 인정' 같은 재해 어휘가
+    # 함께 있어도 기상재해 노이즈가 아니라 병해 피해 기사다(2026-09-22 진도 대파 무름병).
     title_named_pest = _has_named_pest_signal(title_l) or count_any(
         title_l,
-        [w.lower() for w in (
-            "과수화상병", "화상병", "탄저병", "역병", "흰가루병", "노균병",
-            "뿌리응애", "돌발해충", "토마토뿔나방", "총채벌레", "진딧물", "노린재", "응애",
-        )],
+        [w.lower() for w in _PEST_DISASTER_NOISE_NAMED_TERMS],
     ) >= 1
     lead_named_pest = _has_named_pest_signal(lead_l) or count_any(
         lead_l,
-        [w.lower() for w in (
-            "과수화상병", "화상병", "탄저병", "역병", "흰가루병", "노균병",
-            "뿌리응애", "돌발해충", "토마토뿔나방", "총채벌레", "진딧물", "노린재", "응애",
-        )],
+        [w.lower() for w in _PEST_DISASTER_NOISE_NAMED_TERMS],
     ) >= 1
     if title_named_pest or (title_weather_hits <= 0 and lead_named_pest):
         return False
@@ -28098,7 +28109,7 @@ def _is_generic_pest_notice_tail(article: "Article") -> bool:
     text_l = _nfkc_lower(f"{article.title or ''} {article.description or ''}")
     title_named = _has_named_pest_signal(title_l) or count_any(
         title_l,
-        [w.lower() for w in ("탄저병", "총채벌레", "진딧물", "흰비단병", "토마토뿔나방")],
+        [w.lower() for w in ("탄저병", "총채벌레", "진딧물", "흰비단병", "토마토뿔나방") + tuple(_PEST_NAMED_DISEASE_TERMS)],
     ) >= 1
     generic_notice = count_any(title_l, [w.lower() for w in ("병해충", "예찰", "관리", "비상")]) >= 1 and not title_named
     non_horti = best_horti_score(article.title or "", article.description or "") < 1.4
@@ -36028,6 +36039,21 @@ def _section_theme_cap_groups(article: "Article") -> list[tuple[str, str]]:
     return policy_groups + [(c, g) for c in comm for g in capped]
 
 
+def _final_dedupe_keep_rank(section_key: str, article: "Article") -> tuple:
+    """같은 사건 쌍에서 남길 기사의 순위.
+
+    섹션 게이트(`_postbuild_article_reject_reason`)를 통과하는 변형을 먼저 남긴다.
+    2026-09-22 에는 티어가 높지만 본문이 깨져 게이트에 걸리는 변형(agrinet)이
+    이기고, 통과하는 변형(newsam)은 blocked 로 재유입이 막혀 둘 다 지면에서
+    사라졌다. 그 뒤는 기존 매체 신뢰도·core·적합도 순.
+    """
+    try:
+        gate_ok = 0 if _postbuild_article_reject_reason(article, section_key, apply_selection_fit=False) else 1
+    except Exception:
+        gate_ok = 1
+    return (gate_ok,) + tuple(_story_keep_priority(article))
+
+
 def _final_global_story_dedupe(
     final_by_section: dict[str, list["Article"]],
     raw_by_section: dict[str, list["Article"]] | None = None,
@@ -36068,7 +36094,11 @@ def _final_global_story_dedupe(
                 reason = _duplicate_story_pair_reason(art_a, art_b)
                 if not reason:
                     continue
-                loser = art_b if _story_keep_priority(art_a) >= _story_keep_priority(art_b) else art_a
+                loser = (
+                    art_b
+                    if _final_dedupe_keep_rank(sec_a, art_a) >= _final_dedupe_keep_rank(sec_b, art_b)
+                    else art_a
+                )
                 loser_sec = sec_b if loser is art_b else sec_a
                 to_remove.add(id(loser))
                 log.info(
@@ -44998,7 +45028,7 @@ def _is_cross_day_pest_candidate(article: Article) -> bool:
         title,
         [w.lower() for w in (
             "발생", "확산", "피해", "주의", "경보", "예찰", "방제", "예방", "관리",
-            "대응", "도입", "제거", "매몰", "처리", "차단",
+            "대응", "도입", "제거", "매몰", "처리", "차단", "재해",
         )],
     ) >= 1
     authority_growth_advice = bool(
@@ -45018,7 +45048,7 @@ def _cross_day_pest_rank(article: Article) -> tuple[Any, ...]:
     return (
         5 if _has_named_pest_signal(title) or count_any(title, [w.lower() for w in _PEST_NAMED_DISEASE_TERMS]) >= 1 else 0,
         4 if any(term in text for term in ("농촌진흥청", "농진청", "농업기술원", "검역본부")) else 0,
-        3 if any(term in title for term in ("발생", "확산", "피해", "주의", "경보")) else 0,
+        3 if any(term in title for term in ("발생", "확산", "피해", "주의", "경보", "재해")) else 0,
         press_priority(article.press, article.domain),
         _publish_article_effective_fit("pest", article),
         float(getattr(article, "score", 0.0) or 0.0),
@@ -45394,7 +45424,12 @@ def _repair_final_reader_quality_floor(
         if section_key == "supply":
             return _is_supply_reader_role_misfit(article)
         if section_key == "pest":
-            return not _is_cross_day_pest_candidate(article)
+            # cross-day 후보 기준은 '더 강한 카드로 교체'의 기준이지 누출 판정이 아니다.
+            # 2026-09-22 에는 이 판정이 당일 병해충 카드 전부를 누출로 걷어내 섹션을 비웠고
+            # (리필 후보도 같은 기준이라 0건), 최종 게이트가 section_underfill 로 발행을 막았다.
+            # 게이트를 통과한 카드는 남기고, 아래 upgrade_victim 경로에서 더 강한 후보가
+            # 있을 때만 교체한다.
+            return _is_pest_vendor_product_promo(article)
         return False
 
     def _hard_reader_cleanup_for_section(
@@ -45423,7 +45458,9 @@ def _repair_final_reader_quality_floor(
                 "헐값", "걱정", "울분", "시름", "어려움", "비상",
             ))
         ),
-        "pest": _is_publish_pest_editorial_weak,
+        "pest": lambda article: (
+            _is_publish_pest_editorial_weak(article) or not _is_cross_day_pest_candidate(article)
+        ),
     }
 
     def _issue_family(section_key: str, article: Article) -> str:
@@ -53661,6 +53698,25 @@ def _run_prepublish_quality_gate(
                     ",".join(sorted(accepted_sections)) or "-",
                     ",".join(partial_sections),
                 )
+                # 유지된 섹션의 검증 오류도 다음 제안에 넘긴다. 예전에는 부분 적용이면
+                # 이 오류가 버려져 모델이 같은 저티어 조합을 5번 반복했다(2026-09-22 pest).
+                if attempt_validation_errors:
+                    repair_attempts[-1]["local_validation_errors"] = list(attempt_validation_errors)
+                    repair_validation_errors.extend(attempt_validation_errors)
+                    for error in attempt_validation_errors:
+                        section = str(error.get("section") or "")
+                        link = str(error.get("link") or "").strip()
+                        if (
+                            section in repair_excluded_links
+                            and link
+                            and _repair_validation_error_excludes_candidate(error)
+                        ):
+                            repair_excluded_links[section].add(link)
+                    for error in attempt_validation_errors:
+                        log.warning(
+                            "[QUALITY GATE] repair section retained: section=%s reason=%s title=%s",
+                            error.get("section"), error.get("reason"), str(error.get("title") or "")[:80],
+                        )
         if repaired_sections is None:
             repair_attempts[-1]["status"] = "rejected_after_local_validation"
             repair_attempts[-1]["validation_errors"] = attempt_validation_errors

@@ -42,6 +42,30 @@ def remote_weather_feature(title: str, body: str) -> bool:
     return domestic_link is None
 
 
+def remote_weather_crop_story(title: str, body: str) -> bool:
+    """Overseas crop-weather reporting is not a domestic crop-risk card.
+
+    The pest/growth-risk section covers Korean field risk. A foreign vineyard
+    drought or heatwave story only belongs there with an explicit Korean
+    market, quarantine, or trade connection (2026-09-22 "프랑스 와인 말라간다").
+    """
+    title, text = _text(title), _text(f"{title} {body}")
+    foreign = (
+        "유럽", "벨기에", "프랑스", "독일", "스페인", "이탈리아", "미국", "중국", "일본",
+        "태국", "베트남", "호주", "브라질", "인도", "칠레", "뉴질랜드", "캘리포니아",
+    )
+    weather = ("폭염", "가뭄", "이상기후", "이상 기후", "기록적인 고온", "기록적 폭염", "홍수", "한파", "서리")
+    if not (any(w in title for w in foreign) and any(w in text for w in weather)):
+        return False
+    if any(w in title for w in ("검역", "수입", "수출", "국내", "한국", "우리나라")):
+        return False
+    domestic_link = re.search(
+        r"(?:한국|국내|우리나라)(?:의|산|으로|에|에서는|에서)?\s*.{0,35}"
+        r"(?:수입|수출|도매|수급|가격|검역|통관)", text
+    )
+    return domestic_link is None
+
+
 def export_ceremony_filler(title: str, body: str) -> bool:
     """A first shipment's tonnage alone does not establish market impact."""
     title, text = _text(title), _text(f"{title} {body}")
