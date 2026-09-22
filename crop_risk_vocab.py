@@ -56,6 +56,36 @@ _WEATHER_THEME_TERMS: tuple[tuple[str, tuple[str, ...]], ...] = (
     ("weather_cold", ("냉해", "동해", "서리", "한파", "저온피해", "저온 피해", "폭설")),
 )
 
+# ── 생리장해 피해 어휘 ──────────────────────────────────────────────
+# 열과·낙과는 병해충 이름도 기상 현상도 아니지만 작물이 실제로 상했다는 말이라
+# 기상 피해 어휘(CROP_WEATHER_RISK_TERMS)와 같은 등급의 생육 리스크 신호다.
+# 2026-09-22 KBS '레드향 열과 피해 벌써 20%' 기사가 병해충·기상 어휘 어디에도
+# 걸리지 않아 pest 후보가 되지 못했다.
+# 앞에 한글이 붙은 '계열과'·'진열과 판매'·'탈락과'는 다른 낱말이므로 이 어휘는
+# 부분문자열이 아니라 physiological_disorder_hits() 의 앞경계 매칭으로 센다.
+CROP_PHYSIOLOGICAL_DISORDER_TERMS: tuple[str, ...] = (
+    "열과", "낙과", "생리장해", "생리 장해", "기형과", "착색 불량", "착색불량",
+)
+# '열과 성을 다하다'의 '열과(熱과)'는 관용구다. 뒤에 '성'이 오면 세지 않는다.
+_PHYSIOLOGICAL_DISORDER_IDIOM_GUARD: dict[str, str] = {"열과": r"(?!\s*성)"}
+
+
+def _physiological_disorder_rx(term: str) -> "re.Pattern[str]":
+    return re.compile(rf"(?<![가-힣]){re.escape(term)}{_PHYSIOLOGICAL_DISORDER_IDIOM_GUARD.get(term, '')}")
+
+
+_PHYSIOLOGICAL_DISORDER_RX: tuple[tuple[str, "re.Pattern[str]"], ...] = tuple(
+    (term, _physiological_disorder_rx(term)) for term in CROP_PHYSIOLOGICAL_DISORDER_TERMS
+)
+
+# 생리장해 하위 테마. 기상 테마처럼 제목에서만 판정한다. 같은 장해면 같은 버킷,
+# 다른 장해면 다른 버킷이어야 pest 테마 중복 가드·심판이 어긋나지 않는다.
+_PHYSIOLOGICAL_THEME_TERMS: tuple[tuple[str, tuple[str, ...]], ...] = (
+    ("physio_cracking", ("열과",)),
+    ("physio_fruit_drop", ("낙과",)),
+    ("physio_disorder", ("생리장해", "생리 장해", "기형과", "착색 불량", "착색불량")),
+)
+
 # 병해·해충 고유명. 같은 병해충끼리는 묶고 서로 다른 병해충은 나눈다.
 # 역병은 아래 제목 규칙과 같은 키를 쓴다(본문에서 잡혀도 같은 버킷).
 _NAMED_PEST_TERMS: tuple[tuple[str, tuple[str, ...]], ...] = (
@@ -153,6 +183,31 @@ def weather_bucket(text: str) -> str:
     return ""
 
 
+def physiological_disorder_hits(text: str) -> int:
+    """생리장해 피해 어휘 히트 수(앞경계 매칭).
+
+    '열과'는 '계열과'·'진열과'에, '낙과'는 '탈락과'에 통째로 들어앉는다. 다른
+    낱말 안의 부분문자열을 세지 않도록 앞에 한글이 없을 때만 인정한다. 뒤에는
+    조사가 붙으므로('열과가', '낙과율') 뒤경계는 요구하지 않는다.
+    """
+    normalized = normalize(text)
+    if not normalized:
+        return 0
+    return sum(1 for _term, rx in _PHYSIOLOGICAL_DISORDER_RX if rx.search(normalized))
+
+
+def physiological_disorder_bucket(text: str) -> str:
+    """생리장해 하위 테마(앞경계 매칭)."""
+    normalized = normalize(text)
+    if not normalized:
+        return ""
+    for theme, terms in _PHYSIOLOGICAL_THEME_TERMS:
+        for term in terms:
+            if _physiological_disorder_rx(term).search(normalized):
+                return theme
+    return ""
+
+
 def weather_event_damage_signal(title: str, body: str = "") -> bool:
     """기상 현상 + 작물 피해·대응 신호가 함께 있는가.
 
@@ -222,6 +277,12 @@ def classify_pest_theme(title: str, body: str = "", *, fire_blight_hint: bool = 
     weather = weather_bucket(title_l)
     if weather:
         return weather
+    # 생리장해 어휘가 pest 신호로 인정되면서 들어오는 카드가 general_pest 폴백에
+    # 몰리지 않도록 마지막 폴백 앞에서 갈라 둔다. 품목·기상 버킷이 있는 카드의
+    # 분류는 그대로다(폴백 버킷을 쪼갤 뿐이라 중복 감점이 늘지 않는다).
+    physio = physiological_disorder_bucket(title_l)
+    if physio:
+        return physio
     if any(term in text for term in _GENERAL_PEST_TERMS):
         return "general_pest"
     return ""

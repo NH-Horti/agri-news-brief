@@ -16,6 +16,7 @@ from crop_risk_vocab import (
     CROP_WEATHER_HEADLINE_DAMAGE_TERMS,
     CROP_WEATHER_RISK_TERMS,
     classify_pest_theme,
+    physiological_disorder_hits,
 )
 from story_dedup import duplicate_event_reason
 from editorial_rules import export_ceremony_filler, policy_issue_key, remote_weather_feature
@@ -831,8 +832,12 @@ def _is_priority_field_risk_core(article: SurfaceArticle, snapshot_body: str) ->
     )
     # 가뭄·폭염·한파처럼 병해충 이름이 없는 기상 생육피해도 코어 자격이 있다.
     # 행정 대비계획이 아니라 실제 피해·대응 기사만 인정한다.
+    # 생리장해(열과·낙과)도 같은 분기다. main 의 pest 신호(_pest_weather_hits)와 어휘를 공유한다.
     weather_field_damage = bool(
-        any(term in title for term in CROP_WEATHER_RISK_TERMS + CROP_WEATHER_EVENT_TERMS)
+        (
+            any(term in title for term in CROP_WEATHER_RISK_TERMS + CROP_WEATHER_EVENT_TERMS)
+            or physiological_disorder_hits(title) >= 1
+        )
         and any(term in title for term in CROP_WEATHER_HEADLINE_DAMAGE_TERMS)
         and any(term in text for term in ("농작물", "농가", "재배", "과수", "과원", "밭작물", "출하", "생육"))
         and any(term in text for term in ("급수", "관수", "방제", "대책", "지원", "복구", "예방", "피해"))

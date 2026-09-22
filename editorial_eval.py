@@ -315,7 +315,23 @@ def _editorial_response_format() -> dict[str, Any]:
     }
 
 
-def _editorial_repair_response_format() -> dict[str, Any]:
+def _repair_section_card_targets(
+    section_card_targets: dict[str, int] | None,
+) -> dict[str, int]:
+    """섹션별 교체안 행 수. 없는 섹션은 기본 5장, 범위는 1~5로 고정한다."""
+    targets: dict[str, int] = {}
+    for section in SECTION_KEYS:
+        try:
+            value = int((section_card_targets or {}).get(section, PREFERRED_BRIEFING_COUNT_PER_SECTION))
+        except (TypeError, ValueError):
+            value = PREFERRED_BRIEFING_COUNT_PER_SECTION
+        targets[section] = max(1, min(PREFERRED_BRIEFING_COUNT_PER_SECTION, value))
+    return targets
+
+
+def _editorial_repair_response_format(
+    section_card_targets: dict[str, int] | None = None,
+) -> dict[str, Any]:
     card_schema = {
         "type": "object",
         "additionalProperties": False,
@@ -325,6 +341,7 @@ def _editorial_repair_response_format() -> dict[str, Any]:
             "is_core": {"type": "boolean"},
         },
     }
+    targets = _repair_section_card_targets(section_card_targets)
     return {
         "format": {
             "type": "json_schema",
@@ -342,8 +359,8 @@ def _editorial_repair_response_format() -> dict[str, Any]:
                         "properties": {
                             section: {
                                 "type": "array",
-                                "minItems": PREFERRED_BRIEFING_COUNT_PER_SECTION,
-                                "maxItems": PREFERRED_BRIEFING_COUNT_PER_SECTION,
+                                "minItems": targets[section],
+                                "maxItems": targets[section],
                                 "items": card_schema,
                             }
                             for section in SECTION_KEYS
@@ -717,17 +734,27 @@ def _raw_candidates(
     max_raw_per_section: int,
     *,
     excluded_links_by_section: dict[str, set[str]] | None = None,
+    extra_candidates_by_section: dict[str, list[dict[str, Any]]] | None = None,
 ) -> dict[str, list[dict[str, Any]]]:
+    """섹션별 교체 후보 목록.
+
+    extra_candidates_by_section 은 raw 풀에 없는 현재 지면 카드(결정적 체인이 다른
+    섹션 raw 에서 끌어온 카드)다. 모델이 그 카드를 유지할 수 있어야 얇은 섹션
+    교체안이 현재 선정보다 나빠지지 않는다. 같은 링크가 raw 에 이미 있으면 raw
+    행을 쓰고, 추가 행은 점수 정렬·상한과 무관하게 항상 노출한다.
+    """
     raw_by_section = snapshot_payload.get("raw_by_section", {})
     if not isinstance(raw_by_section, dict):
-        return {section: [] for section in SECTION_KEYS}
+        raw_by_section = {}
+
+    def _row_link(row: dict[str, Any]) -> str:
+        return str(row.get("canon_url") or row.get("link") or row.get("originallink") or "").strip()
 
     candidates: dict[str, list[dict[str, Any]]] = {}
     for section in SECTION_KEYS:
         rows = raw_by_section.get(section, [])
         if not isinstance(rows, list):
-            candidates[section] = []
-            continue
+            rows = []
         excluded_links = {
             str(link or "").strip()
             for link in (excluded_links_by_section or {}).get(section, set())
@@ -737,13 +764,30 @@ def _raw_candidates(
             (
                 row
                 for row in rows
-                if isinstance(row, dict)
-                and str(row.get("canon_url") or row.get("link") or row.get("originallink") or "").strip()
-                not in excluded_links
+                if isinstance(row, dict) and _row_link(row) not in excluded_links
             ),
             key=lambda row: _as_float(row.get("score"), 0.0),
             reverse=True,
-        )
+        )[:max(1, max_raw_per_section)]
+        visible_links = {_row_link(row) for row in sorted_rows}
+        raw_links = {_row_link(row) for row in rows if isinstance(row, dict)}
+        for row in (extra_candidates_by_section or {}).get(section, []) or []:
+            if not isinstance(row, dict):
+                continue
+            link = _row_link(row)
+            if not link or link in excluded_links or link in visible_links:
+                continue
+            if link in raw_links:
+                # raw 에 있지만 점수 상한에 밀려 안 보이던 카드: raw 행을 그대로 노출한다.
+                raw_row = next((r for r in rows if isinstance(r, dict) and _row_link(r) == link), None)
+                if raw_row is not None:
+                    sorted_rows.append(raw_row)
+                    visible_links.add(link)
+                    continue
+            extra_row = dict(row)
+            extra_row.setdefault("selection_stage", "current_edition")
+            sorted_rows.append(extra_row)
+            visible_links.add(link)
         candidates[section] = [
             {
                 "title": _truncate(row.get("title"), 180),
@@ -760,7 +804,7 @@ def _raw_candidates(
                 "origin_section": _truncate(row.get("origin_section"), 40),
                 "forced_section": _truncate(row.get("forced_section"), 40),
             }
-            for row in sorted_rows[:max(1, max_raw_per_section)]
+            for row in sorted_rows
         ]
     return candidates
 
@@ -773,6 +817,7 @@ def build_editorial_payload(
     *,
     max_raw_per_section: int = DEFAULT_MAX_RAW_PER_SECTION,
     excluded_links_by_section: dict[str, set[str]] | None = None,
+    extra_candidates_by_section: dict[str, list[dict[str, Any]]] | None = None,
 ) -> dict[str, Any]:
     articles = [article for article in parse_report_html(html_text) if article.surface == BRIEFING_SURFACE]
     selected = [
@@ -801,6 +846,7 @@ def build_editorial_payload(
             snapshot_payload,
             max_raw_per_section,
             excluded_links_by_section=excluded_links_by_section,
+            extra_candidates_by_section=extra_candidates_by_section,
         ),
         "section_count_targets": _section_count_context(operational_result),
         "operational_eval": {
@@ -1232,10 +1278,18 @@ def propose_editorial_repair(
     excluded_links_by_section: dict[str, set[str]] | None = None,
     prior_validation_errors: list[dict[str, Any]] | None = None,
     prior_editorial_issues: list[dict[str, Any]] | None = None,
+    section_card_targets: dict[str, int] | None = None,
+    extra_candidates_by_section: dict[str, list[dict[str, Any]]] | None = None,
     timeout_sec: int = DEFAULT_TIMEOUT_SEC,
     session_factory: Any = requests.Session,
 ) -> dict[str, Any]:
-    """Select a bounded replacement edition using only links in the raw pool."""
+    """Select a bounded replacement edition using only links in the raw pool.
+
+    section_card_targets 는 섹션별 요구 행 수다(기본 5). raw 풀이 얇아 검증기를
+    통과하는 5장이 불가능한 섹션은 main 이 목표를 낮춰 넘긴다(2026-09-22 pest).
+    extra_candidates_by_section 은 raw 풀에 없는 현재 지면 카드로, 그 섹션 후보
+    목록에 합쳐 모델이 유지할 수 있게 한다.
+    """
     resolved_model = model or os.getenv("EDITORIAL_OPENAI_MODEL") or DEFAULT_EDITORIAL_MODEL
     resolved_key = api_key if api_key is not None else os.getenv("OPENAI_API_KEY")
     resolved_effort = (
@@ -1258,7 +1312,10 @@ def propose_editorial_repair(
         operational_result,
         max_raw_per_section=max_raw_per_section,
         excluded_links_by_section=excluded_links_by_section,
+        extra_candidates_by_section=extra_candidates_by_section,
     )
+    card_targets = _repair_section_card_targets(section_card_targets)
+    payload["repair_card_targets_by_section"] = dict(card_targets)
     payload["failed_editorial_eval"] = {
         "score": editorial_result.get("score"),
         "scores": editorial_result.get("scores", {}),
@@ -1279,10 +1336,12 @@ def propose_editorial_repair(
     )
     if prior_validation_errors:
         payload["prior_repair_validation_errors"] = prior_validation_errors[-8:]
+    card_target_text = ", ".join(f"{section}={card_targets[section]}" for section in SECTION_KEYS)
     system_prompt = (
         "You are the repair editor for a Korean agricultural daily news brief. "
         "The first edition failed its editorial acceptance gate. Select a replacement edition that directly fixes every blocking and major issue. "
-        "Return exactly five cards for each of supply, policy, dist, and pest. "
+        f"Return exactly the number of cards listed in repair_card_targets_by_section for each section ({card_target_text}); "
+        "a target below five means the section's valid candidate pool is too thin for five cards under the source-tier rules, so do not pad it with weaker or duplicate cards. "
         "Every returned link must be copied exactly from that section's raw_candidates_by_section list; never invent, rewrite, or move a link from another section. "
         "Candidates rejected by local validation are omitted from the raw lists; if prior_repair_validation_errors is present, correct every listed failure. "
         "Obey repair_constraints_by_section: select every available required and required_core link, mark every required_core link as core, never select an excluded link, and never mark a non_core link as core. "
@@ -1303,7 +1362,7 @@ def propose_editorial_repair(
         ],
         "max_output_tokens": DEFAULT_REPAIR_MAX_OUTPUT_TOKENS,
         "reasoning": {"effort": resolved_effort},
-        "text": {**_editorial_repair_response_format(), "verbosity": "low"},
+        "text": {**_editorial_repair_response_format(card_targets), "verbosity": "low"},
         "prompt_cache_options": {"mode": "explicit", "ttl": "30m"},
     }
 
@@ -1327,8 +1386,11 @@ def propose_editorial_repair(
         normalized: dict[str, list[dict[str, Any]]] = {}
         for section in SECTION_KEYS:
             rows = sections.get(section, [])
-            if not isinstance(rows, list) or len(rows) != PREFERRED_BRIEFING_COUNT_PER_SECTION:
-                raise ValueError(f"Editorial repair section {section} did not contain exactly five cards.")
+            expected = card_targets[section]
+            if not isinstance(rows, list) or len(rows) != expected:
+                raise ValueError(
+                    f"Editorial repair section {section} did not contain exactly {expected} cards."
+                )
             normalized[section] = [
                 {
                     "link": str(row.get("link") or "").strip(),
@@ -1337,13 +1399,14 @@ def propose_editorial_repair(
                 for row in rows
                 if isinstance(row, dict) and str(row.get("link") or "").strip()
             ]
-            if len(normalized[section]) != PREFERRED_BRIEFING_COUNT_PER_SECTION:
+            if len(normalized[section]) != expected:
                 raise ValueError(f"Editorial repair section {section} contained an empty link.")
         model_snapshot = str(response_payload.get("model") or "").strip()
         result: dict[str, Any] = {
             "status": "success",
             "model": resolved_model,
             "sections": normalized,
+            "section_card_targets": dict(card_targets),
             "rationale": _truncate(parsed.get("rationale"), 800),
         }
         if model_snapshot:

@@ -141,6 +141,119 @@ class TestReaderFloorKeepsThinPestSection(unittest.TestCase):
         self.assertEqual(final["pest"], [])
 
 
+REDHYANG_TITLE = "레드향 열과 피해 벌써 20%…올해도 되풀이"
+REDHYANG_DESC = (
+    "[KBS 제주] [앵커] 레드향 재배 농가들의 속을 터지게 하는 열과 피해가 올해도 어김없이 되풀이되고 있습니다. "
+    "발생률은 벌써 20%를 넘어 예년과 비슷한 수준에 달했는데요. [리포트] 비닐하우스에서 재배 중인 만감류 감귤 품종 레드향. "
+    "껍질이 쩍쩍 갈라진 채 바닥에 뒹굽니다. 이 농가는 전체 레드향 중 70% 정도가 열과 피해를 입었습니다. "
+    "올해 레드향 열과 발생률은 지난 12일 기준 21.4%. 2024년 22.3%, 지난해 23.6%와 비슷한 수준입니다. "
+    "[송상철/제주농업기술원 기술지원팀장 : \"재배 환경이 몇 가지라도 맞지 않으면 열과가 많이 발생하는 특성을 갖고 있는 품종입니다.\"] "
+    "농가의 시름을 덜어줄 대책 마련이 시급해지고 있습니다. KBS 뉴스 고기욱입니다."
+)
+
+
+def _redhyang(section="supply"):
+    return _mk(section, REDHYANG_TITLE, REDHYANG_DESC, press="KBS", domain="news.kbs.co.kr", score=39.4, fit=3.9)
+
+
+class TestQuantifiedCropDamageReportIsNotPromoFiller(unittest.TestCase):
+    """2026-09-22 과제 2: 레드향 열과 KBS 기사가 인터뷰이 직함('기술지원팀장')의 '지원' 한 글자로
+    supply 코어에서 promotional_or_event_filler 로 강등되고, '열과'가 어느 pest 어휘에도 없어
+    pest 후보도 되지 못했다."""
+
+    def test_damage_rate_field_report_is_quantified_crop_damage(self):
+        self.assertTrue(main._is_quantified_crop_damage_report(_redhyang()))
+
+    def test_supply_promo_gate_exempts_quantified_damage_report(self):
+        self.assertEqual(main._editorial_safe_core_demote_reason(_redhyang(), "supply"), "")
+        self.assertEqual(main._postbuild_article_reject_reason(_redhyang(), "supply"), "")
+
+    def test_event_title_with_damage_words_is_still_promo(self):
+        article = _mk(
+            "supply",
+            "피해 농가 돕기 사과 판촉 행사 개최…20% 할인 판매",
+            "우박 피해를 입은 농가를 돕기 위한 판촉 행사가 열렸다. 홍보 캠페인과 나눔 행사도 함께 진행됐다.",
+        )
+        self.assertFalse(main._is_quantified_crop_damage_report(article))
+        self.assertEqual(main._editorial_safe_core_demote_reason(article, "supply"), "promotional_or_event_filler")
+
+    def test_physiological_disorder_vocab_makes_pest_candidate(self):
+        article = _redhyang()
+        pest_conf = next(s for s in main.SECTIONS if s.get("key") == "pest")
+        self.assertGreaterEqual(main._pest_weather_hits(article.title.lower()), 1)
+        self.assertTrue(main._has_pest_or_growth_risk_signal(article.title, article.description))
+        self.assertTrue(main.is_relevant(article.title, article.description, article.domain, article.link, pest_conf, article.press))
+        self.assertTrue(main.is_pest_story_focus_strong(article.title, article.description))
+        self.assertEqual(main._editorial_safe_core_demote_reason(article, "pest"), "")
+        self.assertFalse(main._is_generic_pest_notice_tail(article))
+        self.assertEqual(
+            main._preferred_tail_block_reason(article, "pest", current_count=4, raw_count=11),
+            "",
+        )
+        self.assertTrue(main._is_cross_day_pest_candidate(article))
+
+    def test_time_adverb_with_particle_is_not_a_local_geo(self):
+        # '올해도'가 [가-힣]{2,6}(군|시|구|도) 지역명 패턴에 걸려 pest 지역 공지 판정을 켰다.
+        self.assertFalse(main._local_geo_match("레드향 열과 피해 벌써 20%…올해도 되풀이"))
+        self.assertTrue(main._local_geo_match("영천시, 과수 농림지 돌발 해충 성충기 공동 방제"))
+
+    def test_bounded_matching_ignores_words_containing_the_term(self):
+        from crop_risk_vocab import classify_pest_theme, physiological_disorder_hits
+
+        self.assertEqual(physiological_disorder_hits("농협 계열과 협력해 매장 진열과 판매를 늘렸다"), 0)
+        self.assertEqual(physiological_disorder_hits("탈락과 합격 사이"), 0)
+        # '열과 성을 다하다'(熱과 誠)는 관용구다.
+        self.assertEqual(physiological_disorder_hits("조합원을 위해 열과 성을 다하겠다"), 0)
+        self.assertEqual(physiological_disorder_hits("레드향 열과 피해, 낙과율 30%"), 2)
+        self.assertEqual(main._pest_weather_hits("농협 계열과 협력"), 0)
+        # 품목이 제목에 있으면 기존 품목 버킷 그대로, 없으면 general_pest 대신 생리장해 버킷.
+        self.assertEqual(classify_pest_theme(REDHYANG_TITLE, REDHYANG_DESC), "crop_레드향")
+        self.assertEqual(classify_pest_theme("열과 피해 확산…농가 시름", "병해충 방제와 함께 열과 대책이 필요하다"), "physio_cracking")
+        self.assertEqual(classify_pest_theme("태풍에 낙과 속출", "낙과 피해가 크다"), "weather_storm")
+
+    def test_evaluator_treats_physiological_damage_headline_as_field_risk_core(self):
+        import report_eval
+
+        article = report_eval.SurfaceArticle(
+            tag="li", surface=report_eval.BRIEFING_SURFACE, section="pest", title=REDHYANG_TITLE,
+            href="https://news.kbs.co.kr/x", article_id="x", domain="news.kbs.co.kr",
+            summary="레드향 열과 발생률이 20%를 넘어 농가 피해가 반복되고 있다.", is_core=True,
+        )
+        self.assertTrue(report_eval._is_priority_field_risk_core(article, REDHYANG_DESC))
+
+
+class TestGlossaryExplainerIsNotPestCore(unittest.TestCase):
+    """과제 3: '[지식용어]' 용어 해설 카드는 pest 코어를 차지하지 못한다(tail 은 허용)."""
+
+    def _sunburn(self):
+        return _mk(
+            "pest",
+            "뙤약볕에 타들어 가는 농심...과일도 화상 입는다 '일소현상' [지식용어]",
+            "올 여름 유례없는 폭염과 가뭄이 전국을 덮치면서 수확을 앞둔 과수 농가에 비상이 걸렸다. 열매가 일소현상으로 상품성을 잃었다.",
+            press="sisunnews", domain="sisunnews.co.kr", score=15.8, fit=3.4, is_core=True,
+        )
+
+    def test_glossary_tag_is_core_only_demotion(self):
+        article = self._sunburn()
+        self.assertEqual(main._editorial_safe_core_demote_reason(article, "pest"), "pest_glossary_explainer_core")
+        article.is_core = False
+        # 코어 전용 사유는 tail 배치를 막지 않는다(약한 tail 판정기는 별도 축이라 고정).
+        with patch.object(main, "_is_weak_pest_tail", return_value=False),                 patch.object(main, "_is_generic_pest_notice_tail", return_value=False):
+            self.assertEqual(
+                main._preferred_tail_block_reason(article, "pest", current_count=4, raw_count=11),
+                "",
+            )
+
+    def test_plain_damage_headline_keeps_core_eligibility(self):
+        article = _mk(
+            "pest",
+            "뙤약볕에 타들어 가는 농심...과일도 화상 입는다 '일소현상' 피해 확산",
+            "폭염에 사과·배 일소 피해가 늘고 있다.",
+            press="sisunnews", domain="sisunnews.co.kr",
+        )
+        self.assertEqual(main._editorial_safe_core_demote_reason(article, "pest"), "")
+
+
 class TestForeignCropWeatherIsNotPest(unittest.TestCase):
     def test_french_vineyard_drought_rejected_from_pest(self):
         article = _mk(

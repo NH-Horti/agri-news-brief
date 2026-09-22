@@ -57,11 +57,13 @@ import random
 import threading
 
 from crop_risk_vocab import (
+    CROP_PHYSIOLOGICAL_DISORDER_TERMS,
     CROP_WEATHER_DAMAGE_SIGNALS,
     CROP_WEATHER_HEADLINE_DAMAGE_TERMS,
     CROP_WEATHER_RISK_TERMS,
     classify_pest_theme,
     crop_bucket,
+    physiological_disorder_hits,
     weather_event_damage_signal,
 )
 from collector import (
@@ -4166,6 +4168,54 @@ def _has_market_metric_evidence(text: str) -> bool:
     ))
 
 
+# 피해 현장 기사의 본문에서 피해 수치를 찾는다. '발생률은 벌써 20%', '전체의 70%가 열과 피해',
+# '529개 농가 61㏊ 피해' 같은 표현이 대상이다.
+_CROP_DAMAGE_QUANTIFIED_RX = re.compile(
+    r"(?:피해|발생률|발생율|열과|낙과|고사|침수)(?:율|률|면적|규모|농가|주)?.{0,14}?"
+    r"\d[\d,]*(?:\.\d+)?\s*(?:%|㏊|ha|헥타르|농가|주|그루|톤|평|동)(?![A-Za-z])"
+    r"|\d[\d,]*(?:\.\d+)?\s*(?:%|㏊|ha|헥타르|농가|그루|톤|평|동)(?![A-Za-z]).{0,12}(?:피해|열과|낙과|고사|침수)",
+    re.IGNORECASE,
+)
+# 제목이 행사·판촉을 말하면 피해 어휘가 있어도 현장 피해 보도가 아니다('피해 농가 돕기 판촉 행사').
+_CROP_DAMAGE_TITLE_EVENT_TERMS = (
+    "행사", "판촉", "홍보", "캠페인", "개최", "협약", "기탁", "전달", "나눔", "후원",
+    "교육", "설명회", "홈쇼핑", "라이브커머스", "현장투어", "체험", "축제",
+    "할인", "특가", "세일", "돕기", "기부", "성금",
+)
+
+
+def _is_quantified_crop_damage_report(article: "Article") -> bool:
+    """피해율·피해 면적 같은 수치가 있는 작물 피해 현장 기사인가.
+
+    2026-09-22 KBS '레드향 열과 피해 벌써 20%…올해도 되풀이'는 인터뷰이 직함
+    ('제주농업기술원 기술지원팀장')의 '지원' 한 글자가 판촉 어휘로 잡혀 supply
+    코어에서 promotional_or_event_filler 로 강등됐다. 제목이 피해를 말하고 본문에
+    피해 수치가 있는 작물 기사는 판촉 어휘 게이트의 대상이 아니다.
+    """
+    title = getattr(article, "title", "") or ""
+    desc = getattr(article, "description", "") or ""
+    title_l = _nfkc_lower(title)
+    if not title_l:
+        return False
+    if count_any(title_l, [w.lower() for w in _CROP_DAMAGE_TITLE_EVENT_TERMS]) >= 1:
+        return False
+    title_damage = (
+        count_any(title_l, [w.lower() for w in CROP_WEATHER_HEADLINE_DAMAGE_TERMS + CROP_WEATHER_RISK_TERMS]) >= 1
+        or physiological_disorder_hits(title_l) >= 1
+    )
+    if not title_damage:
+        return False
+    text = _nfkc_lower(f"{title} {desc}")
+    crop_context = bool(
+        crop_bucket(title_l)
+        or int(_managed_commodity_match_summary(title, desc).get("count") or 0) >= 1
+        or count_any(text, [w.lower() for w in _PEST_CROP_CONTEXT_TERMS]) >= 1
+    )
+    if not crop_context:
+        return False
+    return bool(_CROP_DAMAGE_QUANTIFIED_RX.search(text))
+
+
 def _soft_news_core_demote_reason(article: "Article") -> str:
     """행사·교육·인사·판촉·칼럼 등 소프트뉴스는 섹션 불문 core 승격을 금지한다.
     tail 카드로는 남을 수 있으나 핵심 슬롯은 하드뉴스가 차지해야 한다."""
@@ -4216,7 +4266,12 @@ def _soft_news_core_demote_reason(article: "Article") -> str:
 
 _PEST_ACTIVE_RISK_TITLE_TERMS = (
     "방제", "발생", "확산", "피해", "예찰", "비상", "주의", "경보", "감염", "고사",
-    "매몰", "확진", "냉해", "우박", "일소", "침수", "차단",
+    "매몰", "확진", "냉해", "우박", "일소", "침수", "차단", "열과", "낙과",
+)
+# 용어 해설·상식 코너 표식. 2026-09-22 발행분에서 sisunnews '일소현상 [지식용어]' 해설 기사가
+# pest 코어를 차지해 편집 평가가 weak_core(major)로 지목했다. 카드 자체는 tail 로 남을 수 있다.
+_PEST_GLOSSARY_EXPLAINER_TAG_RX = re.compile(
+    r"\[(?:지식\s?용어|용어\s?(?:해설|풀이|사전|설명)|농업\s?용어|알기\s?쉬운[^\]]{0,12}용어|상식)\]"
 )
 
 
@@ -4243,6 +4298,9 @@ def _editorial_safe_core_demote_reason(article: "Article", section_key: str) -> 
         # pest core는 당일 발생·확산·방제 등 활성 리스크 신호가 제목에 있어야 한다
         # (방제 편의 기술·품종 보급·AI 서비스 소개류는 tail로만)
         pest_title = _nfkc_lower(getattr(article, "title", "") or "")
+        if pest_title and _PEST_GLOSSARY_EXPLAINER_TAG_RX.search(pest_title):
+            # 용어 해설 코너는 당일 사건이 아니라 배경 설명이다(코어 전용 강등, tail 허용).
+            return "pest_glossary_explainer_core"
         if pest_title and not any(term in pest_title for term in _PEST_ACTIVE_RISK_TITLE_TERMS):
             return "pest_no_active_risk_core"
         return ""
@@ -4373,7 +4431,9 @@ def _editorial_safe_core_demote_reason(article: "Article", section_key: str) -> 
     if any(term in text for term in ("홈쇼핑", "라이브커머스", "쇼호스트", "현장투어")):
         return "promotional_or_event_filler"
     promo_hits = count_any(text, tuple(term.lower() for term in _EDITORIAL_SAFE_PROMO_TERMS))
-    if promo_hits:
+    # 수치 있는 작물 피해 현장 기사는 판촉 게이트 대상이 아니다. 인터뷰이 직함
+    # ('기술지원팀장')의 '지원'처럼 부분문자열 한 개로 강등되던 오탐(2026-09-22 레드향 열과).
+    if promo_hits and not _is_quantified_crop_damage_report(article):
         market_hits = count_any(text, tuple(term.lower() for term in _EDITORIAL_SAFE_MARKET_TERMS))
         title_market_hits = count_any(title_l, tuple(term.lower() for term in _EDITORIAL_SAFE_MARKET_TERMS))
         dist_ops_action = section_key == "dist" and _editorial_safe_has_any(text, (
@@ -7395,7 +7455,7 @@ def is_pest_control_policy_context(text: str) -> bool:
         return False
 
     strict_hits = count_any(t, [w.lower() for w in PEST_STRICT_TERMS])
-    weather_hits = count_any(t, [w.lower() for w in PEST_WEATHER_TERMS])
+    weather_hits = _pest_weather_hits(t)
     horti_hits = count_any(t, [w.lower() for w in PEST_HORTI_TERMS])
     action_hits = count_any(t, [w.lower() for w in ("전수조사", "정밀예찰", "예찰", "방제", "살포", "약제", "무상공급", "집중방제", "긴급방제", "확산 차단")])
     policy_hits = count_any(t, [w.lower() for w in ("정책", "대책", "조례", "예산", "브리핑", "보도자료", "법", "개정", "관세", "통관")])
@@ -7443,7 +7503,7 @@ def _pest_weather_event_hits(title: str, desc: str = "") -> int:
 def _pest_title_signal_count(title: str) -> int:
     t = (title or "").lower()
     hits = count_any(t, [w.lower() for w in PEST_TITLE_CORE_TERMS])
-    hits += count_any(t, [w.lower() for w in PEST_WEATHER_TERMS])
+    hits += _pest_weather_hits(t)
     hits += _pest_weather_event_hits(title)
     if _has_named_pest_signal(t):
         hits += 1
@@ -7508,7 +7568,7 @@ def is_news_roundup_brief_context(title: str, desc: str) -> bool:
 def is_pest_story_focus_strong(title: str, desc: str) -> bool:
     t = f"{title or ''} {desc or ''}".lower()
     strict_hits = count_any(t, [w.lower() for w in PEST_STRICT_TERMS])
-    weather_hits = count_any(t, [w.lower() for w in PEST_WEATHER_TERMS]) + _pest_weather_event_hits(title, desc)
+    weather_hits = _pest_weather_hits(t) + _pest_weather_event_hits(title, desc)
     managed_count = int(_managed_commodity_match_summary(title, desc).get("count") or 0)
     horti_hits = count_any(t, [w.lower() for w in PEST_HORTI_TERMS]) + managed_count
     action_hits = count_any(t, [w.lower() for w in _PEST_ACTION_TERMS])
@@ -15993,6 +16053,9 @@ _LOCAL_GEO_FALSE_POSITIVES = frozenset({
     "마리시", "거리시", "나라시", "모리시", "머리시",
     "나라도", "사리도", "소리도", "누리도",
     "가리시", "바리시", "다리도", "다리시",
+    # 시간 부사 + 조사 '도'('올해도 되풀이')가 지역명으로 잡혀 pest 지역 공지 판정을
+    # 켜던 오탐(2026-09-22 레드향 열과 KBS 기사).
+    "올해도", "작년도", "내년도", "지금도", "아직도", "그래도", "하나도", "조금도", "누구도",
 })
 
 def _local_geo_match(text: str) -> bool:
@@ -16023,6 +16086,22 @@ PEST_STRICT_TERMS = [
 # 폭염·가뭄이 빠져 있던 탓에 순수 기상피해 기사가 pest 관련성·코어 게이트를
 # 통과하지 못했다(경남 가뭄 누락). 어휘는 평가와 공유한다.
 PEST_WEATHER_TERMS = list(CROP_WEATHER_RISK_TERMS)
+
+
+def _pest_weather_hits(text: str) -> int:
+    """기상 피해 어휘 + 생리장해 피해 어휘(열과·낙과 등) 히트 수.
+
+    PEST_WEATHER_TERMS 만 세던 자리를 전부 이 헬퍼로 바꿨다. 생리장해 어휘는 다른
+    낱말에 통째로 들어앉는 일이 잦아('계열과', '진열과 판매', '탈락과') 부분문자열이
+    아니라 앞경계 매칭(crop_risk_vocab.physiological_disorder_hits)으로 센다.
+    (2026-09-22 레드향 열과 KBS 기사가 어느 pest 어휘에도 걸리지 않던 결함)
+    """
+    lowered = (text or "").lower()
+    if not lowered:
+        return 0
+    return count_any(lowered, [w.lower() for w in PEST_WEATHER_TERMS]) + physiological_disorder_hits(lowered)
+
+
 PEST_AGRI_CONTEXT_TERMS = [
     "농작물", "농업", "농가", "재배", "과수", "과원", "시설", "하우스",
     "사과", "배", "감귤", "포도", "딸기", "복숭아", "고추", "오이", "쌀", "벼",
@@ -16550,7 +16629,7 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
                 pest_managed_count = int(_managed_commodity_match_summary(ttl, desc).get("count") or 0)
                 pest_signal_hits = (
                     count_any(text, [t.lower() for t in PEST_STRICT_TERMS])
-                    + count_any(text, [t.lower() for t in PEST_WEATHER_TERMS])
+                    + _pest_weather_hits(text)
                     + _pest_weather_event_hits(ttl, desc)
                 )
                 if is_pest_story_focus_strong(ttl, desc) or (pest_managed_count >= 1 and pest_signal_hits >= 1):
@@ -16849,7 +16928,7 @@ def is_relevant(title: str, desc: str, dom: str, url: str, section_conf: JsonDic
 
         rice_hits = count_any(text, [t.lower() for t in PEST_RICE_TERMS])
         strict_hits = count_any(text, [t.lower() for t in PEST_STRICT_TERMS])
-        weather_hits = count_any(text, [t.lower() for t in PEST_WEATHER_TERMS]) + _pest_weather_event_hits(ttl, desc)
+        weather_hits = _pest_weather_hits(text) + _pest_weather_event_hits(ttl, desc)
         horti_hits = count_any(text, [t.lower() for t in PEST_HORTI_TERMS]) + managed_count
 
         # 벼 병해충은 원예수급부와 거리가 멀어 기본 제외(원예 신호 동반 시만 허용)
@@ -17312,7 +17391,7 @@ def compute_rank_score(title: str, desc: str, dom: str, pub_dt_kst: datetime, se
         foreign_politics = ("트럼프", "바이든", "푸틴", "시진핑", "백악관", "미국 대통령")
         if any(w in title_l for w in foreign_politics):
             # 제목이 정치/외교이고 방제 신호가 제목에서 드러나지 않으면 추가 감점
-            if count_any(title_l, [t.lower() for t in PEST_STRICT_TERMS]) == 0 and count_any(title_l, [t.lower() for t in PEST_WEATHER_TERMS]) == 0:
+            if count_any(title_l, [t.lower() for t in PEST_STRICT_TERMS]) == 0 and _pest_weather_hits(title_l) == 0:
                 score -= 4.2
         # 양곡(벼) 방제는 제외: 남아있더라도 강하게 감점
         rice_hits = count_any(text, [t.lower() for t in PEST_RICE_TERMS])
@@ -18213,14 +18292,14 @@ def _headline_gate(a: "Article", section_key: str) -> bool:
         # 코어는 '헤드라인'에서 병해충/방제/기상피해 신호가 드러나야 한다(수필/일기/정치 제목 누수 방지).
         title_hits = (
             count_any(title, [t.lower() for t in PEST_STRICT_TERMS])
-            + count_any(title, [t.lower() for t in PEST_WEATHER_TERMS])
+            + _pest_weather_hits(title)
             + _pest_weather_event_hits(a.title or "", a.description or "")
         )
         if title_hits == 0:
             return False
 
         strict_hits = count_any(text, [t.lower() for t in PEST_STRICT_TERMS])
-        weather_hits = count_any(text, [t.lower() for t in PEST_WEATHER_TERMS]) + _pest_weather_event_hits(
+        weather_hits = _pest_weather_hits(text) + _pest_weather_event_hits(
             a.title or "", a.description or ""
         )
         # 제목이 기상 현상과 작물 피해를 함께 말하면 그 자체로 코어 자격이 있다.
@@ -24612,7 +24691,8 @@ def _has_pest_or_growth_risk_signal(title: str, desc: str) -> bool:
         return True
     if count_any(text, [w.lower() for w in _PEST_CONTROL_ACTION_TERMS]) >= 1:
         return True
-    growth_hits = count_any(text, [w.lower() for w in _PEST_GROWTH_RISK_TERMS])
+    # 생리장해(열과·낙과)는 기상 피해와 같은 등급의 생육 리스크다(앞경계 매칭).
+    growth_hits = count_any(text, [w.lower() for w in _PEST_GROWTH_RISK_TERMS]) + physiological_disorder_hits(text)
     # 품목명 자체가 작물 맥락이다("제주 당근 파종"에는 '작물'도 '재배'도 없다).
     crop_hits = count_any(text, [w.lower() for w in _PEST_CROP_CONTEXT_TERMS]) + (
         1 if crop_bucket(text) else 0
@@ -24852,6 +24932,42 @@ def is_quantified_public_crop_disease_guidance(title: str, desc: str) -> bool:
         and public_actor
         and quantified
     )
+
+
+def _is_protected_low_tier_pest_card(article: "Article") -> bool:
+    """pest 저티어 예산의 +1 예외를 받는 카드: 수치 있는 공공 방제 지침 또는 기관 종합 방제 지도."""
+    return bool(
+        is_quantified_public_crop_disease_guidance(
+            getattr(article, "title", "") or "",
+            getattr(article, "description", "") or "",
+        )
+        or _is_authority_crop_integrated_pest_guidance(article)
+    )
+
+
+def _low_tier_section_cap_exceeded(
+    section_key: str,
+    low_tier_items: list["Article"],
+    *,
+    per_section_cap: int | None = None,
+) -> bool:
+    """섹션의 저티어(tier<=1) 카드가 예산을 넘었는가.
+
+    결정적 체인(_cap_final_low_tier_sources)과 편집 교체안 검증기
+    (_apply_model_editorial_repair)가 같은 규칙을 쓴다. 예전에는 검증기에만 pest
+    예외가 없어서, 결정적 체인이 통과시키는 pest 구성(저티어 2장 중 1장이 공공 방제
+    지침)을 모델이 제안하면 low_tier_source_section_cap 으로 기각됐다(2026-09-22).
+
+    pest 는 cap+1 까지 허용하되 그중 한 장 이상이 보호 카드
+    (_is_protected_low_tier_pest_card)여야 한다.
+    """
+    cap = FINAL_LOW_TIER_MAX_PER_SECTION if per_section_cap is None else max(0, int(per_section_cap))
+    if len(low_tier_items) <= cap:
+        return False
+    if section_key != "pest" or len(low_tier_items) > cap + 1:
+        return True
+    protected = sum(1 for article in low_tier_items if _is_protected_low_tier_pest_card(article))
+    return protected < 1
 
 
 def _low_tier_section_budget_allows(
@@ -28105,6 +28221,10 @@ def _is_generic_pest_notice_tail(article: "Article") -> bool:
         return False
     if _is_pest_weather_disaster_noise(article):
         return True
+    # 피해율·면적 수치가 있는 작물 피해 현장 기사는 지역 공지가 아니다(레드향 열과 20%).
+    # 기상재해 노이즈 판정 뒤에 두어 태풍 대비 공지류는 그대로 걸러진다.
+    if _is_quantified_crop_damage_report(article):
+        return False
     title_l = _nfkc_lower(article.title or "")
     text_l = _nfkc_lower(f"{article.title or ''} {article.description or ''}")
     title_named = _has_named_pest_signal(title_l) or count_any(
@@ -33975,8 +34095,8 @@ def _preferred_tail_block_reason(
         return "invalid_article"
     protected_thin_section = raw_count < PREFERRED_PER_SECTION and current_count < MIN_FALLBACK_PER_SECTION
     demote_reason = _editorial_safe_core_demote_reason(article, section_key)
-    if demote_reason == "pest_no_active_risk_core":
-        # core 전용 신호(예방·기술 기사) — tail 배치는 허용한다
+    if demote_reason in ("pest_no_active_risk_core", "pest_glossary_explainer_core"):
+        # core 전용 신호(예방·기술 기사, 용어 해설 코너) — tail 배치는 허용한다
         demote_reason = ""
     if (
         section_key == "policy"
@@ -36741,26 +36861,10 @@ def _cap_final_low_tier_sources(
             for sec in section_keys
         }
         low_total = sum(len(items) for items in low_by_section.values())
-        def _section_over_budget(sec: str, items: list[Article]) -> bool:
-            if len(items) <= per_section_cap:
-                return False
-            if sec != "pest" or len(items) > per_section_cap + 1:
-                return True
-            protected = sum(
-                1
-                for article in items
-                if (
-                    is_quantified_public_crop_disease_guidance(
-                        article.title or "",
-                        article.description or "",
-                    )
-                    or _is_authority_crop_integrated_pest_guidance(article)
-                )
-            )
-            return protected < 1
-
         over_sections = {
-            sec for sec, items in low_by_section.items() if _section_over_budget(sec, items)
+            sec
+            for sec, items in low_by_section.items()
+            if _low_tier_section_cap_exceeded(sec, items, per_section_cap=per_section_cap)
         }
         if not over_sections and low_total <= total_cap:
             break
@@ -36773,13 +36877,7 @@ def _cap_final_low_tier_sources(
         ]
         victim_pool.sort(
             key=lambda pair: (
-                1 if (
-                    is_quantified_public_crop_disease_guidance(
-                        pair[1].title or "",
-                        pair[1].description or "",
-                    )
-                    or _is_authority_crop_integrated_pest_guidance(pair[1])
-                ) else 0,
+                1 if _is_protected_low_tier_pest_card(pair[1]) else 0,
                 1 if bool(getattr(pair[1], "is_core", False)) else 0,
                 float(getattr(pair[1], "selection_fit_score", 0.0) or 0.0),
                 float(getattr(pair[1], "score", 0.0) or 0.0),
@@ -45036,9 +45134,16 @@ def _is_cross_day_pest_candidate(article: Article) -> bool:
         or _is_authority_crop_integrated_pest_guidance(article)
     )
     direct_crop_pest_guidance = bool(crop and "병해충" in title and action)
+    # 피해율·면적 수치가 있는 작물 피해 현장 기사(레드향 열과 20%)는 병해충 고유명이
+    # 없어도 이월 후보다. 편집 평가가 일반 일소 해설보다 강하다고 지목한 부류다.
+    quantified_damage_report = _is_quantified_crop_damage_report(article)
     return bool(
         public_guidance
-        or (crop and action and (named or authority_growth_advice or direct_crop_pest_guidance))
+        or (
+            crop
+            and action
+            and (named or authority_growth_advice or direct_crop_pest_guidance or quantified_damage_report)
+        )
     )
 
 
@@ -52917,12 +53022,90 @@ def _repair_article_link_keys(article: Article) -> set[str]:
     return keys
 
 
+def _repair_section_target(section_targets: dict[str, int] | None, section: str) -> int:
+    """교체안이 그 섹션에 돌려줘야 하는 행 수(기본 MAX_PER_SECTION)."""
+    try:
+        target = int((section_targets or {}).get(section, MAX_PER_SECTION) or MAX_PER_SECTION)
+    except (TypeError, ValueError):
+        target = MAX_PER_SECTION
+    return max(MIN_FALLBACK_PER_SECTION, min(MAX_PER_SECTION, target))
+
+
+def _editorial_repair_section_targets(
+    raw_by_section: dict[str, list[Article]],
+    current_by_section: dict[str, list[Article]] | None = None,
+    *,
+    excluded_links_by_section: dict[str, set[str]] | None = None,
+) -> dict[str, int]:
+    """교체안이 섹션별로 채워야 하는 행 수.
+
+    기본은 MAX_PER_SECTION(5)이다. 검증기(_apply_model_editorial_repair)를 통과할 수
+    있는 카드 — raw 풀과 현재 지면 카드 중 postbuild 게이트를 지나는 것 — 가 티어2+
+    유효 후보 + 저티어 예산으로 5장이 안 되는 섹션은 그 수까지 낮추되
+    SOFT_MIN_PER_SECTION(4) 아래로는 내리지 않는다.
+
+    2026-09-22 pest 는 raw 고유 8건 중 티어1이 4건이라 "티어1 1장 이하이면서 5장"이
+    불가능한 조합이었는데 검증기가 정확히 5장을 요구해 모델이 다섯 번 제안하고
+    다섯 번 기각됐다. 현재 지면 카드를 함께 세는 이유는 결정적 체인이 다른 섹션
+    raw 에서 끌어온 카드(정책 raw 의 재해복구비 기사 등)도 유지 가능한 후보이기
+    때문이다.
+    """
+    allowed_reasons = {"", "selection_feedback_low_fit", "selection_feedback_core_fit"}
+    targets: dict[str, int] = {}
+    for section in _section_keys():
+        excluded = {
+            str(link or "").strip()
+            for link in (excluded_links_by_section or {}).get(section, set()) or set()
+            if str(link or "").strip()
+        }
+        seen: set[str] = set()
+        high_tier = 0
+        low_tier: list[Article] = []
+        pool = list(raw_by_section.get(section, []) or []) + list(
+            (current_by_section or {}).get(section, []) or []
+        )
+        for article in pool:
+            if not isinstance(article, Article):
+                continue
+            identity = article.norm_key or article.canon_url or article.title_key
+            if not identity or identity in seen:
+                continue
+            if excluded and (_repair_article_link_keys(article) & excluded):
+                continue
+            if _postbuild_article_reject_reason(article, section) not in allowed_reasons:
+                continue
+            seen.add(identity)
+            if press_tier(article.press or "", article.domain or "") <= 1:
+                low_tier.append(article)
+            else:
+                high_tier += 1
+        low_budget = FINAL_LOW_TIER_MAX_PER_SECTION
+        if section == "pest" and any(_is_protected_low_tier_pest_card(article) for article in low_tier):
+            low_budget += 1
+        feasible = min(MAX_PER_SECTION, high_tier + min(len(low_tier), low_budget))
+        if feasible >= MAX_PER_SECTION:
+            targets[section] = MAX_PER_SECTION
+            continue
+        targets[section] = max(SOFT_MIN_PER_SECTION, feasible)
+        log.info(
+            "[QUALITY GATE] repair target lowered: section=%s target=%d feasible=%d (tier2+=%d tier1=%d budget=%d)",
+            section, targets[section], feasible, high_tier, len(low_tier), low_budget,
+        )
+        if targets[section] > feasible:
+            log.warning(
+                "[QUALITY GATE] section=%s repair target %d exceeds validator-feasible %d; proposals will be retained",
+                section, targets[section], feasible,
+            )
+    return targets
+
+
 def _apply_model_editorial_repair(
     repair_result: JsonDict,
     raw_by_section: dict[str, list[Article]],
     *,
     validation_errors: list[JsonDict] | None = None,
     current_by_section: dict[str, list[Article]] | None = None,
+    section_targets: dict[str, int] | None = None,
 ) -> dict[str, list[Article]] | None:
     """모델이 제안한 교체안을 섹션 단위로 검증해 통과한 섹션만 돌려준다.
 
@@ -52931,7 +53114,11 @@ def _apply_model_editorial_repair(
     사라졌다. 검증에 걸린 섹션만 현재 선정을 유지하면 나머지 개선은 살아남는다.
 
     current_by_section 이 있으면 부분 적용 모드로 동작한다(없으면 예전처럼
-    전부 통과해야 결과를 돌려준다).
+    전부 통과해야 결과를 돌려준다). 현재 지면 카드는 raw 풀에 없어도(다른 섹션
+    raw 에서 끌어온 카드) 그 섹션의 유효 후보로 인정한다.
+
+    section_targets 는 섹션별 요구 행 수(_editorial_repair_section_targets).
+    없으면 예전처럼 모든 섹션에 MAX_PER_SECTION 을 요구한다.
     """
     partial = isinstance(current_by_section, dict)
 
@@ -52959,8 +53146,15 @@ def _apply_model_editorial_repair(
                 continue
             for key in _repair_article_link_keys(article):
                 candidate_index.setdefault(key, article)
+        if partial:
+            for article in (current_by_section or {}).get(section, []) or []:
+                if not isinstance(article, Article):
+                    continue
+                for key in _repair_article_link_keys(article):
+                    candidate_index.setdefault(key, article)
         rows = sections.get(section, [])
-        if not isinstance(rows, list) or len(rows) != MAX_PER_SECTION:
+        expected_rows = _repair_section_target(section_targets, section)
+        if not isinstance(rows, list) or len(rows) != expected_rows:
             reject(section, "section_card_count_invalid")
             if not partial:
                 return None
@@ -53031,10 +53225,12 @@ def _apply_model_editorial_repair(
 
     for section in list(repaired):
         section_low_tier = _low_tier(repaired[section])
-        if len(section_low_tier) > FINAL_LOW_TIER_MAX_PER_SECTION:
+        # 결정적 체인과 같은 규칙(pest 는 보호 카드가 있을 때 cap+1).
+        if _low_tier_section_cap_exceeded(section, section_low_tier):
             victim = min(
                 section_low_tier,
                 key=lambda article: (
+                    _is_protected_low_tier_pest_card(article) if section == "pest" else False,
                     bool(article.is_core),
                     float(article.selection_fit_score or 0.0),
                     float(article.score or 0.0),
@@ -53089,6 +53285,36 @@ def _apply_model_editorial_repair(
     if partial and not repaired:
         return None
     return repaired
+
+
+def _current_edition_repair_candidates(
+    current_by_section: dict[str, list[Article]] | None,
+    raw_by_section: dict[str, list[Article]],
+) -> dict[str, list[JsonDict]]:
+    """현재 지면 카드 중 그 섹션 raw 풀에 없는 카드를 교체안 후보 행으로 만든다.
+
+    결정적 체인은 다른 섹션 raw 에서 카드를 끌어온다(정책 raw 의 재해복구비 기사가
+    pest 지면에). 모델의 후보 목록은 섹션별 raw 만 보므로 그 카드를 유지하려 해도
+    제안할 수 없었고, 검증기도 link_not_in_raw_pool 로 기각했다.
+    """
+    rows: dict[str, list[JsonDict]] = {section: [] for section in _section_keys()}
+    if not isinstance(current_by_section, dict):
+        return rows
+    for section in _section_keys():
+        raw_keys: set[str] = set()
+        for article in raw_by_section.get(section, []) or []:
+            if isinstance(article, Article):
+                raw_keys.update(_repair_article_link_keys(article))
+        for article in current_by_section.get(section, []) or []:
+            if not isinstance(article, Article):
+                continue
+            if _repair_article_link_keys(article) & raw_keys:
+                continue
+            row = _replay_article_to_dict(article)
+            row["press_tier"] = press_tier(article.press or "", article.domain or "")
+            row["selection_stage"] = "current_edition"
+            rows[section].append(row)
+    return rows
 
 
 def _initial_editorial_repair_exclusions(
@@ -53643,6 +53869,13 @@ def _run_prepublish_quality_gate(
             break
         repair_proposal_count += 1
         attempt = repair_proposal_count
+        # 섹션별 요구 행 수: raw 풀(+현재 지면 카드)로 검증기를 통과하는 5장이 불가능한
+        # 섹션은 목표를 낮춘다. 제안이 기각될 때마다 제외 링크가 늘어나므로 매번 다시 센다.
+        section_targets = _editorial_repair_section_targets(
+            raw_by_section,
+            current_sections,
+            excluded_links_by_section=repair_excluded_links,
+        )
         repair = propose_editorial_repair(
             report_date,
             current_html,
@@ -53656,6 +53889,8 @@ def _run_prepublish_quality_gate(
             excluded_links_by_section=repair_excluded_links,
             prior_validation_errors=repair_validation_errors,
             prior_editorial_issues=repair_editorial_issues,
+            section_card_targets=section_targets,
+            extra_candidates_by_section=_current_edition_repair_candidates(current_sections, raw_by_section),
         )
         current_editorial_issues = editorial_result.get("issues", [])
         if isinstance(current_editorial_issues, list):
@@ -53673,6 +53908,7 @@ def _run_prepublish_quality_gate(
                 "reason": repair.get("reason", repair.get("rationale", "")),
                 "usage": usage or {},
                 "model_verification_funded": bool(repair_verification_funded),
+                "section_card_targets": dict(section_targets),
             }
         )
         attempt_validation_errors: list[JsonDict] = []
@@ -53681,6 +53917,7 @@ def _run_prepublish_quality_gate(
             raw_by_section,
             validation_errors=attempt_validation_errors,
             current_by_section=current_sections,
+            section_targets=section_targets,
         )
         repaired_sections: dict[str, list[Article]] | None = None
         if accepted_sections is not None:
@@ -53752,10 +53989,11 @@ def _run_prepublish_quality_gate(
         repair_attempts[-1]["invalidated_summary_cache_entries"] = len(invalidated_summaries)
         candidate_sections = fill_summaries(repaired_sections, cache=summary_cache)
         _finalize_sections_for_render(candidate_sections)
+        # 목표를 낮춘 섹션은 그 목표로 비교한다(4장짜리 pest 교체안이 5장 미달로 기각되지 않게).
         underfilled_sections = [
             section
             for section in _section_keys()
-            if len(candidate_sections.get(section, []) or []) < MAX_PER_SECTION
+            if len(candidate_sections.get(section, []) or []) < _repair_section_target(section_targets, section)
         ]
         if underfilled_sections:
             finalization_errors: list[JsonDict] = []
