@@ -1275,7 +1275,19 @@ def _average(values: list[float], default: float = 0.0) -> float:
     return sum(values) / len(values) if values else default
 
 
-def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str, Any]) -> dict[str, Any]:
+def evaluate_report(
+    report_date: str,
+    html_text: str,
+    snapshot_payload: dict[str, Any],
+    *,
+    expected_by_section: dict[str, int] | None = None,
+) -> dict[str, Any]:
+    """지면 HTML + 스냅샷으로 결정적 점수를 낸다.
+
+    expected_by_section 은 섹션별 기대 카드 수의 상한이다. 기본 기대치는 min(5, raw 행 수)인데
+    raw 행 수는 중복·게이트 탈락 기사까지 세므로, 게이트가 실제 유효 후보 수(예: 겨울철 pest 2건)를
+    넘겨 "불가능한 5장"에 대한 completeness·slot 감점을 막는다. 후보가 충분한 날은 영향이 없다.
+    """
     articles = parse_report_html(html_text)
     briefing_articles = [article for article in articles if article.surface == BRIEFING_SURFACE]
     commodity_articles = [article for article in articles if article.surface in COMMODITY_SURFACES]
@@ -1293,6 +1305,17 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
     expected_counts = {section: _expected_briefing_count(raw_counts[section]) for section in SECTION_KEYS}
     soft_fallback_counts = {section: _soft_fallback_briefing_count(raw_counts[section]) for section in SECTION_KEYS}
     minimum_fallback_counts = {section: _minimum_fallback_briefing_count(raw_counts[section]) for section in SECTION_KEYS}
+    if isinstance(expected_by_section, dict):
+        for section in SECTION_KEYS:
+            if section not in expected_by_section:
+                continue
+            try:
+                achievable = max(0, int(expected_by_section.get(section) or 0))
+            except (TypeError, ValueError):
+                continue
+            expected_counts[section] = min(expected_counts[section], achievable)
+            soft_fallback_counts[section] = min(soft_fallback_counts[section], achievable)
+            minimum_fallback_counts[section] = min(minimum_fallback_counts[section], achievable)
     briefing_counts = _section_counts(briefing_articles)
     core_counts = _section_counts([article for article in briefing_articles if article.is_core])
     commodity_counts = _section_counts(commodity_articles)

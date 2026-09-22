@@ -198,7 +198,7 @@ class GateFlowTests(unittest.TestCase):
     def _run_gate(self, evaluations, *, forced=False, verification_allowed=False):
         calls = []
 
-        def fake_compose(report_date, html_text, snapshot_payload, *, run_editorial, adaptive_reason):
+        def fake_compose(report_date, html_text, snapshot_payload, *, run_editorial, adaptive_reason, achievable_by_section=None):
             calls.append((run_editorial, adaptive_reason))
             return evaluations.pop(0)
 
@@ -206,7 +206,7 @@ class GateFlowTests(unittest.TestCase):
         victim = sections["policy"][3]
         refilled = _mk("정부, 추석 농축산물 할인 지원 900억 추가", "policy")
 
-        def fake_excise(current, raw, targets, cache, *, allow_openai_summaries=True):
+        def fake_excise(current, raw, targets, cache, *, allow_openai_summaries=True, achievable_by_section=None):
             self.assertEqual([t["title"] for t in targets], [victim.title])
             out = {k: list(v) for k, v in current.items()}
             out["policy"] = [a for a in out["policy"] if a is not victim] + [refilled]
@@ -287,7 +287,7 @@ class GateFlowTests(unittest.TestCase):
         ]
         proposals = []
 
-        def fake_compose(report_date, html_text, snapshot_payload, *, run_editorial, adaptive_reason):
+        def fake_compose(report_date, html_text, snapshot_payload, *, run_editorial, adaptive_reason, achievable_by_section=None):
             return evaluations.pop(0)
 
         def fake_propose(*args, **kwargs):

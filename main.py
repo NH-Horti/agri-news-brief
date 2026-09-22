@@ -502,6 +502,12 @@ MAX_PER_SECTION = max(1, min(MAX_PER_SECTION, int(os.getenv("MAX_PER_SECTION_CAP
 PREFERRED_PER_SECTION = max(1, min(MAX_PER_SECTION, int(os.getenv("PREFERRED_ARTICLES_PER_SECTION", "5") or "5")))
 SOFT_MIN_PER_SECTION = max(1, min(PREFERRED_PER_SECTION, int(os.getenv("SOFT_MIN_ARTICLES_PER_SECTION", "4") or "4")))
 MIN_FALLBACK_PER_SECTION = max(1, min(SOFT_MIN_PER_SECTION, int(os.getenv("MIN_FALLBACK_ARTICLES_PER_SECTION", "3") or "3")))
+# 섹션이 이 수에 못 미치면 약한 tail 차단(소프트뉴스·일반 공지·홍보성 등)을 유보하고 유효한
+# 후보로 채운다. 비수기(겨울 pest)엔 강한 기사가 없어 섹션이 0~2장으로 끝나고, 발행 게이트가
+# 그 미달을 막으면 브리핑 자체가 안 나간다. 하드 리젝(postbuild)은 그대로 적용된다.
+THIN_SECTION_TAIL_FILL_FLOOR = max(
+    0, min(MAX_PER_SECTION, int(os.getenv("THIN_SECTION_TAIL_FILL_FLOOR", str(MIN_FALLBACK_PER_SECTION)) or MIN_FALLBACK_PER_SECTION))
+)
 # 독자가 체감하는 출처 품질을 보장하기 위한 발행 직전 예산. 농업 전문지·지역 일간지는
 # tier 2로 보존하고, 검증되지 않은 인터넷/재전송 매체(tier 1)만 제한한다.
 FINAL_LOW_TIER_MAX_PER_SECTION = max(0, int(os.getenv("FINAL_LOW_TIER_MAX_PER_SECTION", "1") or "1"))
@@ -34094,6 +34100,10 @@ def _preferred_tail_block_reason(
     if not isinstance(article, Article):
         return "invalid_article"
     protected_thin_section = raw_count < PREFERRED_PER_SECTION and current_count < MIN_FALLBACK_PER_SECTION
+    # raw 행 수만 보면 중복 포함 11행이 전부 약한 공지인 날(2026-09-22 pest)에 유보가 켜지지 않아
+    # 섹션이 1장으로 끝났다. 현재 카드 수가 채움 하한에 못 미치면 raw 크기와 무관하게 유보한다.
+    if current_count < THIN_SECTION_TAIL_FILL_FLOOR:
+        protected_thin_section = True
     demote_reason = _editorial_safe_core_demote_reason(article, section_key)
     if demote_reason in ("pest_no_active_risk_core", "pest_glossary_explainer_core"):
         # core 전용 신호(예방·기술 기사, 용어 해설 코너) — tail 배치는 허용한다
@@ -46695,6 +46705,9 @@ def _recover_preferred_section_counts_from_raw(
         raw_count = len(raw_by_section.get(section_key, []) or [])
         conf = section_conf.get(section_key, {})
         ranked: list[tuple[tuple[Any, ...], Article]] = []
+        # 채움 하한(THIN_SECTION_TAIL_FILL_FLOOR) 덕분에만 통과한 약한 tail. 강한 후보 뒤로 밀고,
+        # 섹션이 하한에 닿으면 더 넣지 않는다(하한 위 슬롯은 강한 후보만).
+        weak_fill_ids: set[int] = set()
         source_sections: tuple[str, ...] = (section_key,)
         if section_key == "supply" and len(current) < target and raw_by_section.get("policy"):
             source_sections = ("supply", "policy")
@@ -46826,6 +46839,15 @@ def _recover_preferred_section_counts_from_raw(
                     except Exception:
                         pass
                 tail_reason = _preferred_tail_block_reason(article, section_key, current_count=len(current), raw_count=raw_count)
+                if not tail_reason and len(current) < THIN_SECTION_TAIL_FILL_FLOOR and raw_count >= PREFERRED_PER_SECTION:
+                    strict_tail_reason = _preferred_tail_block_reason(
+                        article,
+                        section_key,
+                        current_count=max(len(current), THIN_SECTION_TAIL_FILL_FLOOR),
+                        raw_count=raw_count,
+                    )
+                    if strict_tail_reason:
+                        weak_fill_ids.add(id(article))
                 if tail_reason and not (
                     soft_policy_tail
                     or policy_preferred_gap
@@ -46998,7 +47020,10 @@ def _recover_preferred_section_counts_from_raw(
                 return 0
             return 1 if _low_tier_section_budget_allows(section_key, candidate, section_low_now) else 0
 
-        ranked.sort(key=lambda item: (_source_budget_priority(item[1]), item[0]), reverse=True)
+        ranked.sort(
+            key=lambda item: (0 if id(item[1]) in weak_fill_ids else 1, _source_budget_priority(item[1]), item[0]),
+            reverse=True,
+        )
         used_keys = {
             _article_selection_identity(article)
             for article in current
@@ -47013,6 +47038,8 @@ def _recover_preferred_section_counts_from_raw(
         for rank, article in ranked:
             if len(current) >= target:
                 break
+            if id(article) in weak_fill_ids and len(current) >= THIN_SECTION_TAIL_FILL_FLOOR:
+                continue
             ident = _article_selection_identity(article)
             if ident and ident in used_keys:
                 continue
@@ -52725,6 +52752,45 @@ def _operational_quality_anomaly(result: JsonDict) -> bool:
     )
 
 
+def _prepublish_section_minimums(result: JsonDict, base_minimum: int) -> dict[str, int]:
+    """섹션별 발행 최소 카드 수 = min(고정 최소치, 유효 후보 수).
+
+    counts.achievable_briefing_by_section 은 게이트가 raw 풀에서 센 유효 후보 수
+    (_section_achievable_counts)다. 없으면(옛 평가 JSON, 단독 평가) 고정 최소치를 쓴다.
+    """
+    counts = result.get("counts", {}) if isinstance(result, dict) else {}
+    achievable = counts.get("achievable_briefing_by_section", {}) if isinstance(counts, dict) else {}
+    if not isinstance(achievable, dict):
+        achievable = {}
+    minimums: dict[str, int] = {}
+    for section in _section_keys():
+        minimum = max(0, int(base_minimum))
+        if section in achievable:
+            try:
+                minimum = min(minimum, max(0, int(achievable.get(section) or 0)))
+            except (TypeError, ValueError):
+                pass
+        minimums[section] = minimum
+    return minimums
+
+
+def _prepublish_thin_pool_sections(result: JsonDict, base_minimum: int) -> dict[str, JsonDict]:
+    """고정 최소치보다 유효 후보가 적어 최소치가 내려간 섹션(운영자 가시성용)."""
+    counts = result.get("counts", {}) if isinstance(result, dict) else {}
+    section_counts = counts.get("briefing_by_section", {}) if isinstance(counts, dict) else {}
+    if not isinstance(section_counts, dict):
+        section_counts = {}
+    thin: dict[str, JsonDict] = {}
+    for section, minimum in _prepublish_section_minimums(result, base_minimum).items():
+        if minimum < int(base_minimum):
+            thin[section] = {
+                "achievable": minimum,
+                "fixed_minimum": int(base_minimum),
+                "cards": int(section_counts.get(section, 0) or 0),
+            }
+    return thin
+
+
 def _operational_quality_publishable(result: JsonDict) -> bool:
     counts = result.get("counts", {}) if isinstance(result, dict) else {}
     metrics = result.get("metrics", {}) if isinstance(result, dict) else {}
@@ -52743,13 +52809,18 @@ def _operational_quality_publishable(result: JsonDict) -> bool:
     section_counts = counts.get("briefing_by_section", {})
     if not isinstance(section_counts, dict):
         section_counts = {}
+    # 정상 통과는 섹션당 5장이지만, 유효 후보가 그보다 적은 날은 후보 수만큼이면 된다.
+    section_minimums = _prepublish_section_minimums(result, MAX_PER_SECTION)
     return bool(
         operational_score >= PREPUBLISH_QUALITY_MIN_OPERATIONAL_SCORE
         and reader_score >= PREPUBLISH_QUALITY_MIN_OPERATIONAL_SCORE
         and int(metrics.get("reader_hard_issue_count", 0) or 0) == 0
         and float(metrics.get("summary_presence_rate", 0.0) or 0.0) >= 1.0
         and float(scores.get("commodity_board_quality", 0.0) or 0.0) >= 90.0
-        and all(int(section_counts.get(section, 0) or 0) >= MAX_PER_SECTION for section in _section_keys())
+        and all(
+            int(section_counts.get(section, 0) or 0) >= section_minimums[section]
+            for section in _section_keys()
+        )
     )
 
 
@@ -52853,11 +52924,13 @@ def _prepublish_sla_fallback_blockers(result: JsonDict) -> list[str]:
     hard_editorial_issues = _prepublish_hard_editorial_issues(result)
     if hard_editorial_issues:
         blockers.append(f"editorial_hard_issues:{len(hard_editorial_issues)}")
-    minimum_per_section = _prepublish_sla_minimum_per_section()
+    # 유효 후보가 고정 최소치보다 적은 섹션은 후보 수가 최소치다(겨울철 pest 풀 고갈로
+    # 브리핑 전체가 막히지 않게). 후보가 충분한데 비운 섹션은 여전히 차단된다.
+    section_minimums = _prepublish_section_minimums(result, _prepublish_sla_minimum_per_section())
     underfilled = [
-        f"{section}={int(section_counts.get(section, 0) or 0)}/{minimum_per_section}"
+        f"{section}={int(section_counts.get(section, 0) or 0)}/{section_minimums[section]}"
         for section in _section_keys()
-        if int(section_counts.get(section, 0) or 0) < minimum_per_section
+        if int(section_counts.get(section, 0) or 0) < section_minimums[section]
     ]
     if underfilled:
         blockers.append("section_underfill:" + ",".join(underfilled))
@@ -52905,12 +52978,26 @@ def _compose_prepublish_evaluation(
     *,
     run_editorial: bool,
     adaptive_reason: str,
+    achievable_by_section: dict[str, int] | None = None,
 ) -> JsonDict:
     from editorial_eval import build_editorial_improvement_plan, evaluate_editorial_quality
     from report_eval import evaluate_report
     from scripts.evaluate_daily_report import apply_editorial_quality_gate
 
-    result = evaluate_report(report_date, html_text, snapshot_payload)
+    # 유효 후보 수를 심판의 기대 카드 수 상한으로 넘긴다. 후보가 2건뿐인 섹션에 5장을
+    # 기대해 completeness·slot 감점을 주면 점수 하한(SLA 78)까지 같이 무너진다.
+    result = evaluate_report(
+        report_date,
+        html_text,
+        snapshot_payload,
+        expected_by_section=dict(achievable_by_section) if achievable_by_section else None,
+    )
+    if achievable_by_section:
+        counts = result.setdefault("counts", {})
+        if isinstance(counts, dict):
+            counts["achievable_briefing_by_section"] = {
+                section: int(achievable_by_section.get(section, 0) or 0) for section in _section_keys()
+            }
     result["operational_score"] = result.get("operational_score", result.get("overall_score"))
     result["adaptive_evaluation"] = {
         "full_editorial_eval": bool(run_editorial),
@@ -53031,6 +53118,70 @@ def _repair_section_target(section_targets: dict[str, int] | None, section: str)
     return max(MIN_FALLBACK_PER_SECTION, min(MAX_PER_SECTION, target))
 
 
+def _section_validator_pool(
+    raw_by_section: dict[str, list[Article]],
+    current_by_section: dict[str, list[Article]] | None,
+    section: str,
+    *,
+    excluded_links: set[str] | None = None,
+) -> tuple[int, list[Article]]:
+    """섹션 raw 풀 ∪ 현재 지면 카드 중 postbuild 검증을 지나는 고유 카드 (티어2+ 수, 티어1 목록).
+
+    다른 섹션 지면에 이미 실린 카드는 이 섹션 후보로 세지 않는다(사건 dedupe가 어차피 뺀다).
+    """
+    allowed_reasons = {"", "selection_feedback_low_fit", "selection_feedback_core_fit"}
+    excluded = {str(link or "").strip() for link in (excluded_links or set()) if str(link or "").strip()}
+    used_elsewhere: set[str] = set()
+    for other_section, items in (current_by_section or {}).items():
+        if other_section == section:
+            continue
+        for article in items or []:
+            if isinstance(article, Article):
+                identity = article.norm_key or article.canon_url or article.title_key
+                if identity:
+                    used_elsewhere.add(identity)
+    seen: set[str] = set()
+    high_tier = 0
+    low_tier: list[Article] = []
+    pool = list(raw_by_section.get(section, []) or []) + list(
+        (current_by_section or {}).get(section, []) or []
+    )
+    for article in pool:
+        if not isinstance(article, Article):
+            continue
+        identity = article.norm_key or article.canon_url or article.title_key
+        if not identity or identity in seen or identity in used_elsewhere:
+            continue
+        if excluded and (_repair_article_link_keys(article) & excluded):
+            continue
+        if _postbuild_article_reject_reason(article, section) not in allowed_reasons:
+            continue
+        seen.add(identity)
+        if press_tier(article.press or "", article.domain or "") <= 1:
+            low_tier.append(article)
+        else:
+            high_tier += 1
+    return high_tier, low_tier
+
+
+def _section_achievable_counts(
+    raw_by_section: dict[str, list[Article]],
+    current_by_section: dict[str, list[Article]] | None = None,
+) -> dict[str, int]:
+    """섹션별로 '세상이 준' 유효 후보 수 — 발행 게이트의 섹션 최소치 상한.
+
+    겨울철 pest처럼 후보 자체가 2건뿐인 날에 고정 최소치(정상 4장·강제 복구 3장)를 요구하면
+    브리핑이 통째로 안 나간다(2026-01 pest 평균 0.3장). 반대로 후보가 충분한데 파이프라인이
+    섹션을 비운 날(2026-09-22 새벽, 유효 7건에 지면 1장)은 그대로 차단돼야 한다. 그래서
+    최소치는 min(고정 최소치, 이 값)이다.
+    """
+    counts: dict[str, int] = {}
+    for section in _section_keys():
+        high_tier, low_tier = _section_validator_pool(raw_by_section, current_by_section, section)
+        counts[section] = high_tier + len(low_tier)
+    return counts
+
+
 def _editorial_repair_section_targets(
     raw_by_section: dict[str, list[Article]],
     current_by_section: dict[str, list[Article]] | None = None,
@@ -53050,35 +53201,14 @@ def _editorial_repair_section_targets(
     raw 에서 끌어온 카드(정책 raw 의 재해복구비 기사 등)도 유지 가능한 후보이기
     때문이다.
     """
-    allowed_reasons = {"", "selection_feedback_low_fit", "selection_feedback_core_fit"}
     targets: dict[str, int] = {}
     for section in _section_keys():
-        excluded = {
-            str(link or "").strip()
-            for link in (excluded_links_by_section or {}).get(section, set()) or set()
-            if str(link or "").strip()
-        }
-        seen: set[str] = set()
-        high_tier = 0
-        low_tier: list[Article] = []
-        pool = list(raw_by_section.get(section, []) or []) + list(
-            (current_by_section or {}).get(section, []) or []
+        high_tier, low_tier = _section_validator_pool(
+            raw_by_section,
+            current_by_section,
+            section,
+            excluded_links=(excluded_links_by_section or {}).get(section, set()) or set(),
         )
-        for article in pool:
-            if not isinstance(article, Article):
-                continue
-            identity = article.norm_key or article.canon_url or article.title_key
-            if not identity or identity in seen:
-                continue
-            if excluded and (_repair_article_link_keys(article) & excluded):
-                continue
-            if _postbuild_article_reject_reason(article, section) not in allowed_reasons:
-                continue
-            seen.add(identity)
-            if press_tier(article.press or "", article.domain or "") <= 1:
-                low_tier.append(article)
-            else:
-                high_tier += 1
         low_budget = FINAL_LOW_TIER_MAX_PER_SECTION
         if section == "pest" and any(_is_protected_low_tier_pest_card(article) for article in low_tier):
             low_budget += 1
@@ -53591,8 +53721,13 @@ def _excise_flagged_cards_and_refill(
     summary_cache: dict[str, SummaryCacheEntry | str],
     *,
     allow_openai_summaries: bool = True,
+    achievable_by_section: dict[str, int] | None = None,
 ) -> dict[str, list["Article"]] | None:
-    """지목된 카드를 빼고 결정적 refill 체인으로 재충원한다. 하한 미달이면 None."""
+    """지목된 카드를 빼고 결정적 refill 체인으로 재충원한다. 하한 미달이면 None.
+
+    하한은 MIN_FALLBACK 이지만, 유효 후보가 그보다 적은 섹션(겨울철 pest)은 '후보 수 − 잘라낸
+    수'까지 내려간다. 후보 2건 중 1건이 off_topic 이면 1장으로 줄이는 편이 차단보다 낫다.
+    """
     if not targets:
         return None
     working: dict[str, list[Article]] = {
@@ -53621,12 +53756,19 @@ def _excise_flagged_cards_and_refill(
         _normalize_section_core_badges(working[section])
     candidate = fill_summaries(working, cache=summary_cache, allow_openai=allow_openai_summaries)
     _finalize_sections_for_render(candidate)
+    excised_per_section = Counter(str(t.get("section") or "") for t in targets)
     for section in _section_keys():
         rows = candidate.get(section, []) or []
-        if len(rows) < MIN_FALLBACK_PER_SECTION:
+        floor = MIN_FALLBACK_PER_SECTION
+        if achievable_by_section and section in achievable_by_section:
+            try:
+                floor = min(floor, max(0, int(achievable_by_section.get(section) or 0) - excised_per_section.get(section, 0)))
+            except (TypeError, ValueError):
+                pass
+        if len(rows) < floor:
             log.warning(
                 "[QUALITY GATE] excision left section=%s at %d/%d; keeping previous selection",
-                section, len(rows), MIN_FALLBACK_PER_SECTION,
+                section, len(rows), floor,
             )
             return None
         if any(id(a) in excised_ids or (_repair_article_link_keys(a) & _GATE_EXCISED_LINK_KEYS) for a in rows):
@@ -53705,6 +53847,10 @@ def _run_prepublish_quality_gate(
     enriched_source_tiers = _enrich_editorial_snapshot_source_tiers(snapshot_payload, raw_by_section)
     log.info("[QUALITY GATE] enriched source tiers for %d repair candidates", enriched_source_tiers)
     current_sections = by_section
+    # 섹션별 유효 후보 수: 발행 최소치·심판 기대치의 상한. 후보가 고정 최소치보다 적은
+    # 섹션(겨울철 pest)은 그 수만큼만 요구한다.
+    achievable_by_section = _section_achievable_counts(raw_by_section, by_section)
+    log.info("[QUALITY GATE] achievable candidates by section: %s", achievable_by_section)
     current_html = render_daily_page(
         report_date,
         start_kst,
@@ -53719,6 +53865,7 @@ def _run_prepublish_quality_gate(
         snapshot_payload,
         run_editorial=False,
         adaptive_reason="policy_probe",
+        achievable_by_section=achievable_by_section,
     )
     if force_editorial:
         run_editorial, adaptive_reason = True, "mandatory_replay_pre_send"
@@ -53745,6 +53892,7 @@ def _run_prepublish_quality_gate(
         snapshot_payload,
         run_editorial=run_editorial,
         adaptive_reason=adaptive_reason,
+        achievable_by_section=achievable_by_section,
     )
     repair_attempts: list[JsonDict] = []
     repair_validation_errors: list[JsonDict] = []
@@ -53774,6 +53922,7 @@ def _run_prepublish_quality_gate(
                 targets,
                 summary_cache,
                 allow_openai_summaries=_daily_summary_allow_openai(report_date),
+                achievable_by_section=achievable_by_section,
             )
             attempt = {
                 "attempt": len(excision_attempts) + 1,
@@ -53811,6 +53960,7 @@ def _run_prepublish_quality_gate(
                     snapshot_payload,
                     run_editorial=True,
                     adaptive_reason=f"hard_issue_excision_{attempt['attempt']}",
+                    achievable_by_section=achievable_by_section,
                 )
                 continue
             attempt["verification"] = "deterministic_carry_forward"
@@ -53821,6 +53971,7 @@ def _run_prepublish_quality_gate(
                 snapshot_payload,
                 run_editorial=False,
                 adaptive_reason=f"hard_issue_excision_{attempt['attempt']}_unverified",
+                achievable_by_section=achievable_by_section,
             )
             carried = _editorial_result_without_excised(previous_editorial, targets, result)
             result["editorial"] = carried
@@ -54054,6 +54205,7 @@ def _run_prepublish_quality_gate(
                 snapshot_payload,
                 run_editorial=True,
                 adaptive_reason=f"repair_attempt_{attempt}",
+                achievable_by_section=achievable_by_section,
             )
         else:
             log.warning(
@@ -54066,6 +54218,7 @@ def _run_prepublish_quality_gate(
                 snapshot_payload,
                 run_editorial=False,
                 adaptive_reason="editorial_budget_exhausted_after_repair",
+                achievable_by_section=achievable_by_section,
             )
 
     # LLM 교체안이 새 hard issue를 남겼거나 예산 때문에 손대지 못했다면 한 번 더 잘라낸다.
@@ -54111,10 +54264,18 @@ def _run_prepublish_quality_gate(
         if fallback_passed
         else "blocked"
     )
+    thin_pool_sections = _prepublish_thin_pool_sections(result, fallback_minimum_per_section)
+    if thin_pool_sections:
+        log.warning(
+            "[QUALITY GATE] thin candidate pool lowered section minimums: %s",
+            {section: f"{info['cards']} cards / achievable {info['achievable']} (fixed {info['fixed_minimum']})" for section, info in thin_pool_sections.items()},
+        )
     result["prepublish_quality_gate"] = {
         "status": gate_status,
         "publishable": publishable,
         "publication_mode": publication_mode,
+        "achievable_briefing_by_section": dict(achievable_by_section),
+        "thin_pool_sections": thin_pool_sections,
         "repair_count": len(repair_attempts),
         "applied_repair_count": applied_repair_count,
         "repair_proposal_limit": repair_proposal_limit,
