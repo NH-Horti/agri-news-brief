@@ -54374,6 +54374,7 @@ def main() -> None:
     execute_orchestration(ctx, handlers)
     if dispatch.get("action") == "skip_non_business":
         log.info("[SKIP] Not a business day in KR: %s (weekend/holiday)", end_kst.date().isoformat())
+        _write_kakao_send_status("skipped_non_business_day")
         return
 
     # -----------------------------
@@ -54478,6 +54479,7 @@ def main() -> None:
     is_bd = is_business_day_kr(end_kst.date())
     if (not FORCE_RUN_ANYDAY) and (not is_bd):
         log.info("[SKIP] Not a business day in KR: %s (weekend/holiday)", end_kst.date().isoformat())
+        _write_kakao_send_status("skipped_non_business_day")
         return
 
     start_kst, end_kst = compute_window(repo, GH_TOKEN, end_kst)

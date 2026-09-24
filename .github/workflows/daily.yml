@@ -296,7 +296,9 @@ jobs:
         run: |
           actual='${{ steps.kakao_status.outputs.actual }}'
           renewed='${{ steps.kakao_refresh_token.outputs.renewed }}'
-          if [ "$actual" != 'success' ] && [ "$actual" != 'already_delivered' ]; then
+          if [ "$actual" = 'skipped_non_business_day' ]; then
+            echo "Not a KR business day; no briefing is scheduled."
+          elif [ "$actual" != 'success' ] && [ "$actual" != 'already_delivered' ]; then
             echo "::error::Kakao delivery did not complete successfully: $actual"
             exit 1
           fi

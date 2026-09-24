@@ -1,7 +1,7 @@
 import unittest
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 
-from scripts.delivery_watchdog_decision import decide_delivery_action
+from scripts.delivery_watchdog_decision import decide_delivery_action, is_business_day_kr
 
 
 class DeliveryWatchdogDecisionTests(unittest.TestCase):
@@ -22,6 +22,24 @@ class DeliveryWatchdogDecisionTests(unittest.TestCase):
             "display_title": title,
             "html_url": f"https://example.test/runs/{run_id}",
         }
+
+    def test_holiday_skips_recovery_even_after_failed_runs(self):
+        decision = decide_delivery_action(
+            {},
+            {"workflow_runs": [self._run(10, "2026-09-23T21:05:00Z")]},
+            now=datetime(2026, 9, 24, 4, 41, tzinfo=timezone.utc),
+            report_date="2026-09-24",
+            business_day=False,
+        )
+
+        self.assertEqual(decision["result"], "non-business-day")
+        self.assertEqual(decision["action"], "none")
+
+    def test_business_day_calendar_matches_kr_holidays(self):
+        self.assertFalse(is_business_day_kr(date(2026, 9, 24)))  # Chuseok
+        self.assertFalse(is_business_day_kr(date(2026, 10, 5)))  # substitute holiday
+        self.assertFalse(is_business_day_kr(date(2026, 9, 26)))  # Saturday
+        self.assertTrue(is_business_day_kr(date(2026, 9, 23)))
 
     def test_success_receipt_records_on_time_delivery(self):
         decision = decide_delivery_action(

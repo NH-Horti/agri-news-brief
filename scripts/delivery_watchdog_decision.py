@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import sys
 from datetime import date, datetime, time, timezone
 from pathlib import Path
 from typing import Any
@@ -12,6 +14,28 @@ KST = ZoneInfo("Asia/Seoul")
 DELIVERY_DEADLINE = time(7, 0)
 STALE_RECOVERY_CUTOFF = time(6, 30)
 HARD_RECOVERY_CUTOFF = time(6, 40)
+
+
+def _env_dates(name: str) -> set[str]:
+    return {part.strip() for part in os.getenv(name, "").split(",") if part.strip()}
+
+
+def is_business_day_kr(day: date) -> bool:
+    """Mirror main.is_business_day_kr so the watchdog skips the days main.py skips."""
+    if day.weekday() >= 5:
+        return False
+    iso = day.isoformat()
+    if iso in _env_dates("EXCLUDE_HOLIDAYS"):
+        return True
+    if iso in _env_dates("EXTRA_HOLIDAYS"):
+        return False
+    try:
+        import holidays
+
+        return day not in holidays.KR(years=[day.year], observed=True)
+    except Exception as exc:  # keep recovering deliveries if the calendar is unavailable
+        print(f"[watchdog] holiday calendar unavailable, assuming business day: {exc}", file=sys.stderr)
+        return True
 
 
 def _parse_timestamp(value: object) -> datetime | None:
@@ -64,6 +88,7 @@ def decide_delivery_action(
     stale_after_minutes: int = 25,
     hard_cutoff_minimum_age: int = 10,
     recovery_limit: int = 2,
+    business_day: bool = True,
 ) -> dict[str, Any]:
     if now.tzinfo is None:
         now = now.replace(tzinfo=timezone.utc)
@@ -91,6 +116,22 @@ def decide_delivery_action(
             "receipt_status": receipt_status,
             "receipt_timestamp": sent_at.isoformat() if sent_at else "",
             "delivery_on_time": on_time,
+            "run_id": "",
+            "run_url": "",
+            "run_status": "not_checked",
+            "run_conclusion": "not_checked",
+            "run_age_minutes": 0,
+            "recovery_run_count": 0,
+        }
+
+    if not business_day:
+        return {
+            "result": "non-business-day",
+            "action": "none",
+            "report_date": report_date,
+            "receipt_status": receipt_status or "missing",
+            "receipt_timestamp": "",
+            "delivery_on_time": None,
             "run_id": "",
             "run_url": "",
             "run_status": "not_checked",
@@ -186,6 +227,7 @@ def main() -> int:
         now=now,
         report_date=args.report_date,
         dry_run=str(args.dry_run).strip().lower() in {"1", "true", "yes"},
+        business_day=is_business_day_kr(date.fromisoformat(args.report_date)),
     )
     print(json.dumps(decision, ensure_ascii=False, sort_keys=True))
     return 0
