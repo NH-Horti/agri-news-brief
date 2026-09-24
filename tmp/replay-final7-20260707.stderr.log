@@ -1,0 +1,92 @@
+2026-07-12 08:25:09,120 [INFO] [ENV] loaded local env file(s): .env.dev.local, .env.local
+2026-07-12 08:25:09,124 [INFO] [HF-INIT] token=SET rerank=True board_rerank=False model=intfloat/multilingual-e5-large
+2026-07-12 08:25:09,156 [INFO] [EVAL-FEEDBACK] loaded selection guardrails from docs/evals/latest-selection-feedback.json
+2026-07-12 08:25:09,170 [INFO] [BUILD] local-replay-20260707-final7
+2026-07-12 08:25:09,173 [INFO] [LOCAL DRY RUN] output root: C:\Users\reonw\Documents\GitHub\agri-news-brief\tmp\replay-final7-20260707
+2026-07-12 08:25:09,210 [INFO] [REPLAY] loaded snapshot: C:\Users\reonw\Documents\GitHub\agri-news-brief\docs\replay\2026-07-07.snapshot.json
+2026-07-12 08:26:09,795 [INFO] [REPLAY] rescored 496 article(s) with current scoring logic
+2026-07-12 08:26:09,919 [INFO] [OVERRIDE1] supply-price-collapse-protect: kept in supply title=여름 과일값 숨통 트이나…복숭아· 포도 생산 늘며 가격 하락 전망
+2026-07-12 08:26:09,919 [INFO] [OVERRIDE1] supply-horti-protect: kept in supply title=여름 과일값 숨통 트이나…복숭아· 포도 생산 늘며 가격 하락 전망
+2026-07-12 08:26:09,951 [INFO] [OVERRIDE1] supply-horti-protect: kept in supply title=여름배추 수급 , 선제 대응
+2026-07-12 08:26:09,988 [INFO] [OVERRIDE1] supply-horti-protect: kept in supply title="생산비 폭등·농산물값 폭락 더는 못 버틴다"
+2026-07-12 08:26:10,078 [INFO] [OVERRIDE1] supply-horti-protect: kept in supply title=경남 농가, 400만t 중국 단감시장 진출 '예약'
+2026-07-12 08:26:10,142 [INFO] [OVERRIDE1] supply-horti-protect: kept in supply title=‘AI가 참외밭에 물주고 환기까지’···경북, 자율재배 서비스 상용화
+2026-07-12 08:26:10,275 [INFO] [OVERRIDE1] supply-horti-protect: kept in supply title=' 토마토 달걀 볶음' 한 접시에 11만원…中 식당, 바가지 논란
+2026-07-12 08:26:10,550 [INFO] [OVERRIDE1] supply-price-collapse-protect: kept in supply title=농자재값 폭등과 농산물 가격 폭락에 신음하는 농민들, 시민과 함께 광...
+2026-07-12 08:26:10,551 [INFO] [OVERRIDE1] supply-horti-protect: kept in supply title=농자재값 폭등과 농산물 가격 폭락에 신음하는 농민들, 시민과 함께 광...
+2026-07-12 08:26:10,672 [INFO] [OVERRIDE1] supply-price-collapse-protect: kept in supply title=“여름 급식에 양송이버섯·애호박 요리 추천”
+2026-07-12 08:26:10,735 [INFO] [OVERRIDE1] supply-horti-protect: kept in supply title=농어촌공사, 알제리 씨 감자 연구 역량 강화해 ‘ 감자 외교’ 이어간다
+2026-07-12 08:26:11,211 [INFO] [OVERRIDE1] supply-price-collapse-protect: kept in supply title=농협손보, ‘지역사회 릴레이 양파 나눔 캠페인’ 전개
+2026-07-12 08:26:11,212 [INFO] [OVERRIDE1] supply-horti-protect: kept in supply title=농협손보, ‘지역사회 릴레이 양파 나눔 캠페인’ 전개
+2026-07-12 08:26:11,551 [INFO] [OVERRIDE1] supply-horti-protect: kept in supply title=[최석현의 충청 속 세계]일본의 쌀 소동, 농산물 유통 구조 재편을 묻는...
+2026-07-12 08:26:11,576 [INFO] [OVERRIDE1] supply-horti-protect: kept in supply title=옥천군농업기술센터, 이상기후 대응 ‘고품질 포도 생산’ 맞춤형 교육...
+2026-07-12 08:26:11,668 [INFO] [OVERRIDE1] supply-price-collapse-protect: kept in supply title=김세훈 화천군수, 가락시장서 농산물 세일즈
+2026-07-12 08:26:11,669 [INFO] [OVERRIDE1] supply-horti-protect: kept in supply title=김세훈 화천군수, 가락시장서 농산물 세일즈
+2026-07-12 08:26:11,832 [INFO] [OVERRIDE1] supply-price-collapse-protect: kept in dist title=김세훈 화천군수, 가락시장서 농산물 세일즈
+2026-07-12 08:26:11,833 [INFO] [OVERRIDE1] supply-horti-protect: kept in dist title=김세훈 화천군수, 가락시장서 농산물 세일즈
+2026-07-12 08:26:12,073 [INFO] [OVERRIDE1] supply-price-collapse-protect: kept in dist title=농산물 값 하락에… 화천군수 직접 세일즈
+2026-07-12 08:26:12,074 [INFO] [OVERRIDE1] supply-horti-protect: kept in dist title=농산물 값 하락에… 화천군수 직접 세일즈
+2026-07-12 08:26:12,179 [INFO] [OVERRIDE1] supply-horti-protect: kept in dist title="생산비 폭등·농산물값 폭락 더는 못 버틴다"
+2026-07-12 08:26:12,259 [INFO] [OVERRIDE1] supply-price-collapse-protect: kept in dist title=여름 과일값 숨통 트이나…복숭아· 포도 생산 늘며 가격 하락 전망
+2026-07-12 08:26:12,260 [INFO] [OVERRIDE1] supply-horti-protect: kept in dist title=여름 과일값 숨통 트이나…복숭아· 포도 생산 늘며 가격 하락 전망
+2026-07-12 08:26:13,744 [INFO] [REBALANCE] moved 7 item(s) from policy -> supply/dist (retail-trend + NH-field)
+2026-07-12 08:26:18,695 [INFO] [REBALANCE] moved 15 item(s) by policy-like override: -> policy
+2026-07-12 08:27:08,782 [INFO] [REASSIGN] moved 30 item(s) by global rescoring
+2026-07-12 08:27:46,674 [INFO] [AUDIT] drop section=supply reason=agri_crime_incident_tail title="첫 수확도 못했는데‥" 농산물 절도 기승
+2026-07-12 08:27:57,045 [INFO] [AUDIT] drop section=policy reason=policy_non_agri_foodservice_cost_noise title=유럽 폭염에 올리브유 가격 급등… 국내 치킨값 오르나
+2026-07-12 08:28:09,565 [INFO] [AUDIT] drop section=dist reason=dist_reader_role_misfit title=청양군, '전국 유일 S급 프리미엄' 멜론 본격 출하… 올해 15억 매출 기...
+2026-07-12 08:29:04,960 [INFO] [REBALANCE] promoted 2 program-core board story(s) into final supply
+2026-07-12 08:29:04,977 [INFO] [AUDIT] drop section=supply reason=selection_feedback_core_fit title=NH농협손보, 양파 값 폭락에 팔 걷었다…농가·취약계층 동시 지원
+2026-07-12 08:29:05,061 [INFO] [AUDIT] pruned 1 final item(s) after section normalization
+2026-07-12 08:29:08,846 [INFO] [REBALANCE] recovered 1 supply underfill item(s) from raw pool
+2026-07-12 08:29:10,245 [INFO] [REBALANCE] recovered 2 policy underfill item(s) from raw pool
+2026-07-12 08:29:10,562 [INFO] [REBALANCE] dropped 1 optional weak policy macro tail item(s)
+2026-07-12 08:29:25,436 [INFO] [REBALANCE] replaced 1 optional weak dist tail item(s)
+2026-07-12 08:29:25,512 [INFO] [AUDIT] drop section=policy reason=selection_feedback_low_fit title=성추행·차별·저임금… 인권 사각지대에 놓인 외국인 요양보호사
+2026-07-12 08:29:25,624 [INFO] [AUDIT] pruned 1 final item(s) after underfill recovery
+2026-07-12 08:29:26,630 [INFO] [REBALANCE] replaced 2 weak pest tail item(s)
+2026-07-12 08:29:27,854 [INFO] [REBALANCE] replaced 1 duplicate-theme pest tail item(s)
+2026-07-12 08:29:41,020 [INFO] [REBALANCE] recovered 3 preferred-count tail item(s) from raw pool
+2026-07-12 08:29:43,325 [INFO] [AUDIT] drop section=dist reason=selection_feedback_low_fit title=[더벨][VC 투자기업] 미스터아빠, IPO 준비 착수…AI 사업 본격화
+2026-07-12 08:29:43,354 [INFO] [AUDIT] pruned 1 final item(s) after preferred-count recovery
+2026-07-12 08:29:55,339 [INFO] [REBALANCE] refilled 1 preferred-count gap item(s) after final audit
+2026-07-12 08:30:01,254 [INFO] [REBALANCE] editorial tail guard replaced supply=0 policy=0 dist=2 item(s)
+2026-07-12 08:30:01,560 [INFO] [REBALANCE] editorial issue fallback replaced policy=2 supply=0 dist=0 item(s)
+2026-07-12 08:30:09,110 [INFO] [AUDIT] drop section=dist reason=selection_feedback_low_fit title=강진농협, 2026년산 계약재배 쌀귀리 수매 실시
+2026-07-12 08:30:09,206 [INFO] [REBALANCE] final quality sweep pruned 1 residual item(s)
+2026-07-12 08:30:22,398 [INFO] [AUDIT] drop section=dist reason=selection_feedback_low_fit title=[더벨][VC 투자기업] 미스터아빠, IPO 준비 착수…AI 사업 본격화
+2026-07-12 08:30:22,450 [INFO] [REBALANCE] post-sweep refilled 1 item(s), cleaned dupes=0 hard=0 audit=1
+2026-07-12 08:30:24,436 [INFO] [REBALANCE] final relaxed preferred-count refill added 2 item(s), audit=0
+2026-07-12 08:30:30,785 [INFO] [REBALANCE] publish quality guard repaired supply=0 policy=0 dist=1, refilled dist=0, supply-core=3, dist-core=0
+2026-07-12 08:30:54,349 [INFO] [REBALANCE] final publish editorial selection repaired 12 visible card(s)
+2026-07-12 08:30:54,762 [INFO] [AUDIT] drop section=policy reason=selection_feedback_core_fit title=농자재값 폭등과 농산물 가격 폭락에 신음하는 농민들, 시민과 함께 광...
+2026-07-12 08:30:54,780 [INFO] [AUDIT] drop section=dist reason=selection_feedback_core_fit title=강진농협, 2026년산 계약재배 쌀귀리 수매 실시
+2026-07-12 08:31:14,891 [INFO] [AUDIT] drop section=policy reason=selection_feedback_core_fit title=농자재값 폭등과 농산물 가격 폭락에 신음하는 농민들, 시민과 함께 광...
+2026-07-12 08:31:15,741 [INFO] [REBALANCE] post-publish final hard sweep pruned=0/0 refilled=0/2 audit=2/1
+2026-07-12 08:31:17,521 [INFO] [REBALANCE] post-publish editorial follow-up repaired 5 card/core target(s)
+2026-07-12 08:31:41,342 [INFO] [REBALANCE] post-followup structural quality repaired 5 visible card(s)
+2026-07-12 08:31:58,378 [INFO] [REBALANCE] post-followup quality refill added=1 repaired=1
+2026-07-12 08:31:58,623 [INFO] [FINAL-SOURCE-QUALITY] section=supply dropped excess tier1 without qualified replacement: NH농협손보, 양파 값 폭락에 팔 걷었다…농가·취약계층 동시 지원
+2026-07-12 08:31:58,674 [INFO] [FINAL-SOURCE-QUALITY] section=dist out=[tier1:이로운넷] 청송 사과 협회, '청송 사과 발전 계획' 발표… AI 데이터 허브 구축·직거... | in=[tier2:농수축산신문] 전주원협 양파 대만 수출… 수급안정 총력
+2026-07-12 08:31:58,789 [INFO] [FINAL-SOURCE-QUALITY] section=dist out=[tier1:매일산업뉴스] K-푸드가 연 길, K-농산물이 달린다…수출 전략 품목으로 부상 | in=[tier3:TV조선] 배는 이집트로, 포도는 호주 전 품종 수출 …K- 농산물 수출 길 확대
+2026-07-12 08:31:58,990 [INFO] [FINAL-SOURCE-QUALITY] section=policy dropped excess tier1 without qualified replacement: 농자재값 폭등과 농산물 가격 폭락에 신음하는 농민들, 시민과 함께 광...
+2026-07-12 08:31:58,991 [INFO] [REBALANCE] final source quality changed=4
+2026-07-12 08:32:14,336 [INFO] [FINAL-EVENT-DEDUP] reason=same_commodity_quantity keep=[supply] 여름 제철 과일 복숭아· 포도 생산량 늘어 가격 하락 전망 | drop=[supply] 출하량 증가 영향…여름 대표 과일, 포도·복숭아 가격 하락
+2026-07-12 08:32:14,377 [INFO] [FINAL-EVENT-DEDUP-REFILL] section=supply title=여름 제철 과일 ‘복숭아· 포도 ’ 가격 하락…품질·모양도 양호
+2026-07-12 08:32:27,880 [INFO] [REBALANCE] final reader quality changed=10 dedupe=1/1 source=0 reassert=10
+2026-07-12 08:32:27,927 [INFO] [MAINT] replay_date 2026-07-07 window: 2026-07-06T06:00:00+09:00 ~ 2026-07-07T06:00:00+09:00
+2026-07-12 08:32:27,928 [INFO] [STAGE] maintenance_publish start elapsed=438.8s {'action': 'maintenance replay_date', 'report_date': '2026-07-07'}
+2026-07-12 08:32:27,928 [INFO] [STAGE] maintenance_publish_list_archives start elapsed=438.8s 
+2026-07-12 08:32:28,106 [INFO] [STAGE] maintenance_publish_list_archives done elapsed=439.0s {'archive_count': 129}
+2026-07-12 08:32:28,107 [INFO] [STAGE] maintenance_publish_render start elapsed=439.0s 
+2026-07-12 08:32:31,246 [INFO] [STAGE] maintenance_publish_render done elapsed=442.1s {'html_bytes': 334598}
+2026-07-12 08:32:31,248 [INFO] [STAGE] maintenance_publish_archive start elapsed=442.1s {'path': 'docs/archive/2026-07-07.html'}
+2026-07-12 08:32:50,927 [INFO] [LOCAL DRY RUN] write C:\Users\reonw\Documents\GitHub\agri-news-brief\tmp\replay-final7-20260707\main\docs\archive\2026-07-07.html
+2026-07-12 08:32:50,927 [INFO] [MAINT PUT] docs/archive/2026-07-07.html
+2026-07-12 08:32:50,928 [INFO] [STAGE] maintenance_publish_archive done elapsed=461.8s {'path': 'docs/archive/2026-07-07.html'}
+2026-07-12 08:32:50,928 [INFO] [STAGE] maintenance_publish_debug start elapsed=461.8s {'path': 'docs/debug/2026-07-07.json'}
+2026-07-12 08:32:50,929 [INFO] [STAGE] maintenance_publish_fast_exit done elapsed=461.8s {'reason': 'local_dry_run_after_archive'}
+2026-07-12 08:32:50,946 [INFO] [LOCAL DRY RUN] write C:\Users\reonw\Documents\GitHub\agri-news-brief\tmp\replay-final7-20260707\main\docs\debug\2026-07-07.json
+2026-07-12 08:32:50,947 [INFO] [MAINT PUT] docs/debug/2026-07-07.json
+2026-07-12 08:32:50,947 [INFO] [STAGE] maintenance_publish_debug done elapsed=461.8s {'path': 'docs/debug/2026-07-07.json'}
+2026-07-12 08:32:50,948 [INFO] [LOCAL DRY RUN] fast exit after archive/debug publish; set LOCAL_DRY_RUN_FAST_EXIT_AFTER_ARCHIVE=0 to run index/manifest follow-up

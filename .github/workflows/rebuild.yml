@@ -27,6 +27,26 @@ on:
         required: false
         default: 'false'
         type: string
+      use_saved_snapshot:
+        description: 'Replay docs/replay/<date>.snapshot.json instead of searching again (true/false)'
+        required: false
+        default: 'false'
+        type: string
+      quality_fail_under:
+        description: 'Fail the evaluation when the final score is below this value'
+        required: false
+        default: '55'
+        type: string
+      replay_allow_openai:
+        description: 'Allow OpenAI summaries for newly selected cards during replay (true/false)'
+        required: false
+        default: 'false'
+        type: string
+      run_quality_gate:
+        description: 'Run the editorial quality gate (with deterministic excision) before publishing the rebuilt page even without Kakao (true/false)'
+        required: false
+        default: 'false'
+        type: string
 
 permissions:
   contents: write
@@ -67,6 +87,8 @@ jobs:
           INPUT_SEND_KAKAO: ${{ inputs.send_kakao }}
           INPUT_MAX_PER_SECTION: ${{ inputs.max_per_section }}
           INPUT_DEBUG: ${{ inputs.debug }}
+          INPUT_USE_SAVED_SNAPSHOT: ${{ inputs.use_saved_snapshot }}
+          INPUT_QUALITY_FAIL_UNDER: ${{ inputs.quality_fail_under }}
         run: |
           set -euo pipefail
 
@@ -75,6 +97,8 @@ jobs:
           send_kakao="$INPUT_SEND_KAKAO"
           max_per_section="$INPUT_MAX_PER_SECTION"
           debug_input="$INPUT_DEBUG"
+          use_saved_snapshot="$INPUT_USE_SAVED_SNAPSHOT"
+          quality_fail_under="$INPUT_QUALITY_FAIL_UNDER"
 
           if [ -z "$ux_patch_days" ]; then
             ux_patch_days='0'
@@ -94,11 +118,30 @@ jobs:
             debug_enabled='0'
           fi
 
+          if [ "$use_saved_snapshot" = 'true' ]; then
+            maintenance_task='replay_date'
+            replay_snapshot_path=".agri_replay/${report_date}.snapshot.json"
+            replay_write_snapshot='false'
+          else
+            maintenance_task='rebuild_date'
+            replay_snapshot_path=''
+            replay_write_snapshot='true'
+          fi
+
+          if [ -z "$quality_fail_under" ]; then
+            quality_fail_under='55'
+          fi
+
           echo "report_date=$report_date" >> "$GITHUB_OUTPUT"
           echo "ux_patch_days=$ux_patch_days" >> "$GITHUB_OUTPUT"
           echo "send_kakao=$send_kakao" >> "$GITHUB_OUTPUT"
           echo "max_per_section=$max_per_section" >> "$GITHUB_OUTPUT"
           echo "debug_enabled=$debug_enabled" >> "$GITHUB_OUTPUT"
+          echo "use_saved_snapshot=$use_saved_snapshot" >> "$GITHUB_OUTPUT"
+          echo "maintenance_task=$maintenance_task" >> "$GITHUB_OUTPUT"
+          echo "replay_snapshot_path=$replay_snapshot_path" >> "$GITHUB_OUTPUT"
+          echo "replay_write_snapshot=$replay_write_snapshot" >> "$GITHUB_OUTPUT"
+          echo "quality_fail_under=$quality_fail_under" >> "$GITHUB_OUTPUT"
 
       - name: Install deps
         run: |
@@ -112,6 +155,20 @@ jobs:
         run: |
           python scripts/run_smoke_checks.py
 
+      - name: Prepare saved replay snapshot
+        if: steps.vars.outputs.use_saved_snapshot == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_path="docs/replay/${{ steps.vars.outputs.report_date }}.snapshot.json"
+          target_path="${{ steps.vars.outputs.replay_snapshot_path }}"
+          if [ ! -f "$source_path" ]; then
+            echo "Saved replay snapshot not found: $source_path"
+            exit 1
+          fi
+          mkdir -p "$(dirname "$target_path")"
+          cp "$source_path" "$target_path"
+
       - name: Rebuild
         id: rebuild
         env:
@@ -122,8 +179,14 @@ jobs:
           NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
           NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          OPENAI_MODEL: gpt-5.4
+          OPENAI_MODEL: gpt-5.6-sol
           OPENAI_REASONING_EFFORT: low
+          EDITORIAL_OPENAI_MODEL: gpt-5.6-sol
+          EDITORIAL_REASONING_EFFORT: low
+          EDITORIAL_REPAIR_REASONING_EFFORT: low
+          EDITORIAL_MAX_RAW_PER_SECTION: '10'
+          EDITORIAL_EVAL_MAX_OUTPUT_TOKENS: '2400'
+          EDITORIAL_REPAIR_MAX_OUTPUT_TOKENS: '1800'
           OPENAI_SUMMARY_FEEDBACK_PATH: docs/evals/latest-feedback.txt
           SELECTION_FEEDBACK_PATH: docs/evals/latest-selection-feedback.json
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
@@ -134,6 +197,7 @@ jobs:
           KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
           KAKAO_REFRESH_TOKEN: ${{ secrets.KAKAO_REFRESH_TOKEN }}
           KAKAO_STATUS_FILE: ${{ runner.temp }}/kakao-status.txt
+          KAKAO_FAIL_OPEN: 'true'
           GA4_MEASUREMENT_ID: ${{ secrets.GA4_MEASUREMENT_ID }}
 
           PUBLISH_MODE: github_pages
@@ -141,12 +205,27 @@ jobs:
           PAGES_FILE_PATH: docs/index.html
           BRIEF_VIEW_URL: https://nh-horti.github.io/agri-news-brief/
 
-          MAINTENANCE_TASK: rebuild_date
+          MAINTENANCE_TASK: ${{ steps.vars.outputs.maintenance_task }}
           FORCE_REPORT_DATE: ${{ steps.vars.outputs.report_date }}
           MAINTENANCE_SEND_KAKAO: ${{ steps.vars.outputs.send_kakao }}
-          REPLAY_WRITE_SNAPSHOT: 'true'
+          DELIVERY_RECEIPT_DIR: docs/delivery
+          REPLAY_SNAPSHOT_PATH: ${{ steps.vars.outputs.replay_snapshot_path }}
+          REPLAY_WRITE_SNAPSHOT: ${{ steps.vars.outputs.replay_write_snapshot }}
+          REPLAY_ALLOW_OPENAI: ${{ inputs.replay_allow_openai == 'true' && 'true' || 'false' }}
+          REPLAY_RUN_QUALITY_GATE: ${{ inputs.run_quality_gate == 'true' && 'true' || 'false' }}
           REPLAY_SNAPSHOT_DIR: .agri_replay
           MAX_PER_SECTION: ${{ steps.vars.outputs.max_per_section }}
+
+          # Subscriber-facing replay performs its editorial gate before Kakao.
+          # Bound each model call/repair so this safety check cannot recreate
+          # the unbounded latency and spend pattern from 2026-08-03.
+          EDITORIAL_OPENAI_TIMEOUT_SECONDS: '45'
+          EDITORIAL_OPENAI_MAX_ATTEMPTS: '1'
+          EDITORIAL_OPENAI_RETRY_DELAY_SECONDS: '0'
+          PREPUBLISH_QUALITY_MAX_REPAIRS: '1'
+          PREPUBLISH_QUALITY_MAX_PROPOSALS: '2'
+          PREPUBLISH_EDITORIAL_MAX_CALLS: '4'
+          PREPUBLISH_EDITORIAL_TOKEN_BUDGET: '90000'
 
           FORCE_RUN_ANYDAY: 'false'
           UX_PATCH_DAYS: ${{ steps.vars.outputs.ux_patch_days }}
@@ -194,7 +273,9 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          EDITORIAL_OPENAI_MODEL: gpt-5.4
+          EDITORIAL_OPENAI_MODEL: gpt-5.6-sol
+          EDITORIAL_REASONING_EFFORT: low
+          EDITORIAL_MAX_RAW_PER_SECTION: '10'
         run: |
           set -euo pipefail
 
@@ -204,20 +285,33 @@ jobs:
             exit 1
           fi
 
-          python scripts/evaluate_daily_report.py \
-            --report-date "${{ steps.vars.outputs.report_date }}" \
-            --snapshot-path "$snapshot_path" \
-            --repo "$REPO" \
-            --token "$GITHUB_TOKEN" \
-            --ref main \
-            --publish-branch main \
-            --output-json "reports/evals/${{ steps.vars.outputs.report_date }}.json" \
-            --output-md "reports/evals/${{ steps.vars.outputs.report_date }}.md" \
-            --feedback-out "reports/evals/latest-feedback.txt" \
-            --selection-feedback-out "reports/evals/latest-selection-feedback.json" \
-            --editorial-eval \
-            --editorial-model "$EDITORIAL_OPENAI_MODEL" \
-            --fail-under 55
+          eval_args=(
+            python scripts/evaluate_daily_report.py
+            --report-date "${{ steps.vars.outputs.report_date }}"
+            --snapshot-path "$snapshot_path"
+            --repo "$REPO"
+            --token "$GITHUB_TOKEN"
+            --ref main
+            --publish-branch main
+            --output-json "reports/evals/${{ steps.vars.outputs.report_date }}.json"
+            --output-md "reports/evals/${{ steps.vars.outputs.report_date }}.md"
+            --feedback-out "reports/evals/latest-feedback.txt"
+            --selection-feedback-out "reports/evals/latest-selection-feedback.json"
+            --fail-under "${{ steps.vars.outputs.quality_fail_under }}"
+          )
+
+          result_path="reports/evals/${{ steps.vars.outputs.report_date }}.json"
+          if [ -f "$result_path" ]; then
+            echo "Reusing the mandatory pre-send quality result; no duplicate OpenAI review."
+            eval_args+=(--existing-result-json "$result_path")
+          else
+            eval_args+=(
+              --editorial-eval
+              --editorial-model "$EDITORIAL_OPENAI_MODEL"
+              --editorial-max-raw-per-section "$EDITORIAL_MAX_RAW_PER_SECTION"
+            )
+          fi
+          "${eval_args[@]}"
 
       - name: Resolve Kakao status
         if: always()
@@ -239,15 +333,32 @@ jobs:
 
           echo "actual=$actual" >> "$GITHUB_OUTPUT"
 
+      - name: Enforce Kakao delivery
+        if: always()
+        shell: bash
+        run: |
+          requested='${{ steps.vars.outputs.send_kakao }}'
+          actual='${{ steps.kakao_status.outputs.actual }}'
+          if [ "$requested" = 'true' ] && [ "$actual" != 'success' ] && [ "$actual" != 'already_delivered' ]; then
+            echo "::error::Kakao delivery did not complete with a durable receipt: $actual"
+            exit 1
+          fi
+
       - name: Verify rebuilt production archive content
         id: verify_archive
         shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
         run: |
           set -euo pipefail
 
           archive_path="docs/archive/${{ steps.vars.outputs.report_date }}.html"
-          if [ ! -f "$archive_path" ]; then
-            echo "Archive file was not generated: $archive_path"
+          mkdir -p "$(dirname "$archive_path")"
+          if ! gh api \
+            -H 'Accept: application/vnd.github.raw+json' \
+            "repos/${REPO}/contents/${archive_path}?ref=main" > "$archive_path"; then
+            echo "Published archive could not be fetched from main: $archive_path"
             exit 1
           fi
 
@@ -296,7 +407,8 @@ jobs:
             echo "- Rebuild: ${{ steps.rebuild.outcome }}"
             echo "- Eval JSON: https://raw.githubusercontent.com/${{ github.repository }}/main/docs/evals/${{ steps.vars.outputs.report_date }}.json"
             echo "- Archive verify: ${{ steps.verify_archive.outcome }}"
-            echo "- OpenAI model: gpt-5.4"
+            echo "- Article generation model: gpt-5.6-sol"
+            echo "- Editorial evaluation model: gpt-5.6-sol (low reasoning, bounded/adaptive)"
             echo "- Kakao requested: ${{ steps.vars.outputs.send_kakao }}"
             echo "- Kakao actual: ${{ steps.kakao_status.outputs.actual }}"
             echo "- Archive: https://nh-horti.github.io/agri-news-brief/archive/${{ steps.vars.outputs.report_date }}.html"

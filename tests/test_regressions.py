@@ -3,34 +3,26 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 MAIN = ROOT / "main.py"
-DEV_VERIFY_WORKFLOW = ROOT / ".github" / "workflows" / "dev-verify.yml"
 DAILY_WORKFLOW = ROOT / ".github" / "workflows" / "daily.yml"
+DAILY_WATCHDOG_WORKFLOW = ROOT / ".github" / "workflows" / "daily-watchdog.yml"
 MAINTENANCE_WORKFLOW = ROOT / ".github" / "workflows" / "maintenance.yml"
 REBUILD_WORKFLOW = ROOT / ".github" / "workflows" / "rebuild.yml"
-PROMOTE_WORKFLOW = ROOT / ".github" / "workflows" / "promote-dev.yml"
-AUTO_PROMOTE_WORKFLOW = ROOT / ".github" / "workflows" / "auto-promote-dev.yml"
-AUTO_SYNC_MAIN_TO_DEV_WORKFLOW = ROOT / ".github" / "workflows" / "auto-sync-main-to-dev.yml"
 CI_WORKFLOW = ROOT / ".github" / "workflows" / "ci.yml"
+CI_RUNNER = ROOT / "scripts" / "run_ci_regression_suite.py"
 SECRETS_CHECK_WORKFLOW = ROOT / ".github" / "workflows" / "secrets-check.yml"
-DEV_LOADER_HTML = ROOT / "docs" / "dev" / "index.html"
-DEV_LOADER_VERSION = ROOT / "docs" / "dev" / "version.json"
 PROD_INDEX_HTML = ROOT / "docs" / "index.html"
 
 class TestRegressions(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.text = MAIN.read_text(encoding="utf-8")
-        cls.dev_verify_text = DEV_VERIFY_WORKFLOW.read_text(encoding="utf-8")
         cls.daily_text = DAILY_WORKFLOW.read_text(encoding="utf-8")
+        cls.daily_watchdog_text = DAILY_WATCHDOG_WORKFLOW.read_text(encoding="utf-8")
         cls.maintenance_text = MAINTENANCE_WORKFLOW.read_text(encoding="utf-8")
         cls.rebuild_text = REBUILD_WORKFLOW.read_text(encoding="utf-8")
-        cls.promote_text = PROMOTE_WORKFLOW.read_text(encoding="utf-8")
-        cls.auto_promote_text = AUTO_PROMOTE_WORKFLOW.read_text(encoding="utf-8")
-        cls.auto_sync_text = AUTO_SYNC_MAIN_TO_DEV_WORKFLOW.read_text(encoding="utf-8")
         cls.ci_text = CI_WORKFLOW.read_text(encoding="utf-8")
+        cls.ci_runner_text = CI_RUNNER.read_text(encoding="utf-8")
         cls.secrets_check_text = SECRETS_CHECK_WORKFLOW.read_text(encoding="utf-8")
-        cls.dev_loader_text = DEV_LOADER_HTML.read_text(encoding="utf-8")
-        cls.dev_loader_version_text = DEV_LOADER_VERSION.read_text(encoding="utf-8")
         cls.prod_index_text = PROD_INDEX_HTML.read_text(encoding="utf-8")
 
     def test_has_data_nav_buttons(self):
@@ -178,91 +170,57 @@ class TestRegressions(unittest.TestCase):
         self.assertIn('if (blocked) {{', self.text)
         self.assertIn('swipeActive = false;', self.text)
 
-    def test_dev_verify_does_not_extend_window(self):
-        self.assertIn("WINDOW_MIN_HOURS: '0'", self.dev_verify_text)
-        self.assertIn("cron: '0 21 * * 0-4'", self.dev_verify_text)
-        self.assertIn("if: github.event_name == 'schedule' || github.ref_name == 'dev'", self.dev_verify_text)
-        self.assertIn("ref: ${{ github.event_name == 'schedule' && 'dev' || github.ref_name }}", self.dev_verify_text)
-        self.assertIn("GH_CONTENT_REF: ${{ steps.vars.outputs.content_ref }}", self.dev_verify_text)
-        self.assertIn("content_ref='dev'", self.dev_verify_text)
-        self.assertIn("send_kakao='true'", self.dev_verify_text)
-        self.assertIn("GH_CONTENT_BRANCH: codex/dev-preview", self.dev_verify_text)
-        self.assertIn("PAGES_BRANCH: codex/dev-preview", self.dev_verify_text)
-        self.assertIn("git fetch origin codex/dev-preview", self.dev_verify_text)
-        self.assertIn('preview_ref = GH_CONTENT_BRANCH or GH_CONTENT_REF or "main"', self.text)
-
-    def test_promote_workflow_exists_for_dev_to_main(self):
-        self.assertIn("name: agri-news-brief (promote dev to main)", self.promote_text)
-        self.assertIn("git merge --ff-only origin/dev", self.promote_text)
-        self.assertIn("actions/workflows/rebuild.yml/dispatches", self.promote_text)
-        self.assertIn("default: true", self.promote_text)
-        self.assertIn('echo "- Rebuild Kakao requested: ${{ steps.vars.outputs.send_kakao }}"', self.promote_text)
-
-    def test_auto_promote_workflow_promotes_verified_dev_pushes(self):
-        self.assertIn("name: agri-news-brief (auto promote dev to main)", self.auto_promote_text)
-        self.assertIn("workflow_run:", self.auto_promote_text)
-        self.assertIn("agri-news-brief (dev verify rebuild)", self.auto_promote_text)
-        self.assertIn("github.event.workflow_run.conclusion == 'success'", self.auto_promote_text)
-        self.assertIn("github.event.workflow_run.head_branch == 'dev'", self.auto_promote_text)
-        self.assertIn("github.event.workflow_run.event == 'push'", self.auto_promote_text)
-        self.assertIn("git merge --ff-only origin/dev", self.auto_promote_text)
-        self.assertIn("git push origin HEAD:main", self.auto_promote_text)
-
-    def test_auto_sync_workflow_merges_main_back_into_dev(self):
-        self.assertIn("name: agri-news-brief (auto sync main to dev)", self.auto_sync_text)
-        self.assertIn("push:", self.auto_sync_text)
-        self.assertIn("- main", self.auto_sync_text)
-        self.assertIn("if: github.ref_name == 'main'", self.auto_sync_text)
-        self.assertIn("actions: write", self.auto_sync_text)
-        self.assertIn("git merge-base --is-ancestor origin/main origin/dev", self.auto_sync_text)
-        self.assertIn("git merge --no-edit origin/main", self.auto_sync_text)
-        self.assertIn("git push origin HEAD:dev", self.auto_sync_text)
-        self.assertIn("steps.sync.outputs.synced == 'true'", self.auto_sync_text)
-        self.assertIn("actions/workflows/dev-verify.yml/dispatches", self.auto_sync_text)
-
-    def test_rebuild_and_dev_verify_report_actual_kakao_status(self):
+    def test_rebuild_reports_actual_kakao_status(self):
         self.assertIn("KAKAO_STATUS_FILE: ${{ runner.temp }}/kakao-status.txt", self.rebuild_text)
         self.assertIn("id: kakao_status", self.rebuild_text)
         self.assertIn('echo "- Kakao actual: ${{ steps.kakao_status.outputs.actual }}"', self.rebuild_text)
-        self.assertIn("KAKAO_STATUS_FILE: ${{ runner.temp }}/kakao-status.txt", self.dev_verify_text)
-        self.assertIn('echo "- Kakao actual: ${{ steps.kakao_status.outputs.actual }}"', self.dev_verify_text)
         self.assertIn("KAKAO_REFRESH_TOKEN_OUT_FILE: ${{ runner.temp }}/kakao-refresh-token.txt", self.daily_text)
         self.assertIn("id: kakao_refresh_token", self.daily_text)
         self.assertIn('echo "- Kakao refresh token renewed: ${{ steps.kakao_refresh_token.outputs.renewed }}"', self.daily_text)
 
     def test_secrets_check_workflow_exists(self):
         self.assertIn("name: agri-news-brief (validate API secrets)", self.secrets_check_text)
-        self.assertIn("Validate Naver and Kakao secrets", self.secrets_check_text)
+        self.assertIn("cron: '45 19 * * 0-4'", self.secrets_check_text)
+        self.assertIn("Validate Naver, OpenAI, and Kakao secrets", self.secrets_check_text)
         self.assertIn("https://openapi.naver.com/v1/search/news.json", self.secrets_check_text)
         self.assertIn("https://kauth.kakao.com/oauth/token", self.secrets_check_text)
         self.assertIn('append_summary("- Kakao: success (token refresh)")', self.secrets_check_text)
+        self.assertIn('status = "quota_exhausted"', self.secrets_check_text)
+        self.assertIn("deterministic summaries remain available", self.secrets_check_text)
+        self.assertIn("Delivery readiness: ready (AI quality enhancement is degraded)", self.secrets_check_text)
 
-    def test_dev_loader_uses_preview_branch_assets(self):
-        self.assertIn("codex/dev-preview", self.dev_loader_text)
-        self.assertIn("previewFrame", self.dev_loader_text)
-        self.assertIn("requestedDate", self.dev_loader_text)
-        self.assertIn("isMobileViewport()", self.dev_loader_text)
-        self.assertIn("/archive/", self.dev_loader_text)
-        self.assertIn("srcdoc", self.dev_loader_text)
-        self.assertIn("postMessage", self.dev_loader_text)
-        self.assertIn("createObjectURL", self.dev_loader_text)
-        self.assertIn("revokeObjectURL", self.dev_loader_text)
-        self.assertIn("raw preview", self.dev_loader_text)
-        self.assertIn("body {", self.dev_loader_text)
-        self.assertIn("height: calc(100vh - 180px);", self.dev_loader_text)
-        self.assertIn("border-radius: 0;", self.dev_loader_text)
-        self.assertIn('"mode": "loader"', self.dev_loader_version_text)
-        self.assertIn('"preview_branch": "codex/dev-preview"', self.dev_loader_version_text)
-
-    def test_prod_workflows_do_not_extend_window(self):
-        self.assertIn("Primary daily trigger: Cloudflare Workers Cron at KST 06:05.", self.daily_text)
+    def test_prod_workflows_keep_window_and_have_independent_early_trigger(self):
+        self.assertIn("Independent early trigger at KST 05:35", self.daily_text)
         self.assertIn("workflow_dispatch:", self.daily_text)
         self.assertIn("trigger_source", self.daily_text)
-        self.assertNotIn("schedule:", self.daily_text)
-        self.assertNotIn("cron:", self.daily_text)
+        self.assertIn("schedule:", self.daily_text)
+        self.assertIn("cron: '35 20 * * 0-4'", self.daily_text)
+        self.assertIn("timeout-minutes: 25", self.daily_text)
+        self.assertIn("cancel-in-progress: ${{ inputs.force_sla_fallback == true }}", self.daily_text)
         self.assertIn("WINDOW_MIN_HOURS: '0'", self.daily_text)
         self.assertIn("WINDOW_MIN_HOURS: '0'", self.maintenance_text)
         self.assertIn("WINDOW_MIN_HOURS: '0'", self.rebuild_text)
+
+    def test_daily_watchdog_recovers_a_missing_delivery_receipt(self):
+        self.assertIn("name: agri-news-brief (daily watchdog)", self.daily_watchdog_text)
+        self.assertIn("cron: '50 20 * * 0-4'", self.daily_watchdog_text)
+        self.assertIn("cron: '20,35,50,55 21 * * 0-4'", self.daily_watchdog_text)
+        self.assertIn("cron: '15 0 * * 1-5'", self.daily_watchdog_text)
+        self.assertIn("workflow_run:", self.daily_watchdog_text)
+        self.assertIn("workflows: ['agri-news-brief (daily)']", self.daily_watchdog_text)
+        self.assertIn("!contains(github.event.workflow_run.display_title, 'recovery=true')", self.daily_watchdog_text)
+        self.assertIn("actions: write", self.daily_watchdog_text)
+        self.assertIn("WORKFLOW_FILE: daily.yml", self.daily_watchdog_text)
+        self.assertIn("TZ=Asia/Seoul date +%F", self.daily_watchdog_text)
+        self.assertIn('receipt_path="docs/delivery/${report_date}.json"', self.daily_watchdog_text)
+        self.assertIn("scripts/delivery_watchdog_decision.py", self.daily_watchdog_text)
+        self.assertIn("cancel_and_dispatch", self.daily_watchdog_text)
+        self.assertIn("actions/runs/${run_id}/cancel", self.daily_watchdog_text)
+        self.assertIn("delivery-confirmed-on-time", self.daily_watchdog_text)
+        self.assertIn("delivery-confirmed-late", self.daily_watchdog_text)
+        self.assertIn("inputs[trigger_source]=github-watchdog", self.daily_watchdog_text)
+        self.assertIn("inputs[force_sla_fallback]=true", self.daily_watchdog_text)
+        self.assertIn("DRY_RUN: ${{ inputs.dry_run || 'false' }}", self.daily_watchdog_text)
 
     def test_daily_workflow_runs_eval_harness_and_feedback_loop(self):
         self.assertIn("OPENAI_SUMMARY_FEEDBACK_PATH: docs/evals/latest-feedback.txt", self.daily_text)
@@ -271,17 +229,76 @@ class TestRegressions(unittest.TestCase):
         self.assertIn("scripts/evaluate_daily_report.py", self.daily_text)
         self.assertIn("latest-selection-feedback.json", self.daily_text)
         self.assertIn("docs/evals", self.daily_text)
-        self.assertIn("--editorial-eval", self.daily_text)
-        self.assertIn("EDITORIAL_OPENAI_MODEL: gpt-5.4", self.daily_text)
+        self.assertIn("--existing-result-json", self.daily_text)
+        self.assertNotIn("--editorial-eval", self.daily_text)
+        self.assertIn('OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-5.6-sol")', self.text)
+        self.assertIn("OPENAI_MODEL: gpt-5.6-sol", self.daily_text)
+        self.assertIn("OPENAI_MODEL: gpt-5.6-sol", self.rebuild_text)
+        self.assertIn("OPENAI_MODEL: gpt-5.6-sol", self.maintenance_text)
+        self.assertIn("EDITORIAL_OPENAI_MODEL: gpt-5.6-sol", self.daily_text)
+        self.assertIn("EDITORIAL_OPENAI_MODEL: gpt-5.6-sol", self.rebuild_text)
+        self.assertIn('echo "- Article generation model: gpt-5.6-sol (low reasoning)"', self.daily_text)
+        self.assertIn('echo "- Editorial evaluation/repair model: gpt-5.6-sol (low reasoning, adaptive)"', self.daily_text)
+        self.assertIn('echo "- Article generation model: gpt-5.6-sol"', self.rebuild_text)
+        self.assertIn(
+            'echo "- Editorial evaluation model: gpt-5.6-sol (low reasoning, bounded/adaptive)"',
+            self.rebuild_text,
+        )
+        self.assertIn("PREPUBLISH_QUALITY_GATE_ENABLED: 'true'", self.daily_text)
+        self.assertIn("EDITORIAL_MAX_RAW_PER_SECTION: '10'", self.daily_text)
+        self.assertIn("PREPUBLISH_EDITORIAL_TOKEN_BUDGET:", self.daily_text)
+        self.assertIn("--existing-result-json", self.rebuild_text)
+        self.assertIn(
+            "PREPUBLISH_QUALITY_MAX_REPAIRS: ${{ inputs.quality_recovery && '5' || '1' }}",
+            self.daily_text,
+        )
+        self.assertIn(
+            "PREPUBLISH_QUALITY_MAX_PROPOSALS: ${{ inputs.quality_recovery && '10' || '2' }}",
+            self.daily_text,
+        )
+        self.assertIn("BODY_CRAWL_MAX_ARTICLES: '120'", self.daily_text)
+        self.assertIn("BODY_CRAWL_RETRY_TOTAL: '0'", self.daily_text)
+        self.assertIn(
+            "OPENAI_RETRY_MAX: ${{ inputs.quality_recovery && '3' || '1' }}",
+            self.daily_text,
+        )
+        self.assertIn(
+            "EDITORIAL_OPENAI_MAX_ATTEMPTS: ${{ inputs.quality_recovery && '4' || '1' }}",
+            self.daily_text,
+        )
+        self.assertIn(
+            "cancel-in-progress: ${{ inputs.force_sla_fallback == true }}", self.daily_text
+        )
+        self.assertIn("quality_recovery:", self.daily_text)
+        self.assertIn("force_sla_fallback:", self.daily_text)
+        self.assertIn("recovery=${{ inputs.quality_recovery || false }}", self.daily_text)
+        self.assertIn("default: false", self.daily_text)
+        self.assertIn(
+            "PREPUBLISH_QUALITY_DEADLINE_KST: ${{ inputs.quality_recovery && '23:59' || '06:50' }}",
+            self.daily_text,
+        )
+        self.assertIn("PREPUBLISH_QUALITY_MIN_OPERATIONAL_SCORE: '85'", self.daily_text)
+        self.assertIn("PREPUBLISH_SLA_FALLBACK_ENABLED: 'true'", self.daily_text)
+        self.assertIn("PREPUBLISH_SLA_FALLBACK_MIN_SCORE: '78'", self.daily_text)
+        self.assertIn("DELIVERY_RECEIPT_DIR: docs/delivery", self.daily_text)
+        self.assertIn("DAILY_RECEIPT_EARLY_EXIT_ENABLED: 'true'", self.daily_text)
+        self.assertIn("def _daily_delivery_already_succeeded", self.text)
+        self.assertIn("--fail-under 82", self.daily_text)
+        self.assertIn('if [ "$eval_status" -eq 2 ]', self.daily_text)
+        self.assertIn('elif [ "$eval_status" -ne 0 ]', self.daily_text)
         self.assertIn("Evaluate rebuilt report quality", self.rebuild_text)
         self.assertIn("SELECTION_FEEDBACK_PATH: docs/evals/latest-selection-feedback.json", self.rebuild_text)
         self.assertIn("--editorial-eval", self.rebuild_text)
+        self.assertIn("DELIVERY_RECEIPT_DIR: docs/delivery", self.rebuild_text)
+        self.assertIn("Enforce Kakao delivery", self.rebuild_text)
+        self.assertIn("application/vnd.github.raw+json", self.rebuild_text)
+        self.assertIn("Validate Naver, OpenAI, and Kakao secrets", self.secrets_check_text)
+        self.assertIn("https://api.openai.com/v1/responses", self.secrets_check_text)
 
-    def test_dev_verify_workflow_evaluates_preview_report(self):
-        self.assertIn("Evaluate rebuilt preview report", self.dev_verify_text)
-        self.assertIn("docs/dev/index.html", self.dev_verify_text)
-        self.assertIn("reports/evals/", self.dev_verify_text)
-        self.assertIn("latest-selection-feedback.json", self.dev_verify_text)
+    def test_ci_covers_delivery_sla_regressions(self):
+        self.assertIn('"tests.test_delivery_watchdog_decision"', self.ci_runner_text)
+        self.assertIn('"tests.test_prepublish_quality"', self.ci_runner_text)
+        self.assertIn('"tests.test_kakao_runtime_behavior"', self.ci_runner_text)
 
     def test_briefing_cards_expose_eval_metadata(self):
         self.assertIn('data-selection-fit="', self.text)

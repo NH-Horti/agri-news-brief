@@ -5,7 +5,7 @@
 Run local checks manually:
 
 ```bash
-python -m py_compile main.py collector.py io_github.py retry_utils.py schemas.py ux_patch.py ranking.py orchestrator.py observability.py replay.py hf_semantics.py
+python -m py_compile main.py collector.py io_github.py retry_utils.py schemas.py ux_patch.py ranking.py orchestrator.py observability.py replay.py hf_semantics.py scripts/delivery_watchdog_decision.py
 python -m mypy --config-file mypy.ini
 python -m unittest discover -s tests -p "test_*.py"
 ```
@@ -41,6 +41,28 @@ The repo now includes a daily report quality harness.
 - Published artifacts: `docs/evals/`
 - Auto-feedback loop: `docs/evals/latest-feedback.txt` is fed back into the next OpenAI summary run
 - Selection guardrails: `docs/evals/latest-selection-feedback.json` is fed back into the next card/core/commodity selection run
+- Editorial score: fixed weighted sum of six rubric components; the model-reported total is diagnostic only
+- Daily editorial acceptance: weighted score >= 88, no blocking/major issue, critical components >= 85, all components >= 80, and deterministic publish gates passing
+- Quality tiers: 88 daily pass, 92 excellent, 95 stretch
+
+For a weekly improvement review, inspect saved `docs/evals/` results first,
+change selection rules, and run unit tests before rebuilding. Run the final
+comparison once with frozen historical candidates and cached summaries:
+
+```powershell
+python scripts/review_weekly_briefings.py --start 2026-08-24 --end 2026-08-28 --output reports/weekly-2026-08-24 --finalize
+```
+
+This command blocks network connections, makes no paid calls, and saves one
+replay per date plus before/after deterministic scores under the same rubric.
+It refuses a nonempty output directory to prevent accidental repeated runs.
+The saved editorial scores are historical evidence; the new offline scores
+are not new model editorial reviews. Original published files are preserved.
+An unsuccessful editorial acceptance gate now reports `warn` (or `fail` for a
+low score), even when the numeric headline remains high. The per-run model
+budget bounds how many paid proposals and evaluations may start; a repair or
+excision that was applied is still verified by one model call within the call
+cap even when the token budget is already spent.
 
 Local example:
 
@@ -158,11 +180,78 @@ Use three branches:
 ### Production workflows (main only)
 
 - `.github/workflows/daily.yml`
+- `.github/workflows/daily-watchdog.yml` (05:50/06:20/06:35/06:50/06:55 KST delivery-receipt recovery and 09:15 audit)
 - `.github/workflows/rebuild.yml`
 - `.github/workflows/maintenance.yml`
 - `.github/workflows/ux_patch.yml`
 
 `main` is the only branch that publishes production Pages content under `docs/`.
+
+### Daily prepublish quality gate
+
+The production daily workflow has two independent triggers: GitHub's native
+05:35 KST schedule and the Cloudflare 06:05 KST dispatch. The first successful
+Kakao receipt wins, and a duplicate trigger exits before collection or model
+calls. The job has a 25-minute hard timeout so a delayed or stuck primary cannot
+consume the recovery window before the 07:00 KST delivery SLA. Before it writes
+the daily page, updates the index/state, or sends the normal Kakao briefing, it:
+
+1. generates the candidate briefing with `gpt-5.6-sol` at low reasoning effort;
+2. always runs the deterministic report evaluator, and calls the bounded
+   `gpt-5.6-sol` editorial review only for deterministic anomalies or the Monday audit;
+3. if that editorial gate fails, asks the same model at low reasoning effort
+   to select exactly five validated raw-pool links per section and regenerates
+   changed summaries plus any selected summary explicitly rejected by the review;
+4. re-evaluates the repaired edition within the run's model-call/token budget;
+5. normally accepts an editorial score of 82 and operational/reader scores of
+   85; and
+6. if only soft editorial targets still miss, publishes the same standard
+   four-section page through the SLA fallback when each section has at least
+   four safe cards, deterministic operational and reader scores are at least
+   78, all summaries are present, and no hard reader or editorial issue exists;
+   an operator-forced recovery ignores the score floor and permits the audited
+   three-safe-card emergency floor for an underfilled section, while keeping
+   summary completeness plus hard reader/editorial safety checks.
+
+The model review sees at most ten raw candidates per section, uses concise
+structured output, and disables one-off implicit prompt-cache writes. Normal
+runs allow at most three editorial calls and reserve 60,000 editorial tokens;
+explicit quality recovery doubles that token budget. Rebuild/replay workflows
+reuse an existing pre-send evaluation instead of paying for the same review a
+second time.
+
+The fallback never creates an alert-only page. It continues through the normal
+page renderer and normal Kakao summary builder. After a successful Kakao send,
+including a production rebuild or replay, `docs/delivery/YYYY-MM-DD.json` is
+written as the authoritative delivery receipt. A same-day daily trigger
+suppresses the entire duplicate build when that receipt already exists; rebuild
+and maintenance workflows remain unaffected. The watchdog checks the receipt
+rather than the mere existence or conclusion of an Actions run. It dispatches a
+forced deterministic recovery immediately when a primary finishes without a
+receipt, cancels a primary that is 25 minutes old after 06:30 or 10 minutes old
+after 06:40, and lets a forced recovery replace any older queued primary. The
+05:50/06:20/06:35/06:50/06:55 KST checks are delayed-event backups, automatic
+recovery is capped at two attempts per day, and the 09:15 audit explicitly fails
+if the Kakao receipt timestamp missed 07:00 KST.
+
+The 04:45 KST credential preflight validates Naver, OpenAI quota, and Kakao,
+leaving schedule-delay headroom before both production triggers.
+If OpenAI returns `insufficient_quota` during generation, the run opens a local
+circuit breaker, stops repeated model calls, uses deterministic two-sentence
+summaries, and continues through the SLA delivery policy.
+
+Full model review runs
+daily until 20 consecutive evaluated reports pass with
+an operational score of at least 95, every editorial score at least 85, and an
+average editorial score of at least 90. After that stabilization period, the
+free deterministic checks still run every day; full model review runs on Monday
+audits or whenever a deterministic anomaly appears. The workflow records token
+usage, estimated API cost, repair count, and gate status in the evaluation JSON
+and GitHub Actions summary. The post-run publishing step reuses this result and
+does not call the model a second time.
+
+Required repository secret: `OPENAI_API_KEY`. The existing Naver, Kakao, and
+GitHub configuration remains unchanged.
 
 ### Development verification workflow (`dev`)
 

@@ -1,6 +1,8 @@
 import json
+import os
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 import editorial_eval
 import report_eval
@@ -37,6 +39,13 @@ class _FakeSession:
         )
         return _FakeResponse(
             {
+                "model": "test-model-snapshot",
+                "usage": {
+                    "input_tokens": 1000,
+                    "input_tokens_details": {"cached_tokens": 200},
+                    "output_tokens": 100,
+                    "total_tokens": 1100,
+                },
                 "output_text": json_module_dumps(
                     {
                         "score": 91,
@@ -67,8 +76,29 @@ class _FakeSession:
         )
 
 
+class _RateLimitedResponse:
+    status_code = 429
+    headers = {"Retry-After": "0"}
+
+    def raise_for_status(self):
+        raise editorial_eval.requests.HTTPError("429 Too Many Requests")
+
+
+class _RateLimitedOnceSession(_FakeSession):
+    def post(self, url, headers=None, json=None, timeout=None):
+        if not self.requests:
+            self.requests.append(
+                {"url": url, "headers": headers or {}, "json": json or {}, "timeout": timeout}
+            )
+            return _RateLimitedResponse()
+        return super().post(url, headers=headers, json=json, timeout=timeout)
+
+
 def json_module_dumps(payload):
     return json.dumps(payload)
+
+
+json_module = json
 
 
 class EditorialEvalTests(unittest.TestCase):
@@ -107,8 +137,12 @@ class EditorialEvalTests(unittest.TestCase):
         )
 
         self.assertEqual(payload["report_date"], self.report_date)
+        self.assertEqual(payload["target_score"], 82.0)
+        self.assertAlmostEqual(sum(payload["instructions"]["component_weights"].values()), 1.0)
         self.assertGreater(len(payload["selected_briefing_cards"]), 0)
         self.assertEqual(len(payload["raw_candidates_by_section"]["supply"]), 3)
+        self.assertIn("source_tier", payload["raw_candidates_by_section"]["supply"][0])
+        self.assertIn("source_tier", payload["selected_briefing_cards"][0])
         self.assertIn("operational_eval", payload)
         self.assertIn("section_count_targets", payload)
         self.assertGreater(payload["section_count_targets"]["score"], 0.0)
@@ -128,13 +162,270 @@ class EditorialEvalTests(unittest.TestCase):
         )
 
         self.assertEqual(result["status"], "success")
-        self.assertEqual(result["score"], 91)
+        self.assertEqual(result["score"], 90.65)
+        self.assertEqual(result["model_reported_score"], 91)
+        self.assertEqual(result["score_method"], "weighted_components_v1")
         self.assertEqual(result["scores"]["core_pick_quality"], 89)
-        self.assertEqual(result["issues"][0]["type"], "missed_better_candidate")
+        self.assertEqual(result["issues"][0]["type"], "missed_candidate")
+        self.assertEqual(result["issues"][0]["severity"], "moderate")
+        self.assertEqual(result["model"], "test-model")
+        self.assertEqual(result["model_snapshot"], "test-model-snapshot")
         self.assertEqual(session.requests[0]["json"]["model"], "test-model")
+        self.assertEqual(session.requests[0]["json"]["reasoning"], {"effort": "medium"})
+        self.assertEqual(session.requests[0]["json"]["max_output_tokens"], 2400)
+        self.assertEqual(session.requests[0]["json"]["text"]["verbosity"], "low")
+        self.assertEqual(
+            session.requests[0]["json"]["prompt_cache_options"],
+            {"mode": "explicit", "ttl": "30m"},
+        )
         self.assertEqual(session.requests[0]["json"]["text"]["format"]["type"], "json_schema")
         self.assertIn("raw_candidates_by_section", session.requests[0]["json"]["input"][1]["content"])
         self.assertIn("section_count_targets", session.requests[0]["json"]["input"][1]["content"])
+        issue_schema = session.requests[0]["json"]["text"]["format"]["schema"]["properties"]["issues"]["items"]["properties"]
+        self.assertEqual(issue_schema["severity"]["enum"], ["blocking", "major", "moderate", "minor"])
+        self.assertIn("bad_summary", issue_schema["type"]["enum"])
+        self.assertEqual(result["usage"]["input_tokens"], 1000)
+        self.assertEqual(result["usage"]["cached_input_tokens"], 200)
+
+    def test_evaluate_editorial_quality_retries_transient_429(self):
+        session = _RateLimitedOnceSession()
+        with patch.object(editorial_eval.time, "sleep") as sleep_mock:
+            result = editorial_eval.evaluate_editorial_quality(
+                self.report_date,
+                self.html_text,
+                self.snapshot_payload,
+                self._operational_with_uniform_counts(),
+                api_key="test-key",
+                model="test-model",
+                max_raw_per_section=2,
+                session_factory=lambda: session,
+            )
+
+        self.assertEqual(result["status"], "success")
+        self.assertEqual(len(session.requests), 2)
+        sleep_mock.assert_called_once_with(0.0)
+
+    def test_default_model_is_gpt_5_6_sol_and_does_not_follow_generation_model(self):
+        session = _FakeSession()
+        with patch.dict(os.environ, {"OPENAI_MODEL": "gpt-5.4"}, clear=True):
+            result = editorial_eval.evaluate_editorial_quality(
+                self.report_date,
+                self.html_text,
+                self.snapshot_payload,
+                self._operational_with_uniform_counts(),
+                api_key="test-key",
+                max_raw_per_section=2,
+                session_factory=lambda: session,
+            )
+
+        self.assertEqual(editorial_eval.DEFAULT_EDITORIAL_MODEL, "gpt-5.6-sol")
+        self.assertEqual(session.requests[0]["json"]["model"], "gpt-5.6-sol")
+        self.assertEqual(result["model"], "gpt-5.6-sol")
+
+    def test_gpt_5_6_sol_usage_estimates_standard_context_cost(self):
+        usage = editorial_eval.normalize_openai_usage(
+            {
+                "usage": {
+                    "input_tokens": 1000,
+                    "input_tokens_details": {
+                        "cached_tokens": 200,
+                        "cache_write_tokens": 100,
+                    },
+                    "output_tokens": 100,
+                    "total_tokens": 1100,
+                }
+            },
+            "gpt-5.6-sol",
+        )
+
+        self.assertEqual(usage["input_tokens"], 1000)
+        self.assertEqual(usage["cache_write_input_tokens"], 100)
+        self.assertEqual(usage["estimated_cost_usd"], 0.007225)
+
+    def test_propose_editorial_repair_returns_only_five_raw_links_per_section(self):
+        class RepairSession(_FakeSession):
+            def post(self, url, headers=None, json=None, timeout=None):
+                self.requests.append({"url": url, "headers": headers or {}, "json": json or {}, "timeout": timeout})
+                prompt_payload = json_module.loads(json["input"][1]["content"])
+                sections = {
+                    section: [
+                        {"link": row["link"], "is_core": index < 2}
+                        for index, row in enumerate(prompt_payload["raw_candidates_by_section"][section][:5])
+                    ]
+                    for section in report_eval.SECTION_KEYS
+                }
+                return _FakeResponse(
+                    {
+                        "model": "gpt-5.6-sol-snapshot",
+                        "output_text": json_module_dumps(
+                            {"sections": sections, "rationale": "Replaced weak cards."}
+                        ),
+                    }
+                )
+
+        session = RepairSession()
+        result = editorial_eval.propose_editorial_repair(
+            self.report_date,
+            self.html_text,
+            self.snapshot_payload,
+            self._operational_with_uniform_counts(),
+            {"status": "success", "score": 70, "issues": []},
+            api_key="test-key",
+            model="gpt-5.6-sol",
+            max_raw_per_section=5,
+            session_factory=lambda: session,
+        )
+
+        self.assertEqual(result["status"], "success")
+        self.assertTrue(all(len(result["sections"][section]) == 5 for section in report_eval.SECTION_KEYS))
+        request = session.requests[0]["json"]
+        self.assertEqual(request["reasoning"], {"effort": "medium"})
+        self.assertEqual(request["max_output_tokens"], 1800)
+        self.assertEqual(request["text"]["verbosity"], "low")
+        schema = request["text"]["format"]["schema"]["properties"]["sections"]["properties"]
+        self.assertTrue(all(schema[section]["minItems"] == 5 for section in report_eval.SECTION_KEYS))
+
+    def test_propose_editorial_repair_excludes_locally_rejected_link(self):
+        class RepairSession(_FakeSession):
+            def post(self, url, headers=None, json=None, timeout=None):
+                self.requests.append({"url": url, "headers": headers or {}, "json": json or {}, "timeout": timeout})
+                prompt_payload = json_module.loads(json["input"][1]["content"])
+                sections = {
+                    section: [
+                        {"link": row["link"], "is_core": index < 2}
+                        for index, row in enumerate(prompt_payload["raw_candidates_by_section"][section][:5])
+                    ]
+                    for section in report_eval.SECTION_KEYS
+                }
+                return _FakeResponse(
+                    {
+                        "output_text": json_module_dumps(
+                            {"sections": sections, "rationale": "Retried without the rejected candidate."}
+                        )
+                    }
+                )
+
+        first_payload = editorial_eval.build_editorial_payload(
+            self.report_date,
+            self.html_text,
+            self.snapshot_payload,
+            self._operational_with_uniform_counts(),
+            max_raw_per_section=6,
+        )
+        rejected_link = first_payload["raw_candidates_by_section"]["supply"][0]["link"]
+        prior_editorial_candidate = first_payload["raw_candidates_by_section"]["policy"][0]
+        session = RepairSession()
+        result = editorial_eval.propose_editorial_repair(
+            self.report_date,
+            self.html_text,
+            self.snapshot_payload,
+            self._operational_with_uniform_counts(),
+            {"status": "success", "score": 70, "issues": []},
+            api_key="test-key",
+            max_raw_per_section=6,
+            excluded_links_by_section={"supply": {rejected_link}},
+            prior_validation_errors=[
+                {"section": "supply", "link": rejected_link, "reason": "supply_reader_role_misfit"}
+            ],
+            prior_editorial_issues=[
+                {
+                    "type": "wrong_section",
+                    "severity": "moderate",
+                    "section": "policy",
+                    "title": prior_editorial_candidate["title"],
+                }
+            ],
+            session_factory=lambda: session,
+        )
+
+        self.assertEqual(result["status"], "success")
+        prompt_payload = json_module.loads(session.requests[0]["json"]["input"][1]["content"])
+        self.assertNotIn(
+            rejected_link,
+            [row["link"] for row in prompt_payload["raw_candidates_by_section"]["supply"]],
+        )
+        self.assertEqual(
+            prompt_payload["prior_repair_validation_errors"][0]["reason"],
+            "supply_reader_role_misfit",
+        )
+        self.assertNotIn(
+            prior_editorial_candidate["link"],
+            [row["link"] for row in prompt_payload["raw_candidates_by_section"]["policy"]],
+        )
+
+    def test_repair_constraints_require_missed_and_remove_defective_candidates(self):
+        payload = {
+            "raw_candidates_by_section": {
+                section: [] for section in report_eval.SECTION_KEYS
+            },
+            "selected_briefing_cards": [],
+        }
+        payload["raw_candidates_by_section"]["policy"] = [
+            {"title": "전국 농업 재해복구비 384억원 확정", "link": "https://example.com/required"},
+            {"title": "정부 할인으로 장보기", "link": "https://example.com/excluded"},
+            {"title": "시행 주체 없는 AI 가격비교 구상", "link": "https://example.com/noise"},
+            {"title": "전국 농업 정책 구조 진단", "link": "https://example.com/non-core"},
+            {"title": "지역 기관장 행사 참석", "link": "https://example.com/demote-core"},
+        ]
+        payload["selected_briefing_cards"] = [
+            {
+                "section": "policy",
+                "title": "전국 농업 정책 구조 진단",
+                "is_core": False,
+            },
+            {
+                "section": "policy",
+                "title": "지역 기관장 행사 참석",
+                "is_core": True,
+            },
+        ]
+        constraints = editorial_eval._repair_editorial_constraints(
+            payload,
+            {
+                "issues": [
+                    {"type": "missed_candidate", "severity": "major", "section": "policy", "title": "전국 농업 재해복구비 384억원 확정"},
+                    {"type": "promotional_filler", "severity": "moderate", "section": "policy", "title": "정부 할인으로 장보기"},
+                    {"type": "noise", "severity": "minor", "section": "policy", "title": "시행 주체 없는 AI 가격비교 구상"},
+                    {"type": "weak_core", "severity": "moderate", "section": "policy", "title": "전국 농업 정책 구조 진단"},
+                    {"type": "weak_core", "severity": "moderate", "section": "policy", "title": "지역 기관장 행사 참석"},
+                ]
+            },
+        )
+
+        self.assertEqual(constraints["policy"]["required"][0]["link"], "https://example.com/required")
+        self.assertEqual(constraints["policy"]["required_core"][0]["link"], "https://example.com/non-core")
+        self.assertEqual(constraints["policy"]["non_core"][0]["link"], "https://example.com/demote-core")
+        self.assertNotIn(
+            "https://example.com/excluded",
+            [row["link"] for row in payload["raw_candidates_by_section"]["policy"]],
+        )
+        self.assertNotIn(
+            "https://example.com/noise",
+            [row["link"] for row in payload["raw_candidates_by_section"]["policy"]],
+        )
+
+    def test_editorial_model_environment_override_has_precedence(self):
+        session = _FakeSession()
+        with patch.dict(
+            os.environ,
+            {
+                "EDITORIAL_OPENAI_MODEL": "editorial-override",
+                "OPENAI_MODEL": "gpt-5.4",
+            },
+            clear=True,
+        ):
+            result = editorial_eval.evaluate_editorial_quality(
+                self.report_date,
+                self.html_text,
+                self.snapshot_payload,
+                self._operational_with_uniform_counts(),
+                api_key="test-key",
+                max_raw_per_section=2,
+                session_factory=lambda: session,
+            )
+
+        self.assertEqual(session.requests[0]["json"]["model"], "editorial-override")
+        self.assertEqual(result["model"], "editorial-override")
 
     def test_section_count_gate_caps_editorial_target_when_underfilled(self):
         class HighScoreSession(_FakeSession):
@@ -181,11 +472,13 @@ class EditorialEvalTests(unittest.TestCase):
 
         self.assertEqual(result["status"], "success")
         self.assertLess(result["score"], 95)
-        self.assertEqual(result["target_status"], "needs_iteration")
+        self.assertNotEqual(result["target_status"], "target_met")
+        self.assertFalse(result["acceptance_gate"]["passed"])
+        self.assertIn("no_section_underfill", result["acceptance_gate"]["failure_reasons"])
         self.assertEqual(result["section_count_status"], "underfilled")
         self.assertIn("section_count_adjustment", result)
 
-    def test_operational_gate_calibrates_llm_shadow_score_when_publish_gates_pass(self):
+    def test_operational_gate_does_not_overwrite_editorial_score(self):
         class LowButDebatableSession(_FakeSession):
             def post(self, url, headers=None, json=None, timeout=None):
                 self.requests.append({"url": url, "headers": headers or {}, "json": json or {}, "timeout": timeout})
@@ -257,11 +550,12 @@ class EditorialEvalTests(unittest.TestCase):
         )
 
         self.assertEqual(result["status"], "success")
-        self.assertEqual(result["llm_score"], 84)
-        self.assertEqual(result["score"], 95)
-        self.assertEqual(result["target_status"], "target_met")
-        self.assertEqual(result["score_calibration"]["reason"], "deterministic_publish_gates_passed")
-        self.assertTrue(result["score_calibration"]["gates"]["commodity_board_score_min"])
+        self.assertEqual(result["model_reported_score"], 84)
+        self.assertEqual(result["score"], 82.8)
+        self.assertNotEqual(result["target_status"], "target_met")
+        self.assertFalse(result["acceptance_gate"]["passed"])
+        self.assertEqual(result["acceptance_gate"]["major_issue_count"], 1)
+        self.assertNotIn("score_calibration", result)
 
     def test_section_count_gate_prefers_five_but_accepts_four_soft_fallback(self):
         operational = self._operational_with_uniform_counts(count=4, raw=10)
@@ -277,7 +571,7 @@ class EditorialEvalTests(unittest.TestCase):
         self.assertLess(context["score"], 95.0)
         self.assertEqual(context["status"], "minimum_fallback")
 
-    def test_low_commodity_board_blocks_shadow_calibration(self):
+    def test_low_commodity_board_blocks_editorial_acceptance(self):
         class LowButDebatableSession(_FakeSession):
             def post(self, url, headers=None, json=None, timeout=None):
                 self.requests.append({"url": url, "headers": headers or {}, "json": json or {}, "timeout": timeout})
@@ -331,10 +625,12 @@ class EditorialEvalTests(unittest.TestCase):
         )
 
         self.assertEqual(result["status"], "success")
-        self.assertEqual(result["score"], 84)
+        self.assertEqual(result["score"], 82.8)
+        self.assertFalse(result["acceptance_gate"]["passed"])
+        self.assertIn("commodity_board_score_min", result["acceptance_gate"]["failure_reasons"])
         self.assertNotIn("score_calibration", result)
 
-    def test_minor_pest_theme_penalty_does_not_block_shadow_calibration(self):
+    def test_clean_high_component_result_passes_editorial_acceptance(self):
         class LowButDebatableSession(_FakeSession):
             def post(self, url, headers=None, json=None, timeout=None):
                 self.requests.append({"url": url, "headers": headers or {}, "json": json or {}, "timeout": timeout})
@@ -362,6 +658,7 @@ class EditorialEvalTests(unittest.TestCase):
 
         operational = self._operational_with_uniform_counts(count=5, raw=10)
         operational["overall_score"] = 96.2
+        operational["operational_score"] = 96.2
         operational["scores"] = {
             **operational.get("scores", {}),
             "section_alignment": 100.0,
@@ -392,9 +689,11 @@ class EditorialEvalTests(unittest.TestCase):
         )
 
         self.assertEqual(result["status"], "success")
-        self.assertEqual(result["llm_score"], 88)
-        self.assertEqual(result["score"], 95)
-        self.assertTrue(result["score_calibration"]["gates"]["editorial_penalty_soft_max"])
+        self.assertEqual(result["model_reported_score"], 88)
+        self.assertEqual(result["score"], 89.2)
+        self.assertTrue(result["acceptance_gate"]["passed"])
+        self.assertEqual(result["target_status"], "target_met")
+        self.assertNotIn("score_calibration", result)
 
     def test_editorial_improvement_plan_maps_issues_to_shadow_actions(self):
         editorial_result = {
@@ -407,7 +706,7 @@ class EditorialEvalTests(unittest.TestCase):
 
         self.assertTrue(plan["proposal_only"])
         self.assertEqual(plan["mode"], "shadow_replay_loop")
-        self.assertEqual(plan["target_status"], "needs_minor_iteration")
+        self.assertEqual(plan["target_status"], "needs_iteration")
         self.assertIn("promotion_gates", plan)
         action_kinds = {action["kind"] for action in plan["recommended_actions"]}
         self.assertIn("candidate_recall", action_kinds)

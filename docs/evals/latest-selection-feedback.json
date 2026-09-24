@@ -1,42 +1,47 @@
 {
-  "report_date": "2026-06-12",
-  "generated_at_kst": "2026-06-13T11:17:02+09:00",
+  "report_date": "2026-09-23",
+  "generated_at_kst": "2026-09-23T06:20:08+09:00",
   "scores": {
-    "section_alignment": 91.67,
-    "core_quality": 94.39,
-    "commodity_board_quality": 96.08
+    "section_alignment": 100.0,
+    "core_quality": 85.0,
+    "commodity_board_quality": 99.0
   },
   "metrics": {
-    "section_alignment_low_fit_rate": 0.05,
+    "section_alignment_low_fit_rate": 0.0,
     "section_alignment_cross_gap_rate": 0.0,
     "content_false_positive_rate": 0.0,
     "reader_hard_issue_count": 0,
     "reader_hard_issue_rate": 0.0,
-    "reader_quality_penalty": 0.0,
-    "reader_quality_cap": 100.0,
-    "weak_core_rate": 0.1429,
+    "reader_quality_penalty": 12.28,
+    "reader_quality_cap": 90.0,
+    "weak_core_rate": 0.0,
     "policy_wrong_section_rate": 0.0,
-    "promotional_filler_rate": 0.0,
-    "promotional_core_rate": 0.0,
-    "weak_core_editorial_rate": 0.0,
-    "pest_theme_duplicate_rate": 0.0,
+    "promotional_filler_rate": 0.1,
+    "promotional_core_rate": 0.2222,
+    "weak_core_editorial_rate": 0.2222,
+    "pest_theme_duplicate_rate": 0.05,
     "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 0.0,
+    "editorial_quality_penalty": 4.6,
     "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0,
     "commodity_primary_title_item_focus_rate": 1.0,
-    "commodity_primary_title_issue_signal_rate": 1.0,
-    "commodity_primary_strict_link_rate": 1.0,
+    "commodity_primary_title_issue_signal_rate": 0.8333,
+    "commodity_primary_strict_link_rate": 0.8333,
     "commodity_primary_low_rank_rate": 0.0,
-    "commodity_primary_count": 7,
+    "commodity_primary_count": 6,
+    "commodity_active_today_total": 16,
+    "commodity_active_today_unlinked_total": 10,
+    "commodity_managed_unlinked_total": 27,
     "commodity_board_daily_min_primary_count": 6,
     "commodity_board_low_coverage": false,
-    "commodity_board_coverage_rate": 0.2121,
+    "commodity_board_coverage_rate": 0.1818,
     "commodity_primary_title_item_missing_rate": 0.0,
     "commodity_primary_body_only_rate": 0.0,
     "commodity_primary_false_link_rate": 0.0,
-    "commodity_primary_dominant_section_rate": 0.5714
+    "commodity_pool_count": 12,
+    "commodity_pool_false_link_rate": 0.0,
+    "commodity_primary_dominant_section_rate": 0.3333
   },
   "selection_guardrails": {
     "driver_tags": [],
@@ -65,6 +70,8 @@
       "pest": 1.0
     },
     "disable_relaxed_core_fill": false,
+    "final_low_tier_max_per_section": 1,
+    "final_low_tier_max_total": 4,
     "commodity_active_min_rank": 1,
     "commodity_program_core_min_rank": 1,
     "commodity_require_issue_signal": false,
@@ -72,264 +79,35 @@
     "commodity_strict_primary_only": true,
     "commodity_disable_primary_fallback": true
   },
-  "editorial_quality_samples": [],
+  "editorial_quality_samples": [
+    {
+      "title": "마늘 ·감귤 선별부터 출하까지 산지유통 스마트 전환 발판",
+      "href": "https://www.aflnews.co.kr/news/articleView.html?idxno=328725",
+      "section": "dist",
+      "is_core": true,
+      "reasons": [
+        "promotional_or_event_filler"
+      ]
+    },
+    {
+      "title": "온라인도매시장 판매자 가입요건 폐지…10월 1일부터 시행",
+      "href": "http://www.nongup.net/news/articleView.html?idxno=33740",
+      "section": "dist",
+      "is_core": true,
+      "reasons": [
+        "promotional_or_event_filler"
+      ]
+    },
+    {
+      "title": "농업 현장 애로 해결한 적극행정 포상",
+      "href": "https://www.aflnews.co.kr/news/articleView.html?idxno=328739",
+      "section": "pest",
+      "is_core": false,
+      "reasons": [
+        "pest_theme_duplicate:fire_blight"
+      ]
+    }
+  ],
   "reader_hard_issue_samples": [],
-  "editorial": {
-    "score": 86.0,
-    "target_score": 95.0,
-    "target_status": "needs_iteration",
-    "section_count_score": 100.0,
-    "section_count_status": "target_met",
-    "scores": {
-      "article_selection": 84.0,
-      "section_fit": 86.0,
-      "core_pick_quality": 88.0,
-      "summary_usefulness": 92.0,
-      "missed_opportunity": 82.0,
-      "noise_control": 83.0
-    },
-    "issues": [
-      {
-        "type": "duplication",
-        "severity": "high",
-        "section": "supply",
-        "title": "양파 값 역전 해법 찾고 수출길 넓히고",
-        "reason": "정책 섹션의 양파 토론회 기사와 사실상 같은 축이다.",
-        "suggested_action": "공급에선 다른 품목 수급 기사로 교체."
-      },
-      {
-        "type": "section_fit",
-        "severity": "medium",
-        "section": "policy",
-        "title": "양파산업 위기 해법 찾는다",
-        "reason": "수급·산업 이슈이지만 공급 기사와의 구분이 약하다.",
-        "suggested_action": "정책 각도 더 강한 제도·예산 기사 우선."
-      },
-      {
-        "type": "filler",
-        "severity": "high",
-        "section": "supply",
-        "title": "진주문산농협, 못난이 매실 가공용 수매 지원 나선다",
-        "reason": "지역 지원성 기사로 전국성·핵심성이 약하다.",
-        "suggested_action": "꼬리 기사로도 더 강한 수급 후보 우선 검토."
-      },
-      {
-        "type": "section_fit",
-        "severity": "medium",
-        "section": "dist",
-        "title": "고당도 ‘다올찬수박’ 본격 출하",
-        "reason": "출하 소식 위주로 물류·시장운영 정보가 제한적이다.",
-        "suggested_action": "유통구조·판로·물류 변화가 드러난 기사 우선."
-      },
-      {
-        "type": "filler",
-        "severity": "medium",
-        "section": "dist",
-        "title": "청도 농협공판장 일제 개장…\"농업인 소득증대 최선\"",
-        "reason": "개장 행사 성격이 강하고 운영 변화 정보가 얕다.",
-        "suggested_action": "경매 동향·물류 차질·수출 채널 기사로 교체 검토."
-      },
-      {
-        "type": "missed_opportunity",
-        "severity": "medium",
-        "section": "dist",
-        "title": "제주 농산물 산지 유통 경쟁력 강화...저온유통체계 구축 추진",
-        "reason": "실제 운영보다 2027년 수요조사 단계라 즉시성은 약하다.",
-        "suggested_action": "전남농협 농협몰 설명회 등 현행 판로 운영 기사와 비교 선별."
-      },
-      {
-        "type": "theme_balance",
-        "severity": "medium",
-        "section": "pest",
-        "title": "해외 직구 씨앗, 소량도 식물검역증명서 첨부해야",
-        "reason": "검역 제도 기사로 현장 병해충 위험도는 상대적으로 약하다.",
-        "suggested_action": "명명된 작물 해충 리스크 기사 우선 배치."
-      },
-      {
-        "type": "theme_balance",
-        "severity": "low",
-        "section": "pest",
-        "title": "충남도 농기원, 맥문동 정식 후 예찰·방제 필수",
-        "reason": "전문 작목·지역 한정성이 커 보편성이 떨어진다.",
-        "suggested_action": "토마토뿔나방 등 파급력 큰 해충 기사 우선 고려."
-      }
-    ]
-  },
-  "editorial_suggested_guardrails": {
-    "driver_tags": [
-      "editorial_section_fit",
-      "editorial_duplicate_topic",
-      "editorial_missed_opportunity"
-    ],
-    "section_card_min_fit": {
-      "default": 0.85,
-      "supply": 0.9,
-      "policy": 0.9,
-      "dist": 1.05,
-      "pest": 0.84
-    },
-    "section_low_fit_rescue_min": 0.15,
-    "high_score_low_fit_rescue_margin": 4.2,
-    "tail_score_floor_delta": 0.4,
-    "core_fit_min": {
-      "default": 1.2,
-      "supply": 1.4,
-      "policy": 1.4,
-      "dist": 1.6,
-      "pest": 1.2
-    },
-    "core_relaxed_min_fit": {
-      "default": 1.0,
-      "supply": 1.18,
-      "policy": 1.15,
-      "dist": 1.35,
-      "pest": 1.0
-    },
-    "disable_relaxed_core_fill": false,
-    "commodity_active_min_rank": 1,
-    "commodity_program_core_min_rank": 1,
-    "commodity_require_issue_signal": false,
-    "commodity_require_direct_item_focus": false,
-    "commodity_strict_primary_only": true,
-    "commodity_disable_primary_fallback": true
-  },
-  "editorial_guardrail_mode": "advisory_only",
-  "editorial_improvement_plan": {
-    "mode": "shadow_replay_loop",
-    "proposal_only": true,
-    "target_score": 95.0,
-    "current_editorial_score": 86.0,
-    "target_status": "needs_iteration",
-    "iteration_budget": 3,
-    "promotion_gates": {
-      "editorial_score_min": 95.0,
-      "operational_score_min": 95.0,
-      "section_count_score_min": 95.0,
-      "commodity_board_score_min": 95.0,
-      "no_section_underfill": true
-    },
-    "section_count_context": {
-      "score": 100.0,
-      "status": "target_met",
-      "sections": {
-        "supply": {
-          "actual": 5,
-          "expected": 5,
-          "raw_candidates": 203,
-          "preferred_count": 5,
-          "soft_fallback_count": 4,
-          "minimum_fallback_count": 3,
-          "count_floor": 3,
-          "core_count": 2,
-          "fill_ratio": 1.0,
-          "score": 100.0
-        },
-        "policy": {
-          "actual": 5,
-          "expected": 5,
-          "raw_candidates": 75,
-          "preferred_count": 5,
-          "soft_fallback_count": 4,
-          "minimum_fallback_count": 3,
-          "count_floor": 3,
-          "core_count": 2,
-          "fill_ratio": 1.0,
-          "score": 100.0
-        },
-        "dist": {
-          "actual": 5,
-          "expected": 5,
-          "raw_candidates": 43,
-          "preferred_count": 5,
-          "soft_fallback_count": 4,
-          "minimum_fallback_count": 3,
-          "count_floor": 3,
-          "core_count": 1,
-          "fill_ratio": 1.0,
-          "score": 100.0
-        },
-        "pest": {
-          "actual": 5,
-          "expected": 5,
-          "raw_candidates": 25,
-          "preferred_count": 5,
-          "soft_fallback_count": 4,
-          "minimum_fallback_count": 3,
-          "count_floor": 3,
-          "core_count": 2,
-          "fill_ratio": 1.0,
-          "score": 100.0
-        }
-      },
-      "underfilled_sections": [],
-      "soft_fallback_sections": [],
-      "minimum_fallback_sections": [],
-      "severe_underfilled_sections": [],
-      "preferred_count": 5,
-      "soft_fallback_count": 4,
-      "minimum_fallback_count": 3,
-      "target_score": 95.0,
-      "scoring_rule": "Each section should try to carry 5 briefing cards when raw candidates exist. 4 cards is a soft fallback below target, 3 cards is a minimum fallback, and broad fallback use caps editorial shadow below 95."
-    },
-    "guardrail_focus": [
-      "missed_opportunity",
-      "article_selection",
-      "section_fit"
-    ],
-    "recommended_actions": [
-      {
-        "kind": "candidate_recall",
-        "target": "raw_candidate_pool",
-        "direction": "expand_or_rerank",
-        "reason": "The raw pool contained stronger alternatives than selected cards."
-      },
-      {
-        "kind": "story_dedupe",
-        "target": "story_signature_gate",
-        "direction": "tighten",
-        "reason": "Multiple cards covered the same issue and reduced briefing breadth."
-      },
-      {
-        "kind": "section_fit",
-        "target": "section_card_min_fit",
-        "direction": "tighten",
-        "reason": "A selected card appears to fit another section better."
-      }
-    ],
-    "current_selection_guardrails": {
-      "driver_tags": [],
-      "section_card_min_fit": {
-        "default": 0.8,
-        "supply": 0.82,
-        "policy": 0.82,
-        "dist": 0.95,
-        "pest": 0.78
-      },
-      "section_low_fit_rescue_min": 0.15,
-      "high_score_low_fit_rescue_margin": 3.0,
-      "tail_score_floor_delta": 0.0,
-      "core_fit_min": {
-        "default": 1.2,
-        "supply": 1.4,
-        "policy": 1.4,
-        "dist": 1.6,
-        "pest": 1.2
-      },
-      "core_relaxed_min_fit": {
-        "default": 1.0,
-        "supply": 1.18,
-        "policy": 1.15,
-        "dist": 1.35,
-        "pest": 1.0
-      },
-      "disable_relaxed_core_fill": false,
-      "commodity_active_min_rank": 1,
-      "commodity_program_core_min_rank": 1,
-      "commodity_require_issue_signal": false,
-      "commodity_require_direct_item_focus": false,
-      "commodity_strict_primary_only": true,
-      "commodity_disable_primary_fallback": true
-    },
-    "notes": "Use this as the replay loop contract: iterate guardrails and ranking changes, then promote only when editorial, operational, preferred section-count, and commodity-board gates all pass."
-  }
+  "editorial_improvement_plan": {}
 }

@@ -70,6 +70,59 @@ class TestIoGithubModule(unittest.TestCase):
         self.assertEqual(out_raw, raw)
         self.assertEqual(out_sha, "abc")
 
+    def test_github_get_file_falls_back_to_blob_for_large_file(self):
+        # Contents API는 1MB 초과 파일을 content="" / encoding="none"으로 돌려준다.
+        raw = "x" * 32
+        encoded = base64.b64encode(raw.encode("utf-8")).decode("utf-8")
+        session = _DummySession(get_responses=[
+            _DummyResponse(200, {"content": "", "encoding": "none", "size": 1200000, "sha": "big"}),
+            _DummyResponse(200, {"content": encoded, "encoding": "base64", "sha": "big"}),
+        ])
+
+        out_raw, out_sha = io_github.github_get_file(
+            "org/repo",
+            "docs/search_index.json",
+            "token",
+            session_factory=lambda: session,
+            log_http_error=lambda *_: None,
+        )
+
+        self.assertEqual(out_raw, raw)
+        self.assertEqual(out_sha, "big")
+
+    def test_github_get_file_keeps_empty_for_zero_byte_file(self):
+        session = _DummySession(get_responses=[
+            _DummyResponse(200, {"content": "", "encoding": "base64", "size": 0, "sha": "empty"}),
+        ])
+
+        out_raw, out_sha = io_github.github_get_file(
+            "org/repo",
+            "docs/empty.txt",
+            "token",
+            session_factory=lambda: session,
+            log_http_error=lambda *_: None,
+        )
+
+        self.assertEqual(out_raw, "")
+        self.assertEqual(out_sha, "empty")
+
+    def test_github_get_file_returns_empty_when_blob_fetch_fails(self):
+        session = _DummySession(get_responses=[
+            _DummyResponse(200, {"content": "", "encoding": "none", "size": 1200000, "sha": "big"}),
+            _DummyResponse(500, {}),
+        ])
+
+        out_raw, out_sha = io_github.github_get_file(
+            "org/repo",
+            "docs/search_index.json",
+            "token",
+            session_factory=lambda: session,
+            log_http_error=lambda *_: None,
+        )
+
+        self.assertEqual(out_raw, "")
+        self.assertEqual(out_sha, "big")
+
     def test_github_list_dir_returns_empty_on_404(self):
         session = _DummySession(get_responses=[_DummyResponse(404, {})])
 

@@ -467,6 +467,41 @@ class TestCommodityBoard(unittest.TestCase):
         self.assertTrue(bool(metrics["weak_admin_title_story"]))
         self.assertFalse(main._commodity_board_article_is_active_candidate(self._item("napa_cabbage"), article, metrics))
 
+    def test_apple_jujube_compound_is_not_matched_as_apple(self):
+        article = self._make_article(
+            "dist",
+            "합천유통, 사과 대추 공선출하회 조직 협약 체결",
+            "사과대추 재배농가가 공동출하 체계를 구축하고 9월부터 22톤을 출하할 계획이다.",
+            "https://example.com/apple-jujube-shipping",
+        )
+
+        metrics = main._commodity_board_item_article_representative_metrics(self._item("apple"), article)
+
+        self.assertNotIn("apple", main.managed_commodity_keys_for_article(article))
+        self.assertEqual(int(metrics["title_primary_hits"]), 0)
+        self.assertFalse(main._commodity_board_article_is_active_candidate(self._item("apple"), article, metrics))
+
+    def test_named_apple_disease_can_be_active_primary_representative(self):
+        article = self._make_article(
+            "pest",
+            "사과 갈색무늬병 16~28℃ 수분존재 시간 길수록 발생",
+            "갈색무늬병 발생 조건과 약제 살포 시기, 장마 뒤 사과 과원 방제 요령을 안내했다.",
+            "https://example.com/apple-marssonina-guidance",
+        )
+
+        metrics = main._commodity_board_item_article_representative_metrics(self._item("apple"), article)
+        metrics.update({
+            "board_eligible": True,
+            "representative_rank": 4,
+            "title_primary_hits": 1,
+            "selection_fit_score": 4.0,
+            "issue_bucket": "farm_action",
+            "direct_supply": False,
+            "market_response": False,
+        })
+
+        self.assertTrue(main._commodity_board_article_is_active_candidate(self._item("apple"), article, metrics))
+
     def test_committee_expo_admin_story_is_not_commodity_primary_representative(self):
         article = self._make_article(
             "supply",
@@ -625,6 +660,23 @@ class TestCommodityBoard(unittest.TestCase):
         metrics = main._commodity_board_item_article_representative_metrics(self._item("green_onion"), article)
 
         self.assertGreaterEqual(int(metrics["representative_rank"]), 1)
+
+    def test_green_onion_sports_homonym_is_not_board_match(self):
+        title = "슈팅수 30-2…개최국 캐나다, ‘2명 퇴장’ 자멸한 카타르 6대0 대파"
+        article = self._make_article(
+            "supply",
+            title,
+            "축구 경기에서 개최국 캐나다가 카타르를 크게 이겼다는 스포츠 기사다.",
+            "https://www.chosun.com/sports/sports_special/2026/06/19/3ZUCNKZI25AJFHG6PU5KWFFF54/",
+        )
+
+        self.assertNotIn("green_onion", main.managed_commodity_keys_for_article(article))
+        metrics = main._commodity_board_item_article_representative_metrics(self._item("green_onion"), article)
+
+        self.assertTrue(bool(metrics["green_onion_sports_homonym"]))
+        self.assertEqual(int(metrics["title_primary_hits"]), 0)
+        self.assertFalse(bool(metrics["direct_item_focus"]))
+        self.assertLess(int(metrics["representative_rank"]), 1)
 
     def test_consumer_guide_story_is_not_representative(self):
         article = self._make_article(
@@ -861,6 +913,41 @@ class TestCommodityBoard(unittest.TestCase):
         metrics = main._commodity_board_item_article_representative_metrics(self._item("pear"), article)
         self.assertLessEqual(int(metrics["representative_rank"]), 0)
         self.assertTrue(bool(metrics["weak_blossom_tourism_story"]))
+
+    def test_pear_price_list_headline_is_linked_to_pear_board(self):
+        article = self._make_article(
+            "supply",
+            "배·상추 오르고 수박·참외 안정세… 품목별 가격 동향 엇갈려",
+            "무·상추·사과·배·돼지고기·계란은 평년과 전년 대비 가격 상승세를 보였다.",
+            "https://example.com/pear-price-roundup",
+        )
+
+        self.assertIn("pear", main.managed_commodity_board_keys_for_article(article))
+        metrics = main._commodity_board_item_article_representative_metrics(self._item("pear"), article)
+        self.assertTrue(bool(metrics["board_eligible"]))
+        self.assertTrue(main._commodity_board_article_is_active_candidate(self._item("pear"), article, metrics))
+
+    def test_spaced_apple_pear_cultivar_headline_is_linked_to_pear_board(self):
+        article = self._make_article(
+            "supply",
+            "아산시, 초록빛 사과 배 '아산맑은 그린시스' 재배 확대",
+            "아산시 배 농가가 신품종 과수의 재배 면적과 생산을 확대한다.",
+            "https://example.com/asangreen-pear",
+        )
+
+        self.assertIn("pear", main.managed_commodity_board_keys_for_article(article))
+        with (
+            mock.patch.object(main, "HF_COMMODITY_BOARD_RERANK_ENABLED", False),
+            mock.patch.object(main, "SELECTION_FEEDBACK_GUARDRAILS", {}),
+        ):
+            ctx = main.build_managed_commodity_board_context({key: [article] if key == "supply" else [] for key in self.conf})
+        pear = next(
+            item
+            for group in ctx["groups"]
+            for item in list(group["active_items"]) + list(group["inactive_items"])
+            if item["key"] == "pear"
+        )
+        self.assertTrue(bool(pear["active"]))
 
     def test_board_context_moves_weak_only_program_core_item_to_inactive(self):
         training_article = self._make_article(

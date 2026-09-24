@@ -11,11 +11,22 @@ import re
 from typing import Any
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
+from crop_risk_vocab import (
+    CROP_WEATHER_EVENT_TERMS,
+    CROP_WEATHER_HEADLINE_DAMAGE_TERMS,
+    CROP_WEATHER_RISK_TERMS,
+    classify_pest_theme,
+    physiological_disorder_hits,
+)
+from story_dedup import duplicate_event_reason
+from editorial_rules import export_ceremony_filler, policy_issue_key, remote_weather_feature
+
 
 KST = timezone(timedelta(hours=9))
 SECTION_KEYS = ("supply", "policy", "dist", "pest")
 BRIEFING_SURFACE = "briefing_card"
-COMMODITY_SURFACES = frozenset({"commodity_primary", "commodity_support", "commodity_more"})
+COMMODITY_POOL_SURFACE = "commodity_pool"
+COMMODITY_SURFACES = frozenset({"commodity_primary", "commodity_support", "commodity_more", COMMODITY_POOL_SURFACE})
 PREFERRED_BRIEFING_COUNT_PER_SECTION = 5
 SOFT_FALLBACK_BRIEFING_COUNT_PER_SECTION = 4
 MIN_FALLBACK_BRIEFING_COUNT_PER_SECTION = 3
@@ -35,9 +46,14 @@ TRACKING_QUERY_KEYS = frozenset(
 
 _NON_KO_WORD_RE = re.compile(r"[^0-9a-zA-Z가-힣]+")
 _SPACE_RE = re.compile(r"\s+")
+_GREEN_ONION_SPORTS_HOMONYM_RE = re.compile(
+    r"(?:\d+\s*(?:[-:]\s*|대\s*)\d+|슈팅수|퇴장|월드컵|축구|야구|농구|배구|"
+    r"개최국|카타르|캐나다|득점|골|승리|완승|제압|꺾(?:고|은|었다|는)?).{0,28}대파"
+    r"|대파.{0,18}(?:승리|완승|제압|꺾)"
+)
 _WEAK_SELECTION_STAGE_TOKENS = ("backfill", "bridge", "swap", "recycle")
 _QUALITY_STAGE_PREFIXES = ("dist_anchor", "supply_board", "supply_feature")
-_COMMODITY_ISSUE_TERMS = (
+_COMMODITY_ISSUE_TERMS: tuple[str, ...] = (
     "가격",
     "수급",
     "출하",
@@ -90,6 +106,23 @@ _COMMODITY_ISSUE_TERMS = (
     "밥상물가",
     "장바구니",
 )
+_COMMODITY_ISSUE_TERMS = _COMMODITY_ISSUE_TERMS + (
+    "경매",
+    "경매시간",
+    "경매 시각",
+    "공판장",
+    "초매식",
+    "생장불량",
+    "과잉생산",
+    "공급과잉",
+    "과잉",
+    "주산지",
+    "산업",
+    "산업 구조",
+    "구조 전환",
+    "구조전환",
+)
+
 _COMMODITY_WEAK_TERMS = (
     "교육",
     "총회",
@@ -267,6 +300,11 @@ _KNOWN_DUPLICATE_URL_FRAGMENTS = (
 )
 _OFF_SCOPE_FOREIGN_TERMS = ("베트남", "중국", "태국", "미국", "일본", "해외", "현지")
 _OFF_SCOPE_UNMANAGED_COMMODITY_TERMS = ("두리안", "망고", "바나나", "아보카도", "파인애플")
+_OFF_SCOPE_MANAGED_MARKET_TERMS = (
+    "무", "배추", "감자", "당근", "양배추", "양파", "마늘", "건고추", "대파",
+    "토마토", "오이", "풋고추", "애호박", "참외", "상추", "가지", "파프리카",
+    "사과", "배", "단감", "포도", "감귤", "멜론",
+)
 _DUPLICATE_EVENT_TERMS = ("가격", "안정", "기금", "지원", "농가")
 
 
@@ -288,6 +326,7 @@ class SurfaceArticle:
     board_score: float = 0.0
     selection_fit_score: float = 0.0
     selection_stage: str = ""
+    press_tier: int = -1
 
 
 def _float_attr(value: Any) -> float:
@@ -334,6 +373,7 @@ class ReportHTMLParser(HTMLParser):
                 is_core=_bool_attr(attr_map.get("data-is-core")),
                 selection_fit_score=_float_attr(attr_map.get("data-selection-fit")),
                 selection_stage=str(attr_map.get("data-selection-stage", "")).strip(),
+                press_tier=_int_attr(attr_map.get("data-press-tier"), default=-1),
             )
             self._card_div_depth = 1
             self._summary_div_depth = 0
@@ -358,6 +398,7 @@ class ReportHTMLParser(HTMLParser):
                     board_score=_float_attr(attr_map.get("data-board-score")),
                     selection_fit_score=_float_attr(attr_map.get("data-selection-fit")),
                     selection_stage=str(attr_map.get("data-selection-stage", "")).strip(),
+                    press_tier=_int_attr(attr_map.get("data-press-tier"), default=-1),
                 )
             )
             return
@@ -474,6 +515,77 @@ def _editorial_dist_hard_logistics_metric(text: str) -> bool:
     return hard_hits >= 2 or bool(metric_hit)
 
 
+def _editorial_policy_execution_context(article: SurfaceArticle, text: str) -> bool:
+    if article.section != "policy":
+        return False
+    title_l = _normalize_spaces(article.title or "").lower()
+    text_l = _normalize_spaces(text).lower()
+    quantified_stock_release = bool(
+        _has_any(title_l, ("정부비축", "정부 비축"))
+        and _has_any(title_l, ("콩", "농산물"))
+        and re.search(r"\d[\d,]*\s*(?:만\s*)?(?:톤|t)\b", title_l)
+        and _has_any(text_l, ("방출", "공급", "시장에 풀", "가격 안정", "수급 안정"))
+    )
+    quantified_price_package = bool(
+        _has_any(title_l, ("물가 안정", "가격 안정", "수급 안정"))
+        and re.search(r"\d[\d,.]*\s*(?:조|억)\s*원", title_l)
+        and _has_any(text_l, ("정부", "기재부", "농식품부", "대책", "투입", "시행"))
+    )
+    quantified_agri_discount = bool(
+        _has_any(title_l, ("농축산물", "농축 수산물", "농축수산물", "농산물"))
+        and "할인" in title_l
+        and re.search(r"\d[\d,.]*\s*(?:천\s*)?(?:조|억)\s*원?", title_l)
+        and _has_any(text_l, ("정부", "기재부", "농식품부", "농림축산식품부"))
+        and _has_any(text_l, ("투입", "지원", "상품권", "대책", "시행"))
+    )
+    statutory_agri_execution = bool(
+        _has_any(title_l, ("법적 근거", "시행령", "법안", "조례"))
+        and _has_any(title_l, ("농업", "농산업", "농산물", "농촌", "식품산업"))
+        and _has_any(text_l, ("정부", "농식품부", "농림축산식품부"))
+        and _has_any(text_l, ("시행", "개정", "법적 기반", "지원 근거", "법적 체계"))
+    )
+    import_management_execution = bool(
+        _has_any(title_l, ("수입 농산물 관리", "수입농산물 관리"))
+        and _has_any(text_l, ("개선방안", "효율화", "협의", "생산자", "소비자", "민·관", "민관"))
+    )
+    return (
+        quantified_stock_release
+        or quantified_price_package
+        or quantified_agri_discount
+        or statutory_agri_execution
+        or import_management_execution
+    )
+
+
+def _editorial_dist_channel_execution_context(article: SurfaceArticle, text: str) -> bool:
+    if article.section != "dist":
+        return False
+    title_l = _normalize_spaces(article.title or "").lower()
+    text_l = _normalize_spaces(text).lower()
+    direct_platform = bool(
+        _has_any(title_l, ("직거래 플랫폼", "온라인 직거래", "직거래 장터"))
+        and _has_any(title_l, ("농산물", "농특산물", "농식품"))
+        and _has_any(text_l, ("공식 오픈", "개장", "문 연다", "시범 운영", "시범운영"))
+        and _has_any(text_l, ("판매 수수료", "수수료 부담", "마케팅 비용", "판로 확대"))
+    )
+    measured_export_growth = bool(
+        "수출" in title_l
+        and _has_any(text_l, ("수출량", "판매량", "수출액"))
+        and _has_any(text_l, ("증가", "늘", "확대", "성장"))
+    )
+    quantified_public_distribution = bool(
+        "at" in title_l
+        and "유통" in title_l
+        and _has_any(title_l, ("공공급식", "스마트 apc", "농산물산지유통센터"))
+        and re.search(r"\d+(?:\.\d+)?\s*(?:%|개|개소|조|억)", text_l)
+        and _has_any(
+            text_l,
+            ("거래액", "생산유통통합조직", "공공급식플랫폼", "스마트 apc", "확대"),
+        )
+    )
+    return direct_platform or measured_export_growth or quantified_public_distribution
+
+
 def _editorial_policy_wrong_section_reason(article: SurfaceArticle, snapshot_body: str) -> str:
     if article.section != "policy":
         return ""
@@ -488,9 +600,15 @@ def _editorial_policy_wrong_section_reason(article: SurfaceArticle, snapshot_bod
 def _editorial_promotional_filler_reason(article: SurfaceArticle, snapshot_body: str) -> str:
     if article.section not in {"supply", "dist", "policy"}:
         return ""
+    if export_ceremony_filler(article.title, snapshot_body):
+        return "promotional_or_event_filler"
     text = _editorial_text(article, snapshot_body)
     title_l = str(article.title or "").lower()
     if article.section == "dist" and _editorial_dist_hard_logistics_metric(text):
+        return ""
+    if _editorial_policy_execution_context(article, text):
+        return ""
+    if _editorial_dist_channel_execution_context(article, text):
         return ""
     if any(term in text for term in ("홈쇼핑", "라이브커머스", "쇼호스트", "현장투어")):
         return "promotional_or_event_filler"
@@ -510,6 +628,8 @@ def _editorial_dist_weak_ops_reason(article: SurfaceArticle, snapshot_body: str)
         return ""
     text = _editorial_text(article, snapshot_body)
     if _editorial_dist_hard_logistics_metric(text):
+        return ""
+    if _editorial_dist_channel_execution_context(article, text):
         return ""
     weak_hits = _term_hits(text, tuple(term.lower() for term in _EDITORIAL_DIST_WEAK_TERMS))
     if weak_hits <= 0:
@@ -535,18 +655,15 @@ def _editorial_base_issue_reasons(article: SurfaceArticle, snapshot_body: str) -
 
 
 def _pest_editorial_theme(article: SurfaceArticle, snapshot_body: str = "") -> str:
+    """pest 카드의 편집 테마. 분류 규칙은 선정 가드와 공유한다.
+
+    main.py 의 중복 가드가 같은 함수를 쓰기 때문에, 가드가 통과시킨 지면을
+    여기서 감점하는 어긋남이 생기지 않는다. 기사 본인의 제목·본문만 넣고
+    생성 요약문은 넣지 않는다(가드는 요약 생성 전에 돌기 때문).
+    """
     if article.section != "pest":
         return ""
-    text = _editorial_text(article, snapshot_body)
-    if "식물검역증명서" in text or ("해외 직구 씨앗" in text and "검역" in text):
-        return "plant_quarantine"
-    if "과수화상병" in text or "화상병" in text:
-        return "fire_blight"
-    if "벼" in text and "병해충" in text:
-        return "rice_pest"
-    if "병해충" in text:
-        return "general_pest"
-    return ""
+    return classify_pest_theme(article.title or "", snapshot_body)
 
 
 def _semantic_false_positive_reason(article: SurfaceArticle, snapshot_body: str) -> str:
@@ -596,6 +713,8 @@ def _semantic_false_positive_reason(article: SurfaceArticle, snapshot_body: str)
 
 
 def _reader_hard_issue_reason(article: SurfaceArticle, snapshot_body: str) -> str:
+    if article.section in {"supply", "dist"} and remote_weather_feature(article.title, snapshot_body):
+        return "remote_weather_feature"
     source_text = _normalize_spaces(f"{article.title or ''} {snapshot_body or ''}").lower()
     text = _normalize_spaces(f"{article.title or ''} {article.summary or ''} {snapshot_body or ''}").lower()
     if not text:
@@ -644,6 +763,94 @@ def _reader_hard_issue_reason(article: SurfaceArticle, snapshot_body: str) -> st
     return ""
 
 
+def _is_authoritative_domestic_multi_price_bulletin(
+    article: SurfaceArticle,
+    snapshot_body: str,
+) -> bool:
+    title = _normalize_spaces(str(article.title or "")).lower()
+    text = _normalize_spaces(f"{article.title} {article.summary} {snapshot_body}").lower()
+    if not title or not text:
+        return False
+    official_source = (
+        "한국농수산식품유통공사" in text
+        or "농수산식품유통공사" in text
+        or re.search(r"(?:^|[\s(])aT(?:[\s)]|$)", f" {article.title} {article.summary} {snapshot_body} ") is not None
+    )
+    broad_price = any(term in title for term in ("농산물값", "농산물 값", "농산물 가격"))
+    managed_count = sum(1 for term in _OFF_SCOPE_MANAGED_MARKET_TERMS if term in text)
+    quantified_moves = len(re.findall(r"\d+(?:\.\d+)?\s*%", text))
+    both_directions = (
+        any(term in text for term in ("하락", "내렸", "낮아", "↓"))
+        and any(term in text for term in ("상승", "올랐", "오름세", "↑"))
+    )
+    supply_evidence = _term_hits(
+        text,
+        ("출하", "반입량", "생산량", "재배 면적", "재배면적", "전주 대비"),
+    )
+    return bool(
+        official_source
+        and broad_price
+        and managed_count >= 3
+        and quantified_moves >= 3
+        and both_directions
+        and supply_evidence >= 3
+    )
+
+
+def _is_priority_field_risk_core(article: SurfaceArticle, snapshot_body: str) -> bool:
+    if article.section != "pest":
+        return False
+    title = _normalize_spaces(str(article.title or "")).lower()
+    text = _normalize_spaces(f"{article.title} {article.summary} {snapshot_body}").lower()
+    named_outbreak = any(term in title for term in ("풀무치", "메뚜기"))
+    outbreak_signal = any(term in text for term in ("집단 발생", "떼", "습격", "비상", "확산"))
+    urgent_control = any(term in text for term in ("긴급 방제", "방제에 나", "확산 차단"))
+    crop_exposure = any(term in text for term in ("농작물", "재배지", "벼", "조사료", "간척지"))
+    authoritative_named_warning = bool(
+        any(term in title for term in ("고추", "사과", "배", "복숭아", "포도", "감귤", "토마토"))
+        and any(term in title for term in (
+            "탄저병", "세균성점무늬병", "과수화상병", "역병", "노균병", "흰가루병",
+        ))
+        and any(term in title for term in ("주의", "주위", "경보", "확산", "발생", "위험"))
+        and any(term in text for term in ("농업기술원", "농기원", "검역본부", "연구소"))
+        and any(term in text for term in ("예방", "방제", "살균제", "약제", "피해 과실"))
+    )
+    operational_early_warning = bool(
+        "병해충" in title
+        and any(term in title for term in ("조기 예측", "위험 예측", "예측서비스"))
+        and any(term in title for term in ("ai", "인공지능"))
+        and any(term in text for term in ("농업기술원", "농기원"))
+        and any(term in text for term in ("예보", "주의보", "경보", "위험도", "실시간"))
+        and any(term in text for term in ("벼", "콩", "농작물", "재배"))
+    )
+    multi_disease_field_advisory = bool(
+        any(term in title for term in ("장마철", "우기", "고온다습"))
+        and any(term in title for term in ("사과농가", "과수농가", "사과 농가", "과수 농가"))
+        and any(term in text for term in ("과수화상병", "화상병"))
+        and "탄저병" in text
+        and any(term in text for term in ("발생", "피해", "방제", "예방", "주의"))
+    )
+    # 가뭄·폭염·한파처럼 병해충 이름이 없는 기상 생육피해도 코어 자격이 있다.
+    # 행정 대비계획이 아니라 실제 피해·대응 기사만 인정한다.
+    # 생리장해(열과·낙과)도 같은 분기다. main 의 pest 신호(_pest_weather_hits)와 어휘를 공유한다.
+    weather_field_damage = bool(
+        (
+            any(term in title for term in CROP_WEATHER_RISK_TERMS + CROP_WEATHER_EVENT_TERMS)
+            or physiological_disorder_hits(title) >= 1
+        )
+        and any(term in title for term in CROP_WEATHER_HEADLINE_DAMAGE_TERMS)
+        and any(term in text for term in ("농작물", "농가", "재배", "과수", "과원", "밭작물", "출하", "생육"))
+        and any(term in text for term in ("급수", "관수", "방제", "대책", "지원", "복구", "예방", "피해"))
+    )
+    return bool(
+        (named_outbreak and outbreak_signal and urgent_control and crop_exposure)
+        or authoritative_named_warning
+        or operational_early_warning
+        or multi_disease_field_advisory
+        or weather_field_damage
+    )
+
+
 def _off_scope_content_reason(article: SurfaceArticle, snapshot_body: str) -> str:
     if article.section not in {"supply", "policy", "dist"}:
         return ""
@@ -656,6 +863,8 @@ def _off_scope_content_reason(article: SurfaceArticle, snapshot_body: str) -> st
     if not any(term in text for term in _OFF_SCOPE_UNMANAGED_COMMODITY_TERMS):
         return ""
     if not any(term in text for term in _OFF_SCOPE_FOREIGN_TERMS):
+        return ""
+    if _is_authoritative_domestic_multi_price_bulletin(article, snapshot_body):
         return ""
     return "foreign_unmanaged_commodity"
 
@@ -671,6 +880,15 @@ def _story_duplicate_reason(left: SurfaceArticle, right: SurfaceArticle) -> str:
         return "same_url_duplicate"
     if any(fragment in right_url.lower() for fragment in _KNOWN_DUPLICATE_URL_FRAGMENTS):
         return "known_duplicate_url"
+
+    shared_reason = duplicate_event_reason(
+        left.title,
+        left.summary,
+        right.title,
+        right.summary,
+    )
+    if shared_reason:
+        return shared_reason
 
     left_text = _normalize_spaces(f"{left.title} {left.summary}").lower()
     right_text = _normalize_spaces(f"{right.title} {right.summary}").lower()
@@ -904,15 +1122,23 @@ def _score_percentile(item: dict[str, Any] | None, pool: list[dict[str, Any]]) -
     return _rate(lower_or_equal, len(scores), default=0.5)
 
 
+# 선정 파이프라인의 COMMODITY_REGISTRY 별칭과 어긋나면 안 된다. 선정은 장미
+# 기사를 화훼 대표기사로 올리는데 여기서 장미를 모르면, 맞는 카드를 '품목명
+# 없음(false link)'으로 감점한다 — 2026-08-11 화훼 대표기사가 그렇게 걸려
+# 독자품질이 84로 캡됐다. tests/test_commodity_alias_sync.py 가 드리프트를 막는다.
 _COMMODITY_ALIAS_EXTRA: dict[str, tuple[str, ...]] = {
     "대파": ("쪽파",),
     "풋고추": ("고추", "청양고추", "꽈리고추"),
     "참다래": ("키위",),
+    "키위": ("참다래",),
     "단감": ("감",),
     "감": ("단감", "곶감"),
-    "감귤": ("만감류", "한라봉", "레드향", "천혜향"),
-    "포도": ("샤인머스캣",),
-    "화훼": ("절화", "생화", "꽃시장"),
+    "곶감": ("떫은감",),
+    "감귤": ("만감류", "만감", "한라봉", "레드향", "천혜향", "황금향", "만다린", "클레멘틴"),
+    "포도": ("샤인머스캣", "샤인머스켓"),
+    "호박": ("쥬키니", "주키니"),
+    "멜론": ("하미과", "칸탈루프", "허니듀"),
+    "화훼": ("절화", "생화", "꽃시장", "국화", "장미", "백합", "화훼공판장"),
 }
 
 
@@ -948,6 +1174,17 @@ def _commodity_item_focus_from_text(item_label: str, *texts: str) -> bool:
             if alias in text_l or alias.replace(" ", "") in text_compact:
                 return True
     return False
+
+
+def _commodity_sports_homonym_reason(article: SurfaceArticle, body: str = "") -> str:
+    item_key = str(article.item_key or "").strip()
+    item_label = str(article.item_label or "").strip()
+    if item_key != "green_onion" and "대파" not in item_label:
+        return ""
+    text = _normalize_spaces(f"{article.title or ''} {body or ''}")
+    if text and "대파" in text and _GREEN_ONION_SPORTS_HOMONYM_RE.search(text):
+        return "green_onion_sports_homonym"
+    return ""
 
 
 def _has_representative_issue_signal(title: str, body: str) -> bool:
@@ -1038,11 +1275,24 @@ def _average(values: list[float], default: float = 0.0) -> float:
     return sum(values) / len(values) if values else default
 
 
-def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str, Any]) -> dict[str, Any]:
+def evaluate_report(
+    report_date: str,
+    html_text: str,
+    snapshot_payload: dict[str, Any],
+    *,
+    expected_by_section: dict[str, int] | None = None,
+) -> dict[str, Any]:
+    """지면 HTML + 스냅샷으로 결정적 점수를 낸다.
+
+    expected_by_section 은 섹션별 기대 카드 수의 상한이다. 기본 기대치는 min(5, raw 행 수)인데
+    raw 행 수는 중복·게이트 탈락 기사까지 세므로, 게이트가 실제 유효 후보 수(예: 겨울철 pest 2건)를
+    넘겨 "불가능한 5장"에 대한 completeness·slot 감점을 막는다. 후보가 충분한 날은 영향이 없다.
+    """
     articles = parse_report_html(html_text)
     briefing_articles = [article for article in articles if article.surface == BRIEFING_SURFACE]
     commodity_articles = [article for article in articles if article.surface in COMMODITY_SURFACES]
     commodity_primary_articles = [article for article in commodity_articles if article.surface == "commodity_primary"]
+    commodity_pool_articles = [article for article in commodity_articles if article.surface == COMMODITY_POOL_SURFACE]
     all_surface_articles = briefing_articles + commodity_articles
 
     raw_by_section = snapshot_payload.get("raw_by_section", {})
@@ -1055,6 +1305,17 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
     expected_counts = {section: _expected_briefing_count(raw_counts[section]) for section in SECTION_KEYS}
     soft_fallback_counts = {section: _soft_fallback_briefing_count(raw_counts[section]) for section in SECTION_KEYS}
     minimum_fallback_counts = {section: _minimum_fallback_briefing_count(raw_counts[section]) for section in SECTION_KEYS}
+    if isinstance(expected_by_section, dict):
+        for section in SECTION_KEYS:
+            if section not in expected_by_section:
+                continue
+            try:
+                achievable = max(0, int(expected_by_section.get(section) or 0))
+            except (TypeError, ValueError):
+                continue
+            expected_counts[section] = min(expected_counts[section], achievable)
+            soft_fallback_counts[section] = min(soft_fallback_counts[section], achievable)
+            minimum_fallback_counts[section] = min(minimum_fallback_counts[section], achievable)
     briefing_counts = _section_counts(briefing_articles)
     core_counts = _section_counts([article for article in briefing_articles if article.is_core])
     commodity_counts = _section_counts(commodity_articles)
@@ -1100,16 +1361,41 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
     unique_signatures = {normalize_title_key(article.title) for article in briefing_articles if article.title}
     title_unique_rate = _rate(len(unique_signatures), len(briefing_articles), default=1.0)
     domain_diversity_rate = _rate(len(unique_domains), len(briefing_articles), default=1.0)
+    source_tier_articles = [article for article in briefing_articles if article.press_tier >= 1]
+    low_tier_source_count = sum(1 for article in source_tier_articles if article.press_tier == 1)
+    low_tier_source_rate = _rate(low_tier_source_count, len(source_tier_articles), default=0.0)
+    low_tier_source_by_section = {
+        section: sum(
+            1
+            for article in source_tier_articles
+            if article.section == section and article.press_tier == 1
+        )
+        for section in SECTION_KEYS
+    }
+    source_quality_score = (
+        100.0 * _score_inverse(low_tier_source_rate, 0.15, 0.40)
+        if source_tier_articles
+        else 100.0
+    )
 
     article_id_counts = Counter(article.article_id or normalize_title_key(article.title) for article in all_surface_articles)
     repeated_surface_articles = sum(max(0, count - 2) for count in article_id_counts.values())
     surface_reuse_penalty = _rate(repeated_surface_articles, len(all_surface_articles), default=0.0)
 
-    diversity_score = 100.0 * (
-        _score_between(title_unique_rate, 0.65, 0.9) * 0.45
-        + _score_between(domain_diversity_rate, 0.35, 0.7) * 0.35
-        + _score_inverse(surface_reuse_penalty, 0.05, 0.22) * 0.20
-    )
+    if source_tier_articles:
+        diversity_score = 100.0 * (
+            _score_between(title_unique_rate, 0.65, 0.9) * 0.35
+            + _score_between(domain_diversity_rate, 0.35, 0.7) * 0.25
+            + _score_inverse(surface_reuse_penalty, 0.05, 0.22) * 0.20
+            + (source_quality_score / 100.0) * 0.20
+        )
+    else:
+        # 과거 아카이브에는 data-press-tier가 없으므로 기존 점수와 호환한다.
+        diversity_score = 100.0 * (
+            _score_between(title_unique_rate, 0.65, 0.9) * 0.45
+            + _score_between(domain_diversity_rate, 0.35, 0.7) * 0.35
+            + _score_inverse(surface_reuse_penalty, 0.05, 0.22) * 0.20
+        )
 
     summary_lengths = [len(article.summary.strip()) for article in briefing_articles if article.summary.strip()]
     summary_presence_rate = _rate(len(summary_lengths), len(briefing_articles), default=1.0)
@@ -1204,6 +1490,7 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
                 "href": article.href,
                 "section": article.section,
                 "is_core": bool(article.is_core),
+                "priority_core_override": _is_priority_field_risk_core(article, _desc_text),
                 "fit_score": fit_score,
                 "stage": stage,
                 "score_percentile": _score_percentile(match, section_raw_pools.get(article.section, [])),
@@ -1218,6 +1505,23 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
                 "editorial_issue_reasons": editorial_issue_reasons,
             }
         )
+
+    policy_theme_counts = Counter(
+        key for article in briefing_articles
+        if article.section == "policy" and (key := policy_issue_key(article.title))
+    )
+    policy_theme_duplicate_count = sum(max(0, count - 1) for count in policy_theme_counts.values())
+    policy_matched_counts: Counter[str] = Counter()
+    for record in briefing_match_records:
+        if str(record.get("section") or "") != "policy":
+            continue
+        theme = policy_issue_key(str(record.get("title") or ""))
+        if not theme:
+            continue
+        policy_matched_counts[theme] += 1
+        if policy_matched_counts[theme] > 1:
+            record.setdefault("editorial_issue_reasons", []).append(f"policy_theme_duplicate:{theme}")
+    policy_theme_duplicate_rate = _rate(policy_theme_duplicate_count, len(briefing_articles), default=0.0)
 
     pest_theme_counts: Counter[str] = Counter()
     for record in briefing_match_records:
@@ -1330,7 +1634,15 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
 
     core_match_records = [record for record in briefing_match_records if bool(record.get("is_core"))]
     core_fit_avg = _average([float(record.get("fit_score") or 0.0) for record in core_match_records])
-    core_rank_percentile_avg = _average([float(record.get("score_percentile") or 0.0) for record in core_match_records], default=0.5)
+    core_rank_percentile_avg = _average(
+        [
+            1.0
+            if bool(record.get("priority_core_override"))
+            else float(record.get("score_percentile") or 0.0)
+            for record in core_match_records
+        ],
+        default=0.5,
+    )
     core_stage_core_rate = _rate(
         sum(1 for record in core_match_records if _stage_has_core_signal(str(record.get("stage") or ""))),
         len(core_match_records),
@@ -1340,9 +1652,12 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
         sum(
             1
             for record in core_match_records
-            if float(record.get("fit_score") or 0.0) < 0.95
-            or float(record.get("score_percentile") or 0.0) < 0.6
-            or _stage_is_weak(str(record.get("stage") or ""))
+            if not bool(record.get("priority_core_override"))
+            and (
+                float(record.get("fit_score") or 0.0) < 0.95
+                or float(record.get("score_percentile") or 0.0) < 0.6
+                or _stage_is_weak(str(record.get("stage") or ""))
+            )
         ),
         len(core_match_records),
         default=0.0,
@@ -1469,21 +1784,61 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
         title_item_focus = _commodity_item_focus(article)
         title_issue_signal = _has_representative_issue_signal(article.title, "")
         title_weak_story = _is_weak_commodity_representative(article.title, "")
+        false_positive_reason = _commodity_sports_homonym_reason(article, body)
+        strict_link = bool(
+            title_item_focus
+            and title_issue_signal
+            and not title_weak_story
+            and not false_positive_reason
+            and representative_rank >= 2
+        )
         commodity_primary_records.append(
             {
                 "title": article.title,
                 "section": article.section,
                 "item_label": article.item_label,
+                "surface": article.surface,
                 "title_item_focus": title_item_focus,
                 "title_issue_signal": title_issue_signal,
                 "title_weak_story": title_weak_story,
-                "strict_link": bool(title_item_focus and title_issue_signal and not title_weak_story and representative_rank >= 2),
+                "false_positive_reason": false_positive_reason,
+                "strict_link": strict_link,
                 "item_focus": title_item_focus,
                 "item_focus_with_body": _commodity_item_focus_from_text(article.item_label, article.title, body),
                 "issue_signal": _has_representative_issue_signal(article.title, body),
                 "weak_story": _is_weak_commodity_representative(article.title, body),
                 "fit_score": fit_score,
                 "representative_rank": representative_rank,
+            }
+        )
+
+    commodity_pool_records: list[dict[str, Any]] = []
+    for article in commodity_pool_articles:
+        match = _find_snapshot_match(article, by_url, by_title)
+        body = ""
+        if isinstance(match, dict):
+            body = _normalize_spaces(
+                " ".join(
+                    str(match.get(field) or "")
+                    for field in ("description", "summary", "desc")
+                    if str(match.get(field) or "").strip()
+                )
+            )
+        title_item_focus = _commodity_item_focus(article)
+        title_issue_signal = _has_representative_issue_signal(article.title, "")
+        title_weak_story = _is_weak_commodity_representative(article.title, "")
+        false_positive_reason = _commodity_sports_homonym_reason(article, body)
+        commodity_pool_records.append(
+            {
+                "title": article.title,
+                "section": article.section,
+                "item_label": article.item_label,
+                "surface": article.surface,
+                "title_item_focus": title_item_focus,
+                "title_issue_signal": title_issue_signal,
+                "title_weak_story": title_weak_story,
+                "false_positive_reason": false_positive_reason,
+                "representative_rank": int(article.representative_rank),
             }
         )
 
@@ -1570,10 +1925,24 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
             if (
                 (not bool(record.get("title_item_focus")))
                 or bool(record.get("title_weak_story"))
+                or bool(record.get("false_positive_reason"))
                 or int(record.get("representative_rank") or 0) <= 1
             )
         ),
         len(commodity_primary_records),
+        default=0.0,
+    )
+    commodity_pool_false_link_rate = _rate(
+        sum(
+            1
+            for record in commodity_pool_records
+            if (
+                (not bool(record.get("title_item_focus")))
+                or bool(record.get("title_weak_story"))
+                or bool(record.get("false_positive_reason"))
+            )
+        ),
+        len(commodity_pool_records),
         default=0.0,
     )
     commodity_primary_section_counter = Counter(
@@ -1594,20 +1963,47 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
             "title": str(record.get("title") or ""),
             "item_label": str(record.get("item_label") or ""),
             "section": str(record.get("section") or ""),
+            "surface": str(record.get("surface") or "commodity_primary"),
             "representative_rank": int(record.get("representative_rank") or 0),
             "reasons": [
                 reason
                 for reason, present in (
+                    (str(record.get("false_positive_reason") or ""), bool(record.get("false_positive_reason"))),
                     ("title_item_missing", not bool(record.get("title_item_focus"))),
                     ("title_issue_missing", not bool(record.get("title_issue_signal"))),
                     ("weak_title_story", bool(record.get("title_weak_story"))),
                     ("low_representative_rank", int(record.get("representative_rank") or 0) <= 1),
                 )
-                if present
+                if present and reason
             ],
         }
         for record in commodity_primary_records
         if not bool(record.get("strict_link"))
+    ][:8]
+    commodity_pool_linkage_samples = [
+        {
+            "title": str(record.get("title") or ""),
+            "item_label": str(record.get("item_label") or ""),
+            "section": str(record.get("section") or ""),
+            "surface": str(record.get("surface") or COMMODITY_POOL_SURFACE),
+            "representative_rank": int(record.get("representative_rank") or 0),
+            "reasons": [
+                reason
+                for reason, present in (
+                    (str(record.get("false_positive_reason") or ""), bool(record.get("false_positive_reason"))),
+                    ("title_item_missing", not bool(record.get("title_item_focus"))),
+                    ("title_issue_missing", not bool(record.get("title_issue_signal"))),
+                    ("weak_title_story", bool(record.get("title_weak_story"))),
+                )
+                if present and reason
+            ],
+        }
+        for record in commodity_pool_records
+        if (
+            (not bool(record.get("title_item_focus")))
+            or bool(record.get("title_weak_story"))
+            or bool(record.get("false_positive_reason"))
+        )
     ][:8]
     if commodity_articles and not commodity_primary_articles:
         commodity_board_quality_score = 0.0
@@ -1652,7 +2048,14 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
         + promotional_filler_rate * 2.0
         + dist_weak_ops_rate * 8.0
         + pest_theme_duplicate_rate * 8.0
+        + policy_theme_duplicate_rate * 8.0
         + weak_core_editorial_rate * 10.0,
+    )
+    low_tier_allowed_count = min(4, max(1, int((len(source_tier_articles) * 0.20) + 0.999))) if source_tier_articles else 0
+    low_tier_excess_count = max(0, low_tier_source_count - low_tier_allowed_count)
+    source_quality_penalty = min(
+        10.0,
+        (low_tier_excess_count * 1.5) + (max(0.0, low_tier_source_rate - 0.25) * 12.0),
     )
     operational_score = (
         completeness_score * 0.20
@@ -1672,6 +2075,7 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
             - semantic_false_positive_penalty
             - story_duplicate_penalty
             - editorial_quality_penalty
+            - source_quality_penalty
             - preferred_slot_penalty,
         ),
     )
@@ -1681,8 +2085,11 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
         and content_false_positive_count == 0
         and len(story_duplicate_indices) == 0
         and pest_theme_duplicate_count == 0
+        and policy_theme_duplicate_count == 0
         and commodity_primary_false_link_rate == 0.0
+        and commodity_pool_false_link_rate == 0.0
         and editorial_quality_penalty <= 0.0
+        and low_tier_excess_count == 0
     )
     preferred_slot_reader_penalty_weight = 0.75 if clean_quality_surface else 1.5
     reader_quality_penalty = min(
@@ -1692,9 +2099,12 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
         + max(0, content_false_positive_count - hard_reader_issue_count) * 5.0
         + len(story_duplicate_indices) * 4.0
         + pest_theme_duplicate_count * 4.0
+        + policy_theme_duplicate_count * 4.0
         + editorial_quality_penalty * 1.8
+        + source_quality_penalty
         + preferred_slot_gap_total * preferred_slot_reader_penalty_weight
-        + commodity_primary_false_link_rate * 18.0,
+        + commodity_primary_false_link_rate * 18.0
+        + commodity_pool_false_link_rate * 12.0,
     )
     reader_quality_cap = 100.0
     reader_quality_cap_reasons: list[str] = []
@@ -1720,12 +2130,20 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
         _cap(88.0, "story_duplicate")
     if pest_theme_duplicate_count >= 1:
         _cap(90.0, "pest_theme_duplicate")
+    if policy_theme_duplicate_count >= 1:
+        _cap(90.0, "policy_theme_duplicate")
     if commodity_primary_false_link_rate > 0.0:
         _cap(88.0, "commodity_false_link")
     if commodity_primary_false_link_rate >= 0.10:
         _cap(84.0, "commodity_false_link_severe")
+    if commodity_pool_false_link_rate > 0.0:
+        _cap(90.0, "commodity_pool_false_link")
+    if commodity_pool_false_link_rate >= 0.10:
+        _cap(86.0, "commodity_pool_false_link_severe")
     if preferred_slot_gap_total > 0:
         _cap(95.0, "preferred_slot_underfill")
+    if len(source_tier_articles) >= 8 and low_tier_source_rate > 0.35:
+        _cap(90.0, "low_tier_source_concentration")
 
     reader_quality_score = max(
         0.0,
@@ -1756,6 +2174,10 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
         improvement_hints.append(
             "섹션 오배치 의심 기사가 보입니다. section-fit이 낮거나 다른 섹션에서 더 적합한 후보가 있었던 기사들을 우선 재배치하세요."
         )
+    if low_tier_excess_count > 0:
+        improvement_hints.append(
+            "최하위 매체 비중이 높습니다. 섹션당 tier-1 1건, 전체 20% 이하를 목표로 하고 같은 이슈의 tier-2+ 원문으로 교체하세요."
+        )
     if core_quality_score < 78.0 or weak_core_rate > 0.18:
         improvement_hints.append(
             "핵심기사 품질 편차가 큽니다. core 기사에는 low-fit·tail 후보를 쓰지 말고, fit 상위권이면서 실제 이슈성이 강한 기사만 남기세요."
@@ -1767,6 +2189,7 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
         or commodity_primary_strict_link_rate < 0.65
         or commodity_primary_dominant_section_rate > 0.68
         or commodity_primary_false_link_rate > 0.0
+        or commodity_pool_false_link_rate > 0.0
     ):
         improvement_hints.append(
             "품목 보드 대표기사가 품목 핵심 이슈를 충분히 대변하지 못합니다. 제목에서 품목명과 수급·가격·병해충 신호가 함께 보이는 기사, representative rank 상위 후보, 비수급 섹션의 직접 이슈 후보를 우선하세요."
@@ -1811,6 +2234,8 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
             issue_bits.append(f"dist_weak_ops={dist_weak_ops_rate:.0%}")
         if pest_theme_duplicate_rate > 0.0:
             issue_bits.append(f"pest_theme_duplicate={pest_theme_duplicate_rate:.0%}")
+        if policy_theme_duplicate_rate > 0.0:
+            issue_bits.append(f"policy_theme_duplicate={policy_theme_duplicate_rate:.0%}")
         improvement_hints.append(
             "편집 품질상 약한 기사 선택이 감지되었습니다"
             + (f" ({', '.join(issue_bits)})." if issue_bits else ".")
@@ -1842,6 +2267,7 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
         "scores": {
             "completeness": round(completeness_score, 2),
             "diversity": round(diversity_score, 2),
+            "source_quality": round(source_quality_score, 2),
             "summary_quality": round(summary_score, 2),
             "freshness": round(freshness_score, 2),
             "retrieval_support": round(retrieval_score, 2),
@@ -1854,6 +2280,7 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
             "briefing_total": len(briefing_articles),
             "commodity_total": len(commodity_articles),
             "commodity_primary_total": len(commodity_primary_articles),
+            "commodity_pool_total": len(commodity_pool_articles),
             "commodity_active_today_total": int(commodity_active_today_total),
             "commodity_active_today_unlinked_total": int(commodity_active_today_unlinked_total),
             "commodity_managed_unlinked_total": int(commodity_managed_unlinked_total),
@@ -1865,10 +2292,15 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
             "soft_fallback_briefing_by_section": soft_fallback_counts,
             "minimum_fallback_briefing_by_section": minimum_fallback_counts,
             "preferred_slot_gap_by_section": preferred_slot_gaps,
+            "low_tier_source_total": int(low_tier_source_count),
+            "low_tier_source_by_section": low_tier_source_by_section,
         },
         "metrics": {
             "briefing_title_unique_rate": round(title_unique_rate, 4),
             "briefing_domain_diversity_rate": round(domain_diversity_rate, 4),
+            "low_tier_source_rate": round(low_tier_source_rate, 4),
+            "low_tier_source_excess_count": int(low_tier_excess_count),
+            "source_quality_penalty": round(source_quality_penalty, 4),
             "surface_reuse_penalty": round(surface_reuse_penalty, 4),
             "summary_presence_rate": round(summary_presence_rate, 4),
             "summary_length_ok_rate": round(summary_length_ok_rate, 4),
@@ -1909,6 +2341,8 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
             "promotional_core_rate": round(promotional_core_rate, 4),
             "weak_core_editorial_rate": round(weak_core_editorial_rate, 4),
             "pest_theme_duplicate_rate": round(pest_theme_duplicate_rate, 4),
+            "policy_theme_duplicate_rate": round(policy_theme_duplicate_rate, 4),
+            "policy_theme_duplicate_count": policy_theme_duplicate_count,
             "dist_weak_ops_rate": round(dist_weak_ops_rate, 4),
             "editorial_quality_penalty": round(editorial_quality_penalty, 4),
             "preferred_slot_gap_rate": round(preferred_slot_gap_rate, 4),
@@ -1937,6 +2371,8 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
             "commodity_primary_title_item_missing_rate": round(commodity_primary_title_item_missing_rate, 4),
             "commodity_primary_body_only_rate": round(commodity_primary_body_only_rate, 4),
             "commodity_primary_false_link_rate": round(commodity_primary_false_link_rate, 4),
+            "commodity_pool_count": int(len(commodity_pool_records)),
+            "commodity_pool_false_link_rate": round(commodity_pool_false_link_rate, 4),
             "commodity_primary_dominant_section_rate": round(commodity_primary_dominant_section_rate, 4),
             "commodity_primary_section_balance_score": round(commodity_primary_section_balance_score, 4),
         },
@@ -1970,6 +2406,7 @@ def evaluate_report(report_date: str, html_text: str, snapshot_payload: dict[str
         ][:8],
         "story_duplicate_samples": story_duplicate_samples,
         "commodity_primary_linkage_samples": commodity_primary_linkage_samples,
+        "commodity_pool_linkage_samples": commodity_pool_linkage_samples,
         "editorial_quality_samples": [
             {
                 "title": str(record.get("title") or ""),
@@ -2025,6 +2462,7 @@ def build_selection_guardrails(result: dict[str, Any]) -> dict[str, Any]:
     section_alignment_cross_gap_rate = float(metrics.get("section_alignment_cross_gap_rate", 0.0) or 0.0)
     content_false_positive_rate = float(metrics.get("content_false_positive_rate", 0.0) or 0.0)
     reader_hard_issue_count = int(metrics.get("reader_hard_issue_count", 0) or 0)
+    low_tier_source_excess_count = int(metrics.get("low_tier_source_excess_count", 0) or 0)
     weak_core_rate = float(metrics.get("weak_core_rate", 0.0) or 0.0)
     commodity_primary_item_focus_rate = float(metrics.get("commodity_primary_item_focus_rate", 1.0) or 1.0)
     commodity_primary_issue_signal_rate = float(metrics.get("commodity_primary_issue_signal_rate", 1.0) or 1.0)
@@ -2033,6 +2471,7 @@ def build_selection_guardrails(result: dict[str, Any]) -> dict[str, Any]:
     commodity_primary_dominant_section_rate = float(metrics.get("commodity_primary_dominant_section_rate", 0.0) or 0.0)
     commodity_board_coverage_rate = float(metrics.get("commodity_board_coverage_rate", 1.0) or 1.0)
     commodity_primary_false_link_rate = float(metrics.get("commodity_primary_false_link_rate", 0.0) or 0.0)
+    commodity_pool_false_link_rate = float(metrics.get("commodity_pool_false_link_rate", 0.0) or 0.0)
     try:
         commodity_primary_count = int(metrics.get("commodity_primary_count"))
     except (TypeError, ValueError):
@@ -2073,6 +2512,9 @@ def build_selection_guardrails(result: dict[str, Any]) -> dict[str, Any]:
     commodity_require_direct_item_focus = False
 
     reasons: list[str] = []
+
+    if low_tier_source_excess_count > 0:
+        reasons.append("low_tier_source_concentration")
 
     if content_false_positive_rate > 0.0:
         reasons.append("semantic_false_positive")
@@ -2145,6 +2587,7 @@ def build_selection_guardrails(result: dict[str, Any]) -> dict[str, Any]:
         or commodity_primary_strict_link_rate < 0.65
         or commodity_primary_dominant_section_rate > 0.68
         or commodity_primary_false_link_rate > 0.0
+        or commodity_pool_false_link_rate > 0.0
     ):
         reasons.append("commodity_board")
         commodity_active_min_rank = 2
@@ -2160,7 +2603,12 @@ def build_selection_guardrails(result: dict[str, Any]) -> dict[str, Any]:
             or commodity_primary_weak_rate > 0.15
         )
 
-    if commodity_board_quality_score < 68.0 or commodity_primary_weak_rate > 0.25 or commodity_primary_strict_link_rate < 0.45:
+    if (
+        commodity_board_quality_score < 68.0
+        or commodity_primary_weak_rate > 0.25
+        or commodity_primary_strict_link_rate < 0.45
+        or commodity_pool_false_link_rate >= 0.10
+    ):
         reasons.append("commodity_board_severe")
         commodity_active_min_rank = 2
         commodity_program_core_min_rank = 3
@@ -2200,6 +2648,8 @@ def build_selection_guardrails(result: dict[str, Any]) -> dict[str, Any]:
         "core_fit_min": _round_map(core_fit_min),
         "core_relaxed_min_fit": _round_map(core_relaxed_min_fit),
         "disable_relaxed_core_fill": bool(disable_relaxed_core_fill),
+        "final_low_tier_max_per_section": 1,
+        "final_low_tier_max_total": 4,
         "commodity_active_min_rank": int(commodity_active_min_rank),
         "commodity_program_core_min_rank": int(commodity_program_core_min_rank),
         "commodity_require_issue_signal": bool(commodity_require_issue_signal),
@@ -2263,6 +2713,8 @@ def build_selection_feedback_payload(result: dict[str, Any]) -> dict[str, Any]:
             "commodity_primary_title_item_missing_rate": round(float(metrics.get("commodity_primary_title_item_missing_rate", 0.0) or 0.0), 4),
             "commodity_primary_body_only_rate": round(float(metrics.get("commodity_primary_body_only_rate", 0.0) or 0.0), 4),
             "commodity_primary_false_link_rate": round(float(metrics.get("commodity_primary_false_link_rate", 0.0) or 0.0), 4),
+            "commodity_pool_count": int(metrics.get("commodity_pool_count", 0) or 0),
+            "commodity_pool_false_link_rate": round(float(metrics.get("commodity_pool_false_link_rate", 0.0) or 0.0), 4),
             "commodity_primary_dominant_section_rate": round(float(metrics.get("commodity_primary_dominant_section_rate", 0.0) or 0.0), 4),
         },
         "selection_guardrails": guardrails,
@@ -2272,8 +2724,12 @@ def build_selection_feedback_payload(result: dict[str, Any]) -> dict[str, Any]:
     if isinstance(editorial, dict) and editorial.get("status") == "success":
         payload["editorial"] = {
             "score": editorial.get("score"),
+            "model_reported_score": editorial.get("model_reported_score"),
+            "score_method": editorial.get("score_method"),
+            "quality_tier": editorial.get("quality_tier"),
             "target_score": editorial.get("target_score"),
             "target_status": editorial.get("target_status"),
+            "acceptance_gate": editorial.get("acceptance_gate", {}),
             "section_count_score": editorial.get("section_count_score"),
             "section_count_status": editorial.get("section_count_status"),
             "scores": editorial.get("scores", {}),
@@ -2426,9 +2882,18 @@ def render_evaluation_markdown(result: dict[str, Any]) -> str:
     editorial = result.get("editorial", {})
     editorial_block = ""
     if isinstance(editorial, dict) and editorial:
+        editorial_model = str(editorial.get("model") or "unknown")
+        editorial_model_snapshot = str(editorial.get("model_snapshot") or "").strip()
+        editorial_model_line = f"- Model: {editorial_model}"
+        if editorial_model_snapshot:
+            editorial_model_line += f" (resolved {editorial_model_snapshot})"
+        editorial_model_line += "\n"
         if editorial.get("status") == "success":
             editorial_scores = editorial.get("scores", {})
             editorial_issues = editorial.get("issues", [])
+            editorial_acceptance = editorial.get("acceptance_gate", {})
+            if not isinstance(editorial_acceptance, dict):
+                editorial_acceptance = {}
             issue_lines = "\n".join(
                 f"- [{item.get('severity', 'medium')}] {item.get('type', 'issue')}: {item.get('title', '')} - {item.get('reason', '')}"
                 for item in editorial_issues[:5]
@@ -2444,10 +2909,28 @@ def render_evaluation_markdown(result: dict[str, Any]) -> str:
                     f" -> {float(calibration.get('after', editorial.get('score', 0.0)) or 0.0):.1f}"
                     f" ({calibration.get('reason', 'calibrated')})\n"
                 )
+            acceptance_failures = editorial_acceptance.get("failure_reasons", [])
+            if not isinstance(acceptance_failures, list):
+                acceptance_failures = []
+            acceptance_reason_text = ", ".join(str(item) for item in acceptance_failures) or "clear"
+            model_reported_score = editorial.get("model_reported_score")
+            model_reported_line = ""
+            if model_reported_score is not None:
+                model_reported_line = (
+                    f"- Model-reported score: {float(model_reported_score or 0.0):.2f}; "
+                    f"authoritative method={editorial.get('score_method', 'unknown')}\n"
+                )
             editorial_block = (
                 f"\n### Editorial Shadow Eval\n"
                 f"- Editorial: **{float(editorial.get('score', 0.0) or 0.0):.2f}** "
-                f"(target {float(editorial.get('target_score', 95.0) or 95.0):.0f}, {editorial.get('target_status', 'unknown')})\n"
+                f"(daily target {float(editorial.get('target_score', 88.0) or 88.0):.0f}, "
+                f"tier={editorial.get('quality_tier', 'unknown')}, {editorial.get('target_status', 'unknown')})\n"
+                f"{editorial_model_line}"
+                f"{model_reported_line}"
+                f"- Acceptance: {'pass' if editorial_acceptance.get('passed') else 'needs_iteration'} "
+                f"(blocking={int(editorial_acceptance.get('blocking_issue_count', 0) or 0)}, "
+                f"major={int(editorial_acceptance.get('major_issue_count', 0) or 0)}, "
+                f"reasons={acceptance_reason_text})\n"
                 f"- Section count gate: {float(editorial.get('section_count_score', 100.0) or 100.0):.1f} "
                 f"({editorial.get('section_count_status', 'unknown')})\n"
                 f"{calibration_line}"
@@ -2464,6 +2947,7 @@ def render_evaluation_markdown(result: dict[str, Any]) -> str:
             editorial_block = (
                 f"\n### Editorial Shadow Eval\n"
                 f"- Editorial: {editorial.get('status', 'unknown')} ({editorial.get('reason', 'no reason provided')})\n"
+                f"{editorial_model_line}"
             )
 
     return (
@@ -2473,6 +2957,7 @@ def render_evaluation_markdown(result: dict[str, Any]) -> str:
         f"{reader_quality_line}"
         f"{quality_gate_line}"
         f"- Scores: completeness={scores.get('completeness', 0):.1f}, diversity={scores.get('diversity', 0):.1f}, "
+        f"source={scores.get('source_quality', 100):.1f}, "
         f"summary={scores.get('summary_quality', 0):.1f}, freshness={scores.get('freshness', 0):.1f}, "
         f"retrieval={scores.get('retrieval_support', 0):.1f}, section_fit={scores.get('section_alignment', 0):.1f}, "
         f"core={scores.get('core_quality', 0):.1f}, commodity={scores.get('commodity_board_quality', 0):.1f}\n"
@@ -2480,6 +2965,7 @@ def render_evaluation_markdown(result: dict[str, Any]) -> str:
         f"- Sections: {section_summary}\n"
         f"- Metrics: title_unique={metrics.get('briefing_title_unique_rate', 0):.2f}, "
         f"domain_diversity={metrics.get('briefing_domain_diversity_rate', 0):.2f}, "
+        f"low_tier={metrics.get('low_tier_source_rate', 0):.2f}, "
         f"summary_presence={metrics.get('summary_presence_rate', 0):.2f}, "
         f"summary_numeric={metrics.get('summary_numeric_rate', 0):.2f}, "
         f"fresh_72h={metrics.get('within_72h_rate', 0):.2f}, "
@@ -2495,6 +2981,7 @@ def render_evaluation_markdown(result: dict[str, Any]) -> str:
         f"commodity_coverage={metrics.get('commodity_board_coverage_rate', 0):.2f}, "
         f"commodity_strict_link={metrics.get('commodity_primary_strict_link_rate', 0):.2f}, "
         f"commodity_false_link={metrics.get('commodity_primary_false_link_rate', 0):.2f}, "
+        f"commodity_pool_false_link={metrics.get('commodity_pool_false_link_rate', 0):.2f}, "
         f"commodity_dominant_section={metrics.get('commodity_primary_dominant_section_rate', 0):.2f}, "
         f"semantic_penalty={metrics.get('semantic_false_positive_penalty', 0):.1f}\n\n"
         f"{editorial_block}\n"
@@ -2523,6 +3010,10 @@ def result_to_history_entry(result: dict[str, Any]) -> dict[str, Any]:
         "reader_quality_gate_status": reader_quality_gate.get("status"),
         "reader_quality_gate_reasons": reader_quality_gate.get("reasons", []),
         "editorial_score": result.get("editorial_score"),
+        "editorial_model_reported_score": (result.get("editorial") or {}).get("model_reported_score") if isinstance(result.get("editorial"), dict) else None,
+        "editorial_score_method": (result.get("editorial") or {}).get("score_method") if isinstance(result.get("editorial"), dict) else None,
+        "editorial_quality_tier": (result.get("editorial") or {}).get("quality_tier") if isinstance(result.get("editorial"), dict) else None,
+        "editorial_acceptance_passed": ((result.get("editorial") or {}).get("acceptance_gate") or {}).get("passed") if isinstance(result.get("editorial"), dict) else None,
         "editorial_status": (result.get("editorial") or {}).get("target_status") if isinstance(result.get("editorial"), dict) else None,
         "quality_gate_status": quality_gate.get("status"),
         "quality_gate_reason": quality_gate.get("reason"),
@@ -2538,10 +3029,14 @@ def result_to_history_entry(result: dict[str, Any]) -> dict[str, Any]:
         "summary_presence_rate": metrics.get("summary_presence_rate", 0),
         "within_72h_rate": metrics.get("within_72h_rate", 0),
         "briefing_title_unique_rate": metrics.get("briefing_title_unique_rate", 0),
+        "low_tier_source_rate": metrics.get("low_tier_source_rate", 0),
+        "low_tier_source_excess_count": metrics.get("low_tier_source_excess_count", 0),
         "content_false_positive_rate": metrics.get("content_false_positive_rate", 0),
         "reader_hard_issue_count": metrics.get("reader_hard_issue_count", 0),
         "reader_quality_penalty": metrics.get("reader_quality_penalty", 0),
         "editorial_quality_penalty": metrics.get("editorial_quality_penalty", 0),
+        "commodity_primary_false_link_rate": metrics.get("commodity_primary_false_link_rate", 0),
+        "commodity_pool_false_link_rate": metrics.get("commodity_pool_false_link_rate", 0),
         "policy_wrong_section_rate": metrics.get("policy_wrong_section_rate", 0),
         "promotional_filler_rate": metrics.get("promotional_filler_rate", 0),
         "promotional_core_rate": metrics.get("promotional_core_rate", 0),

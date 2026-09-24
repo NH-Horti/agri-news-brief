@@ -1,47 +1,12 @@
 {
-  "generated_at": "2026-06-14T00:51:37+09:00",
+  "generated_at": "2026-09-24T03:25:06+09:00",
   "rows": [
     {
-      "date": "2026-04-30",
-      "query": "사과",
-      "section_filter": "(not set)",
-      "result_count": 123,
-      "count": 1
-    },
-    {
-      "date": "2026-05-12",
-      "query": "샤인머스",
-      "section_filter": "(not set)",
-      "result_count": 10,
-      "count": 1
-    },
-    {
-      "date": "2026-05-12",
+      "date": "2026-08-24",
       "query": "포도",
       "section_filter": "(not set)",
-      "result_count": 32,
-      "count": 1
-    },
-    {
-      "date": "2026-05-18",
-      "query": "안산",
-      "section_filter": "(not set)",
-      "result_count": 1,
-      "count": 1
-    },
-    {
-      "date": "2026-05-18",
-      "query": "팜",
-      "section_filter": "(not set)",
-      "result_count": 10,
-      "count": 1
-    },
-    {
-      "date": "2026-05-26",
-      "query": "사과",
-      "section_filter": "(not set)",
-      "result_count": 46,
-      "count": 1
+      "result_count": 0,
+      "count": 4
     },
     {
       "date": "2026-06-05",
@@ -62,6 +27,55 @@
       "query": "메론 가격",
       "section_filter": "(not set)",
       "result_count": 0,
+      "count": 1
+    },
+    {
+      "date": "2026-06-22",
+      "query": "물가",
+      "section_filter": "(not set)",
+      "result_count": 12,
+      "count": 1
+    },
+    {
+      "date": "2026-08-21",
+      "query": "가지",
+      "section_filter": "(not set)",
+      "result_count": 0,
+      "count": 1
+    },
+    {
+      "date": "2026-08-21",
+      "query": "배추",
+      "section_filter": "(not set)",
+      "result_count": 150,
+      "count": 1
+    },
+    {
+      "date": "2026-08-24",
+      "query": "김천 포도",
+      "section_filter": "(not set)",
+      "result_count": 7,
+      "count": 1
+    },
+    {
+      "date": "2026-08-24",
+      "query": "샤인",
+      "section_filter": "(not set)",
+      "result_count": 0,
+      "count": 1
+    },
+    {
+      "date": "2026-08-24",
+      "query": "포도",
+      "section_filter": "(not set)",
+      "result_count": 232,
+      "count": 1
+    },
+    {
+      "date": "2026-08-24",
+      "query": "포도",
+      "section_filter": "(not set)",
+      "result_count": 257,
       "count": 1
     }
   ]

@@ -20,7 +20,8 @@ jobs:
   run:
     if: github.ref_name == 'main'
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # 180일치 아카이브 UX 패치는 30분을 초과할 수 있어 여유를 둔다 (타임아웃 시 cancelled로 표기됨)
+    timeout-minutes: 120
     steps:
       - name: Checkout
         uses: actions/checkout@v5

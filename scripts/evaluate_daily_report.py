@@ -14,7 +14,11 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from io_github import github_get_file, github_put_file
-from editorial_eval import build_editorial_improvement_plan, evaluate_editorial_quality
+from editorial_eval import (
+    EDITORIAL_DAILY_TARGET_SCORE,
+    build_editorial_improvement_plan,
+    evaluate_editorial_quality,
+)
 from report_eval import (
     build_selection_feedback_payload,
     evaluate_report,
@@ -158,8 +162,11 @@ def apply_editorial_quality_gate(result: dict[str, Any], editorial_result: dict[
         return result
     if editorial_result.get("status") != "success":
         return result
+    editorial_score_value = editorial_result.get("score")
+    if editorial_score_value is None:
+        return result
     try:
-        editorial_score = float(editorial_result.get("score"))
+        editorial_score = float(editorial_score_value)
     except (TypeError, ValueError):
         return result
     try:
@@ -171,41 +178,65 @@ def apply_editorial_quality_gate(result: dict[str, Any], editorial_result: dict[
     except (TypeError, ValueError):
         current_headline_score = operational_score
 
-    target_score = float(editorial_result.get("target_score", 95.0) or 95.0)
+    target_score = float(
+        editorial_result.get("target_score", EDITORIAL_DAILY_TARGET_SCORE)
+        or EDITORIAL_DAILY_TARGET_SCORE
+    )
     target_status = str(editorial_result.get("target_status") or "")
     gate_status = "target_met" if editorial_score >= target_score and target_status == "target_met" else (target_status or "needs_iteration")
-    blocking_types = {
-        "false_positive",
-        "off_topic",
-        "wrong_section",
-        "duplicate_url",
-        "hard_duplicate",
-        "factual_error",
-        "unsafe_summary",
-    }
     editorial_issues = editorial_result.get("issues", [])
     if not isinstance(editorial_issues, list):
         editorial_issues = []
+    hard_blocking_types = {
+        "false_positive",
+        "off_topic",
+        "factual_error",
+        "unsafe_summary",
+    }
     blocking_issues = [
         issue for issue in editorial_issues
         if isinstance(issue, dict)
-        and str(issue.get("severity", "")).lower() == "high"
-        and str(issue.get("type", "")).lower() in blocking_types
+        and (
+            str(issue.get("severity", "")).lower() in {"blocking", "critical"}
+            or (
+                str(issue.get("type", "")).lower() in hard_blocking_types
+                and str(issue.get("severity", "")).lower() in {"major", "high"}
+            )
+        )
     ]
+    major_issues = [
+        issue for issue in editorial_issues
+        if isinstance(issue, dict)
+        and str(issue.get("severity", "")).lower() in {"major", "high"}
+    ]
+    acceptance_gate = editorial_result.get("acceptance_gate", {})
+    if not isinstance(acceptance_gate, dict):
+        acceptance_gate = {}
+    editorial_failed = (
+        gate_status != "target_met"
+        or acceptance_gate.get("passed") is False
+        or bool(blocking_issues or major_issues)
+    )
+    if editorial_failed and gate_status == "target_met":
+        gate_status = "needs_iteration"
     penalty = 0.0
     reason = "all_targets_met"
-    if editorial_score < target_score:
+    if editorial_failed:
         if blocking_issues:
             gated_score = min(current_headline_score, editorial_score)
             reason = "editorial_blocking_issue"
+        elif major_issues:
+            base_score = min(current_headline_score, operational_score) if operational_score > 0.0 else current_headline_score
+            gap = max(0.0, target_score - editorial_score)
+            penalty = min(8.0, max(2.0, round(gap * 0.25 + len(major_issues) * 1.25, 2)))
+            gated_score = max(0.0, base_score - penalty)
+            reason = "editorial_major_issue"
         else:
             base_score = min(current_headline_score, operational_score) if operational_score > 0.0 else current_headline_score
             gap = max(0.0, target_score - editorial_score)
-            penalty = min(6.0, round(gap * 0.10, 2))
-            if editorial_score < 70.0:
-                penalty = max(penalty, min(10.0, round((70.0 - editorial_score) * 0.25 + 3.0, 2)))
+            penalty = min(6.0, max(0.5, round(gap * 0.25, 2)))
             gated_score = max(0.0, base_score - penalty)
-            reason = "editorial_below_target_bounded_penalty"
+            reason = "editorial_acceptance_gate_failed"
     else:
         gated_score = current_headline_score
     result["quality_gate"] = {
@@ -218,10 +249,14 @@ def apply_editorial_quality_gate(result: dict[str, Any], editorial_result: dict[
         "reason": reason,
         "bounded_penalty": round(penalty, 2),
         "blocking_issue_count": len(blocking_issues),
+        "major_issue_count": len(major_issues),
+        "acceptance_failure_reasons": acceptance_gate.get("failure_reasons", []),
     }
-    if editorial_score < target_score:
+    if editorial_failed:
         result["overall_score"] = round(gated_score, 2)
-        result["status"] = _score_status(gated_score)
+        # Numeric health and editorial acceptance answer different questions.
+        # A high operational score cannot turn a failed editorial review into pass.
+        result["status"] = "fail" if _score_status(gated_score) == "fail" else "warn"
         notes = result.get("score_notes")
         if not isinstance(notes, dict):
             notes = {}
@@ -238,6 +273,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Evaluate a generated daily report and optionally publish eval artifacts.")
     parser.add_argument("--report-date", default="")
     parser.add_argument("--snapshot-path", required=True)
+    parser.add_argument(
+        "--existing-result-json",
+        default="",
+        help="Reuse a prepublish result instead of repeating deterministic and OpenAI evaluation.",
+    )
     parser.add_argument("--html-path", default="")
     parser.add_argument("--repo", default="")
     parser.add_argument("--token", default="")
@@ -252,7 +292,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--fail-under", type=float, default=0.0)
     parser.add_argument("--editorial-eval", action="store_true")
     parser.add_argument("--editorial-model", default="")
-    parser.add_argument("--editorial-max-raw-per-section", type=int, default=24)
+    parser.add_argument("--editorial-max-raw-per-section", type=int, default=10)
     return parser
 
 
@@ -265,37 +305,49 @@ def main() -> int:
     if not report_date:
         raise RuntimeError("Could not resolve report_date from --report-date or snapshot payload.")
 
-    html_text = ""
-    if args.html_path:
-        html_text = Path(args.html_path).read_text(encoding="utf-8")
+    if args.existing_result_json:
+        result_payload = json.loads(Path(args.existing_result_json).read_text(encoding="utf-8"))
+        if not isinstance(result_payload, dict):
+            raise RuntimeError("--existing-result-json must contain a JSON object.")
+        existing_date = str(result_payload.get("report_date") or "").strip()
+        if existing_date and existing_date != report_date:
+            raise RuntimeError(
+                f"Existing result report_date mismatch: expected {report_date}, found {existing_date}."
+            )
+        result = result_payload
+        LOG.info("Reusing prepublish evaluation: %s", args.existing_result_json)
     else:
-        if not (args.repo and args.token):
-            raise RuntimeError("--html-path is required when --repo/--token is not provided.")
-        remote_html_path = args.remote_html_path or f"docs/archive/{report_date}.html"
-        html_text = fetch_remote_text(args.repo, args.token, args.ref, remote_html_path)
+        html_text = ""
+        if args.html_path:
+            html_text = Path(args.html_path).read_text(encoding="utf-8")
+        else:
+            if not (args.repo and args.token):
+                raise RuntimeError("--html-path is required when --repo/--token is not provided.")
+            remote_html_path = args.remote_html_path or f"docs/archive/{report_date}.html"
+            html_text = fetch_remote_text(args.repo, args.token, args.ref, remote_html_path)
 
-    result = evaluate_report(report_date, html_text, snapshot_payload)
-    result["operational_score"] = result.get("operational_score", result.get("overall_score"))
-    result["score_notes"] = {
-        "overall_score": "Headline reader-quality score. It preserves operational coverage but is capped by hard reader-facing quality issues.",
-        "operational_score": "Deterministic operational harness score for format, coverage, freshness, and metadata.",
-        "reader_quality_score": "Deterministic reader-facing score with hard caps for off-topic articles, duplicate topics, and weak commodity linkage.",
-        "editorial_score": "LLM shadow score for article choice, missed opportunities, noise, and summary usefulness.",
-    }
-    if args.editorial_eval:
-        editorial_result = evaluate_editorial_quality(
-            report_date,
-            html_text,
-            snapshot_payload,
-            result,
-            model=args.editorial_model or None,
-            max_raw_per_section=max(1, int(args.editorial_max_raw_per_section or 24)),
-        )
-        result["editorial"] = editorial_result
-        if editorial_result.get("status") == "success":
-            result["editorial_score"] = editorial_result.get("score")
-            result["editorial_improvement_plan"] = build_editorial_improvement_plan(editorial_result, result)
-            apply_editorial_quality_gate(result, editorial_result)
+        result = evaluate_report(report_date, html_text, snapshot_payload)
+        result["operational_score"] = result.get("operational_score", result.get("overall_score"))
+        result["score_notes"] = {
+            "overall_score": "Headline reader-quality score. It preserves operational coverage but is capped by hard reader-facing quality issues.",
+            "operational_score": "Deterministic operational harness score for format, coverage, freshness, and metadata.",
+            "reader_quality_score": "Deterministic reader-facing score with hard caps for off-topic articles, duplicate topics, and weak commodity linkage.",
+            "editorial_score": "LLM shadow score for article choice, missed opportunities, noise, and summary usefulness.",
+        }
+        if args.editorial_eval:
+            editorial_result = evaluate_editorial_quality(
+                report_date,
+                html_text,
+                snapshot_payload,
+                result,
+                model=args.editorial_model or None,
+                max_raw_per_section=max(1, int(args.editorial_max_raw_per_section or 10)),
+            )
+            result["editorial"] = editorial_result
+            if editorial_result.get("status") == "success":
+                result["editorial_score"] = editorial_result.get("score")
+                result["editorial_improvement_plan"] = build_editorial_improvement_plan(editorial_result, result)
+                apply_editorial_quality_gate(result, editorial_result)
 
     markdown = render_evaluation_markdown(result)
     feedback_text = render_summary_feedback_text(result)

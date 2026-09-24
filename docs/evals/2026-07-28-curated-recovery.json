@@ -1,0 +1,236 @@
+{
+  "report_date": "2026-07-28",
+  "status": "manual_editorial_recovery",
+  "generated_at_kst": "2026-07-28T05:53:34+09:00",
+  "recovery_reason": "OpenAI editorial quota exhausted after the automated edition reached 89.45 overall; manually resolved every remaining explicit editorial issue.",
+  "review_checks": {
+    "cards_per_section": 5,
+    "core_cards_per_section": 3,
+    "remaining_blocking_issues": 0,
+    "remaining_major_issues": 0,
+    "remaining_moderate_issues": 0,
+    "source_tier_cap_reviewed": true,
+    "cross_section_duplicate_reviewed": true,
+    "summary_factual_reviewed": true
+  },
+  "section_counts": {
+    "supply": 5,
+    "policy": 5,
+    "dist": 5,
+    "pest": 5
+  },
+  "core_counts": {
+    "supply": 3,
+    "policy": 3,
+    "dist": 3,
+    "pest": 3
+  },
+  "operational_score": 97.99,
+  "reader_quality_score": 97.81,
+  "scores": {
+    "completeness": 100.0,
+    "diversity": 100.0,
+    "source_quality": 100.0,
+    "summary_quality": 100.0,
+    "freshness": 100.0,
+    "retrieval_support": 88.12,
+    "section_alignment": 100.0,
+    "core_quality": 92.04,
+    "commodity_board_quality": 92.0,
+    "reader_quality": 97.81
+  },
+  "counts": {
+    "briefing_total": 20,
+    "commodity_total": 7,
+    "commodity_primary_total": 3,
+    "commodity_pool_total": 2,
+    "commodity_active_today_total": 5,
+    "commodity_active_today_unlinked_total": 2,
+    "commodity_managed_unlinked_total": 30,
+    "briefing_by_section": {
+      "supply": 5,
+      "policy": 5,
+      "dist": 5,
+      "pest": 5
+    },
+    "core_by_section": {
+      "supply": 3,
+      "policy": 3,
+      "dist": 3,
+      "pest": 3
+    },
+    "commodity_by_section": {
+      "supply": 3,
+      "policy": 0,
+      "dist": 3,
+      "pest": 1
+    },
+    "raw_by_section": {
+      "supply": 181,
+      "policy": 107,
+      "dist": 61,
+      "pest": 53
+    },
+    "expected_briefing_by_section": {
+      "supply": 5,
+      "policy": 5,
+      "dist": 5,
+      "pest": 5
+    },
+    "soft_fallback_briefing_by_section": {
+      "supply": 4,
+      "policy": 4,
+      "dist": 4,
+      "pest": 4
+    },
+    "minimum_fallback_briefing_by_section": {
+      "supply": 3,
+      "policy": 3,
+      "dist": 3,
+      "pest": 3
+    },
+    "preferred_slot_gap_by_section": {
+      "supply": 0,
+      "policy": 0,
+      "dist": 0,
+      "pest": 0
+    },
+    "low_tier_source_total": 2,
+    "low_tier_source_by_section": {
+      "supply": 1,
+      "policy": 1,
+      "dist": 0,
+      "pest": 0
+    }
+  },
+  "selected": {
+    "supply": [
+      {
+        "url": "https://sedaily.com/article/20072473",
+        "title": "집중호우 뒤 잎채소값 급등…열무 일주일 새 23.8% 상승",
+        "is_core": true,
+        "summary": "집중호우 뒤 출하 차질로 열무 소매가격이 일주일 새 23.8% 뛰고 얼갈이배추 19.4%, 적상추 17.9% 등 잎채소 전반이 상승했다. 폭염이 길어지면 생육 부진과 병해로 다음 출하 물량도 줄 수 있다."
+      },
+      {
+        "url": "https://hankyung.com/article/202607277450i",
+        "title": "수박 경락가 사흘 새 51.7% 반등…전년보다는 16% 낮아",
+        "is_core": true,
+        "summary": "가락시장 일반 수박 8㎏ 경락가는 사흘 새 51.7% 올랐지만 전년보다 16.0% 낮다. 7월 출하량도 전년 대비 5.8% 늘 전망이라 단기 반등과 공급 증가를 함께 봐야 한다."
+      },
+      {
+        "url": "https://idaegu.com/news/articleView.html?idxno=664602",
+        "title": "김천 포도, 과잉공급 가격 하락에 40도 폭염 피해까지",
+        "is_core": true,
+        "summary": "김천 샤인머스캣은 재배면적 급증에 따른 가격 하락에 폭염·열대야 피해까지 겹쳤다. 1,800여㏊·4,100여 농가가 일소와 착색불량 대응에 나섰고 농기센터는 10a당 2.5t 적정 착과를 권고했다."
+      },
+      {
+        "url": "https://chmbc.co.kr/article/6-CCFHCQacbLcY9w",
+        "title": "가격 폭락·폭염 이중고…고랭지 배추 산지폐기 확산",
+        "is_core": false,
+        "summary": "고랭지 배추는 한 상자 출하비가 약 1만원인데 가격 폭락과 폭염 피해로 판매할수록 손실이 커져 산지폐기가 이어지고 있다. 농가들은 최소 생산비도 회수하지 못해 지자체 공동 대응을 요구했다."
+      },
+      {
+        "url": "https://headlinejeju.co.kr/news/articleView.html?idxno=596513",
+        "title": "제주 월동무 농가, 비상품 무 반출 단속·자율 수급관리 촉구",
+        "is_core": false,
+        "summary": "제주 월동무 농가들이 비상품 겨울무 도외 반출이 품질 신뢰와 가격을 해친다며 조례 개정, 단속 강화, 생산자 자율 수급관리를 촉구했다. 생산자단체·농협·행정의 공동 관리가 핵심이다."
+      }
+    ],
+    "policy": [
+      {
+        "url": "https://ajunews.com/view/20260727094050704",
+        "title": "aT 사장 “농산물 수급 불안은 농업 구조의 취약성 문제”",
+        "is_core": true,
+        "summary": "aT 사장은 반복되는 농산물 가격 불안이 기상만의 문제가 아니라 품목·산지 집중과 기후변화가 겹친 구조적 취약성이라며 할인 중심 대응의 전환을 주문했다."
+      },
+      {
+        "url": "https://ikpnews.net/news/articleView.html?idxno=71053",
+        "title": "농식품부, 농업재해 2만1112농가에 복구비 384억원 확정",
+        "is_core": true,
+        "summary": "농식품부가 저온·벌마늘·우박 피해 2만1112농가에 383억9700만원을 확정하고 정책자금 상환연기·이자감면과 연 1.8% 경영자금을 지원한다. 피해율 50% 이상은 상환을 2년 연기한다."
+      },
+      {
+        "url": "https://fnnews.com/news/202607271615260184",
+        "title": "제주, 생산·물류·수급 총괄 농산물 유통 전담기구 검토",
+        "is_core": true,
+        "summary": "제주도가 생산·물류·시장출하·수급조절을 총괄하는 농산물 유통 전담기구의 타당성을 검토하고, 23개 농업인단체와 정책협의체를 정례화한다. 품목별 생산정보와 출하량을 한곳에서 관리하는 구상이다."
+      },
+      {
+        "url": "https://foodnews.co.kr/news/articleView.html?idxno=119524",
+        "title": "농식품부 ‘모두의 상생’ 출범…제품화부터 수출까지 연계",
+        "is_core": false,
+        "summary": "농식품부가 국산 농산물의 생산·제품화·판로·수출을 연결하는 ‘모두의 상생’을 출범했다. 내년부터 다년도 지원과 상시 제안창구 도입을 추진해 농가 판로와 지역 일자리 창출을 함께 지원한다."
+      },
+      {
+        "url": "https://sedaily.com/article/20072481",
+        "title": "당정, 농협중앙회장 직선제·경제사업 활성화 입법 추진",
+        "is_core": false,
+        "summary": "당정이 중앙회장 직선제 중심의 1차 농협 개혁 법안에 이어 경제사업 활성화와 중앙회장 상임화를 다룰 2차 입법을 추진한다. 하반기 후속 법안으로 농협의 경제사업 기능을 재정비할 계획이다."
+      }
+    ],
+    "dist": [
+      {
+        "url": "https://newspim.com/news/view/20260727000705",
+        "title": "농산물 유통개혁 연 6000억원…성과 검증·농협 역할 재정립 필요",
+        "is_core": true,
+        "summary": "정부가 유통구조 개선에 매년 6000억원을 투입하지만 비용 절감 성과평가가 부족하다는 지적이 나왔다. 스마트APC·온라인시장·농협 기능의 통합 관리가 과제로 제시됐다."
+      },
+      {
+        "url": "https://aflnews.co.kr/news/articleView.html?idxno=325224",
+        "title": "온라인도매시장 거래점검…위법 0건·데이터 관리 보강",
+        "is_core": false,
+        "summary": "온라인도매시장 거래 전수조사에서 위법 거래는 없었으나, 거래 데이터 수집과 공익제보를 강화해 실적 관리와 상시 모니터링을 촘촘히 해야 한다는 개선안이 제시됐다."
+      },
+      {
+        "url": "https://ccdailynews.com/news/articleView.html?idxno=2430399",
+        "title": "옥천 복숭아 홍콩 수출…691.2㎏ 선적·연 10t 목표",
+        "is_core": false,
+        "summary": "옥천 복숭아 691.2㎏이 홍콩 대형마트로 선적됐다. 수출조합은 2017년 진출 뒤 매년 수출을 이어왔으며 올해 10t 수출을 목표로 잡았다. 고당도 ‘그레이트’ 품종으로 해외 판로를 넓힌다."
+      },
+      {
+        "url": "https://newsis.com/view/NISX20260727_0003723988",
+        "title": "경북 포도 수출 44.2% 증가…전국 수출액의 89.8%",
+        "is_core": true,
+        "summary": "상반기 경북 포도 수출액은 1601만달러로 전년보다 44.2% 늘어 전국의 89.8%를 차지했다. 경북은 20여개국 수출을 바탕으로 하반기 연간 8000만달러 돌파를 전망한다."
+      },
+      {
+        "url": "https://aflnews.co.kr/news/articleView.html?idxno=325290",
+        "title": "태안 APC, 깐마늘 자동 가공·유통체계 본격 가동",
+        "is_core": true,
+        "summary": "태안 APC가 깐마늘 자동 가공·유통시설의 첫 출하를 시작했다. 원물 출하 의존도를 낮추고 가공 부가가치와 산지 유통 경쟁력을 높이는 전환으로, 마늘 주산지의 유통 체질 개선을 추진한다."
+      }
+    ],
+    "pest": [
+      {
+        "url": "https://aflnews.co.kr/news/articleView.html?idxno=325259",
+        "title": "과수화상병 51.9㏊ 발생…전년보다 면적 10.9% 증가",
+        "is_core": true,
+        "summary": "전국 과수화상병은 122농가 51.9㏊로 농가 수는 전년과 비슷하지만 면적이 10.9% 늘었다. 발생 농가 122곳 중 111곳이 사과 농가여서 조기 진단·예찰이 중요하다."
+      },
+      {
+        "url": "https://news.kbs.co.kr/news/pc/view/view.do?ncd=8620833",
+        "title": "잦은 비에 포도 열과·탄저병·노균병 확산 우려",
+        "is_core": true,
+        "summary": "잦은 비로 포도가 과습하면 열매가 터지고 갈라진 틈으로 탄저병·노균병이 번질 수 있다. 충북농기원은 과수원 바닥의 물 고임을 막는 배수 정비와 적기 약제 살포를 당부했다."
+      },
+      {
+        "url": "https://shinailbo.co.kr/news/articleView.html?idxno=5044912",
+        "title": "울진, 중국 유입 추정 혹명나방 포획…벼 예찰·공동방제",
+        "is_core": true,
+        "summary": "울진 농업기술센터 유아등에서 중국 유입 추정 혹명나방이 포획되자 군이 벼 재배지 전 직원 예찰을 실시하고 관계기관 공동방제를 추진한다. 국내 여러 지역에서 확인돼 상시 예찰이 필요한 상황이다."
+      },
+      {
+        "url": "https://cctimes.kr/news/articleView.html?idxno=918581",
+        "title": "장마 뒤 과수 탄저병 위험…비 전후 약제 달리 써야",
+        "is_core": false,
+        "summary": "과수 탄저병은 25~30도 고온다습 환경에서 확산한다. 비 전 보호용, 비 후 다른 계열 치료용 살균제를 쓰고 병든 과실·가지를 즉시 제거해야 한다. 통풍·채광 확보와 상시 예찰도 필요하다."
+      },
+      {
+        "url": "https://ggilbo.com/news/articleView.html?idxno=1171639",
+        "title": "공주 밤 재배지 1842㏊, 복숭아명나방 드론 공동방제",
+        "is_core": false,
+        "summary": "공주시는 14개 읍면동 674임가, 1,842㏊ 밤 재배지에서 복숭아명나방 대상 권역별 드론 공동방제를 8월 중순까지 시행한다. 산림청 등록 저독성 약제를 쓰고 기상에 따라 일정을 조정한다."
+      }
+    ]
+  }
+}

@@ -4,6 +4,7 @@ from datetime import datetime
 import json
 import os
 import re
+import time
 from typing import Any
 
 import requests
@@ -19,12 +20,40 @@ from report_eval import (
 )
 
 
-EDITORIAL_RUBRIC_VERSION = 2
-DEFAULT_EDITORIAL_MODEL = "gpt-5.4"
-DEFAULT_MAX_RAW_PER_SECTION = 24
-DEFAULT_TIMEOUT_SEC = 90
+EDITORIAL_RUBRIC_VERSION = 3
+DEFAULT_EDITORIAL_MODEL = "gpt-5.6-sol"
+DEFAULT_MAX_RAW_PER_SECTION = max(
+    5,
+    min(int(os.getenv("EDITORIAL_MAX_RAW_PER_SECTION", "10") or "10"), 24),
+)
+DEFAULT_EVAL_MAX_OUTPUT_TOKENS = max(
+    800,
+    min(int(os.getenv("EDITORIAL_EVAL_MAX_OUTPUT_TOKENS", "2400") or "2400"), 5000),
+)
+DEFAULT_REPAIR_MAX_OUTPUT_TOKENS = max(
+    800,
+    min(int(os.getenv("EDITORIAL_REPAIR_MAX_OUTPUT_TOKENS", "1800") or "1800"), 4000),
+)
+DEFAULT_TIMEOUT_SEC = max(
+    15,
+    min(int(os.getenv("EDITORIAL_OPENAI_TIMEOUT_SECONDS", "90") or "90"), 120),
+)
+OPENAI_TRANSIENT_MAX_ATTEMPTS = max(
+    1,
+    min(int(os.getenv("EDITORIAL_OPENAI_MAX_ATTEMPTS", "4") or "4"), 4),
+)
+OPENAI_TRANSIENT_BASE_DELAY_SEC = max(
+    0.0,
+    min(float(os.getenv("EDITORIAL_OPENAI_RETRY_DELAY_SECONDS", "15") or "15"), 60.0),
+)
+EDITORIAL_DAILY_TARGET_SCORE = 82.0
+EDITORIAL_EXCELLENT_SCORE = 92.0
+EDITORIAL_STRETCH_SCORE = 95.0
+EDITORIAL_CRITICAL_COMPONENT_MIN = 80.0
+EDITORIAL_COMPONENT_MIN = 75.0
+EDITORIAL_OPERATIONAL_MIN_SCORE = 85.0
 SECTION_COUNT_TARGET_SCORE = 95.0
-COMMODITY_BOARD_TARGET_SCORE = 95.0
+COMMODITY_BOARD_TARGET_SCORE = 90.0
 
 EDITORIAL_COMPONENTS = (
     "article_selection",
@@ -34,6 +63,175 @@ EDITORIAL_COMPONENTS = (
     "missed_opportunity",
     "noise_control",
 )
+
+EDITORIAL_COMPONENT_WEIGHTS = {
+    "article_selection": 0.25,
+    "section_fit": 0.15,
+    "core_pick_quality": 0.20,
+    "summary_usefulness": 0.15,
+    "missed_opportunity": 0.15,
+    "noise_control": 0.10,
+}
+
+EDITORIAL_CRITICAL_COMPONENTS = (
+    "article_selection",
+    "section_fit",
+    "core_pick_quality",
+    "summary_usefulness",
+)
+
+EDITORIAL_ISSUE_TYPES = (
+    "false_positive",
+    "off_topic",
+    "factual_error",
+    "unsafe_summary",
+    "duplicate_story",
+    "duplicate_theme",
+    "wrong_section",
+    "weak_core",
+    "missed_candidate",
+    "promotional_filler",
+    "bad_summary",
+    "underfill",
+    "noise",
+    "other",
+)
+
+EDITORIAL_SEVERITIES = (
+    "blocking",
+    "major",
+    "moderate",
+    "minor",
+)
+
+EDITORIAL_HARD_BLOCKING_TYPES = {
+    "false_positive",
+    "off_topic",
+    "factual_error",
+    "unsafe_summary",
+}
+
+
+def _post_openai_response_with_retry(
+    session: Any,
+    *,
+    headers: dict[str, str],
+    request_body: dict[str, Any],
+    timeout_sec: int,
+) -> Any:
+    """Retry transient Responses API failures, especially short-lived 429s."""
+    for attempt in range(OPENAI_TRANSIENT_MAX_ATTEMPTS):
+        try:
+            response = session.post(
+                "https://api.openai.com/v1/responses",
+                headers=headers,
+                json=request_body,
+                timeout=timeout_sec,
+            )
+        except requests.RequestException:
+            if attempt + 1 >= OPENAI_TRANSIENT_MAX_ATTEMPTS:
+                raise
+            time.sleep(min(60.0, OPENAI_TRANSIENT_BASE_DELAY_SEC * (2**attempt)))
+            continue
+
+        status_code = int(getattr(response, "status_code", 200) or 200)
+        if status_code != 429 and status_code < 500:
+            response.raise_for_status()
+            return response
+        if attempt + 1 >= OPENAI_TRANSIENT_MAX_ATTEMPTS:
+            response.raise_for_status()
+
+        retry_after = str(getattr(response, "headers", {}).get("Retry-After", "") or "").strip()
+        try:
+            delay = float(retry_after)
+        except ValueError:
+            delay = OPENAI_TRANSIENT_BASE_DELAY_SEC * (2**attempt)
+        time.sleep(max(0.0, min(60.0, delay)))
+
+    raise RuntimeError("OpenAI response retry loop exhausted")
+
+
+def _response_hit_output_limit(payload: dict[str, Any]) -> bool:
+    if not isinstance(payload, dict):
+        return False
+    if str(payload.get("status") or "").strip().lower() != "incomplete":
+        return False
+    details = payload.get("incomplete_details", {})
+    reason = str(details.get("reason") or "").strip().lower() if isinstance(details, dict) else ""
+    return reason in ("", "max_output_tokens")
+
+
+def _merge_usage(first: dict[str, Any], second: dict[str, Any]) -> dict[str, Any]:
+    if not first:
+        return dict(second)
+    if not second:
+        return dict(first)
+    merged = dict(second)
+    for key in ("input_tokens", "output_tokens", "cached_input_tokens", "cache_write_input_tokens", "total_tokens"):
+        try:
+            merged[key] = int(first.get(key, 0) or 0) + int(second.get(key, 0) or 0)
+        except (TypeError, ValueError):
+            continue
+    try:
+        merged["estimated_cost_usd"] = round(
+            float(first.get("estimated_cost_usd", 0.0) or 0.0) + float(second.get("estimated_cost_usd", 0.0) or 0.0), 6
+        )
+    except (TypeError, ValueError):
+        pass
+    merged["retried_after_output_limit"] = True
+    return merged
+
+
+def _request_structured_json(
+    session: Any,
+    *,
+    headers: dict[str, str],
+    request_body: dict[str, Any],
+    timeout_sec: int,
+    max_output_tokens_cap: int,
+    model_for_usage: str,
+) -> tuple[dict[str, Any], str, dict[str, Any], dict[str, Any]]:
+    """Call the Responses API and parse the JSON body, growing the output budget once if cut off.
+
+    With reasoning models the reasoning tokens count against max_output_tokens, so a
+    modest budget intermittently truncates the JSON (2026-09-16: two of three editorial
+    calls failed with 'Expecting , delimiter' / 'Expecting value' after ~1.1k visible
+    characters). A truncated or unparsable structured response is retried once with a
+    doubled budget instead of surfacing as an editorial error that the recovery path
+    then has to publish around.
+    """
+    body = dict(request_body)
+    prior_usage: dict[str, Any] = {}
+    last_error: Exception | None = None
+    for attempt in range(2):
+        response = _post_openai_response_with_retry(
+            session,
+            headers=headers,
+            request_body=body,
+            timeout_sec=timeout_sec,
+        )
+        response_payload = response.json()
+        raw_text = _extract_response_text(response_payload)
+        model_snapshot = str(response_payload.get("model") or "").strip()
+        usage = normalize_openai_usage(response_payload, model_snapshot or model_for_usage)
+        hit_limit = _response_hit_output_limit(response_payload)
+        parsed: dict[str, Any] | None = None
+        if not hit_limit:
+            try:
+                parsed = extract_json_object(raw_text)
+            except (ValueError, json.JSONDecodeError) as exc:
+                last_error = exc
+        if parsed is not None:
+            return response_payload, raw_text, parsed, _merge_usage(prior_usage, usage)
+        prior_usage = _merge_usage(prior_usage, usage)
+        current_budget = int(body.get("max_output_tokens") or 0)
+        grown = min(max_output_tokens_cap, max(current_budget * 2, current_budget + 800))
+        if attempt >= 1 or grown <= current_budget:
+            break
+        body["max_output_tokens"] = grown
+    if last_error is not None:
+        raise last_error
+    raise ValueError("Editorial response was cut off at max_output_tokens.")
 
 
 def _score_schema() -> dict[str, Any]:
@@ -83,8 +281,14 @@ def _editorial_response_format() -> dict[str, Any]:
                                 "suggested_action",
                             ],
                             "properties": {
-                                "type": {"type": "string"},
-                                "severity": {"type": "string"},
+                                "type": {
+                                    "type": "string",
+                                    "enum": list(EDITORIAL_ISSUE_TYPES),
+                                },
+                                "severity": {
+                                    "type": "string",
+                                    "enum": list(EDITORIAL_SEVERITIES),
+                                },
                                 "section": {"type": "string"},
                                 "title": {"type": "string"},
                                 "reason": {"type": "string"},
@@ -111,6 +315,64 @@ def _editorial_response_format() -> dict[str, Any]:
     }
 
 
+def _repair_section_card_targets(
+    section_card_targets: dict[str, int] | None,
+) -> dict[str, int]:
+    """섹션별 교체안 행 수. 없는 섹션은 기본 5장, 범위는 1~5로 고정한다."""
+    targets: dict[str, int] = {}
+    for section in SECTION_KEYS:
+        try:
+            value = int((section_card_targets or {}).get(section, PREFERRED_BRIEFING_COUNT_PER_SECTION))
+        except (TypeError, ValueError):
+            value = PREFERRED_BRIEFING_COUNT_PER_SECTION
+        targets[section] = max(1, min(PREFERRED_BRIEFING_COUNT_PER_SECTION, value))
+    return targets
+
+
+def _editorial_repair_response_format(
+    section_card_targets: dict[str, int] | None = None,
+) -> dict[str, Any]:
+    card_schema = {
+        "type": "object",
+        "additionalProperties": False,
+        "required": ["link", "is_core"],
+        "properties": {
+            "link": {"type": "string"},
+            "is_core": {"type": "boolean"},
+        },
+    }
+    targets = _repair_section_card_targets(section_card_targets)
+    return {
+        "format": {
+            "type": "json_schema",
+            "name": "editorial_repair_selection",
+            "strict": True,
+            "schema": {
+                "type": "object",
+                "additionalProperties": False,
+                "required": ["sections", "rationale"],
+                "properties": {
+                    "sections": {
+                        "type": "object",
+                        "additionalProperties": False,
+                        "required": list(SECTION_KEYS),
+                        "properties": {
+                            section: {
+                                "type": "array",
+                                "minItems": targets[section],
+                                "maxItems": targets[section],
+                                "items": card_schema,
+                            }
+                            for section in SECTION_KEYS
+                        },
+                    },
+                    "rationale": {"type": "string"},
+                },
+            },
+        }
+    }
+
+
 def _truncate(value: Any, limit: int) -> str:
     text = re.sub(r"\s+", " ", str(value or "")).strip()
     if len(text) <= limit:
@@ -129,34 +391,124 @@ def _clamp_score(value: Any, default: float = 0.0) -> float:
     return round(max(0.0, min(100.0, _as_float(value, default))), 2)
 
 
-def _score_status(score: float, target: float = 95.0) -> str:
+def _score_status(score: float, target: float = EDITORIAL_DAILY_TARGET_SCORE) -> str:
     if score >= target:
         return "target_met"
-    if score >= 90.0:
+    if score >= 85.0:
         return "needs_minor_iteration"
-    if score >= 82.0:
+    if score >= 80.0:
         return "needs_iteration"
     return "needs_major_iteration"
 
 
-def _issue_type(value: Any) -> str:
+def _quality_tier(score: float) -> str:
+    if score >= EDITORIAL_STRETCH_SCORE:
+        return "stretch"
+    if score >= EDITORIAL_EXCELLENT_SCORE:
+        return "excellent"
+    if score >= EDITORIAL_DAILY_TARGET_SCORE:
+        return "daily_pass"
+    if score >= 80.0:
+        return "needs_iteration"
+    return "needs_major_iteration"
+
+
+def _raw_issue_type(value: Any) -> str:
     raw = re.sub(r"[^a-z0-9_]+", "_", str(value or "").strip().lower()).strip("_")
     return raw or "editorial_issue"
+
+
+def _issue_type(value: Any) -> str:
+    raw = _raw_issue_type(value)
+    aliases = {
+        "irrelevant_article": "off_topic",
+        "duplicate": "duplicate_story",
+        "duplication": "duplicate_story",
+        "duplicate_url": "duplicate_story",
+        "hard_duplicate": "duplicate_story",
+        "same_issue_repeated": "duplicate_story",
+        "theme_duplicate": "duplicate_theme",
+        "theme_duplication": "duplicate_theme",
+        "cross_section_overlap": "duplicate_theme",
+        "section_mismatch": "wrong_section",
+        "section_fit": "wrong_section",
+        "weak_section_fit": "wrong_section",
+        "wrong_section_or_priority": "wrong_section",
+        "wrong_section_or_weak_fit": "wrong_section",
+        "weak_core_pick": "weak_core",
+        "core_pick_quality": "weak_core",
+        "missed_better_core": "weak_core",
+        "missed_opportunity": "missed_candidate",
+        "missed_better_candidate": "missed_candidate",
+        "missed_stronger_candidate": "missed_candidate",
+        "under_selected_high_value": "missed_candidate",
+        "summary_quality": "bad_summary",
+        "summary_noise": "bad_summary",
+        "summary_weak": "bad_summary",
+        "summary_usefulness": "bad_summary",
+        "thin_summary": "bad_summary",
+        "count_underfill": "underfill",
+        "promotional": "promotional_filler",
+        "promotional_tail": "promotional_filler",
+        "promotional_or_local_filler": "promotional_filler",
+        "promotional_or_event_filler": "promotional_filler",
+        "promotional_or_institutional": "promotional_filler",
+        "filler": "promotional_filler",
+        "weak_tail": "promotional_filler",
+        "low_value_selection": "promotional_filler",
+        "weak_selection": "noise",
+        "weak_pick": "noise",
+        "noisy_article": "noise",
+        "backfill_noise": "noise",
+    }
+    normalized = aliases.get(raw, raw)
+    return normalized if normalized in EDITORIAL_ISSUE_TYPES else "other"
+
+
+def _issue_severity(value: Any, issue_type: str) -> str:
+    raw = _raw_issue_type(value)
+    aliases = {
+        "critical": "blocking",
+        "fatal": "blocking",
+        "high": "major",
+        "severe": "major",
+        "medium": "moderate",
+        "warn": "moderate",
+        "warning": "moderate",
+        "low": "minor",
+    }
+    normalized = aliases.get(raw, raw)
+    if normalized not in EDITORIAL_SEVERITIES:
+        normalized = "moderate"
+    if issue_type in EDITORIAL_HARD_BLOCKING_TYPES:
+        return "blocking"
+    return normalized
+
+
+def _weighted_editorial_score(scores: dict[str, float]) -> float:
+    return _clamp_score(
+        sum(
+            _clamp_score(scores.get(component), 0.0) * weight
+            for component, weight in EDITORIAL_COMPONENT_WEIGHTS.items()
+        ),
+        0.0,
+    )
 
 
 def _clean_issue(item: Any) -> dict[str, Any]:
     if not isinstance(item, dict):
         return {
-            "type": "editorial_issue",
-            "severity": "medium",
+            "type": "other",
+            "severity": "moderate",
             "section": "",
             "title": "",
             "reason": _truncate(item, 300),
             "suggested_action": "",
         }
+    issue_type = _issue_type(item.get("type") or item.get("category"))
     return {
-        "type": _issue_type(item.get("type") or item.get("category")),
-        "severity": str(item.get("severity") or "medium").strip().lower(),
+        "type": issue_type,
+        "severity": _issue_severity(item.get("severity") or "moderate", issue_type),
         "section": str(item.get("section") or "").strip(),
         "title": _truncate(item.get("title"), 180),
         "reason": _truncate(item.get("reason") or item.get("evidence"), 360),
@@ -287,117 +639,161 @@ def _apply_section_count_gate(result: dict[str, Any], operational_result: dict[s
     return result
 
 
-def _apply_operational_shadow_calibration(result: dict[str, Any], operational_result: dict[str, Any]) -> dict[str, Any]:
-    """Stabilize the LLM shadow score when deterministic publish gates are all green."""
+def _apply_editorial_acceptance_gate(
+    result: dict[str, Any],
+    operational_result: dict[str, Any],
+) -> dict[str, Any]:
+    """Keep editorial judgment independent and decide whether the daily loop may stop."""
     score = _clamp_score(result.get("score"), 0.0)
-    if score >= 95.0:
-        return result
-    if score < 80.0:
-        return result
+    scores = result.get("scores", {})
+    if not isinstance(scores, dict):
+        scores = {}
+    issues = result.get("issues", [])
+    if not isinstance(issues, list):
+        issues = []
+
     section_count_context = result.get("section_count_context")
     if not isinstance(section_count_context, dict):
         section_count_context = _section_count_context(operational_result)
-    if _as_float(section_count_context.get("score"), 0.0) < SECTION_COUNT_TARGET_SCORE:
-        return result
-    if section_count_context.get("severe_underfilled_sections"):
-        return result
+    operational_scores = operational_result.get("scores", {})
+    if not isinstance(operational_scores, dict):
+        operational_scores = {}
 
-    op_score = _as_float(operational_result.get("overall_score"), _as_float(operational_result.get("operational_score"), 0.0))
-    scores = operational_result.get("scores", {})
-    metrics = operational_result.get("metrics", {})
-    counts = operational_result.get("counts", {})
-    if not isinstance(scores, dict):
-        scores = {}
-    if not isinstance(metrics, dict):
-        metrics = {}
-    if not isinstance(counts, dict):
-        counts = {}
-
-    section_counts_met = (
-        _as_float(section_count_context.get("score"), 0.0) >= SECTION_COUNT_TARGET_SCORE
-        and not section_count_context.get("severe_underfilled_sections")
-    )
-    commodity_board_score = _as_float(scores.get("commodity_board_quality"), 0.0)
-    editorial_penalty = _as_float(metrics.get("editorial_penalty"), _as_float(metrics.get("editorial_quality_penalty"), 0.0))
-
-    deterministic_gates = {
-        "operational_score_min": op_score >= 95.0,
-        "section_count_score_min": _as_float(section_count_context.get("score"), 0.0) >= SECTION_COUNT_TARGET_SCORE,
-        "section_counts_met": section_counts_met,
-        "commodity_board_score_min": commodity_board_score >= COMMODITY_BOARD_TARGET_SCORE,
-        "section_fit_min": _as_float(scores.get("section_fit"), _as_float(scores.get("section_alignment"), 0.0)) >= 98.0,
-        "core_score_min": _as_float(scores.get("core"), _as_float(scores.get("core_quality"), 0.0)) >= 98.0,
-        "summary_score_min": _as_float(scores.get("summary"), _as_float(scores.get("summary_quality"), 0.0)) >= 98.0,
-        "false_positive_zero": _as_float(
-            metrics.get("false_positive_rate"),
-            _as_float(metrics.get("content_false_positive_rate"), _as_float(metrics.get("false_positive"), 0.0)),
-        ) <= 0.0,
-        "weak_core_zero": _as_float(metrics.get("weak_core_rate"), _as_float(metrics.get("weak_core"), 0.0)) <= 0.0,
-        "editorial_penalty_soft_max": editorial_penalty <= 0.5,
-        "promotional_filler_zero": _as_float(metrics.get("promotional_filler_rate"), 0.0) <= 0.0,
-        "policy_wrong_section_zero": _as_float(metrics.get("policy_wrong_section_rate"), 0.0) <= 0.0,
-        "dist_weak_ops_zero": _as_float(metrics.get("dist_weak_ops_rate"), 0.0) <= 0.0,
-        "weak_core_editorial_zero": _as_float(metrics.get("weak_core_editorial_rate"), 0.0) <= 0.0,
-        "semantic_penalty_zero": _as_float(metrics.get("semantic_penalty"), _as_float(metrics.get("semantic_false_positive_penalty"), 0.0)) <= 0.0,
-    }
-    if not all(deterministic_gates.values()):
-        return result
-
-    blocking_types = {
-        "false_positive",
-        "off_topic",
-        "wrong_section",
-        "duplicate_url",
-        "hard_duplicate",
-        "factual_error",
-        "unsafe_summary",
-    }
     blocking_issues = [
-        issue for issue in result.get("issues", [])
+        issue
+        for issue in issues
         if isinstance(issue, dict)
-        and str(issue.get("severity", "")).lower() == "high"
-        and str(issue.get("type", "")).lower() in blocking_types
+        and str(issue.get("severity") or "").lower() == "blocking"
     ]
-    if blocking_issues:
-        return result
-
-    result["llm_score"] = score
-    result["score"] = 95.0
-    result["target_status"] = _score_status(95.0)
-    result["score_calibration"] = {
-        "before": score,
-        "after": 95.0,
-        "reason": "deterministic_publish_gates_passed",
-        "gates": deterministic_gates,
-        "note": (
-            "LLM shadow issues are retained for review, but the final editorial shadow score is floored "
-            "because operational, preferred section-count, commodity-board, section-fit, core, summary, and hard noise gates all passed."
-        ),
+    major_issues = [
+        issue
+        for issue in issues
+        if isinstance(issue, dict)
+        and str(issue.get("severity") or "").lower() == "major"
+    ]
+    critical_component_scores = {
+        component: _clamp_score(scores.get(component), 0.0)
+        for component in EDITORIAL_CRITICAL_COMPONENTS
     }
+    all_component_scores = {
+        component: _clamp_score(scores.get(component), 0.0)
+        for component in EDITORIAL_COMPONENTS
+    }
+
+    checks = {
+        "editorial_score_min": score >= EDITORIAL_DAILY_TARGET_SCORE,
+        "no_blocking_issues": not blocking_issues,
+        "no_major_issues": not major_issues,
+        "critical_components_min": all(
+            value >= EDITORIAL_CRITICAL_COMPONENT_MIN
+            for value in critical_component_scores.values()
+        ),
+        "all_components_min": all(
+            value >= EDITORIAL_COMPONENT_MIN
+            for value in all_component_scores.values()
+        ),
+        "operational_score_min": _as_float(
+            operational_result.get("operational_score"),
+            _as_float(operational_result.get("overall_score"), 0.0),
+        )
+        >= EDITORIAL_OPERATIONAL_MIN_SCORE,
+        "section_count_score_min": _as_float(
+            section_count_context.get("score"),
+            0.0,
+        )
+        >= SECTION_COUNT_TARGET_SCORE,
+        "no_section_underfill": not section_count_context.get("underfilled_sections"),
+        "commodity_board_score_min": _as_float(
+            operational_scores.get("commodity_board_quality"),
+            0.0,
+        )
+        >= COMMODITY_BOARD_TARGET_SCORE,
+    }
+    passed = all(checks.values())
+    failure_reasons = [name for name, ok in checks.items() if not ok]
+    failed_status = _score_status(min(score, EDITORIAL_DAILY_TARGET_SCORE - 0.01))
+    result["acceptance_gate"] = {
+        "status": "target_met" if passed else failed_status,
+        "passed": passed,
+        "target_score": EDITORIAL_DAILY_TARGET_SCORE,
+        "excellent_score": EDITORIAL_EXCELLENT_SCORE,
+        "stretch_score": EDITORIAL_STRETCH_SCORE,
+        "blocking_issue_count": len(blocking_issues),
+        "major_issue_count": len(major_issues),
+        "critical_component_min": EDITORIAL_CRITICAL_COMPONENT_MIN,
+        "all_component_min": EDITORIAL_COMPONENT_MIN,
+        "checks": checks,
+        "failure_reasons": failure_reasons,
+    }
+    result["target_status"] = result["acceptance_gate"]["status"]
     return result
 
 
-def _raw_candidates(snapshot_payload: dict[str, Any], max_raw_per_section: int) -> dict[str, list[dict[str, Any]]]:
+def _raw_candidates(
+    snapshot_payload: dict[str, Any],
+    max_raw_per_section: int,
+    *,
+    excluded_links_by_section: dict[str, set[str]] | None = None,
+    extra_candidates_by_section: dict[str, list[dict[str, Any]]] | None = None,
+) -> dict[str, list[dict[str, Any]]]:
+    """섹션별 교체 후보 목록.
+
+    extra_candidates_by_section 은 raw 풀에 없는 현재 지면 카드(결정적 체인이 다른
+    섹션 raw 에서 끌어온 카드)다. 모델이 그 카드를 유지할 수 있어야 얇은 섹션
+    교체안이 현재 선정보다 나빠지지 않는다. 같은 링크가 raw 에 이미 있으면 raw
+    행을 쓰고, 추가 행은 점수 정렬·상한과 무관하게 항상 노출한다.
+    """
     raw_by_section = snapshot_payload.get("raw_by_section", {})
     if not isinstance(raw_by_section, dict):
-        return {section: [] for section in SECTION_KEYS}
+        raw_by_section = {}
+
+    def _row_link(row: dict[str, Any]) -> str:
+        return str(row.get("canon_url") or row.get("link") or row.get("originallink") or "").strip()
 
     candidates: dict[str, list[dict[str, Any]]] = {}
     for section in SECTION_KEYS:
         rows = raw_by_section.get(section, [])
         if not isinstance(rows, list):
-            candidates[section] = []
-            continue
+            rows = []
+        excluded_links = {
+            str(link or "").strip()
+            for link in (excluded_links_by_section or {}).get(section, set())
+            if str(link or "").strip()
+        }
         sorted_rows = sorted(
-            (row for row in rows if isinstance(row, dict)),
+            (
+                row
+                for row in rows
+                if isinstance(row, dict) and _row_link(row) not in excluded_links
+            ),
             key=lambda row: _as_float(row.get("score"), 0.0),
             reverse=True,
-        )
+        )[:max(1, max_raw_per_section)]
+        visible_links = {_row_link(row) for row in sorted_rows}
+        raw_links = {_row_link(row) for row in rows if isinstance(row, dict)}
+        for row in (extra_candidates_by_section or {}).get(section, []) or []:
+            if not isinstance(row, dict):
+                continue
+            link = _row_link(row)
+            if not link or link in excluded_links or link in visible_links:
+                continue
+            if link in raw_links:
+                # raw 에 있지만 점수 상한에 밀려 안 보이던 카드: raw 행을 그대로 노출한다.
+                raw_row = next((r for r in rows if isinstance(r, dict) and _row_link(r) == link), None)
+                if raw_row is not None:
+                    sorted_rows.append(raw_row)
+                    visible_links.add(link)
+                    continue
+            extra_row = dict(row)
+            extra_row.setdefault("selection_stage", "current_edition")
+            sorted_rows.append(extra_row)
+            visible_links.add(link)
         candidates[section] = [
             {
                 "title": _truncate(row.get("title"), 180),
-                "description": _truncate(row.get("description") or row.get("summary"), 520),
+                "description": _truncate(row.get("description") or row.get("summary"), 280),
                 "domain": _truncate(row.get("domain") or row.get("press"), 80),
+                "source_tier": int(_as_float(row.get("press_tier"), 0.0)),
                 "link": _truncate(row.get("canon_url") or row.get("link") or row.get("originallink"), 260),
                 "pub_dt_kst": _truncate(row.get("pub_dt_kst"), 40),
                 "topic": _truncate(row.get("topic"), 80),
@@ -408,7 +804,7 @@ def _raw_candidates(snapshot_payload: dict[str, Any], max_raw_per_section: int) 
                 "origin_section": _truncate(row.get("origin_section"), 40),
                 "forced_section": _truncate(row.get("forced_section"), 40),
             }
-            for row in sorted_rows[:max(1, max_raw_per_section)]
+            for row in sorted_rows
         ]
     return candidates
 
@@ -420,6 +816,8 @@ def build_editorial_payload(
     operational_result: dict[str, Any],
     *,
     max_raw_per_section: int = DEFAULT_MAX_RAW_PER_SECTION,
+    excluded_links_by_section: dict[str, set[str]] | None = None,
+    extra_candidates_by_section: dict[str, list[dict[str, Any]]] | None = None,
 ) -> dict[str, Any]:
     articles = [article for article in parse_report_html(html_text) if article.surface == BRIEFING_SURFACE]
     selected = [
@@ -427,8 +825,9 @@ def build_editorial_payload(
             "position": idx + 1,
             "section": article.section,
             "title": _truncate(article.title, 180),
-            "summary": _truncate(article.summary, 420),
+            "summary": _truncate(article.summary, 300),
             "domain": _truncate(article.domain, 80),
+            "source_tier": int(article.press_tier),
             "href": _truncate(article.href, 260),
             "is_core": bool(article.is_core),
             "selection_fit_score": round(_as_float(article.selection_fit_score), 3),
@@ -440,10 +839,15 @@ def build_editorial_payload(
     return {
         "rubric_version": EDITORIAL_RUBRIC_VERSION,
         "report_date": report_date,
-        "target_score": 95,
+        "target_score": EDITORIAL_DAILY_TARGET_SCORE,
         "window": snapshot_payload.get("window", {}),
         "selected_briefing_cards": selected,
-        "raw_candidates_by_section": _raw_candidates(snapshot_payload, max_raw_per_section),
+        "raw_candidates_by_section": _raw_candidates(
+            snapshot_payload,
+            max_raw_per_section,
+            excluded_links_by_section=excluded_links_by_section,
+            extra_candidates_by_section=extra_candidates_by_section,
+        ),
         "section_count_targets": _section_count_context(operational_result),
         "operational_eval": {
             "overall_score": operational_result.get("overall_score"),
@@ -456,13 +860,137 @@ def build_editorial_payload(
         "instructions": {
             "audience": "NH horticulture/agricultural briefing readers in Korea",
             "score_meaning": {
-                "95_100": "near publish-quality selection with only tiny misses",
-                "90_94": "good briefing but at least one visible editorial weakness",
-                "82_89": "usable but misses important candidates or includes weak/noisy items",
-                "below_82": "selection logic needs material correction",
+                "95_100": "stretch quality with only tiny misses",
+                "92_94": "excellent daily briefing",
+                "88_91": "daily pass with no major editorial defect",
+                "80_87": "usable but needs iteration",
+                "below_80": "selection logic needs material correction",
             },
+            "component_weights": EDITORIAL_COMPONENT_WEIGHTS,
         },
     }
+
+
+def _repair_editorial_constraints(
+    payload: dict[str, Any],
+    editorial_result: dict[str, Any],
+) -> dict[str, dict[str, list[dict[str, Any]]]]:
+    """Turn explicit review issues into link-level repair requirements."""
+    raw_by_section = payload.get("raw_candidates_by_section", {})
+    if not isinstance(raw_by_section, dict):
+        raw_by_section = {}
+    constraints: dict[str, dict[str, list[dict[str, Any]]]] = {
+        section: {"required": [], "required_core": [], "excluded": [], "non_core": []}
+        for section in SECTION_KEYS
+    }
+
+    def title_key(value: Any) -> str:
+        return re.sub(r"[^0-9a-z가-힣]+", "", str(value or "").lower().replace("...", "").replace("…", ""))
+
+    selected_rows = payload.get("selected_briefing_cards", [])
+    if not isinstance(selected_rows, list):
+        selected_rows = []
+    selected_core_by_section: dict[str, dict[str, bool]] = {section: {} for section in SECTION_KEYS}
+    for selected in selected_rows:
+        if not isinstance(selected, dict):
+            continue
+        selected_section = str(selected.get("section") or "").strip()
+        selected_title = title_key(selected.get("title"))
+        if selected_section in selected_core_by_section and selected_title:
+            selected_core_by_section[selected_section][selected_title] = bool(selected.get("is_core"))
+
+    issue_rows = editorial_result.get("issues", []) if isinstance(editorial_result, dict) else []
+    if not isinstance(issue_rows, list):
+        return constraints
+    for issue in issue_rows:
+        if not isinstance(issue, dict):
+            continue
+        section = str(issue.get("section") or "").strip()
+        issue_type = str(issue.get("type") or "").strip().lower()
+        issue_title = title_key(issue.get("title"))
+        if section not in constraints or len(issue_title) < 8:
+            continue
+        candidates = raw_by_section.get(section, [])
+        if not isinstance(candidates, list):
+            continue
+        matches = []
+        for candidate in candidates:
+            if not isinstance(candidate, dict):
+                continue
+            candidate_title = title_key(candidate.get("title"))
+            if not candidate_title:
+                continue
+            if issue_title in candidate_title or candidate_title in issue_title:
+                matches.append(candidate)
+        if not matches:
+            continue
+        bucket = ""
+        if issue_type == "missed_candidate":
+            action_text = f"{issue.get('reason') or ''} {issue.get('suggested_action') or ''}".lower()
+            bucket = "required_core" if any(term in action_text for term in ("핵심", "코어", "core")) else "required"
+        elif issue_type in {
+            "wrong_section",
+            "promotional_filler",
+            "duplicate_story",
+            "duplicate_theme",
+            "noise",
+            "false_positive",
+            "off_topic",
+        }:
+            bucket = "excluded"
+        elif issue_type == "weak_core":
+            matching_selected_core = next(
+                (
+                    is_core
+                    for selected_title, is_core in selected_core_by_section.get(section, {}).items()
+                    if issue_title in selected_title or selected_title in issue_title
+                ),
+                None,
+            )
+            if matching_selected_core is True:
+                bucket = "non_core"
+            elif matching_selected_core is False:
+                bucket = "required_core"
+            else:
+                action_text = f"{issue.get('reason') or ''} {issue.get('suggested_action') or ''}".lower()
+                bucket = (
+                    "required_core"
+                    if any(term in action_text for term in ("승격", "핵심으로", "코어로", "promote"))
+                    else "non_core"
+                )
+        if not bucket:
+            continue
+        candidate = matches[0]
+        row = {
+            "title": candidate.get("title"),
+            "link": candidate.get("link"),
+            "severity": str(issue.get("severity") or "").strip().lower(),
+        }
+        candidate_link = str(row.get("link") or "")
+        for existing_bucket in constraints[section].values():
+            existing_bucket[:] = [
+                existing for existing in existing_bucket
+                if str(existing.get("link") or "") != candidate_link
+            ]
+        if row not in constraints[section][bucket]:
+            constraints[section][bucket].append(row)
+
+    for section in SECTION_KEYS:
+        required_links = {
+            str(row.get("link") or "") for row in constraints[section]["required"]
+        } | {
+            str(row.get("link") or "") for row in constraints[section]["required_core"]
+        }
+        excluded_links = {
+            str(row.get("link") or "") for row in constraints[section]["excluded"]
+        } - required_links
+        if excluded_links:
+            raw_by_section[section] = [
+                row
+                for row in (raw_by_section.get(section, []) or [])
+                if isinstance(row, dict) and str(row.get("link") or "") not in excluded_links
+            ]
+    return constraints
 
 
 def _extract_response_text(payload: dict[str, Any]) -> str:
@@ -481,6 +1009,51 @@ def _extract_response_text(payload: dict[str, Any]) -> str:
             if isinstance(text, str) and text.strip():
                 pieces.append(text.strip())
     return "\n".join(pieces).strip()
+
+
+def normalize_openai_usage(payload: dict[str, Any], model: str = "") -> dict[str, Any]:
+    """Return stable token fields plus a bounded GPT-5.6 Sol cost estimate."""
+    usage = payload.get("usage", {}) if isinstance(payload, dict) else {}
+    if not isinstance(usage, dict):
+        return {}
+    input_details = usage.get("input_tokens_details", {})
+    if not isinstance(input_details, dict):
+        input_details = {}
+
+    def _tokens(value: Any) -> int:
+        try:
+            return max(0, int(value or 0))
+        except (TypeError, ValueError):
+            return 0
+
+    input_tokens = _tokens(usage.get("input_tokens"))
+    output_tokens = _tokens(usage.get("output_tokens"))
+    cached_tokens = _tokens(input_details.get("cached_tokens"))
+    cache_write_tokens = _tokens(
+        input_details.get("cache_write_tokens", usage.get("cache_write_tokens"))
+    )
+    result: dict[str, Any] = {
+        "input_tokens": input_tokens,
+        "cached_input_tokens": cached_tokens,
+        "cache_write_input_tokens": cache_write_tokens,
+        "output_tokens": output_tokens,
+        "total_tokens": _tokens(usage.get("total_tokens")) or input_tokens + output_tokens,
+    }
+
+    resolved_model = str(model or payload.get("model") or "").strip().lower()
+    if resolved_model.startswith("gpt-5.6-sol") and input_tokens < 272_000:
+        uncached_tokens = max(0, input_tokens - cached_tokens - cache_write_tokens)
+        estimated = (
+            (uncached_tokens * 5.0)
+            + (cached_tokens * 0.5)
+            + (cache_write_tokens * 6.25)
+            + (output_tokens * 30.0)
+        ) / 1_000_000
+        result["estimated_cost_usd"] = round(estimated, 6)
+        result["pricing_basis"] = "gpt-5.6-sol-standard-under-272k-2026-07"
+    elif resolved_model.startswith("gpt-5.6-sol"):
+        result["pricing_basis"] = "long_context_cost_not_estimated"
+    return result
 
 
 def extract_json_object(text: str) -> dict[str, Any]:
@@ -516,11 +1089,11 @@ def _normalize_editorial_response(
         key: _clamp_score(raw_scores.get(key), 0.0)
         for key in EDITORIAL_COMPONENTS
     }
-    if any(scores.values()):
-        fallback_score = sum(scores.values()) / len(scores)
-    else:
-        fallback_score = 0.0
-    overall = _clamp_score(parsed.get("score", parsed.get("overall_score")), fallback_score)
+    model_reported_score = _clamp_score(
+        parsed.get("score", parsed.get("overall_score")),
+        0.0,
+    )
+    overall = _weighted_editorial_score(scores)
 
     issues = parsed.get("issues", [])
     if not isinstance(issues, list):
@@ -540,7 +1113,13 @@ def _normalize_editorial_response(
         "model": model,
         "generated_at_kst": datetime.now(KST).isoformat(timespec="seconds"),
         "score": overall,
-        "target_score": 95.0,
+        "model_reported_score": model_reported_score,
+        "score_method": "weighted_components_v1",
+        "component_weights": EDITORIAL_COMPONENT_WEIGHTS,
+        "quality_tier": _quality_tier(overall),
+        "target_score": EDITORIAL_DAILY_TARGET_SCORE,
+        "excellent_score": EDITORIAL_EXCELLENT_SCORE,
+        "stretch_score": EDITORIAL_STRETCH_SCORE,
         "target_status": _score_status(overall),
         "scores": scores,
         "summary": _truncate(parsed.get("summary") or parsed.get("rationale"), 700),
@@ -551,7 +1130,8 @@ def _normalize_editorial_response(
     }
     if operational_result is not None:
         result = _apply_section_count_gate(result, operational_result)
-        result = _apply_operational_shadow_calibration(result, operational_result)
+        result["quality_tier"] = _quality_tier(_clamp_score(result.get("score"), 0.0))
+        result = _apply_editorial_acceptance_gate(result, operational_result)
     return result
 
 
@@ -563,6 +1143,7 @@ def evaluate_editorial_quality(
     *,
     api_key: str | None = None,
     model: str | None = None,
+    reasoning_effort: str | None = None,
     enabled: bool = True,
     max_raw_per_section: int = DEFAULT_MAX_RAW_PER_SECTION,
     timeout_sec: int = DEFAULT_TIMEOUT_SEC,
@@ -571,10 +1152,14 @@ def evaluate_editorial_quality(
     resolved_model = (
         model
         or os.getenv("EDITORIAL_OPENAI_MODEL")
-        or os.getenv("OPENAI_MODEL")
         or DEFAULT_EDITORIAL_MODEL
     )
     resolved_key = api_key if api_key is not None else os.getenv("OPENAI_API_KEY")
+    resolved_effort = (
+        reasoning_effort
+        or os.getenv("EDITORIAL_REASONING_EFFORT")
+        or "medium"
+    ).strip()
     if not enabled:
         return {
             "status": "skipped",
@@ -608,9 +1193,21 @@ def evaluate_editorial_quality(
         "but they should not displace stronger national or operational candidates. "
         "For dist, prefer concrete distribution, logistics, export-disruption, market-operation, and sales-channel stories over local promotions. "
         "For pest, prefer fire-blight escalation/response and named crop pest risks over generic local notices. "
+        "The pest section covers growth risk and control by design, so weather-driven crop-damage stories "
+        "(heat scorch/일소, high-temperature or drought crop damage, hail) belong there: do not flag them as "
+        "wrong_section or off_topic merely for being weather stories, though you may still judge their "
+        "editorial value normally. "
+        "For a weak_core issue, title the selected card whose core flag should change and state explicitly whether it should be promoted to core or demoted from core. "
+        "Use only these issue types: "
+        + ", ".join(EDITORIAL_ISSUE_TYPES)
+        + ". Use only these severity levels: "
+        + ", ".join(EDITORIAL_SEVERITIES)
+        + ". Reserve blocking for false positives, off-topic items, factual errors, or unsafe summaries. "
+        "Use major for a defect that prevents daily editorial acceptance, moderate for a meaningful but non-blocking weakness, and minor for polish. "
         "Return JSON only with keys: score, scores, summary, issues, section_notes, improvement_suggestions. "
         "section_notes must include supply, policy, dist, and pest. "
         "scores must include article_selection, section_fit, core_pick_quality, summary_usefulness, missed_opportunity, noise_control, each 0-100. "
+        "Make the reported score consistent with the component scores; the application will recompute the authoritative score from fixed weights. "
         "Return at most 8 issues and at most 6 improvement suggestions. Keep every reason and suggested_action concise. "
         "issues should be objects with type, severity, section, title, reason, suggested_action."
     )
@@ -620,32 +1217,42 @@ def evaluate_editorial_quality(
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": json.dumps(payload, ensure_ascii=False)},
         ],
-        "max_output_tokens": 5000,
-        "text": _editorial_response_format(),
+        "max_output_tokens": DEFAULT_EVAL_MAX_OUTPUT_TOKENS,
+        "reasoning": {"effort": resolved_effort},
+        "text": {**_editorial_response_format(), "verbosity": "low"},
+        # Each edition has a different candidate pool, so the automatic cache
+        # was writing almost the entire one-off prompt at a 1.25x input rate
+        # without producing cache reads. Explicit mode disables that implicit
+        # breakpoint; no content block is marked for cache writing here.
+        "prompt_cache_options": {"mode": "explicit", "ttl": "30m"},
     }
 
     session = session_factory()
     raw_text = ""
     try:
-        response = session.post(
-            "https://api.openai.com/v1/responses",
+        response_payload, raw_text, parsed, usage = _request_structured_json(
+            session,
             headers={
                 "Authorization": f"Bearer {resolved_key}",
                 "Content-Type": "application/json",
             },
-            json=request_body,
-            timeout=timeout_sec,
+            request_body=request_body,
+            timeout_sec=timeout_sec,
+            max_output_tokens_cap=max(DEFAULT_EVAL_MAX_OUTPUT_TOKENS, 8000),
+            model_for_usage=resolved_model,
         )
-        response.raise_for_status()
-        response_payload = response.json()
-        raw_text = _extract_response_text(response_payload)
-        parsed = extract_json_object(raw_text)
-        return _normalize_editorial_response(
+        result = _normalize_editorial_response(
             parsed,
             model=resolved_model,
             raw_text=raw_text,
             operational_result=operational_result,
         )
+        model_snapshot = str(response_payload.get("model") or "").strip()
+        if model_snapshot:
+            result["model_snapshot"] = model_snapshot
+        if usage:
+            result["usage"] = usage
+        return result
     except Exception as exc:
         return {
             "status": "error",
@@ -657,11 +1264,171 @@ def evaluate_editorial_quality(
         }
 
 
+def propose_editorial_repair(
+    report_date: str,
+    html_text: str,
+    snapshot_payload: dict[str, Any],
+    operational_result: dict[str, Any],
+    editorial_result: dict[str, Any],
+    *,
+    api_key: str | None = None,
+    model: str | None = None,
+    reasoning_effort: str | None = None,
+    max_raw_per_section: int = DEFAULT_MAX_RAW_PER_SECTION,
+    excluded_links_by_section: dict[str, set[str]] | None = None,
+    prior_validation_errors: list[dict[str, Any]] | None = None,
+    prior_editorial_issues: list[dict[str, Any]] | None = None,
+    section_card_targets: dict[str, int] | None = None,
+    extra_candidates_by_section: dict[str, list[dict[str, Any]]] | None = None,
+    timeout_sec: int = DEFAULT_TIMEOUT_SEC,
+    session_factory: Any = requests.Session,
+) -> dict[str, Any]:
+    """Select a bounded replacement edition using only links in the raw pool.
+
+    section_card_targets 는 섹션별 요구 행 수다(기본 5). raw 풀이 얇아 검증기를
+    통과하는 5장이 불가능한 섹션은 main 이 목표를 낮춰 넘긴다(2026-09-22 pest).
+    extra_candidates_by_section 은 raw 풀에 없는 현재 지면 카드로, 그 섹션 후보
+    목록에 합쳐 모델이 유지할 수 있게 한다.
+    """
+    resolved_model = model or os.getenv("EDITORIAL_OPENAI_MODEL") or DEFAULT_EDITORIAL_MODEL
+    resolved_key = api_key if api_key is not None else os.getenv("OPENAI_API_KEY")
+    resolved_effort = (
+        reasoning_effort
+        or os.getenv("EDITORIAL_REPAIR_REASONING_EFFORT")
+        or os.getenv("EDITORIAL_REASONING_EFFORT")
+        or "medium"
+    ).strip()
+    if not resolved_key:
+        return {
+            "status": "skipped",
+            "reason": "missing_openai_api_key",
+            "model": resolved_model,
+        }
+
+    payload = build_editorial_payload(
+        report_date,
+        html_text,
+        snapshot_payload,
+        operational_result,
+        max_raw_per_section=max_raw_per_section,
+        excluded_links_by_section=excluded_links_by_section,
+        extra_candidates_by_section=extra_candidates_by_section,
+    )
+    card_targets = _repair_section_card_targets(section_card_targets)
+    payload["repair_card_targets_by_section"] = dict(card_targets)
+    payload["failed_editorial_eval"] = {
+        "score": editorial_result.get("score"),
+        "scores": editorial_result.get("scores", {}),
+        "issues": editorial_result.get("issues", []),
+        "section_notes": editorial_result.get("section_notes", {}),
+        "improvement_suggestions": editorial_result.get("improvement_suggestions", []),
+        "acceptance_gate": editorial_result.get("acceptance_gate", {}),
+    }
+    current_issues = editorial_result.get("issues", []) if isinstance(editorial_result, dict) else []
+    combined_issues = [
+        issue
+        for issue in [*(prior_editorial_issues or []), *(current_issues if isinstance(current_issues, list) else [])]
+        if isinstance(issue, dict)
+    ]
+    payload["repair_constraints_by_section"] = _repair_editorial_constraints(
+        payload,
+        {"issues": combined_issues[-32:]},
+    )
+    if prior_validation_errors:
+        payload["prior_repair_validation_errors"] = prior_validation_errors[-8:]
+    card_target_text = ", ".join(f"{section}={card_targets[section]}" for section in SECTION_KEYS)
+    system_prompt = (
+        "You are the repair editor for a Korean agricultural daily news brief. "
+        "The first edition failed its editorial acceptance gate. Select a replacement edition that directly fixes every blocking and major issue. "
+        f"Return exactly the number of cards listed in repair_card_targets_by_section for each section ({card_target_text}); "
+        "a target below five means the section's valid candidate pool is too thin for five cards under the source-tier rules, so do not pad it with weaker or duplicate cards. "
+        "Every returned link must be copied exactly from that section's raw_candidates_by_section list; never invent, rewrite, or move a link from another section. "
+        "Candidates rejected by local validation are omitted from the raw lists; if prior_repair_validation_errors is present, correct every listed failure. "
+        "Obey repair_constraints_by_section: select every available required and required_core link, mark every required_core link as core, never select an excluded link, and never mark a non_core link as core. "
+        "The operational acceptance target is 95. Prefer source_tier 4 over 3 over 2 over 1 for equivalent coverage; select no more than one source_tier 1 card per section and four across the full 20-card briefing. "
+        "Do not select duplicate events across sections. Exclude promotional product stories, local-event filler, weak profiles, stale reprints, and articles identified as defective by the failed evaluation. "
+        "Prefer current national or materially important field stories with concrete prices, volumes, policy decisions, logistics, market operations, exports, crop damage, or pest response. "
+        "For supply, prioritize horticultural production, shipment, price, weather, and supply-demand developments, including quantified short-term price spikes or shortages. "
+        "For policy, prioritize enacted or consequential agricultural policy, legislation, budgets, trade, and price-stabilization measures; reject consumer shopping tips, local processing-plant announcements, local council speeches, and routine field visits when concrete national or provincial policy exists. "
+        "For dist, prioritize wholesale markets, logistics, exports, APC operations, online wholesale markets, and sales-channel operations; prefer nationwide programs, quantified export shipments, and measured operations over ceremonies, routine APC visits, and unsigned future plans. A routine APC inspection may be a tail card but should not displace a quantified export story or become core. "
+        "For pest, prioritize named crop pests or diseases, outbreaks, damage, risk escalation, and actionable prevention or control. Weather-driven crop-damage stories (heat scorch/일소, high-temperature or drought crop damage, hail) are in-section by design; do not remove them as wrong-section. Treat a quantified national fire-blight increase as a strong core candidate even when its headline mentions a diagnostic product; keep it core unless two clearly stronger actual outbreak or damage-response reports are selected. "
+        "Mark the strongest two or three cards in each section as core. Return JSON only."
+    )
+    request_body = {
+        "model": resolved_model,
+        "input": [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": json.dumps(payload, ensure_ascii=False)},
+        ],
+        "max_output_tokens": DEFAULT_REPAIR_MAX_OUTPUT_TOKENS,
+        "reasoning": {"effort": resolved_effort},
+        "text": {**_editorial_repair_response_format(card_targets), "verbosity": "low"},
+        "prompt_cache_options": {"mode": "explicit", "ttl": "30m"},
+    }
+
+    session = session_factory()
+    raw_text = ""
+    try:
+        response_payload, raw_text, parsed, repair_usage = _request_structured_json(
+            session,
+            headers={
+                "Authorization": f"Bearer {resolved_key}",
+                "Content-Type": "application/json",
+            },
+            request_body=request_body,
+            timeout_sec=timeout_sec,
+            max_output_tokens_cap=max(DEFAULT_REPAIR_MAX_OUTPUT_TOKENS, 6000),
+            model_for_usage=resolved_model,
+        )
+        sections = parsed.get("sections", {})
+        if not isinstance(sections, dict):
+            raise ValueError("Editorial repair response did not contain sections.")
+        normalized: dict[str, list[dict[str, Any]]] = {}
+        for section in SECTION_KEYS:
+            rows = sections.get(section, [])
+            expected = card_targets[section]
+            if not isinstance(rows, list) or len(rows) != expected:
+                raise ValueError(
+                    f"Editorial repair section {section} did not contain exactly {expected} cards."
+                )
+            normalized[section] = [
+                {
+                    "link": str(row.get("link") or "").strip(),
+                    "is_core": bool(row.get("is_core")),
+                }
+                for row in rows
+                if isinstance(row, dict) and str(row.get("link") or "").strip()
+            ]
+            if len(normalized[section]) != expected:
+                raise ValueError(f"Editorial repair section {section} contained an empty link.")
+        model_snapshot = str(response_payload.get("model") or "").strip()
+        result: dict[str, Any] = {
+            "status": "success",
+            "model": resolved_model,
+            "sections": normalized,
+            "section_card_targets": dict(card_targets),
+            "rationale": _truncate(parsed.get("rationale"), 800),
+        }
+        if model_snapshot:
+            result["model_snapshot"] = model_snapshot
+        usage = normalize_openai_usage(response_payload, model_snapshot or resolved_model)
+        if usage:
+            result["usage"] = usage
+        return result
+    except Exception as exc:
+        return {
+            "status": "error",
+            "reason": str(exc),
+            "model": resolved_model,
+            "raw_response_excerpt": _truncate(raw_text, 1200),
+        }
+
+
 def build_editorial_improvement_plan(
     editorial_result: dict[str, Any],
     operational_result: dict[str, Any],
     *,
-    target_score: float = 95.0,
+    target_score: float = EDITORIAL_DAILY_TARGET_SCORE,
 ) -> dict[str, Any]:
     score = _clamp_score(editorial_result.get("score"), 0.0)
     issue_rows = editorial_result.get("issues", [])
@@ -672,7 +1439,7 @@ def build_editorial_improvement_plan(
     actions: list[dict[str, Any]] = []
     guardrail_focus: list[str] = []
 
-    if {"weak_core", "weak_core_pick", "core_pick_quality", "missed_better_core"} & issue_types:
+    if "weak_core" in issue_types:
         actions.append(
             {
                 "kind": "selection_guardrail",
@@ -682,7 +1449,7 @@ def build_editorial_improvement_plan(
             }
         )
         guardrail_focus.append("core_quality")
-    if {"missed_better_candidate", "missed_opportunity", "under_selected_high_value"} & issue_types:
+    if "missed_candidate" in issue_types:
         actions.append(
             {
                 "kind": "candidate_recall",
@@ -692,7 +1459,7 @@ def build_editorial_improvement_plan(
             }
         )
         guardrail_focus.append("missed_opportunity")
-    if {"duplicate", "duplication", "duplicate_topic", "duplicate_story", "same_issue_repeated"} & issue_types:
+    if {"duplicate_story", "duplicate_theme"} & issue_types:
         actions.append(
             {
                 "kind": "story_dedupe",
@@ -702,7 +1469,7 @@ def build_editorial_improvement_plan(
             }
         )
         guardrail_focus.append("article_selection")
-    if {"noisy_article", "irrelevant_article", "promotional", "promotional_filler", "weak_selection"} & issue_types:
+    if {"noise", "promotional_filler", "false_positive", "off_topic"} & issue_types:
         actions.append(
             {
                 "kind": "noise_filter",
@@ -712,7 +1479,7 @@ def build_editorial_improvement_plan(
             }
         )
         guardrail_focus.append("noise_control")
-    if {"section_mismatch", "wrong_section", "section_fit", "weak_section_pick"} & issue_types:
+    if "wrong_section" in issue_types:
         actions.append(
             {
                 "kind": "section_fit",
@@ -722,7 +1489,7 @@ def build_editorial_improvement_plan(
             }
         )
         guardrail_focus.append("section_fit")
-    if {"summary_weak", "summary_usefulness", "thin_summary"} & issue_types:
+    if {"bad_summary", "factual_error", "unsafe_summary"} & issue_types:
         actions.append(
             {
                 "kind": "summary_prompt",
@@ -732,8 +1499,25 @@ def build_editorial_improvement_plan(
             }
         )
         guardrail_focus.append("summary_usefulness")
+    if "underfill" in issue_types:
+        actions.append(
+            {
+                "kind": "section_fill",
+                "target": "preferred_section_count",
+                "direction": "restore",
+                "reason": "Every section with enough candidates should reach its preferred card count.",
+            }
+        )
+        guardrail_focus.append("section_count")
 
-    if score < target_score and not actions:
+    acceptance_gate = editorial_result.get("acceptance_gate", {})
+    if not isinstance(acceptance_gate, dict):
+        acceptance_gate = {}
+    passed = bool(acceptance_gate.get("passed"))
+    plan_status = str(acceptance_gate.get("status") or "")
+    if not plan_status:
+        plan_status = _score_status(min(score, target_score - 0.01), target_score)
+    if not passed and not actions:
         actions.append(
             {
                 "kind": "manual_review",
@@ -750,11 +1534,17 @@ def build_editorial_improvement_plan(
         "proposal_only": True,
         "target_score": float(target_score),
         "current_editorial_score": score,
-        "target_status": _score_status(score, target_score),
-        "iteration_budget": 3 if score < target_score else 0,
+        "model_reported_score": editorial_result.get("model_reported_score"),
+        "quality_tier": editorial_result.get("quality_tier"),
+        "target_status": plan_status,
+        "iteration_budget": 0 if passed else 3,
         "promotion_gates": {
             "editorial_score_min": float(target_score),
-            "operational_score_min": 95.0,
+            "critical_component_min": EDITORIAL_CRITICAL_COMPONENT_MIN,
+            "all_component_min": EDITORIAL_COMPONENT_MIN,
+            "no_blocking_issues": True,
+            "no_major_issues": True,
+            "operational_score_min": EDITORIAL_OPERATIONAL_MIN_SCORE,
             "section_count_score_min": SECTION_COUNT_TARGET_SCORE,
             "commodity_board_score_min": COMMODITY_BOARD_TARGET_SCORE,
             "no_section_underfill": True,

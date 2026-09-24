@@ -24,6 +24,44 @@ def github_api_headers(token: str) -> dict[str, str]:
     }
 
 
+def _is_large_file_response(j: JsonDict) -> bool:
+    """Contents API가 본문을 비워서 돌려준 응답인지(=1MB 초과 파일) 판별."""
+    if str(j.get("encoding") or "").lower() == "none":
+        return True
+    try:
+        return int(j.get("size") or 0) > 0
+    except (TypeError, ValueError):
+        return False
+
+
+def github_get_blob_text(
+    repo: str,
+    sha: str,
+    token: str,
+    *,
+    session_factory: SessionFactory,
+    log_http_error: HttpErrorLogger,
+) -> str:
+    """Blobs API(최대 100MB)로 본문을 받아온다. 실패해도 예외 없이 ""를 돌려준다."""
+    url = f"https://api.github.com/repos/{repo}/git/blobs/{sha}"
+    try:
+        r = session_factory().get(url, headers=github_api_headers(token), timeout=60)
+        if not r.ok:
+            metric_inc("github.get.blob_error", status=str(r.status_code))
+            log_http_error("[GitHub BLOB GET ERROR]", r)
+            return ""
+        j = ensure_dict(r.json())
+        content_b64 = str(j.get("content", "") or "")
+        if not content_b64:
+            metric_inc("github.get.blob_empty")
+            return ""
+        metric_inc("github.get.blob_success")
+        return base64.b64decode(content_b64).decode("utf-8", errors="replace")
+    except Exception:
+        metric_inc("github.get.blob_error", status="exception")
+        return ""
+
+
 def github_get_file(
     repo: str,
     path: str,
@@ -47,6 +85,17 @@ def github_get_file(
     sha_raw = j.get("sha")
     sha = str(sha_raw) if isinstance(sha_raw, (str, int)) else None
     raw = base64.b64decode(content_b64).decode("utf-8", errors="replace") if content_b64 else ""
+    # 1MB 초과 파일은 Contents API가 content=""(encoding="none")로 돌려준다.
+    # 그대로 빈 문자열을 넘기면 호출부가 "파일 없음"으로 오해해 기존 내용을 덮어쓴다.
+    if not raw and sha and _is_large_file_response(j):
+        metric_inc("github.get.large_file")
+        raw = github_get_blob_text(
+            repo,
+            sha,
+            token,
+            session_factory=session_factory,
+            log_http_error=log_http_error,
+        )
     metric_inc("github.get.success")
     return raw, sha
 

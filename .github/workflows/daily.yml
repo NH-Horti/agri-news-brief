@@ -1,27 +1,44 @@
 name: agri-news-brief (daily)
+run-name: >-
+  daily · trigger=${{ inputs.trigger_source || 'github' }} · recovery=${{ inputs.quality_recovery || false }}
 
 on:
-  # Primary daily trigger: Cloudflare Workers Cron at KST 06:05.
-  # Keep GitHub native schedule disabled to avoid duplicate Kakao sends.
+  # Independent early trigger at KST 05:35 (UTC Sunday-Thursday). Cloudflare
+  # remains the second trigger at 06:05; the delivery receipt suppresses duplicates.
+  schedule:
+    - cron: '35 20 * * 0-4'
   workflow_dispatch:
     inputs:
       trigger_source:
         description: 'External trigger source, e.g. cloudflare-cron'
         required: false
         type: string
+      quality_recovery:
+        description: 'Allow an operator-requested same-day quality recovery after the normal 06:50 KST deadline'
+        required: false
+        default: false
+        type: boolean
+      force_sla_fallback:
+        description: 'Skip score floors and publish a safe standard four-section briefing through the deterministic SLA fallback'
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: write
 
 concurrency:
   group: agri-news-brief-daily
-  cancel-in-progress: true
+  # A forced SLA recovery replaces any delayed primary still occupying the slot.
+  cancel-in-progress: ${{ inputs.force_sla_fallback == true }}
 
 jobs:
   run:
     if: github.ref_name == 'main'
     runs-on: ubuntu-latest
-    timeout-minutes: 150
+    # A stuck primary must terminate early enough for a full forced recovery
+    # to finish before the 07:00 KST sharing deadline.
+    timeout-minutes: 25
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -60,8 +77,20 @@ jobs:
           NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
           NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          OPENAI_MODEL: gpt-5.4
+          OPENAI_MODEL: gpt-5.6-sol
           OPENAI_REASONING_EFFORT: low
+          OPENAI_RETRY_MAX: ${{ inputs.quality_recovery && '3' || '1' }}
+          OPENAI_SUMMARY_TIMEOUT_SECONDS: ${{ inputs.quality_recovery && '70' || '45' }}
+          OPENAI_SUMMARY_MISSING_RETRY_MAX: '5'
+          EDITORIAL_OPENAI_MODEL: gpt-5.6-sol
+          EDITORIAL_REASONING_EFFORT: low
+          EDITORIAL_REPAIR_REASONING_EFFORT: low
+          EDITORIAL_MAX_RAW_PER_SECTION: '10'
+          EDITORIAL_EVAL_MAX_OUTPUT_TOKENS: '2400'
+          EDITORIAL_REPAIR_MAX_OUTPUT_TOKENS: '1800'
+          EDITORIAL_OPENAI_TIMEOUT_SECONDS: ${{ inputs.quality_recovery && '90' || '45' }}
+          EDITORIAL_OPENAI_MAX_ATTEMPTS: ${{ inputs.quality_recovery && '4' || '1' }}
+          EDITORIAL_OPENAI_RETRY_DELAY_SECONDS: ${{ inputs.quality_recovery && '15' || '0' }}
           OPENAI_SUMMARY_FEEDBACK_PATH: docs/evals/latest-feedback.txt
           SELECTION_FEEDBACK_PATH: docs/evals/latest-selection-feedback.json
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
@@ -86,6 +115,26 @@ jobs:
           FORCE_RUN_ANYDAY: 'false'
           REPLAY_WRITE_SNAPSHOT: 'true'
           REPLAY_SNAPSHOT_DIR: .agri_replay
+          BODY_CRAWL_MAX_ARTICLES: '120'
+          BODY_CRAWL_CONNECT_TIMEOUT: '3'
+          BODY_CRAWL_READ_TIMEOUT: '7'
+          BODY_CRAWL_RETRY_TOTAL: '0'
+          PREPUBLISH_QUALITY_GATE_ENABLED: 'true'
+          PREPUBLISH_QUALITY_FAIL_CLOSED: 'true'
+          PREPUBLISH_QUALITY_ADAPTIVE: 'true'
+          PREPUBLISH_QUALITY_MAX_REPAIRS: ${{ inputs.quality_recovery && '5' || '1' }}
+          PREPUBLISH_QUALITY_MAX_PROPOSALS: ${{ inputs.quality_recovery && '10' || '2' }}
+          PREPUBLISH_EDITORIAL_MAX_CALLS: ${{ inputs.quality_recovery && '6' || '4' }}
+          PREPUBLISH_EDITORIAL_TOKEN_BUDGET: ${{ inputs.quality_recovery && '150000' || '90000' }}
+          PREPUBLISH_QUALITY_STABLE_DAYS: '20'
+          PREPUBLISH_QUALITY_DEADLINE_KST: ${{ inputs.quality_recovery && '23:59' || '06:50' }}
+          PREPUBLISH_QUALITY_RESULT_DIR: reports/evals
+          PREPUBLISH_QUALITY_MIN_OPERATIONAL_SCORE: '85'
+          PREPUBLISH_SLA_FALLBACK_ENABLED: 'true'
+          PREPUBLISH_FORCE_SLA_FALLBACK: ${{ inputs.force_sla_fallback && 'true' || 'false' }}
+          PREPUBLISH_SLA_FALLBACK_MIN_SCORE: '78'
+          DELIVERY_RECEIPT_DIR: docs/delivery
+          DAILY_RECEIPT_EARLY_EXIT_ENABLED: 'true'
           UX_PATCH_DAYS: '7'
           WINDOW_MIN_HOURS: '0'
           CROSSDAY_DEDUPE_ENABLED: 'true'
@@ -93,6 +142,8 @@ jobs:
 
           MAX_PER_SECTION: '5'
           PAGE_TAIL_MARGIN_EXTRA: '4.0'
+          FINAL_LOW_TIER_MAX_PER_SECTION: '1'
+          FINAL_LOW_TIER_MAX_TOTAL: '4'
 
           NAVER_MAX_WORKERS: '6'
           NAVER_MIN_INTERVAL_SEC: '0.3'
@@ -106,7 +157,7 @@ jobs:
           python main.py
 
       - name: Publish replay snapshot
-        if: success()
+        if: always()
         shell: bash
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -129,25 +180,30 @@ jobs:
             --message "Update replay snapshot (${{ steps.vars.outputs.report_date }})"
 
       - name: Evaluate daily report quality
-        if: success()
+        if: always()
         shell: bash
         env:
           GITHUB_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          EDITORIAL_OPENAI_MODEL: gpt-5.4
         run: |
           set -euo pipefail
 
           snapshot_path=".agri_replay/${{ steps.vars.outputs.report_date }}.snapshot.json"
+          result_path="reports/evals/${{ steps.vars.outputs.report_date }}.json"
           if [ ! -f "$snapshot_path" ]; then
             echo "::warning::Daily run did not generate replay snapshot; skipping quality evaluation"
             exit 0
           fi
+          if [ ! -f "$result_path" ]; then
+            echo "::warning::Daily run did not generate a prepublish evaluation; skipping publication"
+            exit 0
+          fi
 
+          set +e
           python scripts/evaluate_daily_report.py \
             --report-date "${{ steps.vars.outputs.report_date }}" \
             --snapshot-path "$snapshot_path" \
+            --existing-result-json "$result_path" \
             --repo "$REPO" \
             --token "$GITHUB_TOKEN" \
             --ref main \
@@ -156,9 +212,15 @@ jobs:
             --output-md "reports/evals/${{ steps.vars.outputs.report_date }}.md" \
             --feedback-out "reports/evals/latest-feedback.txt" \
             --selection-feedback-out "reports/evals/latest-selection-feedback.json" \
-            --editorial-eval \
-            --editorial-model "$EDITORIAL_OPENAI_MODEL" \
-            --fail-under 55
+            --fail-under 82
+          eval_status=$?
+          set -e
+          if [ "$eval_status" -eq 2 ]; then
+            echo "::warning::Post-publication editorial target was missed; the formal briefing remains published when the SLA safety gate passed."
+          elif [ "$eval_status" -ne 0 ]; then
+            echo "::error::Post-publication evaluation failed with exit code $eval_status"
+            exit "$eval_status"
+          fi
 
       - name: Resolve Kakao status
         if: always()
@@ -200,13 +262,29 @@ jobs:
             echo "- Event: ${{ github.event_name }}"
             echo "- Trigger source: ${{ github.event.inputs.trigger_source || 'github' }}"
             echo "- Report date: ${{ steps.vars.outputs.report_date }}"
-            echo "- OpenAI model: gpt-5.4"
+            echo "- Article generation model: gpt-5.6-sol (low reasoning)"
+            echo "- Editorial evaluation/repair model: gpt-5.6-sol (low reasoning, adaptive)"
+            echo "- Quality recovery: ${{ inputs.quality_recovery || 'false' }}"
+            echo "- Forced SLA fallback: ${{ inputs.force_sla_fallback || 'false' }}"
+            echo "- Prepublish deadline: ${{ inputs.quality_recovery && '23:59' || '06:50' }} KST"
             echo "- Kakao actual: ${{ steps.kakao_status.outputs.actual }}"
             echo "- Kakao refresh token renewed: ${{ steps.kakao_refresh_token.outputs.renewed }}"
             echo "- Main page: https://nh-horti.github.io/agri-news-brief/"
             echo "- Archive: https://nh-horti.github.io/agri-news-brief/archive/${{ steps.vars.outputs.report_date }}.html"
             echo "- Eval JSON: https://raw.githubusercontent.com/${{ github.repository }}/main/docs/evals/${{ steps.vars.outputs.report_date }}.json"
           } >> "$GITHUB_STEP_SUMMARY"
+
+          result_path="reports/evals/${{ steps.vars.outputs.report_date }}.json"
+          if [ -f "$result_path" ]; then
+            gate_status="$(jq -r '.prepublish_quality_gate.status // "unknown"' "$result_path")"
+            repair_count="$(jq -r '.prepublish_quality_gate.repair_count // 0' "$result_path")"
+            estimated_cost="$(jq -r '.prepublish_quality_gate.estimated_cost_usd // 0' "$result_path")"
+            {
+              echo "- Quality gate: $gate_status"
+              echo "- Automatic repairs: $repair_count"
+              echo "- Estimated OpenAI cost: \$$estimated_cost"
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
 
           if [ -f "reports/evals/${{ steps.vars.outputs.report_date }}.md" ]; then
             cat "reports/evals/${{ steps.vars.outputs.report_date }}.md" >> "$GITHUB_STEP_SUMMARY"
@@ -218,7 +296,9 @@ jobs:
         run: |
           actual='${{ steps.kakao_status.outputs.actual }}'
           renewed='${{ steps.kakao_refresh_token.outputs.renewed }}'
-          if [ "$actual" != 'success' ]; then
+          if [ "$actual" = 'skipped_non_business_day' ]; then
+            echo "Not a KR business day; no briefing is scheduled."
+          elif [ "$actual" != 'success' ] && [ "$actual" != 'already_delivered' ]; then
             echo "::error::Kakao delivery did not complete successfully: $actual"
             exit 1
           fi

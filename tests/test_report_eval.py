@@ -18,8 +18,17 @@ class ReportEvalTests(unittest.TestCase):
         )
 
     @staticmethod
-    def _briefing_card(section: str, title: str, href: str, *, core: bool = False, stage: str = "tail") -> str:
+    def _briefing_card(
+        section: str,
+        title: str,
+        href: str,
+        *,
+        core: bool = False,
+        stage: str = "tail",
+        press_tier: int | None = None,
+    ) -> str:
         core_attr = ' data-is-core="1"' if core else ""
+        tier_attr = f' data-press-tier="{press_tier}"' if press_tier is not None else ""
         badge = '<span class="badgeCore">핵심</span>' if core else ""
         return f"""
         <div
@@ -32,6 +41,7 @@ class ReportEvalTests(unittest.TestCase):
           data-selection-fit="1.6"
           data-selection-stage="{stage}"
           {core_attr}
+          {tier_attr}
         >
           {badge}
           <div class="sum">{title} 관련 수급과 현장 변화가 보고됐다.</div>
@@ -64,11 +74,11 @@ class ReportEvalTests(unittest.TestCase):
 
         apply_editorial_quality_gate(result, editorial)
 
-        self.assertEqual(result["overall_score"], 96.63)
+        self.assertEqual(result["overall_score"], 94.38)
         self.assertEqual(result["operational_score"], 98.13)
-        self.assertEqual(result["status"], "pass")
-        self.assertEqual(result["quality_gate"]["reason"], "editorial_below_target_bounded_penalty")
-        self.assertEqual(result["quality_gate"]["bounded_penalty"], 1.5)
+        self.assertEqual(result["status"], "warn")
+        self.assertEqual(result["quality_gate"]["reason"], "editorial_acceptance_gate_failed")
+        self.assertEqual(result["quality_gate"]["bounded_penalty"], 3.75)
         rendered = report_eval.render_evaluation_markdown(
             {
                 **result,
@@ -101,6 +111,28 @@ class ReportEvalTests(unittest.TestCase):
         self.assertEqual(result["status"], "warn")
         self.assertEqual(result["quality_gate"]["reason"], "editorial_blocking_issue")
         self.assertEqual(result["quality_gate"]["blocking_issue_count"], 1)
+
+    def test_editorial_quality_gate_treats_section_judgment_as_bounded_feedback(self) -> None:
+        result = {
+            "overall_score": 98.13,
+            "operational_score": 98.13,
+            "status": "pass",
+            "score_notes": {},
+        }
+        editorial = {
+            "status": "success",
+            "score": 80.0,
+            "target_score": 95.0,
+            "target_status": "needs_major_iteration",
+            "issues": [{"severity": "high", "type": "wrong_section"}],
+        }
+
+        apply_editorial_quality_gate(result, editorial)
+
+        self.assertEqual(result["overall_score"], 93.13)
+        self.assertEqual(result["quality_gate"]["reason"], "editorial_major_issue")
+        self.assertEqual(result["quality_gate"]["blocking_issue_count"], 0)
+        self.assertEqual(result["quality_gate"]["major_issue_count"], 1)
 
     def test_parse_report_html_extracts_commodity_primary_metadata(self) -> None:
         html = """
@@ -173,6 +205,31 @@ class ReportEvalTests(unittest.TestCase):
         self.assertTrue(article.is_core)
         self.assertAlmostEqual(article.selection_fit_score, 1.72)
         self.assertEqual(article.selection_stage, "core_final")
+
+    def test_parse_report_html_extracts_press_tier(self) -> None:
+        html = self._briefing_card(
+            "pest",
+            "토마토 담배가루이 초기 방제 당부",
+            "https://example.com/pest",
+            press_tier=2,
+        )
+
+        article = report_eval.parse_report_html(html)[0]
+
+        self.assertEqual(article.press_tier, 2)
+
+    def test_evaluate_report_caps_excessive_low_tier_source_mix(self) -> None:
+        html = self.html_text.replace(
+            'data-surface="briefing_card"',
+            'data-surface="briefing_card" data-press-tier="1"',
+        )
+
+        result = report_eval.evaluate_report(self.report_date, html, self.snapshot_payload)
+
+        self.assertEqual(result["counts"]["low_tier_source_total"], 15)
+        self.assertEqual(result["metrics"]["low_tier_source_rate"], 1.0)
+        self.assertGreater(result["metrics"]["low_tier_source_excess_count"], 0)
+        self.assertIn("low_tier_source_concentration", result["reader_quality_gate"]["reasons"])
 
     def test_evaluate_report_returns_scores_and_feedback(self) -> None:
         result = report_eval.evaluate_report(self.report_date, self.html_text, self.snapshot_payload)
@@ -526,6 +583,57 @@ class ReportEvalTests(unittest.TestCase):
         self.assertAlmostEqual(result["metrics"]["commodity_board_coverage_rate"], round(1 / report_eval.MANAGED_COMMODITY_EVAL_ITEM_COUNT, 4))
         self.assertEqual(result["commodity_primary_linkage_samples"][0]["item_label"], "애호박(쥬키니)")
 
+    def test_commodity_pool_sports_homonym_penalizes_visible_false_link(self) -> None:
+        title = "슈팅수 30-2…개최국 캐나다, ‘2명 퇴장’ 자멸한 카타르 6대0 대파"
+        html = f"""
+        <a
+          data-surface="commodity_pool"
+          data-section="supply"
+          data-article-title="{title}"
+          data-article-id="sports-green-onion-homonym"
+          data-target-domain="chosun.com"
+          data-item-key="green_onion"
+          data-item-label="대파"
+          data-representative-rank="1"
+          data-representative-score="210.6"
+          data-board-score="176.6"
+          data-selection-fit="1.05"
+          data-selection-stage="commodity_pool"
+          href="https://www.chosun.com/sports/sports_special/2026/06/19/3ZUCNKZI25AJFHG6PU5KWFFF54/"
+        >대파 대표 기사</a>
+        """
+        snapshot_payload = {
+            "window": {"end_kst": "2026-06-22T06:00:00+09:00"},
+            "raw_by_section": {
+                "supply": [
+                    {
+                        "section": "supply",
+                        "title": title,
+                        "link": "https://www.chosun.com/sports/sports_special/2026/06/19/3ZUCNKZI25AJFHG6PU5KWFFF54/",
+                        "description": "축구 경기에서 개최국 캐나다가 카타르를 크게 이겼다는 스포츠 기사다.",
+                        "selection_fit_score": 1.05,
+                        "selection_stage": "commodity_pool",
+                        "score": 7.8,
+                        "pub_dt_kst": "2026-06-19T12:00:00+09:00",
+                    }
+                ],
+                "policy": [],
+                "dist": [],
+                "pest": [],
+            },
+        }
+
+        result = report_eval.evaluate_report("2026-06-22", html, snapshot_payload)
+
+        self.assertEqual(result["counts"]["commodity_pool_total"], 1)
+        self.assertEqual(result["metrics"]["commodity_primary_false_link_rate"], 0.0)
+        self.assertEqual(result["metrics"]["commodity_pool_false_link_rate"], 1.0)
+        self.assertIn("commodity_pool_false_link_severe", result["reader_quality_gate"]["reasons"])
+        self.assertIn("commodity_board", result["selection_guardrails"]["driver_tags"])
+        sample = result["commodity_pool_linkage_samples"][0]
+        self.assertEqual(sample["surface"], "commodity_pool")
+        self.assertIn("green_onion_sports_homonym", sample["reasons"])
+
     def test_commodity_board_strict_link_accepts_weather_and_field_issue_terms(self) -> None:
         html = """
         <a
@@ -721,6 +829,182 @@ class ReportEvalTests(unittest.TestCase):
         self.assertEqual(result["content_false_positive_samples"], [])
         self.assertGreater(result["scores"]["core_quality"], 80.0)
 
+    def test_quantified_public_distribution_execution_is_not_event_filler(self) -> None:
+        html = """
+        <div
+          data-surface="briefing_card"
+          data-section="dist"
+          data-article-title="aT, 유통 본부 회의 개최…공공급식 거래액 2.3%↑·스마트 APC 115개 확대"
+          data-href="https://example.com/at-public-distribution"
+          data-article-id="at-public-distribution"
+          data-target-domain="example.com"
+          data-selection-fit="3.7"
+          data-selection-stage="dist_publish_daily_floor_replacement"
+          data-is-core="0"
+        >
+          <div class="sum">aT가 공공급식플랫폼 거래액 증가와 스마트 APC 확대 실적을 점검했다.</div>
+        </div>
+        """
+        snapshot_payload = {
+            "window": {"end_kst": "2026-07-01T06:00:00+09:00"},
+            "raw_by_section": {
+                "dist": [
+                    {
+                        "section": "dist",
+                        "title": "aT, 유통 본부 회의 개최…공공급식 거래액 2.3%↑·스마트 APC 115개 확대",
+                        "link": "https://example.com/at-public-distribution",
+                        "description": (
+                            "aT가 생산유통통합조직과 공공급식플랫폼 거래액 2.3% 증가, "
+                            "스마트 APC 115개소 확대 실적을 발표했다."
+                        ),
+                        "selection_fit_score": 3.7,
+                        "selection_stage": "dist_publish_daily_floor_replacement",
+                        "score": 60.0,
+                        "pub_dt_kst": "2026-07-01T05:00:00+09:00",
+                    }
+                ],
+                "supply": [],
+                "policy": [],
+                "pest": [],
+            },
+        }
+
+        result = report_eval.evaluate_report("2026-07-01", html, snapshot_payload)
+
+        self.assertEqual(result["metrics"]["promotional_filler_rate"], 0.0)
+        self.assertEqual(result["metrics"]["dist_weak_ops_rate"], 0.0)
+        self.assertEqual(result["editorial_quality_samples"], [])
+
+    def test_priority_locust_outbreak_core_overrides_stale_pool_rank(self) -> None:
+        html = """
+        <div
+          data-surface="briefing_card"
+          data-section="pest"
+          data-article-title="'풀무치 떼의 습격'…고흥만 간척지 비상"
+          data-href="https://example.com/locust-outbreak"
+          data-article-id="locust-outbreak"
+          data-target-domain="example.com"
+          data-selection-fit="3.19"
+          data-selection-stage="pest_publish_editorial_core"
+          data-is-core="1"
+        >
+          <span class="badgeCore">핵심</span>
+          <div class="sum">풀무치가 집단 발생해 농정 당국이 긴급 방제에 나섰다.</div>
+        </div>
+        """
+        snapshot_payload = {
+            "window": {"end_kst": "2026-06-30T06:00:00+09:00"},
+            "raw_by_section": {
+                "pest": [
+                    {
+                        "section": "pest",
+                        "title": "'풀무치 떼의 습격'…고흥만 간척지 비상",
+                        "link": "https://example.com/locust-outbreak",
+                        "description": "풀무치가 집단 발생해 벼와 조사료 재배지로 번지자 농정 당국이 긴급 방제에 나섰다.",
+                        "selection_fit_score": 3.19,
+                        "selection_stage": "pest_publish_editorial_core",
+                        "score": 7.76,
+                        "pub_dt_kst": "2026-06-29T18:00:00+09:00",
+                    },
+                    {
+                        "section": "pest",
+                        "title": "병해충 일반 안내",
+                        "link": "https://example.com/high-rank-pest",
+                        "description": "병해충 예찰 안내다.",
+                        "selection_fit_score": 3.5,
+                        "selection_stage": "core_final",
+                        "score": 90.0,
+                        "pub_dt_kst": "2026-06-29T17:00:00+09:00",
+                    },
+                ],
+                "supply": [],
+                "policy": [],
+                "dist": [],
+            },
+        }
+
+        result = report_eval.evaluate_report("2026-06-30", html, snapshot_payload)
+
+        self.assertEqual(result["metrics"]["weak_core_rate"], 0.0)
+        self.assertEqual(result["metrics"]["core_rank_percentile_avg"], 1.0)
+
+    def test_authoritative_warning_and_live_prediction_are_priority_pest_cores(self) -> None:
+        html = """
+        <div
+          data-surface="briefing_card"
+          data-section="pest"
+          data-article-title="경북농기원, 장마철 고추 탄저병 주의 당부"
+          data-href="https://example.com/pepper-warning"
+          data-article-id="pepper-warning"
+          data-target-domain="example.com"
+          data-selection-fit="2.89"
+          data-selection-stage="pest_publish_editorial_core"
+          data-is-core="1"
+        ><div class="sum">농기원이 고추 탄저병 확산을 경고하고 비 전 살균제 방제를 당부했다.</div></div>
+        <div
+          data-surface="briefing_card"
+          data-section="pest"
+          data-article-title="경기도농업기술원, 병해충 위험 AI 조기 예측"
+          data-href="https://example.com/pest-ai-warning"
+          data-article-id="pest-ai-warning"
+          data-target-domain="example.com"
+          data-selection-fit="3.55"
+          data-selection-stage="pest_publish_editorial_core"
+          data-is-core="1"
+        ><div class="sum">벼·콩 병해충 위험을 AI로 분석해 예보부터 경보까지 실시간 제공한다.</div></div>
+        """
+        snapshot_payload = {
+            "window": {"end_kst": "2026-07-01T06:00:00+09:00"},
+            "raw_by_section": {
+                "pest": [
+                    {
+                        "section": "pest",
+                        "title": "경북농기원, 장마철 고추 탄저병 주의 당부",
+                        "link": "https://example.com/pepper-warning",
+                        "description": (
+                            "경북농업기술원이 고추 탄저병 확산을 경고하고 비 전 살균제 살포와 "
+                            "비 뒤 피해 과실 제거, 치료 약제 방제를 당부했다."
+                        ),
+                        "selection_fit_score": 2.89,
+                        "selection_stage": "pest_publish_editorial_core",
+                        "score": 20.0,
+                        "pub_dt_kst": "2026-07-01T05:00:00+09:00",
+                    },
+                    {
+                        "section": "pest",
+                        "title": "경기도농업기술원, 병해충 위험 AI 조기 예측",
+                        "link": "https://example.com/pest-ai-warning",
+                        "description": (
+                            "경기도농업기술원이 벼와 콩 등 농작물 병해충 위험도를 분석해 "
+                            "예보·주의보·경보를 실시간 제공한다."
+                        ),
+                        "selection_fit_score": 3.55,
+                        "selection_stage": "pest_publish_editorial_core",
+                        "score": 21.0,
+                        "pub_dt_kst": "2026-07-01T04:00:00+09:00",
+                    },
+                    {
+                        "section": "pest",
+                        "title": "일반 병해충 지원 소식",
+                        "link": "https://example.com/high-score-generic",
+                        "description": "지역 농가에 방제장비를 지원했다.",
+                        "selection_fit_score": 3.8,
+                        "selection_stage": "core_final",
+                        "score": 90.0,
+                        "pub_dt_kst": "2026-07-01T03:00:00+09:00",
+                    },
+                ],
+                "supply": [],
+                "policy": [],
+                "dist": [],
+            },
+        }
+
+        result = report_eval.evaluate_report("2026-07-01", html, snapshot_payload)
+
+        self.assertEqual(result["metrics"]["weak_core_rate"], 0.0)
+        self.assertEqual(result["metrics"]["core_rank_percentile_avg"], 1.0)
+
     def test_commodity_item_focus_uses_snapshot_body_context(self) -> None:
         html = """
         <a
@@ -846,6 +1130,51 @@ class ReportEvalTests(unittest.TestCase):
         self.assertEqual(result["metrics"]["off_scope_foreign_rate"], 1.0)
         self.assertEqual(result["content_false_positive_samples"][0]["reason"], "foreign_unmanaged_commodity")
 
+    def test_eval_keeps_authoritative_domestic_multi_price_bulletin(self) -> None:
+        html = """
+        <div
+          data-surface="briefing_card"
+          data-section="supply"
+          data-article-title="늦어지는 장마·무더위에 농산물값, 체리·파프리카↓, 다다기오이↑"
+          data-href="https://www.ytn.co.kr/_ln/0102_202606291118044521"
+          data-article-id="at-market"
+          data-target-domain="ytn.co.kr"
+          data-selection-fit="7.0"
+          data-selection-stage="core_final"
+        >
+          <div class="sum">aT는 파프리카·감자 가격 하락과 오이·참외 가격 상승을 발표했다.</div>
+        </div>
+        """
+        snapshot_payload = {
+            "window": {"end_kst": "2026-06-30T06:00:00+09:00"},
+            "raw_by_section": {
+                "supply": [
+                    {
+                        "section": "supply",
+                        "title": "늦어지는 장마·무더위에 농산물값, 체리·파프리카↓, 다다기오이↑",
+                        "link": "https://www.ytn.co.kr/_ln/0102_202606291118044521",
+                        "description": (
+                            "한국농수산식품유통공사는 파프리카 가격이 전주 대비 17.1% 하락하고 "
+                            "감자 생산량 증가로 13.4% 내렸다고 밝혔다. 미국 체리와 망고도 다뤘지만 "
+                            "다다기오이는 반입량 감소로 3.2% 상승했고 참외 출하량도 늘었다."
+                        ),
+                        "selection_fit_score": 7.0,
+                        "selection_stage": "core_final",
+                        "score": 80.0,
+                        "pub_dt_kst": "2026-06-29T11:18:00+09:00",
+                    }
+                ],
+                "policy": [],
+                "dist": [],
+                "pest": [],
+            },
+        }
+
+        result = report_eval.evaluate_report("2026-06-30", html, snapshot_payload)
+
+        self.assertEqual(result["metrics"]["off_scope_foreign_rate"], 0.0)
+        self.assertEqual(result["content_false_positive_samples"], [])
+
     def test_eval_flags_cross_section_same_event_duplicate(self) -> None:
         html = """
         <div data-surface="briefing_card" data-section="supply"
@@ -893,6 +1222,57 @@ class ReportEvalTests(unittest.TestCase):
         result = report_eval.evaluate_report("2026-05-19", html, snapshot_payload)
         self.assertEqual(result["metrics"]["story_duplicate_rate"], 0.5)
         self.assertIn(result["story_duplicate_samples"][0]["reason"], {"known_duplicate_url", "same_event_numbers"})
+
+    def test_eval_uses_source_independent_event_fingerprint(self) -> None:
+        html = """
+        <div data-surface="briefing_card" data-section="dist"
+          data-article-title="무주군, 스마트 APC 전환으로 산지유통센터 첨단화"
+          data-href="https://one.example/apc" data-article-id="apc-a"
+          data-target-domain="one.example"><div class="sum">무주군이 ERP 포장라인을 구축했다.</div></div>
+        <div data-surface="briefing_card" data-section="dist"
+          data-article-title="무주군, 농산물산지유통센터 고도화…선별 체계·냉동시설 보완"
+          data-href="https://two.example/apc" data-article-id="apc-b"
+          data-target-domain="two.example"><div class="sum">전북 무주군이 냉동시설을 보완했다.</div></div>
+        <div data-surface="briefing_card" data-section="dist"
+          data-article-title="무주 농산물산지유통센터 첨단화 완료…산지유통 경쟁력 강화"
+          data-href="https://three.example/apc" data-article-id="apc-c"
+          data-target-domain="three.example"><div class="sum">무주군 스마트 APC 사업이 완료됐다.</div></div>
+        """
+        samples, duplicate_indices = report_eval._briefing_story_duplicate_samples(
+            report_eval.parse_report_html(html)
+        )
+
+        self.assertEqual(duplicate_indices, {1, 2})
+        self.assertTrue(all(sample["reason"] == "same_facility_upgrade" for sample in samples))
+
+    def test_eval_detects_amount_omission_and_press_release_headline_angles(self) -> None:
+        html = """
+        <div data-surface="briefing_card" data-section="policy"
+          data-article-title="농협, 하절기 과채류 수급 안정 대책…12억4천만원 투입"
+          data-href="https://one.example/program" data-article-id="program-a"
+          data-target-domain="one.example"><div class="sum">농식품부와 함께 추진한다.</div></div>
+        <div data-surface="briefing_card" data-section="policy"
+          data-article-title="농협-농식품부, 과채류 수급 안정에 협력"
+          data-href="https://two.example/program" data-article-id="program-b"
+          data-target-domain="two.example"></div>
+        <div data-surface="briefing_card" data-section="policy"
+          data-article-title="농식품부, 식품업계 원가부담 완화 지원…물가 안정 총력"
+          data-href="https://three.example/cost" data-article-id="cost-a"
+          data-target-domain="three.example"></div>
+        <div data-surface="briefing_card" data-section="policy"
+          data-article-title="식품업계 잇단 인상에…농식품부 원가 부담 완화 지원"
+          data-href="https://four.example/cost" data-article-id="cost-b"
+          data-target-domain="four.example"></div>
+        """
+        samples, duplicate_indices = report_eval._briefing_story_duplicate_samples(
+            report_eval.parse_report_html(html)
+        )
+
+        self.assertEqual(duplicate_indices, {1, 3})
+        self.assertEqual(
+            {sample["reason"] for sample in samples},
+            {"same_supply_stabilization_program", "same_food_industry_cost_relief"},
+        )
 
     def test_eval_scores_editorial_selection_risks(self) -> None:
         articles = [
@@ -958,12 +1338,101 @@ class ReportEvalTests(unittest.TestCase):
 
         self.assertEqual(report_eval._editorial_base_issue_reasons(article, body), [])
 
+    def test_eval_keeps_quantified_policy_execution_clean(self) -> None:
+        cases = (
+            (
+                "정부비축 국산 콩 6만5000톤 푼다",
+                "정부가 가격 안정을 위해 비축 콩 6만5000톤을 시장에 공급한다.",
+            ),
+            (
+                "물가 안정 위해 1조 원 투입",
+                "정부가 농산물 물가 안정 대책에 1조 원을 투입해 시행한다.",
+            ),
+            (
+                "수입 농산물 관리 효율화, 민·관 머리 맞댄다",
+                "생산자와 소비자가 참여해 수입 농산물 관리 개선방안을 협의한다.",
+            ),
+            (
+                "정부, 농축산물 할인에 3천억 투입…농할상품권 매월 200억 발행",
+                "농식품부가 여름철 농축산물 할인 지원에 3000억원을 투입하는 대책을 시행한다.",
+            ),
+            (
+                "농산업 육성·지원 법적 근거 마련",
+                "농식품부가 농산업 지원 근거를 담은 기본법 시행령 개정안을 시행했다.",
+            ),
+        )
+        for index, (title, body) in enumerate(cases):
+            with self.subTest(title=title):
+                article = report_eval.SurfaceArticle(
+                    tag="div",
+                    surface=report_eval.BRIEFING_SURFACE,
+                    section="policy",
+                    title=title,
+                    href=f"https://example.com/policy-execution-{index}",
+                    article_id=f"policy-execution-{index}",
+                    domain="example.com",
+                    summary=body,
+                    is_core=index == 0,
+                )
+                self.assertEqual(report_eval._editorial_base_issue_reasons(article, body), [])
+
+    def test_eval_pest_theme_keeps_distinct_field_risks_separate(self) -> None:
+        cases = (
+            ("고추역병 6월부터 발생…배수 관리 필요", "phytophthora"),
+            ("영천시, 과수·산림지 돌발해충 합동방제", "outbreak_pest"),
+            ("고온기 육묘장 병해충 확산 우려", "nursery_pest"),
+            ("마늘·양파 여름철 토양 소독 당부", "soil_disinfection"),
+        )
+        for title, expected in cases:
+            with self.subTest(title=title):
+                article = report_eval.SurfaceArticle(
+                    tag="div",
+                    surface=report_eval.BRIEFING_SURFACE,
+                    section="pest",
+                    title=title,
+                    href="https://example.com/pest-theme",
+                    article_id=expected,
+                    domain="example.com",
+                )
+                self.assertEqual(
+                    report_eval._pest_editorial_theme(article, f"{title} 병해충 방제 안내"),
+                    expected,
+                )
+
+    def test_eval_keeps_direct_platform_and_measured_export_clean(self) -> None:
+        cases = (
+            (
+                "제주 농특산물 직거래 플랫폼 '탐나는장터' 7월 10일 공식 오픈",
+                "생산자는 판매 수수료와 마케팅 비용 부담을 줄이고 소비자에게 직접 판매한다. 공식 오픈한다.",
+            ),
+            (
+                "K-참외 매력에 ‘흠뻑’…국산 참외 일본 수출 ‘쑥쑥’",
+                "국산 참외의 일본 수출량과 현지 판매량이 해마다 증가하고 있다.",
+            ),
+        )
+        for index, (title, body) in enumerate(cases):
+            with self.subTest(title=title):
+                article = report_eval.SurfaceArticle(
+                    tag="div",
+                    surface=report_eval.BRIEFING_SURFACE,
+                    section="dist",
+                    title=title,
+                    href=f"https://example.com/dist-channel-{index}",
+                    article_id=f"dist-channel-{index}",
+                    domain="example.com",
+                    summary=body,
+                    is_core=False,
+                )
+                self.assertEqual(report_eval._editorial_base_issue_reasons(article, body), [])
+
     def test_markdown_and_history_renderers_have_expected_shape(self) -> None:
         result = report_eval.evaluate_report(self.report_date, self.html_text, self.snapshot_payload)
         result["operational_score"] = result["overall_score"]
         result["editorial_score"] = 91.0
         result["editorial"] = {
             "status": "success",
+            "model": "gpt-5.5",
+            "model_snapshot": "gpt-5.5-2026-04-23",
             "score": 91.0,
             "target_score": 95.0,
             "target_status": "needs_minor_iteration",
@@ -989,6 +1458,7 @@ class ReportEvalTests(unittest.TestCase):
         self.assertIn(self.report_date, markdown)
         self.assertIn("section_fit=", markdown)
         self.assertIn("Editorial Shadow Eval", markdown)
+        self.assertIn("Model: gpt-5.5 (resolved gpt-5.5-2026-04-23)", markdown)
         self.assertEqual(history_entry["report_date"], self.report_date)
         self.assertIn("overall_score", history_entry)
         self.assertEqual(history_entry["editorial_score"], 91.0)
