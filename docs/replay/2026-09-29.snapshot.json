@@ -2,8 +2,8 @@
   "schema_version": 1,
   "version": 1,
   "report_date": "2026-09-29",
-  "created_at_kst": "2026-09-29T06:16:48+09:00",
-  "build_tag": "0a7bd5c",
+  "created_at_kst": "2026-09-29T06:30:13+09:00",
+  "build_tag": "d6f31e9",
   "content_ref": "main",
   "content_branch": "main",
   "window": {
@@ -1915,31 +1915,6 @@
       {
         "pub_dt_kst": "2026-09-28T15:19:00+09:00",
         "section": "supply",
-        "title": "가격 오르는 홈런볼",
-        "description": "웅진식품은 같은 날부터 아침햇살·초록 매실 ·하늘보리·자연은 등 20여개 품목의 가격 을 평균 7% 인상한다. 사진은 28일 서울의 한 대형마트에 진열된 해태 홈런볼. 2026.9.28/뉴스1",
-        "link": "https://n.news.naver.com/mnews/article/421/0009195628?sid=101",
-        "originallink": "https://www.news1.kr/photos/8129715",
-        "domain": "news1.kr",
-        "press": "뉴스1",
-        "norm_key": "url:df8bb3cd3d4745e7f984dc19d21ff084",
-        "title_key": "가격오르는홈런볼",
-        "canon_url": "https://news1.kr/photos/8129715",
-        "topic": "기타",
-        "summary": "",
-        "forced_section": "",
-        "origin_section": "supply",
-        "source_query": "매실 가격",
-        "source_channel": "naver_api",
-        "selection_stage": "",
-        "selection_note": "",
-        "reassigned_from": "",
-        "score": 6.91,
-        "selection_fit_score": 0.0,
-        "is_core": false
-      },
-      {
-        "pub_dt_kst": "2026-09-28T15:19:00+09:00",
-        "section": "supply",
         "title": "홈런볼·오예스 등 해태제과 과자 가격 인상",
         "description": "웅진식품은 같은 날부터 아침햇살·초록 매실 ·하늘보리·자연은 등 20여개 품목의 가격 을 평균 7% 인상한다. 사진은 28일 서울의 한 대형마트에 진열된 해태 오예스. 2026.9.28/뉴스1",
         "link": "https://n.news.naver.com/mnews/article/421/0009195623?sid=101",
@@ -1988,17 +1963,17 @@
         "is_core": false
       },
       {
-        "pub_dt_kst": "2026-09-28T15:18:00+09:00",
+        "pub_dt_kst": "2026-09-28T15:19:00+09:00",
         "section": "supply",
-        "title": "'용량 줄이고 가격 은 그대로'",
-        "description": "웅진식품은 같은 날부터 아침햇살·초록 매실 ·하늘보리·자연은 등 20여개 품목의 가격 을 평균 7% 인상한다. 사진은 28일 서울의 한 대형마트에 진열된 해태 허니버터칩. 2026.9.28/뉴스1",
-        "link": "https://n.news.naver.com/mnews/article/421/0009195616?sid=101",
-        "originallink": "https://www.news1.kr/photos/8129729",
+        "title": "가격 오르는 홈런볼",
+        "description": "웅진식품은 같은 날부터 아침햇살·초록 매실 ·하늘보리·자연은 등 20여개 품목의 가격 을 평균 7% 인상한다. 사진은 28일 서울의 한 대형마트에 진열된 해태 홈런볼. 2026.9.28/뉴스1",
+        "link": "https://n.news.naver.com/mnews/article/421/0009195628?sid=101",
+        "originallink": "https://www.news1.kr/photos/8129715",
         "domain": "news1.kr",
         "press": "뉴스1",
-        "norm_key": "url:f9c675c9529e40c6cc56e97e9056f2da",
-        "title_key": "용량줄이고가격은그대로",
-        "canon_url": "https://news1.kr/photos/8129729",
+        "norm_key": "url:df8bb3cd3d4745e7f984dc19d21ff084",
+        "title_key": "가격오르는홈런볼",
+        "canon_url": "https://news1.kr/photos/8129715",
         "topic": "기타",
         "summary": "",
         "forced_section": "",
@@ -2024,6 +1999,31 @@
         "norm_key": "url:5afde079b71e19f924e838dafd9b8e6b",
         "title_key": "가격오르거나용량줄거나",
         "canon_url": "https://news1.kr/photos/8129730",
+        "topic": "기타",
+        "summary": "",
+        "forced_section": "",
+        "origin_section": "supply",
+        "source_query": "매실 가격",
+        "source_channel": "naver_api",
+        "selection_stage": "",
+        "selection_note": "",
+        "reassigned_from": "",
+        "score": 6.91,
+        "selection_fit_score": 0.0,
+        "is_core": false
+      },
+      {
+        "pub_dt_kst": "2026-09-28T15:18:00+09:00",
+        "section": "supply",
+        "title": "'용량 줄이고 가격 은 그대로'",
+        "description": "웅진식품은 같은 날부터 아침햇살·초록 매실 ·하늘보리·자연은 등 20여개 품목의 가격 을 평균 7% 인상한다. 사진은 28일 서울의 한 대형마트에 진열된 해태 허니버터칩. 2026.9.28/뉴스1",
+        "link": "https://n.news.naver.com/mnews/article/421/0009195616?sid=101",
+        "originallink": "https://www.news1.kr/photos/8129729",
+        "domain": "news1.kr",
+        "press": "뉴스1",
+        "norm_key": "url:f9c675c9529e40c6cc56e97e9056f2da",
+        "title_key": "용량줄이고가격은그대로",
+        "canon_url": "https://news1.kr/photos/8129729",
         "topic": "기타",
         "summary": "",
         "forced_section": "",
@@ -3963,6 +3963,31 @@
         "is_core": false
       },
       {
+        "pub_dt_kst": "2026-09-28T18:40:00+09:00",
+        "section": "supply",
+        "title": "진안군, 노지수박 차열망 재배 공모 사업 선정",
+        "description": "진안군이 전북특별자치도 농업기술원에서 주관 ‘2027년 원예특작분야 경쟁력 향상 맞춤형 신기술보급 공모사업’에 최종 선정돼 총사업비 2억원을 확보했다.\r\n이번 공모에는 전북 14개 시·군 가운데 1차로 8개소가 선정 진안군, 노지수박 차열망 재배 공모사업 선정 지역 기자 양병채 입력 2026년 09월 28일 11:17 승인 2026년 09월 28일 18:39 지역 진안 공유 카카오톡 페이스북 트위터 밴드 URL 복사 프린트 [새전북신문] 진안군이 전북특별자치도 농업기술원에서 주관 ‘2027년 원예특작분야 경쟁력 향상 맞춤형 신기술보급 공모사업’에 최종 선정돼 총사업비 2억원을 확보했다. 이번 공모에는 전북 14개 시·군 가운데 1차로 8개소가 선정됐으며, 지난 9월 10일 최종 심사를 거쳐 진안군이 선정됐다. 이에 따라 여름철 고온으로 인한 노지수박의 생육 저하와 당도 하락을 줄이기 위해, 빛이 투과되는 특수 차열망을 설치하는 ‘고온기 노지수박 차열망 터널 재배 시범사업’을 추진한다. 사업을 통해 고온기 수박 재배 안정성을 확보하고, 생산량과 품질을 동시에 높여 농가 소득 증대에도 기여할 계획이다. 진안군 농업기술센터 노금선 소장은 “기후변화로 인한 고온 피해가 농업 현장의 큰 부담으로 떠오르고 있다”며 “지역 여건에 맞는 신기술 보급사업을 지속적으로 발굴해 안정적인 농산물 생산과 농가 경쟁력 향상에 힘쓰겠다”고 말했다./진안=양병채 기자 💬 댓글 (0) 댓글을 작성하려면 로그인이 필요합니다. 로그인 첫 댓글을 작성해보세요!",
+        "link": "https://sjbnews.com/news/news.php?number=888687",
+        "originallink": "https://sjbnews.com/news/news.php?number=888687",
+        "domain": "sjbnews.com",
+        "press": "새전북신문",
+        "norm_key": "url:34fc7f6556a81ae734724757830e1b63",
+        "title_key": "진안군노지수박차열망재배공모사업선정",
+        "canon_url": "https://sjbnews.com/news/news.php?number=888687",
+        "topic": "수박",
+        "summary": "",
+        "forced_section": "",
+        "origin_section": "policy",
+        "source_query": "원예 시범사업",
+        "source_channel": "naver_api",
+        "selection_stage": "",
+        "selection_note": "",
+        "reassigned_from": "",
+        "score": 12.79,
+        "selection_fit_score": 0.0,
+        "is_core": false
+      },
+      {
         "pub_dt_kst": "2026-09-28T09:52:00+09:00",
         "section": "supply",
         "title": "\"마늘·양파 농가, 경작신고하고 의무자조금 꼭 납부하세요\"",
@@ -4411,31 +4436,6 @@
         "selection_note": "",
         "reassigned_from": "",
         "score": 5.7,
-        "selection_fit_score": 0.0,
-        "is_core": false
-      },
-      {
-        "pub_dt_kst": "2026-09-28T18:40:00+09:00",
-        "section": "policy",
-        "title": "진안군, 노지수박 차열망 재배 공모 사업 선정",
-        "description": "진안군이 전북특별자치도 농업기술원에서 주관 ‘2027년 원예 특작분야 경쟁력 향상 맞춤형 신기술보급... 재배 시범사업 ’을 추진한다. 사업 을 통해 고온기 수박 재배 안정성을 확보하고, 생산량과 품질을 동시에 높여...",
-        "link": "https://sjbnews.com/news/news.php?number=888687",
-        "originallink": "https://sjbnews.com/news/news.php?number=888687",
-        "domain": "sjbnews.com",
-        "press": "새전북신문",
-        "norm_key": "url:34fc7f6556a81ae734724757830e1b63",
-        "title_key": "진안군노지수박차열망재배공모사업선정",
-        "canon_url": "https://sjbnews.com/news/news.php?number=888687",
-        "topic": "수박",
-        "summary": "",
-        "forced_section": "",
-        "origin_section": "policy",
-        "source_query": "원예 시범사업",
-        "source_channel": "naver_api",
-        "selection_stage": "",
-        "selection_note": "",
-        "reassigned_from": "",
-        "score": 12.35,
         "selection_fit_score": 0.0,
         "is_core": false
       },
@@ -5615,6 +5615,31 @@
         "is_core": false
       },
       {
+        "pub_dt_kst": "2026-09-28T15:50:00+09:00",
+        "section": "policy",
+        "title": "한국농어촌공사, 우간다 공무원 초청…농산물 안전·검역 기술 전수",
+        "description": "한국농어촌공사가 우간다 농업 분야 공무원을 국내로 초청해 농산물 안전·품질관리와 검역 기술을 전수한다. 한국농어촌공사는 이달 27일부터 다음달 10일까지 14일간 우간다 농촌진흥청.. [인터뷰] 진종문 교수 “HBM 16단 쌓아도 역부족...AI 메모리 승부처는 ‘계층 설계’",
+        "link": "https://www.ekn.kr/web/view.php?key=20260928029209536",
+        "originallink": "https://www.ekn.kr/web/view.php?key=20260928029209536",
+        "domain": "ekn.kr",
+        "press": "에너지경제신문",
+        "norm_key": "url:a78d84f2319fad675b8a306227ce7aac",
+        "title_key": "한국농어촌공사우간다공무원초청농산물안전검역기술전수",
+        "canon_url": "https://ekn.kr/web/view.php?key=20260928029209536",
+        "topic": "병해충",
+        "summary": "",
+        "forced_section": "",
+        "origin_section": "pest",
+        "source_query": "병해충 예찰 방제",
+        "source_channel": "naver_api",
+        "selection_stage": "",
+        "selection_note": "",
+        "reassigned_from": "pest",
+        "score": 5.42,
+        "selection_fit_score": 0.0,
+        "is_core": false
+      },
+      {
         "pub_dt_kst": "2026-09-28T07:08:00+09:00",
         "section": "policy",
         "title": "'860억 투입' 청주 침수 위험 4곳 정비…하천·교량 손질",
@@ -5689,31 +5714,6 @@
         "reassigned_from": "policy",
         "score": 44.96,
         "selection_fit_score": 5.44,
-        "is_core": false
-      },
-      {
-        "pub_dt_kst": "2026-09-28T15:50:00+09:00",
-        "section": "dist",
-        "title": "한국농어촌공사, 우간다 공무원 초청… 농산물 안전· 검역 기술 전수",
-        "description": "한국농어촌공사가 우간다 농업 분야 공무원을 국내로 초청해 농산물 안전·품질관리와 검역 기술을... 조사, 수출 입 검역 등에 초점을 맞췄다. 참가자들은 올바른 농약 사용법과 안전사용 기준을 비롯해 식물 병해충...",
-        "link": "https://www.ekn.kr/web/view.php?key=20260928029209536",
-        "originallink": "https://www.ekn.kr/web/view.php?key=20260928029209536",
-        "domain": "ekn.kr",
-        "press": "에너지경제신문",
-        "norm_key": "url:a78d84f2319fad675b8a306227ce7aac",
-        "title_key": "한국농어촌공사우간다공무원초청농산물안전검역기술전수",
-        "canon_url": "https://ekn.kr/web/view.php?key=20260928029209536",
-        "topic": "수출/검역",
-        "summary": "",
-        "forced_section": "",
-        "origin_section": "dist",
-        "source_query": "농산물 수출 검역",
-        "source_channel": "naver_api",
-        "selection_stage": "",
-        "selection_note": "",
-        "reassigned_from": "policy",
-        "score": 7.54,
-        "selection_fit_score": 0.0,
         "is_core": false
       },
       {
@@ -6892,6 +6892,31 @@
         "is_core": false
       },
       {
+        "pub_dt_kst": "2026-09-28T15:50:00+09:00",
+        "section": "dist",
+        "title": "한국농어촌공사, 우간다 공무원 초청… 농산물 안전· 검역 기술 전수",
+        "description": "한국농어촌공사가 우간다 농업 분야 공무원을 국내로 초청해 농산물 안전·품질관리와 검역 기술을 전수한다. 한국농어촌공사는 이달 27일부터 다음달 10일까지 14일간 우간다 농촌진흥청.. [인터뷰] 진종문 교수 “HBM 16단 쌓아도 역부족...AI 메모리 승부처는 ‘계층 설계’",
+        "link": "https://www.ekn.kr/web/view.php?key=20260928029209536",
+        "originallink": "https://www.ekn.kr/web/view.php?key=20260928029209536",
+        "domain": "ekn.kr",
+        "press": "에너지경제신문",
+        "norm_key": "url:a78d84f2319fad675b8a306227ce7aac",
+        "title_key": "한국농어촌공사우간다공무원초청농산물안전검역기술전수",
+        "canon_url": "https://ekn.kr/web/view.php?key=20260928029209536",
+        "topic": "수출/검역",
+        "summary": "",
+        "forced_section": "",
+        "origin_section": "dist",
+        "source_query": "농산물 수출 검역",
+        "source_channel": "naver_api",
+        "selection_stage": "",
+        "selection_note": "",
+        "reassigned_from": "",
+        "score": 4.22,
+        "selection_fit_score": 0.0,
+        "is_core": false
+      },
+      {
         "pub_dt_kst": "2026-09-28T07:00:00+09:00",
         "section": "dist",
         "title": "[아프리카 녹색전환] ③그린 ODA 2.0…농업서 에너지까지 '자립 생태계'",
@@ -7461,8 +7486,8 @@
         "origin_section": "pest",
         "source_query": "과수화상병 방제",
         "source_channel": "naver_api",
-        "selection_stage": "pest_preferred_count_recovery",
-        "selection_note": "preferred_count_tail",
+        "selection_stage": "pest_generic_notice_replacement",
+        "selection_note": "replace_generic_pest_notice",
         "reassigned_from": "pest",
         "score": 34.53,
         "selection_fit_score": 4.12,
@@ -7486,8 +7511,8 @@
         "origin_section": "pest",
         "source_query": "과수화상병",
         "source_channel": "naver_api",
-        "selection_stage": "pest_preferred_count_recovery",
-        "selection_note": "preferred_count_tail",
+        "selection_stage": "pest_generic_notice_replacement",
+        "selection_note": "replace_generic_pest_notice",
         "reassigned_from": "pest",
         "score": 31.48,
         "selection_fit_score": 3.27,
@@ -7586,12 +7611,12 @@
         "origin_section": "pest",
         "source_query": "과수화상병",
         "source_channel": "naver_api",
-        "selection_stage": "core",
-        "selection_note": "",
+        "selection_stage": "pest_preferred_count_recovery",
+        "selection_note": "preferred_count_tail",
         "reassigned_from": "policy",
         "score": 35.18,
         "selection_fit_score": 3.47,
-        "is_core": true
+        "is_core": false
       },
       {
         "pub_dt_kst": "2026-09-28T21:12:00+09:00",
@@ -7647,7 +7672,7 @@
         "pub_dt_kst": "2026-09-28T18:40:00+09:00",
         "section": "pest",
         "title": "정읍시, 가을 배추 ?무 병해충 적기 방제 및 초기 대응 중요성 강조",
-        "description": "정읍시농업기술센터가 가을 배추 ·무의 안정적인 생산을 위해 생육 상태를 살피고 병해충을 초기에 방제해 줄 것을 농가에 당부했다. 배추 는 높은 기온으로 잎이 누렇게 변하거나 해충 피해가 발생하지 않았는지 살펴야...",
+        "description": "정읍시농업기술센터가 가을 배추·무의 안정적인 생산을 위해 생육 상태를 살피고 병해충을 초기에 방제해 줄 것을 농가에 당부했다.\r\n배추는 높은 기온으로 잎이 누렇게 변하거나 해충 피해가 발생하지 않았는지 살펴야 하며 정읍시, 가을배추∙무 병해충 적기 방제 및 초기 대응 중요성 강조 지역 기자 임기섭 입력 2026년 09월 28일 12:18 승인 2026년 09월 28일 18:39 지역 정읍 공유 카카오톡 페이스북 트위터 밴드 URL 복사 프린트 [새전북신문] 정읍시농업기술센터가 가을 배추·무의 안정적인 생산을 위해 생육 상태를 살피고 병해충을 초기에 방제해 줄 것을 농가에 당부했다. 배추는 높은 기온으로 잎이 누렇게 변하거나 해충 피해가 발생하지 않았는지 살펴야 하며 고온이나 가뭄이 이어질 때는 뿌리가 잘 내리고 초기 생육이 원활하도록 수분을 알맞게 공급하는 것이 중요하다. 무는 본잎이 1~2장 나올 때부터 6~7장이 될 때까지 튼튼한 포기만 남기고 제때 솎아줘야 한다. 병해충은 첫 증상이 나타났을 때 신속히 방제해야 피해를 줄일 수 있다. 약제에 대한 내성이 생기지 않도록 작용 방식이 다른 약제를 번갈아 사용하고, 해충이 숨기 쉬운 잎 뒷면과 생장점에도 약제가 충분히 닿도록 뿌려야 한다. 병든 포기는 발견 즉시 뽑아내 주변으로 퍼지는 것을 막고, 등록 약제의 안전 사용 기준을 지켜야 한다. 배수로를 정비하고 작물 사이로 바람이 잘 통하도록 관리하는 것도 중요하다. 배추는 옮겨 심은 뒤 15일 간격으로 2~3차례 웃거름을 주고, 배추와 무 모두 토양 수분이 적절하게 유지되도록 살펴야 한다. 강용원 농업기술센터 소장은 “가을 배추·무의 안정적인 생산을 위해서는 생육기 작물 관리와 병해충 초기 방제가 중요하다”며 “농가 피해를 예방할 수 있도록 현장 예찰과 기술 지도를 이어가겠다”고 말했다. /정읍=임기섭 기자 💬 댓글 (0) 댓글을 작성하려면 로그인이 필요합니다. 로그인 첫 댓글을 작성해보세요!",
         "link": "https://sjbnews.com/news/news.php?number=888699",
         "originallink": "https://sjbnews.com/news/news.php?number=888699",
         "domain": "sjbnews.com",
@@ -7664,7 +7689,7 @@
         "selection_stage": "",
         "selection_note": "",
         "reassigned_from": "supply",
-        "score": 11.55,
+        "score": 14.91,
         "selection_fit_score": 0.0,
         "is_core": false
       },
@@ -7747,7 +7772,7 @@
         "pub_dt_kst": "2026-09-28T16:23:00+09:00",
         "section": "pest",
         "title": "한반도 삼킨 1mm 재선충…과학은 소나무 못 지키나 [최준호의 사이언스...",
-        "description": "소나무재선충병 3차 대발생 피해고사목 올해만 177만 그루 효과 90% 예방주사도 있지만 빈틈 없는 방제 사실상 어려워 22일 경남 창녕군 유어면 세진리 우포늪 인근 야산에서 소나무재선충병 피해로 붉고 하얗게 변한 고사목이 곳곳에 보인다. 송봉근 객원기자 중부내륙고속도로 창녕 인터체인지에서 빠져나와 국도 20번을 따라 서쪽으로 10여 분을 달리니 ‘우포늪생태관’과 ‘따오기품은 세진마을’을 안은 해발 50~70m의 야산이 심상치 않은 모습을 드러냈다. 낮 최고 기온 29도. 가을 단풍이 들기엔 아직 여름 같은 날씨지만 동산은 채도를 잃어가는 천연색. 초록이 빠져나가 버린 붉은색은 그나마 나은 편이다. 이미 백골의 고사목이 되어버린 소나무들이 동산 골짜기 위아래를 휘감고 있었다. 추석 연휴를 앞둔 지난 22일 중앙일보 취재진이 경남 창녕군 유어면 세진리를 찾았다. 2018년 세계 최초 람사르 습지도시 인증과, 2024년 유네스코 생물권보전지역으로 지정된 창녕 우포늪을 품은 일대 야산이다. 이곳은 소나무재선충병의 소리 없는 전장(戰場)이었다. 한반도가 소나무재선충병으로 황폐화하고 있다. 이른바 '제3차 대발생기'의 한가운데를 지나고 있다. 지난 6월 산림청이 발표한 ‘2026년 소나무재선충병 방제 결과 발표’에 따르면, 소나무재선충병 피해고사목은 전국적으로 177만 그루가 발생했고, 재선충병이 집단·반복 발생하거나 산불 등으로 피해 우려가 큰 특별방제구역은 19만 헥타르(ha)로 확대됐다. 이는 전년 대비 피해 고사목이 28만 그루 증가한 수치다. 재선충병은 북한도 예외가 아니다. 공식통계는 없지만, 남한 내에서 파주·연천 등 비무장지대(DMZ) 턱밑 민통선 구역까지 북상했다. 재선충을 옮기는 하늘소가 휴전선을 넘었을 가능성이 크다는 얘기. 북한과 국경을 맞대고 있는 중국도 재선충병 대발생으로 심각한 피해를 보고 있다. 박경민 기자 부산 금정산에서 시작한 재선충병 재선충병은 1988년 부산 금정산에서 최초로 확인됐다. 일본에서 들여온 목재에 재선충이 숨어있었던 게 원인이었다. 재선충병은 이후 영남권을 중심으로 확산하다 2000년대 중반 충청지역을 건너뛰고 경기 광주 등에 나타났다. 누군가 재선충병이 든 소나무를 이동시켜 퍼졌다는 뜻이다. 2007년(137만 그루)과 2014년(218만 그루) 두 차례 재선충병이 크게 번졌다가 2021년에는 31만 그루까지 줄어들며 진정세를 보였다. 하지만 이듬해부터 다시 늘어나기 시작해 2023년 이후 연간 100만 그루를 웃돌며 가파른 증가세를 보이고 있다. 산림과학원 자료에 따르면, 올해 전국 166개 시·군·구에서 재선충병 발생이 확인됐다. 지난해 대비 12개 기초지자체가 더해졌다. 21세기 첨단 과학기술이 크기 1㎜에 불과한 소나무재선충을 잡을 수 없는 걸까. 인공지능(AI)이 인간의 능력을 넘어서고, 유전자가위가 염기서열까지 편집하는 시대가 됐지만, 소나무재선충병은 한반도에 들어온 이후 38년 동안 확대일로를 걷고 있다. 서울 동대문구 청량리동, 홍릉으로도 불리는 곳에 있는 국립산림과학원을 찾았다. 우리나라 소나무재선충병을 잡기 위한 연구개발(R&D)이 진행되는 본부다. 산림과학원 내에는 수령 134년의 반송 거목과 붉은 외피와 곧게 뻗은 줄기가 특징인 금강송들이 짙은 초록빛 솔잎을 자랑하며 건강하게 자라고 있었다. 적어도 과학원과 홍릉숲 내에서는 제3차 대발생기를 느낄 수 없었다. 소나무에 다가가보니 ‘2023년 12월12일 소나무재선충병 예방나무주사’라는 표식이 붙어있었다. 산림병해충연구과에 들어서니 나무에서 재선충을 뽑아내 현미경으로 관찰하는 연구시설들이 놓여있었다. 산림과학원 사람들은 재선충 3차 대발생과 세간의 비판에 곤혹스럽다 못해 지친 분위기였다. 소나무재선충병을 연구해온 남영우 박사가 조심스럽게 답을 했다. “현재 사용되는 예방 나무주사는 농약 등록 기준상 90% 이상의 방제 효과가 있습니다. 산림과학원 내 소나무들은 주기적인 예방 나무주사를 통해 철저하게 관리되고 있습니다.” 병의 발생과 확산의 원인을 알고, 방제 효과가 90% 이상 되는 예방 나무주사가 있는데",
+        "description": "중앙일보 지면보기 서비스는 로그인 후 이용 가능합니다. 로그인 하러 가기 Close 최근 1개월 내 지면만 열람하실 수 있습니다. Close 중앙일보 지면보기 서비스는 로그인 후 이용 가능합니다. 로그인 하러 가기 Close 로그인 하시면 최신호의 전체 내용을 보실 수 있습니다. 로그인 하시겠습니까? 로그인 Close 더중앙플러스 회원이 되시면 창간호부터 전체 지면보기와 지면 다운로드가 가능합니다. 더중앙플러스 회원이 되시겠습니까? 더중앙플러스 시작하기 Close 22일 경남 창녕군 유어면 세진리 우포늪 인근 야산에서 소나무재선충병 피해로 붉고 하얗게 변한 고사목이 곳곳에 보인다. 송봉근 객원기자 중부내륙고속도로 창녕 인터체인지에서 빠져나와 국도 20번을 따라 서쪽으로 10여 분을 달리니 ‘우포늪생태관’과 ‘따오기품은 세진마을’을 안은 해발 50~70m의 야산이 심상치 않은 모습을 드러냈다. 낮 최고 기온 29도. 가을 단풍이 들기엔 아직 여름 같은 날씨지만 동산은 채도를 잃어가는 천연색. 초록이 빠져나가 버린 붉은색은 그나마 나은 편이다. 이미 백골의 고사목이 되어버린 소나무들이 동산 골짜기 위아래를 휘감고 있었다. 추석 연휴를 앞둔 지난 22일 중앙일보 취재진이 경남 창녕군 유어면 세진리를 찾았다. 2018년 세계 최초 람사르 습지도시 인증과, 2024년 유네스코 생물권보전지역으로 지정된 창녕 우포늪을 품은 일대 야산이다. 이곳은 소나무재선충병의 소리 없는 전장(戰場)이었다. 소나무재선충병 3차 대발생 #피해고사목 올해만 177만 그루 #효과 90% 예방주사도 있지만 #빈틈 없는 방제 사실상 어려워 한반도가 소나무재선충병으로 황폐화하고 있다. 이른바 '제3차 대발생기'의 한가운데를 지나고 있다. 지난 6월 산림청이 발표한 ‘2026년 소나무재선충병 방제 결과 발표’에 따르면, 소나무재선충병 피해고사목은 전국적으로 177만 그루가 발생했고, 재선충병이 집단·반복 발생하거나 산불 등으로 피해 우려가 큰 특별방제구역은 19만 헥타르(ha)로 확대됐다. 이는 전년 대비 피해 고사목이 28만 그루 증가한 수치다. 재선충병은 북한도 예외가 아니다. 공식통계는 없지만, 남한 내에서 파주·연천 등 비무장지대(DMZ) 턱밑 민통선 구역까지 북상했다. 재선충을 옮기는 하늘소가 휴전선을 넘었을 가능성이 크다는 얘기. 북한과 국경을 맞대고 있는 중국도 재선충병 대발생으로 심각한 피해를 보고 있다. 박경민 기자 부산 금정산에서 시작한 재선충병 재선충병은 1988년 부산 금정산에서 최초로 확인됐다. 일본에서 들여온 목재에 재선충이 숨어있었던 게 원인이었다. 재선충병은 이후 영남권을 중심으로 확산하다 2000년대 중반 충청지역을 건너뛰고 경기 광주 등에 나타났다. 누군가 재선충병이 든 소나무를 이동시켜 퍼졌다는 뜻이다. 2007년(137만 그루)과 2014년(218만 그루) 두 차례 재선충병이 크게 번졌다가 2021년에는 31만 그루까지 줄어들며 진정세를 보였다. 하지만 이듬해부터 다시 늘어나기 시작해 2023년 이후 연간 100만 그루를 웃돌며 가파른 증가세를 보이고 있다. 산림과학원 자료에 따르면, 올해 전국 166개 시·군·구에서 재선충병 발생이 확인됐다. 지난해 대비 12개 기초지자체가 더해졌다. 21세기 첨단 과학기술이 크기 1㎜에 불과한 소나무재선충을 잡을 수 없는 걸까. 인공지능(AI)이 인간의 능력을 넘어서고, 유전자가위가 염기서열까지 편집하는 시대가 됐지만, 소나무재선충병은 한반도에 들어온 이후 38년 동안 확대일로를 걷고 있다. 서울 동대문구 청량리동, 홍릉으로도 불리는 곳에 있는 국립산림과학원을 찾았다. 우리나라 소나무재선충병을 잡기 위한 연구개발(R&D)이 진행되는 본부다. 산림과학원 내에는 수령 134년의 반송 거목과 붉은 외피와 곧게 뻗은 줄기가 특징인 금강송들이 짙은 초록빛 솔잎을 자랑하며 건강하게 자라고 있었다. 적어도 과학원과 홍릉숲 내에서는 제3차 대발생기를 느낄 수 없었다. 소나무에 다가가보니 ‘2023년 12월12일 소나무재선충병 예방나무주사’라는 표식이 붙어있었다. 산림병해충연구과에 들어서니 나무에서",
         "link": "https://n.news.naver.com/mnews/article/025/0003554221?sid=105",
         "originallink": "https://www.joongang.co.kr/article/25465268",
         "domain": "joongang.co.kr",
@@ -7757,15 +7782,15 @@
         "canon_url": "https://joongang.co.kr/article/25465268",
         "topic": "병해충",
         "summary": "",
-        "forced_section": "pest",
+        "forced_section": "",
         "origin_section": "pest",
         "source_query": "병해충 예찰 방제",
         "source_channel": "naver_api",
-        "selection_stage": "pest_diversity_gap_refill",
-        "selection_note": "fill_pest_diversity_gap",
+        "selection_stage": "",
+        "selection_note": "",
         "reassigned_from": "",
-        "score": 23.73,
-        "selection_fit_score": 2.97,
+        "score": 18.38,
+        "selection_fit_score": 0.0,
         "is_core": false
       },
       {
@@ -7847,7 +7872,7 @@
         "pub_dt_kst": "2026-09-28T18:40:00+09:00",
         "section": "pest",
         "title": "정읍시, 가을배추?무 병해충 적기 방제 및 초기 대응 중요성 강조",
-        "description": "강용원 농업기술센터 소장은 “가을 배추·무의 안정적인 생산을 위해서는 생육기 작물 관리와 병해충 초기 방제 가 중요하다”며 “농가 피해를 예방할 수 있도록 현장 예찰 과 기술 지도를 이어가겠다”고 말했다. /정읍=",
+        "description": "정읍시농업기술센터가 가을 배추·무의 안정적인 생산을 위해 생육 상태를 살피고 병해충을 초기에 방제해 줄 것을 농가에 당부했다.\r\n배추는 높은 기온으로 잎이 누렇게 변하거나 해충 피해가 발생하지 않았는지 살펴야 하며 정읍시, 가을배추∙무 병해충 적기 방제 및 초기 대응 중요성 강조 지역 기자 임기섭 입력 2026년 09월 28일 12:18 승인 2026년 09월 28일 18:39 지역 정읍 공유 카카오톡 페이스북 트위터 밴드 URL 복사 프린트 [새전북신문] 정읍시농업기술센터가 가을 배추·무의 안정적인 생산을 위해 생육 상태를 살피고 병해충을 초기에 방제해 줄 것을 농가에 당부했다. 배추는 높은 기온으로 잎이 누렇게 변하거나 해충 피해가 발생하지 않았는지 살펴야 하며 고온이나 가뭄이 이어질 때는 뿌리가 잘 내리고 초기 생육이 원활하도록 수분을 알맞게 공급하는 것이 중요하다. 무는 본잎이 1~2장 나올 때부터 6~7장이 될 때까지 튼튼한 포기만 남기고 제때 솎아줘야 한다. 병해충은 첫 증상이 나타났을 때 신속히 방제해야 피해를 줄일 수 있다. 약제에 대한 내성이 생기지 않도록 작용 방식이 다른 약제를 번갈아 사용하고, 해충이 숨기 쉬운 잎 뒷면과 생장점에도 약제가 충분히 닿도록 뿌려야 한다. 병든 포기는 발견 즉시 뽑아내 주변으로 퍼지는 것을 막고, 등록 약제의 안전 사용 기준을 지켜야 한다. 배수로를 정비하고 작물 사이로 바람이 잘 통하도록 관리하는 것도 중요하다. 배추는 옮겨 심은 뒤 15일 간격으로 2~3차례 웃거름을 주고, 배추와 무 모두 토양 수분이 적절하게 유지되도록 살펴야 한다. 강용원 농업기술센터 소장은 “가을 배추·무의 안정적인 생산을 위해서는 생육기 작물 관리와 병해충 초기 방제가 중요하다”며 “농가 피해를 예방할 수 있도록 현장 예찰과 기술 지도를 이어가겠다”고 말했다. /정읍=임기섭 기자 💬 댓글 (0) 댓글을 작성하려면 로그인이 필요합니다. 로그인 첫 댓글을 작성해보세요!",
         "link": "https://sjbnews.com/news/news.php?number=888699",
         "originallink": "https://sjbnews.com/news/news.php?number=888699",
         "domain": "sjbnews.com",
@@ -7864,7 +7889,7 @@
         "selection_stage": "",
         "selection_note": "",
         "reassigned_from": "",
-        "score": 14.97,
+        "score": 14.91,
         "selection_fit_score": 0.0,
         "is_core": false
       },
@@ -7907,15 +7932,15 @@
         "canon_url": "https://daily.hankooki.com/news/articleView.html?idxno=1410047",
         "topic": "병해충",
         "summary": "",
-        "forced_section": "",
+        "forced_section": "pest",
         "origin_section": "pest",
         "source_query": "병해충 예찰 방제",
         "source_channel": "naver_api",
-        "selection_stage": "",
-        "selection_note": "",
+        "selection_stage": "pest_diversity_gap_refill",
+        "selection_note": "fill_pest_diversity_gap",
         "reassigned_from": "",
         "score": 14.48,
-        "selection_fit_score": 0.0,
+        "selection_fit_score": 2.97,
         "is_core": false
       },
       {
@@ -8013,6 +8038,10 @@
         ],
         "api_items_top": [
           [
+            "정책브리핑 농축수산물",
+            50
+          ],
+          [
             "농식품부 정책브리핑",
             50
           ],
@@ -8021,19 +8050,15 @@
             50
           ],
           [
-            "정책브리핑 농축수산물",
-            50
-          ],
-          [
             "농축수산물 할인지원",
             50
           ],
           [
-            "성수품 가격 안정 대책",
+            "원산지 단속 농산물",
             50
           ],
           [
-            "원산지 단속 농산물",
+            "성수품 가격 안정 대책",
             50
           ],
           [
@@ -8877,15 +8902,15 @@
             50
           ],
           [
+            "공판장 청과 경매",
+            50
+          ],
+          [
             "도매시장 수급",
             50
           ],
           [
             "공영도매시장 경매",
-            50
-          ],
-          [
-            "공판장 청과 경매",
             50
           ],
           [
@@ -9447,16 +9472,6 @@
       },
       {
         "section": "policy",
-        "reason": "finance_strict_no_agri_context",
-        "press": "동아일보",
-        "domain": "sports.donga.com",
-        "title": "의정부시, 추석 앞두고 ‘전통시장 현장 점검’.. 상인 애로 청취",
-        "url": "https://sports.donga.com/region/article/all/20260928/134740786/1",
-        "source_query": "성수품 가격 안정 대책",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "policy",
         "reason": "origin_fraud_enforcement",
         "press": "광주일보",
         "domain": "kwangju.co.kr",
@@ -9548,6 +9563,16 @@
       {
         "section": "policy",
         "reason": "origin_fraud_enforcement",
+        "press": "이로운넷",
+        "domain": "eroun.net",
+        "title": "윤준병 의원, 밥쌀용·가공용 수입쌀 부정유통 활개…올 상반기 적발, 지...",
+        "url": "https://www.eroun.net/news/articleView.html?idxno=91022",
+        "source_query": "원산지 단속 농산물",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "policy",
+        "reason": "origin_fraud_enforcement",
         "press": "아주경제",
         "domain": "ajunews.com",
         "title": "'묵은쌀→햅쌀' 둔갑 오늘부터 단속 …도정일보다 먼저 볼 것은",
@@ -9557,12 +9582,12 @@
       },
       {
         "section": "policy",
-        "reason": "origin_fraud_enforcement",
-        "press": "이로운넷",
-        "domain": "eroun.net",
-        "title": "윤준병 의원, 밥쌀용·가공용 수입쌀 부정유통 활개…올 상반기 적발, 지...",
-        "url": "https://www.eroun.net/news/articleView.html?idxno=91022",
-        "source_query": "원산지 단속 농산물",
+        "reason": "finance_strict_no_agri_context",
+        "press": "동아일보",
+        "domain": "sports.donga.com",
+        "title": "의정부시, 추석 앞두고 ‘전통시장 현장 점검’.. 상인 애로 청취",
+        "url": "https://sports.donga.com/region/article/all/20260928/134740786/1",
+        "source_query": "성수품 가격 안정 대책",
         "source_channel": "naver_api"
       },
       {
@@ -10608,16 +10633,6 @@
       {
         "section": "supply",
         "reason": "wine_lifestyle_noise",
-        "press": "thebilliards",
-        "domain": "thebilliards.kr",
-        "title": "금양인터내셔날, '샤또 라 네르뜨' 와인 5종 국내 출시",
-        "url": "https://www.thebilliards.kr/news/articleView.html?idxno=32010",
-        "source_query": "포도 가격",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "wine_lifestyle_noise",
         "press": "세계비즈",
         "domain": "segyebiz.com",
         "title": "금양인터내셔날, 460년 역사 ‘샤또 라 네르뜨’ 선봬",
@@ -10628,10 +10643,10 @@
       {
         "section": "supply",
         "reason": "wine_lifestyle_noise",
-        "press": "ABCN",
-        "domain": "abcn.kr",
-        "title": "금양인터내셔날, '샤또 라 네르뜨' 국내 론칭",
-        "url": "https://www.abcn.kr/news/articleView.html?idxno=92259",
+        "press": "thebilliards",
+        "domain": "thebilliards.kr",
+        "title": "금양인터내셔날, '샤또 라 네르뜨' 와인 5종 국내 출시",
+        "url": "https://www.thebilliards.kr/news/articleView.html?idxno=32010",
         "source_query": "포도 가격",
         "source_channel": "naver_api"
       },
@@ -10648,10 +10663,10 @@
       {
         "section": "supply",
         "reason": "wine_lifestyle_noise",
-        "press": "sisunnews",
-        "domain": "sisunnews.co.kr",
-        "title": "금양인터내셔날, '샤또 라 네르뜨' 5종 국내 선보여",
-        "url": "http://www.sisunnews.co.kr/news/articleView.html?idxno=246592",
+        "press": "ABCN",
+        "domain": "abcn.kr",
+        "title": "금양인터내셔날, '샤또 라 네르뜨' 국내 론칭",
+        "url": "https://www.abcn.kr/news/articleView.html?idxno=92259",
         "source_query": "포도 가격",
         "source_channel": "naver_api"
       },
@@ -10662,6 +10677,16 @@
         "domain": "e2news.com",
         "title": "금양인터내셔날, 프랑스 '샤또 라 네르뜨' 와인 5종 선봬",
         "url": "http://www.e2news.com/news/articleView.html?idxno=334547",
+        "source_query": "포도 가격",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "wine_lifestyle_noise",
+        "press": "sisunnews",
+        "domain": "sisunnews.co.kr",
+        "title": "금양인터내셔날, '샤또 라 네르뜨' 5종 국내 선보여",
+        "url": "http://www.sisunnews.co.kr/news/articleView.html?idxno=246592",
         "source_query": "포도 가격",
         "source_channel": "naver_api"
       },
@@ -11740,8 +11765,8 @@
         "reason": "potato_non_fresh_context",
         "press": "뉴스1",
         "domain": "news1.kr",
-        "title": "가격 인상 앞둔 오예스",
-        "url": "https://www.news1.kr/photos/8129713",
+        "title": "홈런볼·오예스 등 해태제과 과자 가격 인상",
+        "url": "https://www.news1.kr/photos/8129714",
         "source_query": "감자 가격",
         "source_channel": "naver_api"
       },
@@ -11750,8 +11775,8 @@
         "reason": "potato_non_fresh_context",
         "press": "뉴스1",
         "domain": "news1.kr",
-        "title": "홈런볼·오예스 등 해태제과 과자 가격 인상",
-        "url": "https://www.news1.kr/photos/8129714",
+        "title": "가격 인상 앞둔 오예스",
+        "url": "https://www.news1.kr/photos/8129713",
         "source_query": "감자 가격",
         "source_channel": "naver_api"
       },
@@ -11780,16 +11805,6 @@
         "reason": "potato_non_fresh_context",
         "press": "뉴스1",
         "domain": "news1.kr",
-        "title": "'홈런볼·오예스도 가격 오른다'",
-        "url": "https://www.news1.kr/photos/8129707",
-        "source_query": "감자 가격",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "potato_non_fresh_context",
-        "press": "뉴스1",
-        "domain": "news1.kr",
         "title": "10월부터 홈런볼 등 해태제과 식품 가격 인상",
         "url": "https://www.news1.kr/photos/8129712",
         "source_query": "감자 가격",
@@ -11810,16 +11825,6 @@
         "reason": "potato_non_fresh_context",
         "press": "뉴스1",
         "domain": "news1.kr",
-        "title": "10월부터 홈런볼 등 해태 과자 가격 인상",
-        "url": "https://www.news1.kr/photos/8129708",
-        "source_query": "감자 가격",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "potato_non_fresh_context",
-        "press": "뉴스1",
-        "domain": "news1.kr",
         "title": "10월부터 과자 등 식품 가격 줄인상",
         "url": "https://www.news1.kr/photos/8129716",
         "source_query": "감자 가격",
@@ -11830,8 +11835,18 @@
         "reason": "potato_non_fresh_context",
         "press": "뉴스1",
         "domain": "news1.kr",
-        "title": "' 가격 오르거나 용량 줄거나'",
-        "url": "https://www.news1.kr/photos/8129730",
+        "title": "10월부터 홈런볼 등 해태 과자 가격 인상",
+        "url": "https://www.news1.kr/photos/8129708",
+        "source_query": "감자 가격",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "potato_non_fresh_context",
+        "press": "뉴스1",
+        "domain": "news1.kr",
+        "title": "'홈런볼·오예스도 가격 오른다'",
+        "url": "https://www.news1.kr/photos/8129707",
         "source_query": "감자 가격",
         "source_channel": "naver_api"
       },
@@ -11842,6 +11857,16 @@
         "domain": "news1.kr",
         "title": "10월부터 해태 과자 등 식품 가격 인상",
         "url": "https://www.news1.kr/photos/8129728",
+        "source_query": "감자 가격",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "potato_non_fresh_context",
+        "press": "뉴스1",
+        "domain": "news1.kr",
+        "title": "' 가격 오르거나 용량 줄거나'",
+        "url": "https://www.news1.kr/photos/8129730",
         "source_query": "감자 가격",
         "source_channel": "naver_api"
       },
@@ -12388,20 +12413,20 @@
       {
         "section": "supply",
         "reason": "potato_non_fresh_context",
-        "press": "아이뉴스24",
-        "domain": "inews24.com",
-        "title": "유통가 덮친 '국감 쓰나미'…쿠팡·MBK 정조준",
-        "url": "http://www.inews24.com/view/2008579",
+        "press": "조선일보",
+        "domain": "biz.chosun.com",
+        "title": "오리온·CJ프레시웨이, 내년 매출 4兆 정조준… 식품업계 ‘4조 클럽’ ...",
+        "url": "https://biz.chosun.com/distribution/food/2026/09/28/4ZKO6TVFCNAI5FNYXMEP4E5NSU/",
         "source_query": "감자 산업",
         "source_channel": "naver_api"
       },
       {
         "section": "supply",
         "reason": "potato_non_fresh_context",
-        "press": "조선일보",
-        "domain": "biz.chosun.com",
-        "title": "오리온·CJ프레시웨이, 내년 매출 4兆 정조준… 식품업계 ‘4조 클럽’ ...",
-        "url": "https://biz.chosun.com/distribution/food/2026/09/28/4ZKO6TVFCNAI5FNYXMEP4E5NSU/",
+        "press": "아이뉴스24",
+        "domain": "inews24.com",
+        "title": "유통가 덮친 '국감 쓰나미'…쿠팡·MBK 정조준",
+        "url": "http://www.inews24.com/view/2008579",
         "source_query": "감자 산업",
         "source_channel": "naver_api"
       },
@@ -13018,20 +13043,20 @@
       {
         "section": "supply",
         "reason": "apple_non_edible_context",
-        "press": "pressman",
-        "domain": "pressman.kr",
-        "title": "일상 파고든 K-푸드, 굿즈·할인·캠페인까지",
-        "url": "https://www.pressman.kr/news/articleView.html?idxno=103802",
+        "press": "포쓰저널",
+        "domain": "4th.kr",
+        "title": "[유통소식] 롯데백화점, '롯데 액티브 위크' 개최",
+        "url": "http://www.4th.kr/news/articleView.html?idxno=2118731",
         "source_query": "생강 가격",
         "source_channel": "naver_api"
       },
       {
         "section": "supply",
         "reason": "apple_non_edible_context",
-        "press": "포쓰저널",
-        "domain": "4th.kr",
-        "title": "[유통소식] 롯데백화점, '롯데 액티브 위크' 개최",
-        "url": "http://www.4th.kr/news/articleView.html?idxno=2118731",
+        "press": "pressman",
+        "domain": "pressman.kr",
+        "title": "일상 파고든 K-푸드, 굿즈·할인·캠페인까지",
+        "url": "https://www.pressman.kr/news/articleView.html?idxno=103802",
         "source_query": "생강 가격",
         "source_channel": "naver_api"
       },
@@ -14468,20 +14493,20 @@
       {
         "section": "supply",
         "reason": "supply_context_gate",
-        "press": "뉴스워커",
-        "domain": "newsworker.co.kr",
-        "title": "해남군, '영농 부산물 순회 파쇄'... 가을철 산불 ·미세먼지 총력 대응",
-        "url": "https://www.newsworker.co.kr/news/articleView.html?idxno=506148",
+        "press": "LG헬로비전뉴스",
+        "domain": "news.lghellovision.net",
+        "title": "해남군, 가을철 영농 부산물 무료 파쇄 지원",
+        "url": "http://news.lghellovision.net/news/articleView.html?idxno=556380",
         "source_query": "산불 과수",
         "source_channel": "naver_api"
       },
       {
         "section": "supply",
         "reason": "supply_context_gate",
-        "press": "LG헬로비전뉴스",
-        "domain": "news.lghellovision.net",
-        "title": "해남군, 가을철 영농 부산물 무료 파쇄 지원",
-        "url": "http://news.lghellovision.net/news/articleView.html?idxno=556380",
+        "press": "뉴스워커",
+        "domain": "newsworker.co.kr",
+        "title": "해남군, '영농 부산물 순회 파쇄'... 가을철 산불 ·미세먼지 총력 대응",
+        "url": "https://www.newsworker.co.kr/news/articleView.html?idxno=506148",
         "source_query": "산불 과수",
         "source_channel": "naver_api"
       },
@@ -15447,6 +15472,36 @@
       },
       {
         "section": "dist",
+        "reason": "fishery_title_only",
+        "press": "대경일보",
+        "domain": "dkilbo.com",
+        "title": "시민이 직접 경매 사 되는 대구농수산물시장",
+        "url": "https://www.dkilbo.com/news/articleView.html?idxno=555580",
+        "source_query": "공판장 청과 경매",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "dist",
+        "reason": "fishery_title_only",
+        "press": "농민신문",
+        "domain": "nongmin.com",
+        "title": "대구농수산물도매시장, 5일간 ‘ 경매 체험주간’ 운영",
+        "url": "https://www.nongmin.com/article/20260928500340",
+        "source_query": "공판장 청과 경매",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "dist",
+        "reason": "fishery_title_only",
+        "press": "매일신문",
+        "domain": "imaeil.com",
+        "title": "대구농수산물도매시장, 내달 초 ' 경매 체험 행사'",
+        "url": "https://www.imaeil.com/page/view/2026092814371233831",
+        "source_query": "공판장 청과 경매",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "dist",
         "reason": "low_value_local_promo",
         "press": "팜인사이트",
         "domain": "farminsight.net",
@@ -15503,36 +15558,6 @@
         "title": "전력난 덮친 인도, 공장 자가 발전기까지 총동원…112곳 전력망 강제 수...",
         "url": "https://www.g-enews.com/view.php?ud=202609280722389282fbbec65dfb_1",
         "source_query": "도매시장 수급",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "dist",
-        "reason": "fishery_title_only",
-        "press": "대경일보",
-        "domain": "dkilbo.com",
-        "title": "시민이 직접 경매 사 되는 대구농수산물시장",
-        "url": "https://www.dkilbo.com/news/articleView.html?idxno=555580",
-        "source_query": "공판장 청과 경매",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "dist",
-        "reason": "fishery_title_only",
-        "press": "농민신문",
-        "domain": "nongmin.com",
-        "title": "대구농수산물도매시장, 5일간 ‘ 경매 체험주간’ 운영",
-        "url": "https://www.nongmin.com/article/20260928500340",
-        "source_query": "공판장 청과 경매",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "dist",
-        "reason": "fishery_title_only",
-        "press": "매일신문",
-        "domain": "imaeil.com",
-        "title": "대구농수산물도매시장, 내달 초 ' 경매 체험 행사'",
-        "url": "https://www.imaeil.com/page/view/2026092814371233831",
-        "source_query": "공판장 청과 경매",
         "source_channel": "naver_api"
       },
       {
@@ -15640,8 +15665,8 @@
         "reason": "dist_program_event_noise",
         "press": "남도일보",
         "domain": "namdonews.com",
-        "title": "전남광주, 친환경농업 기반구축 공모 6곳 선정",
-        "url": "https://www.namdonews.com/news/articleView.html?idxno=924625",
+        "title": "남선희 관장, '남도 우리술 품평회' 이끈다",
+        "url": "https://www.namdonews.com/news/articleView.html?idxno=924624",
         "source_query": "농산물 판로 확대",
         "source_channel": "naver_api"
       },
@@ -15650,8 +15675,8 @@
         "reason": "dist_program_event_noise",
         "press": "남도일보",
         "domain": "namdonews.com",
-        "title": "남선희 관장, '남도 우리술 품평회' 이끈다",
-        "url": "https://www.namdonews.com/news/articleView.html?idxno=924624",
+        "title": "전남광주, 친환경농업 기반구축 공모 6곳 선정",
+        "url": "https://www.namdonews.com/news/articleView.html?idxno=924625",
         "source_query": "농산물 판로 확대",
         "source_channel": "naver_api"
       },
@@ -16998,20 +17023,20 @@
       {
         "section": "dist",
         "reason": "must_terms_fail",
-        "press": "포쓰저널",
-        "domain": "4th.kr",
-        "title": "[유통소식] 롯데백화점, '롯데 액티브 위크' 개최",
-        "url": "http://www.4th.kr/news/articleView.html?idxno=2118731",
+        "press": "연합뉴스",
+        "domain": "yna.co.kr",
+        "title": "영남이공대, AI 물류 자동화과 신설…쿠팡과 공동 운영",
+        "url": "https://www.yna.co.kr/view/AKR20260928073500053?input=1195m",
         "source_query": "스마트 공동물류센터",
         "source_channel": "naver_api"
       },
       {
         "section": "dist",
         "reason": "must_terms_fail",
-        "press": "연합뉴스",
-        "domain": "yna.co.kr",
-        "title": "영남이공대, AI 물류 자동화과 신설…쿠팡과 공동 운영",
-        "url": "https://www.yna.co.kr/view/AKR20260928073500053?input=1195m",
+        "press": "포쓰저널",
+        "domain": "4th.kr",
+        "title": "[유통소식] 롯데백화점, '롯데 액티브 위크' 개최",
+        "url": "http://www.4th.kr/news/articleView.html?idxno=2118731",
         "source_query": "스마트 공동물류센터",
         "source_channel": "naver_api"
       },
@@ -17477,21 +17502,21 @@
       },
       {
         "section": "dist",
-        "reason": "dist_non_horti_anchorless",
-        "press": "jejumaeil",
-        "domain": "jejumaeil.net",
-        "title": "\"원도심 상권 벨트화로 민생경제·골목상권에 활력\"",
-        "url": "https://www.jejumaeil.net/news/articleView.html?idxno=405062",
-        "source_query": "농산물 유통 현장",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "dist",
         "reason": "dist_county_local_weak_dist_signal",
         "press": "동양일보",
         "domain": "dynews.co.kr",
         "title": "세종시의회, 못난이 농산물 판로 확대·제대군인 사회복귀 지원 나선다",
         "url": "https://www.dynews.co.kr/news/articleView.html?idxno=867467",
+        "source_query": "농산물 유통 현장",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "dist",
+        "reason": "dist_non_horti_anchorless",
+        "press": "jejumaeil",
+        "domain": "jejumaeil.net",
+        "title": "\"원도심 상권 벨트화로 민생경제·골목상권에 활력\"",
+        "url": "https://www.jejumaeil.net/news/articleView.html?idxno=405062",
         "source_query": "농산물 유통 현장",
         "source_channel": "naver_api"
       },
@@ -17607,21 +17632,21 @@
       },
       {
         "section": "dist",
-        "reason": "dist_county_local_weak_dist_signal",
-        "press": "동아일보",
-        "domain": "sports.donga.com",
-        "title": "무안군, 로컬 콘텐츠 페스타서 농수특산물·지역 콘텐츠 홍보…1천여명...",
-        "url": "https://sports.donga.com/region/article/all/20260928/134742858/1",
-        "source_query": "농산물 유통 현장",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "dist",
         "reason": "dist_soft_without_infra",
         "press": "이투데이",
         "domain": "etoday.co.kr",
         "title": "[단독] 대북 농산물 반출 주도 고려인, 우크라이나 검찰 기소",
         "url": "https://www.etoday.co.kr/news/view/2629891",
+        "source_query": "농산물 유통 현장",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "dist",
+        "reason": "dist_county_local_weak_dist_signal",
+        "press": "동아일보",
+        "domain": "sports.donga.com",
+        "title": "무안군, 로컬 콘텐츠 페스타서 농수특산물·지역 콘텐츠 홍보…1천여명...",
+        "url": "https://sports.donga.com/region/article/all/20260928/134742858/1",
         "source_query": "농산물 유통 현장",
         "source_channel": "naver_api"
       },
@@ -19937,16 +19962,6 @@
       },
       {
         "section": "supply",
-        "reason": "supply_context_gate",
-        "press": "에너지경제신문",
-        "domain": "ekn.kr",
-        "title": "한국농어촌공사, 우간다 공무원 초청… 농산물 안전· 검역 기술 전수",
-        "url": "https://ekn.kr/web/view.php?key=20260928029209536",
-        "source_query": "",
-        "source_channel": ""
-      },
-      {
-        "section": "supply",
         "reason": "must_terms_fail",
         "press": "광주일보",
         "domain": "kwangju.co.kr",
@@ -20817,6 +20832,16 @@
       },
       {
         "section": "pest",
+        "reason": "pest_no_agri_context",
+        "press": "중앙일보",
+        "domain": "joongang.co.kr",
+        "title": "한반도 삼킨 1mm 재선충…과학은 소나무 못 지키나 [최준호의 사이언스...",
+        "url": "https://n.news.naver.com/mnews/article/025/0003554221?sid=105",
+        "source_query": "",
+        "source_channel": ""
+      },
+      {
+        "section": "pest",
         "reason": "ban_keywords",
         "press": "농기자재신문",
         "domain": "newsam.co.kr",
@@ -21077,6 +21102,16 @@
       },
       {
         "section": "pest",
+        "reason": "pest_no_agri_context",
+        "press": "중앙일보",
+        "domain": "joongang.co.kr",
+        "title": "한반도 삼킨 1mm 재선충…과학은 소나무 못 지키나 [최준호의 사이언스...",
+        "url": "https://n.news.naver.com/mnews/article/025/0003554221?sid=105",
+        "source_query": "",
+        "source_channel": ""
+      },
+      {
+        "section": "pest",
         "reason": "ban_keywords",
         "press": "농기자재신문",
         "domain": "newsam.co.kr",
@@ -21337,6 +21372,16 @@
       },
       {
         "section": "pest",
+        "reason": "pest_no_agri_context",
+        "press": "중앙일보",
+        "domain": "joongang.co.kr",
+        "title": "한반도 삼킨 1mm 재선충…과학은 소나무 못 지키나 [최준호의 사이언스...",
+        "url": "https://n.news.naver.com/mnews/article/025/0003554221?sid=105",
+        "source_query": "",
+        "source_channel": ""
+      },
+      {
+        "section": "pest",
         "reason": "ban_keywords",
         "press": "농기자재신문",
         "domain": "newsam.co.kr",
@@ -21592,6 +21637,16 @@
         "domain": "joongang.co.kr",
         "title": "[최준호의 사이언스&] 한반도 삼킨 1㎜ 재선충…과학은 소나무 못 지키...",
         "url": "https://n.news.naver.com/mnews/article/025/0003554338?sid=110",
+        "source_query": "",
+        "source_channel": ""
+      },
+      {
+        "section": "pest",
+        "reason": "pest_no_agri_context",
+        "press": "중앙일보",
+        "domain": "joongang.co.kr",
+        "title": "한반도 삼킨 1mm 재선충…과학은 소나무 못 지키나 [최준호의 사이언스...",
+        "url": "https://n.news.naver.com/mnews/article/025/0003554221?sid=105",
         "source_query": "",
         "source_channel": ""
       },
@@ -21947,6 +22002,16 @@
       },
       {
         "section": "pest",
+        "reason": "pest_no_agri_context",
+        "press": "중앙일보",
+        "domain": "joongang.co.kr",
+        "title": "한반도 삼킨 1mm 재선충…과학은 소나무 못 지키나 [최준호의 사이언스...",
+        "url": "https://n.news.naver.com/mnews/article/025/0003554221?sid=105",
+        "source_query": "",
+        "source_channel": ""
+      },
+      {
+        "section": "pest",
         "reason": "ban_keywords",
         "press": "농기자재신문",
         "domain": "newsam.co.kr",
@@ -21972,6 +22037,46 @@
         "domain": "kado.net",
         "title": "[화요시선] 세네갈에서 키우는 희망의 씨앗 'K-Rice'",
         "url": "https://n.news.naver.com/mnews/article/654/0000202739?sid=110",
+        "source_query": "",
+        "source_channel": ""
+      },
+      {
+        "section": "policy",
+        "reason": "hardblock_entertainment",
+        "press": "충남일보",
+        "domain": "chungnamilbo.co.kr",
+        "title": "천안시의회, 28일부터 제292회 임시회 운영",
+        "url": "http://www.chungnamilbo.co.kr/news/articleView.html?idxno=911812",
+        "source_query": "",
+        "source_channel": ""
+      },
+      {
+        "section": "policy",
+        "reason": "ban_keywords",
+        "press": "머니투데이",
+        "domain": "mt.co.kr",
+        "title": "1인당 1평씩? 413㎡ 논, 소유자는 109명...이곳 직접 가보니",
+        "url": "https://n.news.naver.com/mnews/article/008/0005418785?sid=101",
+        "source_query": "",
+        "source_channel": ""
+      },
+      {
+        "section": "policy",
+        "reason": "hardblock_entertainment",
+        "press": "충남일보",
+        "domain": "chungnamilbo.co.kr",
+        "title": "천안시의회, 28일부터 제292회 임시회 운영",
+        "url": "http://www.chungnamilbo.co.kr/news/articleView.html?idxno=911812",
+        "source_query": "",
+        "source_channel": ""
+      },
+      {
+        "section": "policy",
+        "reason": "ban_keywords",
+        "press": "머니투데이",
+        "domain": "mt.co.kr",
+        "title": "1인당 1평씩? 413㎡ 논, 소유자는 109명...이곳 직접 가보니",
+        "url": "https://n.news.naver.com/mnews/article/008/0005418785?sid=101",
         "source_query": "",
         "source_channel": ""
       },
@@ -22467,6 +22572,16 @@
       },
       {
         "section": "pest",
+        "reason": "pest_no_agri_context",
+        "press": "중앙일보",
+        "domain": "joongang.co.kr",
+        "title": "한반도 삼킨 1mm 재선충…과학은 소나무 못 지키나 [최준호의 사이언스...",
+        "url": "https://n.news.naver.com/mnews/article/025/0003554221?sid=105",
+        "source_query": "",
+        "source_channel": ""
+      },
+      {
+        "section": "pest",
         "reason": "ban_keywords",
         "press": "농기자재신문",
         "domain": "newsam.co.kr",
@@ -22627,7 +22742,7 @@
       }
     ],
     "runtime": {
-      "started_at_kst": "2026-09-29T06:08:15+09:00",
+      "started_at_kst": "2026-09-29T06:21:27+09:00",
       "local_dry_run": false,
       "placement_only": false
     },
