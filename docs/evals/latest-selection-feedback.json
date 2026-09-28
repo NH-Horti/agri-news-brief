@@ -1,9 +1,9 @@
 {
   "report_date": "2026-09-29",
-  "generated_at_kst": "2026-09-29T06:18:09+09:00",
+  "generated_at_kst": "2026-09-29T06:31:27+09:00",
   "scores": {
     "section_alignment": 100.0,
-    "core_quality": 88.31,
+    "core_quality": 88.32,
     "commodity_board_quality": 88.0
   },
   "metrics": {
@@ -12,16 +12,16 @@
     "content_false_positive_rate": 0.0,
     "reader_hard_issue_count": 0,
     "reader_hard_issue_rate": 0.0,
-    "reader_quality_penalty": 13.49,
+    "reader_quality_penalty": 15.2357,
     "reader_quality_cap": 95.0,
     "weak_core_rate": 0.125,
     "policy_wrong_section_rate": 0.0,
-    "promotional_filler_rate": 0.0667,
+    "promotional_filler_rate": 0.0714,
     "promotional_core_rate": 0.125,
     "weak_core_editorial_rate": 0.125,
     "pest_theme_duplicate_rate": 0.0,
     "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 2.3833,
+    "editorial_quality_penalty": 2.3929,
     "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0,
@@ -95,8 +95,8 @@
   ],
   "reader_hard_issue_samples": [],
   "editorial": {
-    "score": 70.7,
-    "model_reported_score": 72.0,
+    "score": 73.2,
+    "model_reported_score": 72.8,
     "score_method": "weighted_components_v1",
     "quality_tier": "needs_major_iteration",
     "target_score": 82.0,
@@ -108,7 +108,7 @@
       "excellent_score": 92.0,
       "stretch_score": 95.0,
       "blocking_issue_count": 0,
-      "major_issue_count": 4,
+      "major_issue_count": 2,
       "critical_component_min": 80.0,
       "all_component_min": 75.0,
       "checks": {
@@ -133,80 +133,72 @@
         "commodity_board_score_min"
       ]
     },
-    "section_count_score": 93.0,
-    "section_count_status": "soft_fallback",
+    "section_count_score": 92.5,
+    "section_count_status": "minimum_fallback",
     "scores": {
-      "article_selection": 68.0,
-      "section_fit": 84.0,
-      "core_pick_quality": 61.0,
-      "summary_usefulness": 91.0,
-      "missed_opportunity": 55.0,
-      "noise_control": 70.0
+      "article_selection": 70.0,
+      "section_fit": 85.0,
+      "core_pick_quality": 67.0,
+      "summary_usefulness": 92.0,
+      "missed_opportunity": 53.0,
+      "noise_control": 78.0
     },
     "issues": [
       {
         "type": "underfill",
         "severity": "major",
         "section": "supply/policy/pest",
-        "title": "수급·정책·병해충 섹션 편수 부족",
-        "reason": "충분한 원시 후보가 있는데 각각 3·3·4건에 그쳐 목표 5건을 충족하지 못했다.",
-        "suggested_action": "강한 미선정 후보로 각 섹션을 4~5건까지 보강한다."
+        "title": "공급·정책·병해충 섹션 각 3건 편성",
+        "reason": "가용 후보가 충분한 세 섹션에서 최소 편성에 머물러 총 6개 슬롯이 비었다.",
+        "suggested_action": "각 섹션을 최소 4건, 품질이 허용되면 5건으로 보강한다."
       },
       {
         "type": "missed_candidate",
         "severity": "major",
         "section": "supply",
         "title": "[2026년 9월 5주] 주요 농산물 경락가 상승·하락 품목",
-        "reason": "쌈배추 145.8% 상승 등 실제 가격·출하 신호를 담은 최상위 수급 후보가 빠졌다.",
-        "suggested_action": "지역 종구 공급 기사보다 우선해 수급 핵심으로 선정한다."
+        "reason": "쌈배추 145.8% 상승 등 전국 도매가격 신호를 담은 최상위 공급 후보를 누락했다.",
+        "suggested_action": "공급 핵심 카드로 추가하고 지역성 강한 핵심 기사보다 앞에 배치한다."
       },
       {
         "type": "weak_core",
         "severity": "moderate",
         "section": "supply",
-        "title": "제주, 드론 활용 극조생 감귤 수확 현장 단속 강화",
-        "reason": "지역 비상품 단속 기사로 전국 가격 동향 후보보다 핵심성이 낮다.",
+        "title": "단양군, 2026년 단양 마늘 우량종구 11.3톤 공급 완료",
+        "reason": "단일 군의 종구 보급 실적으로 전국 수급·시장 신호보다 핵심성이 낮다.",
         "suggested_action": "비핵심으로 강등하고 주간 경락가 기사를 핵심으로 승격한다."
-      },
-      {
-        "type": "missed_candidate",
-        "severity": "major",
-        "section": "policy",
-        "title": "'3중고' K-농업…소득·기술·CPTPP 모두 '위기'",
-        "reason": "농업소득·경영비·통상 위험을 함께 다룬 전국 정책 의제가 지역 시스템 개발·지원 건의보다 중요하다.",
-        "suggested_action": "정책 핵심 카드로 추가하고 지역 지원 건의를 후순위로 내린다."
       },
       {
         "type": "weak_core",
         "severity": "moderate",
         "section": "policy",
         "title": "충남도 농축산국, 생성형 AI로 농업업무 시스템 직접 개발",
-        "reason": "유용한 행정 혁신 사례지만 당일 전국 정책 의제를 대표하기에는 약하다.",
-        "suggested_action": "비핵심으로 강등하고 농가소득·CPTPP 기사를 핵심으로 승격한다."
+        "reason": "지역 행정시스템 구축 사례로 법 개정·소득·통상 현안보다 정책 파급력이 작다.",
+        "suggested_action": "비핵심으로 강등한다."
+      },
+      {
+        "type": "weak_core",
+        "severity": "moderate",
+        "section": "policy",
+        "title": "'3중고' K-농업…소득·기술·CPTPP 모두 '위기'",
+        "reason": "경영비·농업소득·R&D·통상을 아우르는 전국 정책 현안인데 비핵심 처리됐다.",
+        "suggested_action": "핵심으로 승격한다."
+      },
+      {
+        "type": "promotional_filler",
+        "severity": "moderate",
+        "section": "dist",
+        "title": "의성군 과수거점 산지 유통센터(APC), 전국 경영 평가 2위(경북 1위)",
+        "reason": "지역 시설 수상 실적 중심으로 구체적인 유통 변화나 운영 쟁점이 부족하다.",
+        "suggested_action": "온라인도매시장 구조 분석 또는 주간 경락가 기사로 교체한다."
       },
       {
         "type": "missed_candidate",
         "severity": "moderate",
         "section": "dist",
-        "title": "[농산유통 집중해부⑧] 거래액 1조 넘긴 온라인 도매시장",
-        "reason": "온라인도매시장의 구조와 유통비용을 다룬 분석이 APC 평가 수상 기사보다 운영상 유용하다.",
-        "suggested_action": "APC 순위 기사와 교체해 온라인도매시장 비판 기사와 함께 배치한다."
-      },
-      {
-        "type": "weak_core",
-        "severity": "major",
-        "section": "pest",
-        "title": "한반도 삼킨 1mm 재선충…과학은 소나무 못 지키나",
-        "reason": "피해 고사목 177만그루의 전국적 확산 기사인데 비핵심으로 처리됐다.",
-        "suggested_action": "핵심으로 승격하고 방제·예찰 로봇 기사를 비핵심으로 강등한다."
-      },
-      {
-        "type": "noise",
-        "severity": "moderate",
-        "section": "pest",
-        "title": "공주시, '가을철 영농부산물 안전처리 지원사업' 신청·접수",
-        "reason": "병해충 예방은 부수 목적이며 지역 신청 안내 성격이 강해 편집 가치가 낮다.",
-        "suggested_action": "명시적 병해충 발생·피해 후보가 없을 때만 꼬리 카드로 사용한다."
+        "title": "[농산유통 집중해부⑧] 거래액 1조 넘긴 온라인 도매시장…‘유통혁신’은 어디까지 왔나",
+        "reason": "온라인도매시장의 비용·거래구조를 다루는 운영 분석으로 APC 평가 기사보다 활용도가 높다.",
+        "suggested_action": "유통 꼬리 카드로 추가하거나 APC 평가 기사를 대체한다."
       }
     ]
   },
@@ -214,18 +206,19 @@
     "driver_tags": [
       "low_tier_source_concentration",
       "commodity_board",
+      "editorial_noise_filter",
       "editorial_core_pick"
     ],
     "section_card_min_fit": {
-      "default": 0.8,
-      "supply": 0.82,
-      "policy": 0.82,
-      "dist": 0.95,
-      "pest": 0.78
+      "default": 0.85,
+      "supply": 0.87,
+      "policy": 0.87,
+      "dist": 1.0,
+      "pest": 0.83
     },
-    "section_low_fit_rescue_min": 0.15,
+    "section_low_fit_rescue_min": 0.35,
     "high_score_low_fit_rescue_margin": 3.0,
-    "tail_score_floor_delta": 0.0,
+    "tail_score_floor_delta": 0.4,
     "core_fit_min": {
       "default": 1.3,
       "supply": 1.5,
@@ -255,8 +248,8 @@
     "mode": "shadow_replay_loop",
     "proposal_only": true,
     "target_score": 82.0,
-    "current_editorial_score": 70.7,
-    "model_reported_score": 72.0,
+    "current_editorial_score": 73.2,
+    "model_reported_score": 72.8,
     "quality_tier": "needs_major_iteration",
     "target_status": "needs_major_iteration",
     "iteration_budget": 3,
@@ -272,13 +265,13 @@
       "no_section_underfill": true
     },
     "section_count_context": {
-      "score": 93.0,
-      "status": "soft_fallback",
+      "score": 92.5,
+      "status": "minimum_fallback",
       "sections": {
         "supply": {
           "actual": 3,
           "expected": 5,
-          "raw_candidates": 162,
+          "raw_candidates": 163,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -312,7 +305,7 @@
           "score": 100.0
         },
         "pest": {
-          "actual": 4,
+          "actual": 3,
           "expected": 5,
           "raw_candidates": 27,
           "preferred_count": 5,
@@ -320,8 +313,8 @@
           "minimum_fallback_count": 3,
           "count_floor": 3,
           "core_count": 2,
-          "fill_ratio": 0.8,
-          "score": 92.0
+          "fill_ratio": 0.6,
+          "score": 90.0
         }
       },
       "underfilled_sections": [
@@ -329,12 +322,11 @@
         "policy",
         "pest"
       ],
-      "soft_fallback_sections": [
-        "pest"
-      ],
+      "soft_fallback_sections": [],
       "minimum_fallback_sections": [
         "supply",
-        "policy"
+        "policy",
+        "pest"
       ],
       "severe_underfilled_sections": [],
       "preferred_count": 5,
