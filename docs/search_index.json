@@ -1,7 +1,594 @@
 {
   "version": 1,
-  "updated_at": "2026-09-29T06:33:23.880570+09:00",
+  "updated_at": "2026-09-30T06:16:53.813534+09:00",
   "items": [
+    {
+      "id": "0a13e0ec59e1",
+      "date": "2026-09-30",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 1,
+      "title": "[경제사업 1등 비결] 배 수출 성과 ‘괄목’…값 지지 온힘",
+      "press": "농민신문",
+      "summary": "충남 아산원예농협이 배 수출을 늘리고 가격 지지에 힘쓰며 조합원의 판로와 농가소득 안정에 성과를 냈다. 지난해 배 수출량은 1529t으로 36% 증가했으며, 작물보호제 할인율도 30%로 확대했다.",
+      "url": "https://n.news.naver.com/mnews/article/662/0000105241?sid=101",
+      "archive": "/agri-news-brief/archive/2026-09-30.html#sec-dist",
+      "score": 47.88,
+      "press_tier": 3,
+      "topics": []
+    },
+    {
+      "id": "cf33073193da",
+      "date": "2026-09-30",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 1,
+      "title": "전남광주 ‘골드 키위 ’, 뉴질랜드·칠레 간다",
+      "press": "서울신문",
+      "summary": "전남광주에서 육성한 골드키위 ‘해금’이 뉴질랜드·칠레·남아공에서 묘목 생산과 상업 재배에 들어간다. 농업기술원은 보스톡 뉴질랜드와 계약을 맺고 2038년까지 현지 재배면적을 100㏊ 이상으로 확대한다.",
+      "url": "https://n.news.naver.com/mnews/article/081/0003684575?sid=102",
+      "archive": "/agri-news-brief/archive/2026-09-30.html#sec-supply",
+      "score": 29.86,
+      "press_tier": 3,
+      "topics": [
+        "키위"
+      ]
+    },
+    {
+      "id": "2fda799bcd62",
+      "date": "2026-09-30",
+      "section": "policy",
+      "section_title": "정책 및 주요 이슈",
+      "rank": 1,
+      "title": "“ 유통 기업에서 출하대금 못 받으면 농식품부 장관이 대신 지급”…농...",
+      "press": "농민신문",
+      "summary": "농산물 유통기업의 경영 악화로 출하대금이 미정산되면 농식품부 장관이 대신 지급하는 농안법 개정안이 발의됐다. 송옥주 의원안은 지급보장 조항을 신설하고 미정산 업체에 최대 3년의 징역형을 두도록 했다.",
+      "url": "https://n.news.naver.com/mnews/article/662/0000105197?sid=101",
+      "archive": "/agri-news-brief/archive/2026-09-30.html#sec-policy",
+      "score": 28.36,
+      "press_tier": 3,
+      "topics": []
+    },
+    {
+      "id": "b99b60a164e9",
+      "date": "2026-09-30",
+      "section": "policy",
+      "section_title": "정책 및 주요 이슈",
+      "rank": 3,
+      "title": "한농연, 2026 국감 농정 8대 핵심 이슈 선정…\"현장 대안 제시해야\"",
+      "press": "팜인사이트",
+      "summary": "한국후계농업경영인중앙연합회가 국정감사를 앞두고 농업 현장의 주요 현안을 농정 핵심 이슈로 제시했다. 선정된 8개 과제에는 CPTPP 피해 우려, 물가안정 중심 수입 확대, 농어촌특별세 활용 문제가 포함됐다.",
+      "url": "https://www.farminsight.net/news/articleView.html?idxno=16953",
+      "archive": "/agri-news-brief/archive/2026-09-30.html#sec-policy",
+      "score": 60.14,
+      "press_tier": 2,
+      "topics": []
+    },
+    {
+      "id": "87d2a92914bf",
+      "date": "2026-09-30",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 3,
+      "title": "농산물 수급조절위원회 제8기 출범…김장철 배추·무 수급 점검",
+      "press": "아주경제",
+      "summary": "농산물 수급조절위원회가 제8기 위원회를 출범하고 김장철 배추·무 등 주요 농산물의 수급 점검에 나선다. 위원회는 개정 농안법 시행에 맞춰 농산물 수급정책을 심의하고 선제적인 시장 안정 방안을 논의한다.",
+      "url": "https://www.ajunews.com/view/20260929173959485",
+      "archive": "/agri-news-brief/archive/2026-09-30.html#sec-supply",
+      "score": 51.41,
+      "press_tier": 2,
+      "topics": [
+        "무",
+        "배추"
+      ]
+    },
+    {
+      "id": "742fb8598dd0",
+      "date": "2026-09-30",
+      "section": "policy",
+      "section_title": "정책 및 주요 이슈",
+      "rank": 1,
+      "title": "김장철 앞두고 농산물 수급조절위 8기 출범…배추·무 등 수급 점검",
+      "press": "뉴시스",
+      "summary": "",
+      "url": "https://www.newsis.com/view/NISX20260929_0003807659",
+      "archive": "/agri-news-brief/archive/2026-09-30.html#commodity-napa_cabbage",
+      "score": 45.61,
+      "press_tier": 2,
+      "topics": [
+        "무",
+        "배추"
+      ]
+    },
+    {
+      "id": "f732e57c2500",
+      "date": "2026-09-30",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 3,
+      "title": "보은과수거점 산지유통 센터 전국 경영평가서 2년 연속 '상위권'",
+      "press": "뉴스1",
+      "summary": "충북 보은 과수거점산지유통센터가 전국 경영평가에서 2년 연속 상위권에 올랐다. 농식품부가 평가한 24곳 중 3위이자 충청권 최고 성적을 거뒀으며 매출액은 346억원이다.",
+      "url": "https://n.news.naver.com/mnews/article/421/0009197864?sid=102",
+      "archive": "/agri-news-brief/archive/2026-09-30.html#sec-dist",
+      "score": 40.33,
+      "press_tier": 2,
+      "topics": []
+    },
+    {
+      "id": "dc764b8936f6",
+      "date": "2026-09-30",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 4,
+      "title": "10a당 소득 1위는 딸기 '1642만원'…농가 평균소득은 7.7% 감소",
+      "press": "뉴스1",
+      "summary": "",
+      "url": "https://www.news1.kr/economy/trend/6304804",
+      "archive": "/agri-news-brief/archive/2026-09-30.html#commodity-strawberry",
+      "score": 39.332,
+      "press_tier": 2,
+      "topics": [
+        "딸기"
+      ]
+    },
+    {
+      "id": "5f9a15b873b0",
+      "date": "2026-09-30",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 4,
+      "title": "제주 감귤 의 첫인상, 품질에서 시작된다",
+      "press": "헤드라인제주",
+      "summary": "제주 극조생감귤의 수확·출하가 시작되면서 초반 품질관리가 올해 감귤 소비와 가격 형성의 핵심으로 떠올랐다. 출하 초기의 맛과 품질이 제주감귤의 첫인상을 좌우하는 만큼 농가와 유통 현장의 세심한 관리가 요구된다.",
+      "url": "https://www.headlinejeju.co.kr/news/articleView.html?idxno=599714",
+      "archive": "/agri-news-brief/archive/2026-09-30.html#sec-dist",
+      "score": 34.02,
+      "press_tier": 2,
+      "topics": [
+        "감귤/만감"
+      ]
+    },
+    {
+      "id": "59a828aa0ef8",
+      "date": "2026-09-30",
+      "section": "pest",
+      "section_title": "생육 리스크 및 방제",
+      "rank": 3,
+      "title": "공주시, '가을철 영농부산물 안전처리 지원사업'신청·접수",
+      "press": "충청일보",
+      "summary": "충남 공주시가 과수 잔가지와 밭작물 잔재물을 파쇄하는 하반기 영농부산물 안전처리 지원사업을 추진한다. 시는 30일까지 신청을 받아 불법소각과 미세먼지를 줄이고 산불·병해충 확산 예방과 자원순환을 지원한다.",
+      "url": "https://www.ccdailynews.com/news/articleView.html?idxno=2443418",
+      "archive": "/agri-news-brief/archive/2026-09-30.html#sec-pest",
+      "score": 33.78,
+      "press_tier": 2,
+      "topics": []
+    },
+    {
+      "id": "5cb350574a36",
+      "date": "2026-09-30",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 8,
+      "title": "극조생 감귤 의 첫인상, 제주 감귤 의 신뢰를 만든다",
+      "press": "뉴스제주",
+      "summary": "",
+      "url": "https://www.newsjeju.net/news/articleView.html?idxno=426428",
+      "archive": "/agri-news-brief/archive/2026-09-30.html#commodity-citrus",
+      "score": 33.47,
+      "press_tier": 2,
+      "topics": [
+        "감귤/만감"
+      ]
+    },
+    {
+      "id": "f025917fd861",
+      "date": "2026-09-30",
+      "section": "policy",
+      "section_title": "정책 및 주요 이슈",
+      "rank": 2,
+      "title": "충북도 ' 농산물 가격 안정 · 지원 조례' 본회의 통과",
+      "press": "한국농어민신문",
+      "summary": "충북 주요 농산물의 가격 하락에 대응해 농가를 지원할 수 있는 가격안정 조례가 도의회 본회의를 통과했다. 송미애 도의원이 발의한 조례는 지난달 22일 의결돼 도 차원의 가격안정 지원 기반을 마련했다.",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=407506",
+      "archive": "/agri-news-brief/archive/2026-09-30.html#sec-policy",
+      "score": 27.81,
+      "press_tier": 2,
+      "topics": []
+    },
+    {
+      "id": "47ff322ffb45",
+      "date": "2026-09-30",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 2,
+      "title": "깐마늘 불량품 AI로 가려낸다…농진청, 자동 선별기 현장 평가",
+      "press": "데일리안",
+      "summary": "농촌진흥청이 깐마늘의 갈변·파손·박피 불량을 인공지능으로 판별하는 자동 선별시스템을 개발했다. 양품과 불량품 구분 정확도는 약 97%이며, 9월30일 경남 창녕농협 APC에서 작업 성능을 평가한다.",
+      "url": "https://n.news.naver.com/mnews/article/119/0003137340?sid=101",
+      "archive": "/agri-news-brief/archive/2026-09-30.html#sec-dist",
+      "score": 27.57,
+      "press_tier": 2,
+      "topics": [
+        "마늘"
+      ]
+    },
+    {
+      "id": "8d382b9aa384",
+      "date": "2026-09-30",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 4,
+      "title": "거창군 \"준고랭지 여름 배추 안정생산 체계 구축\"…기술 효과 검증",
+      "press": "뉴스핌",
+      "summary": "경남 거창 준고랭지의 여름배추가 고온과 가뭄에도 안정적인 생육을 보여 생산 기반 확대 가능성을 확인했다. 거창군은 기후변화와 여름철 재해에 대응하기 위해 5월부터 안정생산 기술의 현장 효과를 검증했다.",
+      "url": "https://www.newspim.com/news/view/20260929001081",
+      "archive": "/agri-news-brief/archive/2026-09-30.html#sec-supply",
+      "score": 27.12,
+      "press_tier": 2,
+      "topics": [
+        "배추"
+      ]
+    },
+    {
+      "id": "bfd225e9a0c8",
+      "date": "2026-09-30",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 5,
+      "title": "농진청, 마늘· 양파 기계수확부터 저장까지 효율화 기술 점검",
+      "press": "뉴시스",
+      "summary": "전남 무안의 마늘·양파 생산·수확후관리 현장에서 기계수확부터 예건·저장까지 작업 효율화 기술이 점검됐다. 농촌진흥청은 500㎏ 철망 팰릿을 활용한 벌크 저장 기술의 적용 상황을 살피고 농업인 의견을 들었다.",
+      "url": "https://n.news.naver.com/mnews/article/003/0014221259?sid=101",
+      "archive": "/agri-news-brief/archive/2026-09-30.html#sec-supply",
+      "score": 21.51,
+      "press_tier": 2,
+      "topics": [
+        "마늘",
+        "양파"
+      ]
+    },
+    {
+      "id": "1a8c0c89ee7c",
+      "date": "2026-09-30",
+      "section": "pest",
+      "section_title": "생육 리스크 및 방제",
+      "rank": 4,
+      "title": "가을철 시설채소 바이러스 병해 잡는다",
+      "press": "농축유통신문",
+      "summary": "가을철 오이·참외·토마토 시설재배가 본격화되면서 치료가 어려운 주요 바이러스병 예방 필요성이 높아졌다. 경농은 CMV·TSWV·TYLCV 피해를 줄이기 위해 매개충 방제와 바이러스 억제를 병행하는 예방책을 제시했다.",
+      "url": "http://www.amnews.co.kr/news/articleView.html?idxno=74767",
+      "archive": "/agri-news-brief/archive/2026-09-30.html#sec-pest",
+      "score": 20.61,
+      "press_tier": 2,
+      "topics": [
+        "오이",
+        "참외",
+        "토마토"
+      ]
+    },
+    {
+      "id": "3bdd9d52f9a6",
+      "date": "2026-09-30",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 11,
+      "title": "전남광주서 키운 골드 키위 ‘해금’ 남반구 시장 진출한다",
+      "press": "전남매일",
+      "summary": "",
+      "url": "http://www.jndn.com/article.php?aid=1790676960440447003",
+      "archive": "/agri-news-brief/archive/2026-09-30.html#commodity-kiwifruit",
+      "score": 18.822,
+      "press_tier": 2,
+      "topics": [
+        "키위"
+      ]
+    },
+    {
+      "id": "9bff26329b08",
+      "date": "2026-09-30",
+      "section": "pest",
+      "section_title": "생육 리스크 및 방제",
+      "rank": 2,
+      "title": "가루이류 약제 저항성, '교호 방제'로 낮춘다",
+      "press": "한국농업신문",
+      "summary": "가을철 토마토·파프리카·오이·참외·가지 시설재배에서 가루이류 확산과 약제 저항성 관리 필요성이 커졌다. 경농은 담배가루이와 온실가루이의 저항성을 낮추기 위해 ‘스티온’과 ‘팡파레’를 활용한 교호 방제를 제안했다.",
+      "url": "http://www.newsfarm.co.kr/news/articleView.html?idxno=102459",
+      "archive": "/agri-news-brief/archive/2026-09-30.html#sec-pest",
+      "score": 16.4,
+      "press_tier": 2,
+      "topics": [
+        "오이",
+        "참외",
+        "토마토",
+        "파프리카"
+      ]
+    },
+    {
+      "id": "df91a011b2a7",
+      "date": "2026-09-30",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 16,
+      "title": "추석 맞아 전국 공원묘원서 생화 헌화 캠페인",
+      "press": "농업정보신문",
+      "summary": "",
+      "url": "http://www.nongup.net/news/articleView.html?idxno=33771",
+      "archive": "/agri-news-brief/archive/2026-09-30.html#commodity-flowers",
+      "score": 10.87,
+      "press_tier": 2,
+      "topics": [
+        "화훼"
+      ]
+    },
+    {
+      "id": "e89f9117c896",
+      "date": "2026-09-30",
+      "section": "policy",
+      "section_title": "정책 및 주요 이슈",
+      "rank": 5,
+      "title": "CPTPP 농업 피해액 연 최대 7100억?···축소·부실 분석 '논란'",
+      "press": "한국농어민신문",
+      "summary": "CPTPP 가입에 따른 농림수산업 피해 영향평가가 농업 피해를 축소하거나 부실하게 분석했다는 논란에 휩싸였다. 정부 평가에서 제시된 농업 피해 규모는 연간 최대 7100억원으로, 농어업계의 반발이 커지고 있다.",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=407571",
+      "archive": "/agri-news-brief/archive/2026-09-30.html#sec-policy",
+      "score": 7.5,
+      "press_tier": 2,
+      "topics": []
+    },
+    {
+      "id": "95bc2baa76f1",
+      "date": "2026-09-30",
+      "section": "policy",
+      "section_title": "정책 및 주요 이슈",
+      "rank": 3,
+      "title": "“농가 경영안정 돕는다”…전남광주특별시, 마늘·양파 농산물 가격안...",
+      "press": "브레이크뉴스",
+      "summary": "",
+      "url": "http://www.breaknews.com/1239551",
+      "archive": "/agri-news-brief/archive/2026-09-30.html#commodity-onion",
+      "score": 31.13,
+      "press_tier": 1,
+      "topics": [
+        "마늘",
+        "양파"
+      ]
+    },
+    {
+      "id": "cb062a55bdbf",
+      "date": "2026-09-30",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 9,
+      "title": "전남광주 골드 키위 '해금' 남반구 식탁 오른다",
+      "press": "진일보",
+      "summary": "",
+      "url": "https://www.jnilbo.com/news/articleView.html?idxno=90000069374",
+      "archive": "/agri-news-brief/archive/2026-09-30.html#commodity-kiwifruit",
+      "score": 24.76,
+      "press_tier": 1,
+      "topics": [
+        "키위"
+      ]
+    },
+    {
+      "id": "b56c4129a4ca",
+      "date": "2026-09-30",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 2,
+      "title": "딸기, 소득 짭짤 농가 효자 작목",
+      "press": "전주일보",
+      "summary": "딸기는 작목별 소득 조사에서 사과보다 높은 소득을 올리며 농가 효자 작목으로 나타났다. 소득은 딸기 741만원, 사과 570만원이었고 전년보다 증가한 작목은 21개, 감소한 작목은 30개였다.",
+      "url": "http://www.jjn.co.kr/news/articleView.html?idxno=1053362",
+      "archive": "/agri-news-brief/archive/2026-09-30.html#sec-supply",
+      "score": 24.181,
+      "press_tier": 1,
+      "topics": [
+        "딸기"
+      ]
+    },
+    {
+      "id": "b6d4662d7ebe",
+      "date": "2026-09-30",
+      "section": "pest",
+      "section_title": "생육 리스크 및 방제",
+      "rank": 1,
+      "title": "팜한농, 10월 농가 추천 제품 공개…나방 방제부터 저온기 수박·생분해...",
+      "press": "한국영농신문",
+      "summary": "팜한농이 가을철 해충 방제와 저온기 수박 재배, 원예용 비료 수요에 맞춘 10월 추천 제품을 공개했다. 살충제 ‘델리게이트’, ‘맘모스꿀수박’, 생분해 코팅 완효성 비료 ‘한번에생생’ 등 3개 제품을 제시했다.",
+      "url": "https://www.youngnong.co.kr/news/articleView.html?idxno=70684",
+      "archive": "/agri-news-brief/archive/2026-09-30.html#sec-pest",
+      "score": 20.72,
+      "press_tier": 1,
+      "topics": [
+        "수박"
+      ]
+    },
+    {
+      "id": "52a2d1f3e208",
+      "date": "2026-09-30",
+      "section": "policy",
+      "section_title": "정책 및 주요 이슈",
+      "rank": 4,
+      "title": "고창군, '수직확산형 순환팬' 보급…온실 고온 피해 줄인다",
+      "press": "이로운넷",
+      "summary": "전북 고창 시설원예 농가에 여름철 온실 고온 피해와 경영비 부담을 낮추는 환경관리 기술이 보급된다. 고창군은 농촌진흥청이 개발한 수직확산형 순환팬과 자동제어 시스템을 농가에 지원한다.",
+      "url": "https://www.eroun.net/news/articleView.html?idxno=91136",
+      "archive": "/agri-news-brief/archive/2026-09-30.html#sec-policy",
+      "score": 15.63,
+      "press_tier": 1,
+      "topics": []
+    },
+    {
+      "id": "38cbd560b941",
+      "date": "2026-09-30",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 12,
+      "title": "전남광주농기원, 골드 키위 ‘해금’ 남반구 시장 진출 본격화",
+      "press": "더파워뉴스",
+      "summary": "",
+      "url": "https://www.thepowernews.co.kr/view.php?ud=202609290927046886caa2b7671d_7",
+      "archive": "/agri-news-brief/archive/2026-09-30.html#commodity-kiwifruit",
+      "score": 15.622,
+      "press_tier": 1,
+      "topics": [
+        "키위"
+      ]
+    },
+    {
+      "id": "4aabcaa9997c",
+      "date": "2026-09-30",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 13,
+      "title": "전남광주 골드 키위 '해금', 뉴질랜드·칠레·남아공서 상업재배한다",
+      "press": "매일산업뉴스",
+      "summary": "",
+      "url": "https://www.m-i.kr/news/articleView.html?idxno=2000537",
+      "archive": "/agri-news-brief/archive/2026-09-30.html#commodity-kiwifruit",
+      "score": 14.929,
+      "press_tier": 1,
+      "topics": [
+        "키위"
+      ]
+    },
+    {
+      "id": "9311daa35f9e",
+      "date": "2026-09-30",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 5,
+      "title": "한 송이 경매 부터 5천원 송이라면까지…가을 미식의 절정 ‘서른살’ 봉...",
+      "press": "쿠키뉴스",
+      "summary": "가을 송이 행사에서 100~200g 소량 포장과 한 송이 경매 등 새로운 판매 방식이 운영된다. 5000원 송이라면을 선보이고 생산자가 사과·버섯·가공식품 등 지역 농특산물을 직접 판매한다.",
+      "url": "https://www.kukinews.com/article/view/kuk202609290058",
+      "archive": "/agri-news-brief/archive/2026-09-30.html#sec-dist",
+      "score": 14.31,
+      "press_tier": 1,
+      "topics": [
+        "사과"
+      ]
+    },
+    {
+      "id": "732365c57bdd",
+      "date": "2026-09-30",
+      "section": "policy",
+      "section_title": "정책 및 주요 이슈",
+      "rank": 6,
+      "title": "대구 가을 장바구니 가격 '희비'…고구마·사과 안정, 쌀값은 상승세",
+      "press": "아이대구",
+      "summary": "",
+      "url": "https://www.idaegu.com/news/articleView.html?idxno=665971",
+      "archive": "/agri-news-brief/archive/2026-09-30.html#commodity-apple",
+      "score": 12.91,
+      "press_tier": 1,
+      "topics": []
+    },
+    {
+      "id": "87dc2deb82fc",
+      "date": "2026-09-30",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 10,
+      "title": "전남광주농기원, 골드 키위 '해금' 남반구 진출… 연 2억 로열티 기대",
+      "press": "전라일보",
+      "summary": "",
+      "url": "http://www.jeollailbo.com/news/articleView.html?idxno=812299",
+      "archive": "/agri-news-brief/archive/2026-09-30.html#commodity-kiwifruit",
+      "score": 12.656,
+      "press_tier": 1,
+      "topics": [
+        "키위"
+      ]
+    },
+    {
+      "id": "d034b9470118",
+      "date": "2026-09-30",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 14,
+      "title": "전남 국산 골드 키위 '해금', 남반구 시장으로…뉴질랜드 기업과 상업재...",
+      "press": "녹색경제신문",
+      "summary": "",
+      "url": "https://www.greened.kr/news/articleView.html?idxno=350966",
+      "archive": "/agri-news-brief/archive/2026-09-30.html#commodity-kiwifruit",
+      "score": 10.52,
+      "press_tier": 1,
+      "topics": [
+        "키위"
+      ]
+    },
+    {
+      "id": "de95b17f5371",
+      "date": "2026-09-30",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 5,
+      "title": "시그니파이, 프레팜 오이 육묘시설에 식물 생육 LED 적용",
+      "press": "DDAILY",
+      "summary": "",
+      "url": "https://www.ddaily.co.kr/page/view/2026092914513778120",
+      "archive": "/agri-news-brief/archive/2026-09-30.html#commodity-cucumber",
+      "score": 7.798,
+      "press_tier": 1,
+      "topics": [
+        "오이"
+      ]
+    },
+    {
+      "id": "1ab4ce121be6",
+      "date": "2026-09-30",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 7,
+      "title": "문경 사과 품평회 출품작 7일부터 접수…13농가 입상 예정",
+      "press": "국제뉴스",
+      "summary": "",
+      "url": "https://www.gukjenews.com/news/articleView.html?idxno=3708617",
+      "archive": "/agri-news-brief/archive/2026-09-30.html#commodity-apple",
+      "score": 6.901,
+      "press_tier": 1,
+      "topics": [
+        "사과"
+      ]
+    },
+    {
+      "id": "d981f6de508f",
+      "date": "2026-09-30",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 15,
+      "title": "전남광주 육성 골드 키위 ‘해금’, 뉴질랜드 등 남반구서 상업화",
+      "press": "아시아투데이",
+      "summary": "",
+      "url": "https://www.asiatoday.co.kr/kn/view.php?key=20260929010010001",
+      "archive": "/agri-news-brief/archive/2026-09-30.html#commodity-kiwifruit",
+      "score": 6.328,
+      "press_tier": 1,
+      "topics": [
+        "키위"
+      ]
+    },
+    {
+      "id": "387be05a5e2a",
+      "date": "2026-09-30",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 2,
+      "title": "“마늘‧ 양파 ” 생산-수확후관리 현장 적용형 기술 보급 주력",
+      "press": "농기자재신문",
+      "summary": "",
+      "url": "https://www.newsam.co.kr/news/article.html?no=44102",
+      "archive": "/agri-news-brief/archive/2026-09-30.html#commodity-onion",
+      "score": 5.671,
+      "press_tier": 1,
+      "topics": [
+        "마늘",
+        "양파"
+      ]
+    },
     {
       "id": "ad79b1b4b64b",
       "date": "2026-09-29",
