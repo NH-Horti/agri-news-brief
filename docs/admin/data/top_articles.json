@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-29T05:34:42+09:00",
+  "generated_at": "2026-09-30T04:26:29+09:00",
   "rows": [
     {
       "date": "2026-09-22",
@@ -39,6 +39,19 @@
       "users": 5,
       "archive_url": "",
       "source_url": ""
+    },
+    {
+      "date": "2026-09-29",
+      "article_id": "afaccb56fb6f",
+      "title": "[단독] 법원이 막은 감자 다시 추진… 소프톤 정관엔 갑자기 '식품사업...",
+      "report_date": "2026-09-29",
+      "section": "policy",
+      "surface": "commodity_pool",
+      "target_domain": "www.thisisgame.com",
+      "clicks": 7,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-09-29.html#commodity-potato",
+      "source_url": "https://www.thisisgame.com/articles/430417"
     },
     {
       "date": "2026-06-08",
@@ -1402,19 +1415,6 @@
       "target_domain": "www.nongmin.com",
       "clicks": 3,
       "users": 1,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-06-02",
-      "article_id": "f3d56986f87b",
-      "title": "\"한 그루만 걸려도 매몰\"…과수화상병 77% 급증, 미발생지 4곳도 뚫려",
-      "report_date": "2026-06-02",
-      "section": "pest",
-      "surface": "briefing_open",
-      "target_domain": "www.news1.kr",
-      "clicks": 2,
-      "users": 2,
       "archive_url": "",
       "source_url": ""
     },
@@ -4006,160 +4006,17 @@
       "source_url": "https://biz.newdaily.co.kr/site/data/html/2026/09/23/2026092300238.html"
     },
     {
-      "date": "2026-06-02",
-      "article_id": "1e34fe9cd6ca",
-      "title": "함양군·농협, 양파 수급 안정 공동 대응",
-      "report_date": "2026-06-02",
-      "section": "supply",
-      "surface": "briefing_card",
-      "target_domain": "www.gnmaeil.com",
-      "clicks": 1,
-      "users": 1,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-06-02",
-      "article_id": "5ca150cc96e9",
-      "title": "6월 이달의 추천품종",
-      "report_date": "2026-06-02",
-      "section": "supply",
-      "surface": "briefing_open",
-      "target_domain": "www.hortitimes.com",
-      "clicks": 1,
-      "users": 1,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-06-02",
-      "article_id": "6d53d8bf2e7d",
-      "title": "불탄 듯 말라가는 과수원... 화상병 공포 전국 확산",
-      "report_date": "2026-06-02",
-      "section": "pest",
-      "surface": "briefing_open",
-      "target_domain": "www.hankookilbo.com",
-      "clicks": 1,
-      "users": 1,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-06-02",
-      "article_id": "757610dc3262",
-      "title": "“전쟁 장기화에 이미 한계”…7월 식품값 줄인상 '카운트다운'",
-      "report_date": "2026-06-02",
-      "section": "policy",
-      "surface": "briefing_open",
-      "target_domain": "www.newstomato.com",
-      "clicks": 1,
-      "users": 1,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-06-02",
-      "article_id": "89642f5a935e",
-      "title": "경기 고양 사과 과수원, ‘과수화상병’ 신규 발생…전국 39개 농가 17.4ha 피해",
-      "report_date": "2026-06-02",
-      "section": "pest",
-      "surface": "briefing_open",
-      "target_domain": "www.ecotiger.co.kr",
-      "clicks": 1,
-      "users": 1,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-06-02",
-      "article_id": "9a1d8a421fb2",
-      "title": "배추가 숨 쉬는 저장고 'CA 저장'",
-      "report_date": "2026-06-02",
-      "section": "dist",
-      "surface": "briefing_open",
-      "target_domain": "www.farmnmarket.com",
-      "clicks": 1,
-      "users": 1,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-06-02",
-      "article_id": "ca3503c812d9",
-      "title": "폭염·열대야 예고에 농축산물 수급 점검 나선 정부",
-      "report_date": "2026-06-02",
-      "section": "policy",
-      "surface": "briefing_card",
-      "target_domain": "biz.heraldcorp.com",
-      "clicks": 1,
-      "users": 1,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-06-02",
-      "article_id": "ca3503c812d9",
-      "title": "폭염·열대야 예고에 농축산물 수급 점검 나선 정부",
-      "report_date": "2026-06-02",
-      "section": "policy",
-      "surface": "briefing_open",
-      "target_domain": "biz.heraldcorp.com",
-      "clicks": 1,
-      "users": 1,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-06-02",
-      "article_id": "ee1d264f7efb",
-      "title": "\"올해는 우리도 '매실청' 담글까?\" 청매실 구매 손질법",
-      "report_date": "2026-06-02",
+      "date": "2026-09-29",
+      "article_id": "01118786bed8",
+      "title": "[2026년 9월 5주] 주요 농산물 경락가 상승·하락 품목 - 쌈배추· 단감 송...",
+      "report_date": "2026-09-29",
       "section": "supply",
       "surface": "commodity_primary",
-      "target_domain": "www.ytn.co.kr",
-      "clicks": 1,
-      "users": 1,
-      "archive_url": "/agri-news-brief/archive/2026-06-02.html#commodity-maesil",
-      "source_url": "https://www.ytn.co.kr/_ln/0102_202606010948390797"
-    },
-    {
-      "date": "2026-06-02",
-      "article_id": "f3d56986f87b",
-      "title": "\"한 그루만 걸려도 매몰\"…과수화상병 77% 급증, 미발생지 4곳도 뚫려",
-      "report_date": "2026-06-02",
-      "section": "pest",
-      "surface": "briefing_card",
-      "target_domain": "www.news1.kr",
-      "clicks": 1,
-      "users": 1,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-06-02",
-      "article_id": "f7d96ec025d3",
-      "title": "[issue+] 농산물 가격안정제 의미와 과제는",
-      "report_date": "2026-06-02",
-      "section": "supply",
-      "surface": "briefing_card",
       "target_domain": "www.aflnews.co.kr",
-      "clicks": 1,
+      "clicks": 2,
       "users": 1,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-06-02",
-      "article_id": "f7d96ec025d3",
-      "title": "[issue+] 농산물 가격안정제 의미와 과제는",
-      "report_date": "2026-06-02",
-      "section": "supply",
-      "surface": "briefing_open",
-      "target_domain": "www.aflnews.co.kr",
-      "clicks": 1,
-      "users": 1,
-      "archive_url": "",
-      "source_url": ""
+      "archive_url": "/agri-news-brief/archive/2026-09-29.html#commodity-napa_cabbage",
+      "source_url": "https://www.aflnews.co.kr/news/articleView.html?idxno=328926"
     },
     {
       "date": "2026-06-04",
@@ -13858,6 +13715,45 @@
       "users": 1,
       "archive_url": "/agri-news-brief/archive/2026-09-28.html#sec-supply",
       "source_url": "https://www.farmnmarket.com/news/article.html?no=27967"
+    },
+    {
+      "date": "2026-09-29",
+      "article_id": "65ac0732aa78",
+      "title": "제주, 드론 활용 극조생 감귤 수확 현장 단속 강화",
+      "report_date": "2026-09-29",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.headlinejeju.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-09-29.html#sec-supply",
+      "source_url": "https://www.headlinejeju.co.kr/news/articleView.html?idxno=599662"
+    },
+    {
+      "date": "2026-09-29",
+      "article_id": "7583978dd1d7",
+      "title": "농협 법 개정안 29일 재심사…직선제·감사위 쟁점 조율 주목",
+      "report_date": "2026-09-29",
+      "section": "policy",
+      "surface": "briefing_card",
+      "target_domain": "www.mt.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-09-29",
+      "article_id": "ce491c62c3e2",
+      "title": "화훼자조금 협의회, '국산 생화 헌화' 대국민 캠페인 전개",
+      "report_date": "2026-09-29",
+      "section": "supply",
+      "surface": "commodity_pool",
+      "target_domain": "www.amnews.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-09-29.html#commodity-flowers",
+      "source_url": "http://www.amnews.co.kr/news/articleView.html?idxno=74738"
     }
   ]
 }
