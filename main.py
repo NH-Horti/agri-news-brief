@@ -25169,6 +25169,8 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str, *, apply_se
         return ""
     if section_key == "policy" and is_generic_personnel_digest_context(a.title or "", a.description or ""):
         return "policy_personnel_digest_noise"
+    if section_key == "policy" and is_non_agri_org_head_inauguration_context(a.title or "", a.description or ""):
+        return "policy_non_agri_org_head_inauguration"
     if section_key == "policy" and is_non_agri_foodservice_cost_context(a.title or "", a.description or ""):
         return "policy_non_agri_foodservice_cost_noise"
     if section_key == "policy" and (
@@ -35804,6 +35806,7 @@ _HARD_FINAL_POSTBUILD_REJECT_REASONS = frozenset(
         "commodity_corporate_stock_context",
         "garbled_article_text",
         "policy_personnel_digest_noise",
+        "policy_non_agri_org_head_inauguration",
         "policy_schedule_digest_noise",
         "policy_local_council_multi_issue_digest",
         "policy_field_production_crisis_without_policy_lead",
@@ -44184,6 +44187,28 @@ def is_generic_personnel_digest_context(title: str, desc: str) -> bool:
         )],
     ) >= 2
     return digest and not direct_agri_action
+
+
+_ORG_HEAD_INAUGURATION_TITLE_TERMS = ("취임", "이임", "부임", "연임", "선임", "임명")
+# 농업·식품 기관/행위자를 가리키는 조각. 하나라도 있으면 농업 기관 인사로 보고 남긴다.
+_AGRI_ORG_CONTEXT_RX = re.compile(r"농|원예|청과|과수|과일|채소|산림|식품|aT|APC", re.IGNORECASE)
+
+
+def is_non_agri_org_head_inauguration_context(title: str, desc: str) -> bool:
+    """농업과 무관한 기관장 취임 기사("김선기 KTL 원장 취임…첨단 산업 시험인증").
+
+    2026-10-01 에 제목의 '수출 지원 강화'로 정책 섹션에 들어와 편집 평가 blocking(off_topic)
+    이 됐다. 제목·본문 어디에도 농업·식품 기관/맥락이 없을 때만 막는다.
+    """
+    ttl = _nfkc_lower(title or "")
+    if not ttl or not any(term in ttl for term in _ORG_HEAD_INAUGURATION_TITLE_TERMS):
+        return False
+    if _has_title_agri_policy_anchor(title):
+        return False
+    text = unicodedata.normalize("NFKC", f"{title or ''} {desc or ''}")
+    if _AGRI_ORG_CONTEXT_RX.search(text):
+        return False
+    return count_any(text.lower(), _AGRI_CONTEXT_RELEVANCE_TERMS) <= 0
 
 
 def is_non_agri_foodservice_cost_context(title: str, desc: str) -> bool:
@@ -53118,14 +53143,14 @@ def _repair_section_target(section_targets: dict[str, int] | None, section: str)
     return max(MIN_FALLBACK_PER_SECTION, min(MAX_PER_SECTION, target))
 
 
-def _section_validator_pool(
+def _section_validator_candidates(
     raw_by_section: dict[str, list[Article]],
     current_by_section: dict[str, list[Article]] | None,
     section: str,
     *,
     excluded_links: set[str] | None = None,
-) -> tuple[int, list[Article]]:
-    """섹션 raw 풀 ∪ 현재 지면 카드 중 postbuild 검증을 지나는 고유 카드 (티어2+ 수, 티어1 목록).
+) -> list[Article]:
+    """섹션 raw 풀 ∪ 현재 지면 카드 중 postbuild 검증을 지나는 고유 카드 목록.
 
     다른 섹션 지면에 이미 실린 카드는 이 섹션 후보로 세지 않는다(사건 dedupe가 어차피 뺀다).
     """
@@ -53141,8 +53166,7 @@ def _section_validator_pool(
                 if identity:
                     used_elsewhere.add(identity)
     seen: set[str] = set()
-    high_tier = 0
-    low_tier: list[Article] = []
+    candidates: list[Article] = []
     pool = list(raw_by_section.get(section, []) or []) + list(
         (current_by_section or {}).get(section, []) or []
     )
@@ -53157,11 +53181,40 @@ def _section_validator_pool(
         if _postbuild_article_reject_reason(article, section) not in allowed_reasons:
             continue
         seen.add(identity)
+        candidates.append(article)
+    return candidates
+
+
+def _section_validator_pool(
+    raw_by_section: dict[str, list[Article]],
+    current_by_section: dict[str, list[Article]] | None,
+    section: str,
+    *,
+    excluded_links: set[str] | None = None,
+) -> tuple[int, list[Article]]:
+    """_section_validator_candidates 를 (티어2+ 수, 티어1 목록)으로 나눈다."""
+    high_tier = 0
+    low_tier: list[Article] = []
+    for article in _section_validator_candidates(
+        raw_by_section, current_by_section, section, excluded_links=excluded_links
+    ):
         if press_tier(article.press or "", article.domain or "") <= 1:
             low_tier.append(article)
         else:
             high_tier += 1
     return high_tier, low_tier
+
+
+def _distinct_story_count(articles: list[Article], cap: int) -> int:
+    """매체만 다른 같은 사건을 하나로 묶은 사건 수(cap 에 닿으면 멈춘다)."""
+    representatives: list[Article] = []
+    for article in articles:
+        if any(_duplicate_story_pair_reason(article, rep) for rep in representatives):
+            continue
+        representatives.append(article)
+        if len(representatives) >= cap:
+            break
+    return len(representatives)
 
 
 def _section_achievable_counts(
@@ -53174,11 +53227,17 @@ def _section_achievable_counts(
     브리핑이 통째로 안 나간다(2026-01 pest 평균 0.3장). 반대로 후보가 충분한데 파이프라인이
     섹션을 비운 날(2026-09-22 새벽, 유효 7건에 지면 1장)은 그대로 차단돼야 한다. 그래서
     최소치는 min(고정 최소치, 이 값)이다.
+
+    같은 사건의 매체별 변형은 한 건으로 센다. 발행 직전 사건 dedupe 가 어차피 한 장만
+    남기기 때문이다. 2026-10-01 pest 는 유효 후보 5건이 사건 2건(가평 돌발해충 2판·담양
+    딸기 스마트팜 3판)뿐이었는데 5건으로 세어 최소 3~4장을 요구했고, 두 런 모두 차단됐다.
+    사건이 MAX_PER_SECTION 이상이면 섹션은 얇지 않으므로 기존처럼 고유 카드 수를 쓴다.
     """
     counts: dict[str, int] = {}
     for section in _section_keys():
-        high_tier, low_tier = _section_validator_pool(raw_by_section, current_by_section, section)
-        counts[section] = high_tier + len(low_tier)
+        candidates = _section_validator_candidates(raw_by_section, current_by_section, section)
+        distinct = _distinct_story_count(candidates, MAX_PER_SECTION)
+        counts[section] = len(candidates) if distinct >= MAX_PER_SECTION else distinct
     return counts
 
 
@@ -53765,6 +53824,11 @@ def _excise_flagged_cards_and_refill(
                 floor = min(floor, max(0, int(achievable_by_section.get(section) or 0) - excised_per_section.get(section, 0)))
             except (TypeError, ValueError):
                 pass
+        if not excised_per_section.get(section, 0):
+            # 절제와 무관한 섹션이 원래부터 하한 아래였다면 그 부족을 이유로 다른 섹션의
+            # 절제를 되돌리지 않는다. 2026-10-01 에는 pest 2장(사건 2건뿐)이 정책 off_topic
+            # 카드 절제를 막아 blocking 이슈가 그대로 남았다. 절제 전보다 줄면 여전히 기각.
+            floor = min(floor, len([a for a in (sections.get(section) or []) if isinstance(a, Article)]))
         if len(rows) < floor:
             log.warning(
                 "[QUALITY GATE] excision left section=%s at %d/%d; keeping previous selection",
