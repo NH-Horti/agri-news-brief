@@ -189,6 +189,15 @@ class TestRegressions(unittest.TestCase):
         self.assertIn("deterministic summaries remain available", self.secrets_check_text)
         self.assertIn("Delivery readiness: ready (AI quality enhancement is degraded)", self.secrets_check_text)
 
+    def test_secrets_check_fails_on_kakao_refresh_token_renewal(self):
+        # 2026-09-30: the preflight refresh received a renewed token and discarded it silently,
+        # which invalidated the shared secret and broke the next garak-fruit-brief send (KOE322).
+        self.assertIn('renewed_token = str(payload.get("refresh_token") or "").strip()', self.secrets_check_text)
+        self.assertIn("if renewed_token and renewed_token != refresh_token:", self.secrets_check_text)
+        self.assertIn('write_output("kakao_status", "renewed")', self.secrets_check_text)
+        self.assertIn("https://kapi.kakao.com/v2/api/talk/memo/default/send", self.secrets_check_text)
+        self.assertIn('print(f"::add-mask::{secret_value}")', self.secrets_check_text)
+
     def test_prod_workflows_keep_window_and_have_independent_early_trigger(self):
         self.assertIn("Independent early trigger at KST 05:35", self.daily_text)
         self.assertIn("workflow_dispatch:", self.daily_text)
