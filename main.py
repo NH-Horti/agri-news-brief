@@ -25007,6 +25007,33 @@ _COMMUNITY_WELFARE_OPS_ANCHORS = (
 )
 
 
+_COOP_SCHOLARSHIP_TITLE_TERMS = ("장학금", "장학생", "장학사업", "장학기금", "장학회")
+_COOP_RECRUITMENT_TITLE_TERMS = (
+    "신규직원", "신규 직원", "공개채용", "공채", "직원 채용", "원서 접수", "원서접수",
+    "하반기 채용", "상반기 채용", "동시 채용", "동시채용",
+)
+# 농작업 인력 수급(계절근로자·일손)은 농업 정책·수급 기사라 남긴다.
+_COOP_RECRUITMENT_AGRI_LABOR_TERMS = ("계절근로", "근로자", "외국인", "인력", "일손", "농작업", "영농도우미")
+
+
+def is_coop_scholarship_or_recruitment_notice_context(title: str, desc: str) -> bool:
+    """조합원 자녀 장학금 전달·조합 신규직원 채용 공고.
+
+    2026-10-01 복구 런에서 유통 지면의 '충북 농협, 지역 농축협 신규직원 동시 채용'이 절제된 뒤
+    재충원으로 '성주농협, 조합원 대학생 자녀 장학금 전달'이 들어와 둘 다 편집 평가 off_topic
+    (blocking)이 됐다. 장학금 기사는 리드에 행사장('농산물산지유통 센터 회의실')이 적혀 있어
+    복지 판정의 운영 앵커(산지유통)가 오히려 판정을 보류시켰다. 그래서 제목만 본다.
+    """
+    ttl = _nfkc_lower(title or "")
+    if not ttl:
+        return False
+    if any(term in ttl for term in _COOP_SCHOLARSHIP_TITLE_TERMS):
+        return True
+    if "채용" not in ttl or not any(term in ttl for term in _COOP_RECRUITMENT_TITLE_TERMS):
+        return False
+    return not any(term in ttl for term in _COOP_RECRUITMENT_AGRI_LABOR_TERMS)
+
+
 def _is_community_welfare_service_story(title: str, desc: str) -> bool:
     """주민 복지·봉사 기사인가.
 
@@ -25161,6 +25188,10 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str, *, apply_se
         return "dist_local_apc_performance_meeting"
     if section_key == "dist" and _is_community_welfare_service_story(a.title or "", a.description or ""):
         return "dist_community_welfare_service"
+    if section_key in ("supply", "policy", "dist") and is_coop_scholarship_or_recruitment_notice_context(
+        a.title or "", a.description or ""
+    ):
+        return "coop_scholarship_or_recruitment_notice"
     if section_key == "dist" and is_dist_wholesale_market_schedule_context(a.title or "", a.description or ""):
         return ""
     if section_key == "dist" and is_agri_digital_sales_channel_context(a.title or "", a.description or ""):
@@ -35807,6 +35838,7 @@ _HARD_FINAL_POSTBUILD_REJECT_REASONS = frozenset(
         "garbled_article_text",
         "policy_personnel_digest_noise",
         "policy_non_agri_org_head_inauguration",
+        "coop_scholarship_or_recruitment_notice",
         "policy_schedule_digest_noise",
         "policy_local_council_multi_issue_digest",
         "policy_field_production_crisis_without_policy_lead",
@@ -36172,7 +36204,7 @@ def _section_theme_cap_groups(article: "Article") -> list[tuple[str, str]]:
     return policy_groups + [(c, g) for c in comm for g in capped]
 
 
-def _final_dedupe_keep_rank(section_key: str, article: "Article") -> tuple:
+def _final_dedupe_keep_rank(section_key: str, article: "Article") -> tuple[Any, ...]:
     """같은 사건 쌍에서 남길 기사의 순위.
 
     섹션 게이트(`_postbuild_article_reject_reason`)를 통과하는 변형을 먼저 남긴다.

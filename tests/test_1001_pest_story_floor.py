@@ -149,5 +149,30 @@ class NonAgriOrgHeadInaugurationTests(unittest.TestCase):
             self.assertFalse(main.is_non_agri_org_head_inauguration_context(title, desc), title)
 
 
+class CoopScholarshipRecruitmentNoticeTests(unittest.TestCase):
+    """복구 런: 유통 지면 절제 → 재충원이 같은 부류(조합 장학금·채용) 카드를 다시 끌어와 blocking."""
+
+    def test_scholarship_and_hiring_notices_are_rejected(self):
+        scholarship = _mk(
+            "dist",
+            "성주농협, 조합원 대학생 자녀 장학금 전달",
+            desc="지난 21일 성주농협은 농산물산지유통 센터 2층 회의실에서 임직원과 학부모 등 40여명이 참석한 가운데",
+        )
+        hiring = _mk("dist", "충북 농협 , 지역 농축협 하반기 신규 직원 동시 채용", desc="채용 직렬은 교육·신용·경제사업 일반관리직")
+        for article in (scholarship, hiring):
+            self.assertEqual(
+                main._postbuild_article_reject_reason(article, "dist"), "coop_scholarship_or_recruitment_notice"
+            )
+        self.assertTrue(main.is_coop_scholarship_or_recruitment_notice_context("농협 , 하반기 농축협 신규직원 867명 공개채용", ""))
+
+    def test_farm_labor_hiring_is_kept(self):
+        for title in (
+            "영암군, 외국인 계절근로자 120명 채용…농번기 일손 해소",
+            "농협, 영농 인력 채용 지원 확대",
+            "사과 도매가 3주째 하락…추석 수요 둔화",
+        ):
+            self.assertFalse(main.is_coop_scholarship_or_recruitment_notice_context(title, ""), title)
+
+
 if __name__ == "__main__":
     unittest.main()
