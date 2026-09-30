@@ -2,8 +2,8 @@
   "schema_version": 1,
   "version": 1,
   "report_date": "2026-10-01",
-  "created_at_kst": "2026-10-01T06:17:21+09:00",
-  "build_tag": "a999e33",
+  "created_at_kst": "2026-10-01T06:31:30+09:00",
+  "build_tag": "5cd9f5e",
   "content_ref": "main",
   "content_branch": "main",
   "window": {
@@ -191,7 +191,7 @@
         "pub_dt_kst": "2026-09-30T09:23:00+09:00",
         "section": "supply",
         "title": "배추 값 오르기 전에 잡는다…롯데마트·슈퍼, 절임 배추 물량 20% 확대",
-        "description": "소종섭의 시사쇼 머니마니 실시간 뉴스 SSG닷컴, '2시간 배송' 전국 33곳으로 확대…\"연내 55곳 목표\" 펫 사업 힘주는 소노…소노펫클럽앤리조트, 웰니스 클래스 운영 \"61만원 내돈내산\" 한가인 구매내역 공개, 사망여우 \"경솔했다\" 사과 손해보험 모집종사자 상위 1%…'블루리본 컨설턴트' 1602명 선정 [오늘의신상]자몽에 돔 페리뇽 더했다…신라호텔 가을 한정 '로제 자몽 빙수' AI에 희비 갈린 직장인…삼일PwC \"업무 재설계 필요\" 배추값 오르기 전에 잡는다…롯데마트·슈퍼, 절임배추 물량 20% 확대 코오롱, 수소트럭 활용 친환경 에너지 교육 첫선 롯데온, '경동나비엔 얼리특가전' 진행 배경훈 \"독파모 계속된다…프론티어 AI도 함께 도전\" 산업·IT 배추값 오르기 전에 잡는다…롯데마트·슈퍼, 절임배추 물량 20% 확대 const carouselInner = document.querySelector('.bx--rolling .carousel-inner'); const items = document.querySelectorAll('.bx--rolling .carousel-inner .item'); let currentIndex = 0; const firstClone = items[0].cloneNode(true); carouselInner.appendChild(firstClone); const itemHeight = 60; const totalItems = items.length; function moveCarousel() { currentIndex++; carouselInner.style.transform = `translateY(-${itemHeight * currentIndex}px)`; if (currentIndex === totalItems) { setTimeout(() => { carouselInner.style.transition = 'none'; carouselInner.style.transform = 'translateY(0)'; currentIndex = 0; setTimeout(() => { carouselInner.style.transition = 'transform 0.6s ease-in-out'; }, 50); }, 700); } } setInterval(moveCarousel, 3000); 뉴스 뉴스 증권 경제 부동산 산업·IT 정치 사회 국제 문화 오피니언 해외칼럼 골프 연예·스포츠 포토뉴스 전국 스페셜 기획·이슈 연재 프리미엄 콘텐츠 경제법률 완전정복 법률소식 Visual-News 인사이트 실시간 뉴스 오디오페이퍼 많이 본 뉴스 뉴스레터 전 종목 시세 플랩+ Game Hub if ($('.service-list__banner .swiper-container .item').length > 1) { const serviceRollingSwiper = new Swiper('.service-list__banner .swiper-container', { slidesPerView: 1, loop: true, resizeObserver: true, pagination: { clickable: true, el: '.service-list__banner .swiper-pagination', }, autoplay: { delay: 3000, disableOnInteraction: false, }, }); $('.btn_gnb').on('click', function () { setTimeout(() => { serviceRollingSwiper.update(); //250630-1 수정 serviceRollingSwiper.slideTo(1,0,true)//첫번째슬라이드로 이동 }, 10); }); } 아시아경제 서비스 운세 양낙규의 디펜스클럽 아시아경제CORE 알립니다 아시아경제 교육센터 E아시아경제 검색영역 뉴스검색 삭제아이콘 검색아이콘 function checkSearchSubmit(obj) { if( obj.sn.value && obj.sn.value != '뉴스검색' ) { return t",
+        "description": "소종섭의 시사쇼 머니마니 실시간 뉴스 펫 사업 힘주는 소노…소노펫클럽앤리조트, 웰니스 클래스 운영 \"61만원 내돈내산\" 한가인 구매내역 공개, 사망여우 \"경솔했다\" 사과 손해보험 모집종사자 상위 1%…'블루리본 컨설턴트' 1602명 선정 [오늘의신상]자몽에 돔 페리뇽 더했다…신라호텔 가을 한정 '로제 자몽 빙수' AI에 희비 갈린 직장인…삼일PwC \"업무 재설계 필요\" 배추값 오르기 전에 잡는다…롯데마트·슈퍼, 절임배추 물량 20% 확대 코오롱, 수소트럭 활용 친환경 에너지 교육 첫선 롯데온, '경동나비엔 얼리특가전' 진행 배경훈 \"독파모 계속된다…프론티어 AI도 함께 도전\" 상생협력기금, 벤처투자 첫 모펀드 결성 산업·IT 배추값 오르기 전에 잡는다…롯데마트·슈퍼, 절임배추 물량 20% 확대 const carouselInner = document.querySelector('.bx--rolling .carousel-inner'); const items = document.querySelectorAll('.bx--rolling .carousel-inner .item'); let currentIndex = 0; const firstClone = items[0].cloneNode(true); carouselInner.appendChild(firstClone); const itemHeight = 60; const totalItems = items.length; function moveCarousel() { currentIndex++; carouselInner.style.transform = `translateY(-${itemHeight * currentIndex}px)`; if (currentIndex === totalItems) { setTimeout(() => { carouselInner.style.transition = 'none'; carouselInner.style.transform = 'translateY(0)'; currentIndex = 0; setTimeout(() => { carouselInner.style.transition = 'transform 0.6s ease-in-out'; }, 50); }, 700); } } setInterval(moveCarousel, 3000); 뉴스 뉴스 증권 경제 부동산 산업·IT 정치 사회 국제 문화 오피니언 해외칼럼 골프 연예·스포츠 포토뉴스 전국 스페셜 기획·이슈 연재 프리미엄 콘텐츠 경제법률 완전정복 법률소식 Visual-News 인사이트 실시간 뉴스 오디오페이퍼 많이 본 뉴스 뉴스레터 전 종목 시세 플랩+ Game Hub if ($('.service-list__banner .swiper-container .item').length > 1) { const serviceRollingSwiper = new Swiper('.service-list__banner .swiper-container', { slidesPerView: 1, loop: true, resizeObserver: true, pagination: { clickable: true, el: '.service-list__banner .swiper-pagination', }, autoplay: { delay: 3000, disableOnInteraction: false, }, }); $('.btn_gnb').on('click', function () { setTimeout(() => { serviceRollingSwiper.update(); //250630-1 수정 serviceRollingSwiper.slideTo(1,0,true)//첫번째슬라이드로 이동 }, 10); }); } 아시아경제 서비스 운세 양낙규의 디펜스클럽 아시아경제CORE 알립니다 아시아경제 교육센터 E아시아경제 검색영역 뉴스검색 삭제아이콘 검색아이콘 function checkSearchSubmit(obj) { if( obj.sn.value && obj.sn.value != '뉴스검색' ) { return true; } else { aler",
         "link": "https://n.news.naver.com/mnews/article/277/0005822565?sid=101",
         "originallink": "https://view.asiae.co.kr/article/2026093009074636488",
         "domain": "view.asiae.co.kr",
@@ -291,7 +291,7 @@
         "pub_dt_kst": "2026-09-30T17:18:00+09:00",
         "section": "supply",
         "title": "폭염·가뭄 뚫은 거창 배추 … 준고랭지 여름 재배 ‘성공작’",
-        "description": "기후변화로 여름 배추 농가가 어려움을 겪고 있는 가운데 거창군이 고온과 가뭄을 극복하고 여름 배추 수확에 성공해 눈길을 끌고 있다.거창군은 ... 경남신문 > 경제 폭염·가뭄 뚫은 거창 배추… 준고랭지 여름 재배 ‘성공작’ 거창군, ‘준고랭지 여름배추 시범사업’ 성공적 추진 기후변화 대응 안정생산…여름배추 수급 안정 기대 기사입력 : 2026-09-30 17:07:59 최종수정 : 2026-09-30 17:12:12 기후변화로 여름 배추 농가가 어려움을 겪고 있는 가운데 거창군이 고온과 가뭄을 극복하고 여름 배추 수확에 성공해 눈길을 끌고 있다. 거창군은 기후변화에 따른 여름철 이상고온과 재해에 대응하고 여름배추의 안정적인 생산 기반을 구축하기 위해 지난 5월 ‘준고랭지 여름배추 안정생산 체계 구축 시범사업’을 추진해 좋은 성과를 거뒀다고 30일 밝혔다. 이번 사업은 ‘기후변화 대응 품종 육성 지원사업’의 일환으로 국립원예특작과학원에 요청해 선정됐다. 준고랭지와 고랭지 지역에 적합한 여름배추 재배 기술을 현장에 적용해 안정적인 생산 가능성을 확인하기 위해 추진됐다. 준고랭지 여름배추 시범사업으로 생산한 배추./거창군/ 사업에서는 내서성 품종, 저온성 필름, 자동 관수 시스템, 재배 기술 등을 지원​해 여름철 고온과 가뭄 등 이상기후에 대응할 수 있는 재배 환경을 조성했다. 올해 강원도 등 주요 고랭지 배추 주산지에서는 여름철 잦은 강우로 작황이 좋지 못한 상황이었으며, 거창 지역 역시 고온과 가뭄이 발생했다. 그러나 시범사업 농가들은 지원된 저온성 필름과 자동 관수 시스템 등을 적극 활용하고 재배 관리에 노력한 결과 양호한 생육을 유지하며 안정적인 생산 성과를 거뒀다. 특히 생산된 여름배추의 일부는 한국농수산식품유통공사(aT) 정부 수매 물량으로 약 43t 출하했다. 정부 수매 물량을 제외한 배추는 농가에서 개별 출하했으며, 높은 가격을 받은 것으로 나타났다. 이번 시범사업을 통해 거창 지역에서도 준고랭지 여름배추의 안정적인 생산과 소득 창출 가능성을 확인했으며, 참여 농가들은 향후에도 여름배추 재배를 지속적으로 희망하는 등 사업에 대한 긍정적인 반응을 보였다. 김규태 농업기술센터소장은 “이번 시범사업을 통해 여름배추의 안정적인 생산과 고소득 창출이 가능함을 확인했고, 앞으로도 기후변화에 대응한 재배 기술 지원을 확대해 농가의 경쟁력을 높여 나가겠다”고 말했다. 이상규 기자 sklee@knnews.co.kr 이상규 기자의 다른기사 검색 맨위로 [기획연재] [경남형 콤팩트 시티] (6·끝) 시군별 주력산업 분담… 부족한 기능, 이웃지역과 연결해야 [귀향시대] [청년이 돌아왔다, 귀향시대] (20·끝) 이제는 귀향 아닌 정착 [무나 공간] [무나공간] 밀양 시니어카페 ‘진장올래’ [주말ON] [주말ON- 김시탁의 전원산책] (28) 가을의 첫 맛, 태추단감 많이 본 뉴스 일간 주간 창원 집트랙, 세계 최장 규모 ‘익스트림 슬라이드’ 만든다 거창 9경 가고… 1~4일 거창한마당대축제 마산 10대 현안사업 지연…창원상의, 조속한 추진 촉구 창원산단, 국내 첫 ‘첨단항공엔진 특화단지’ 지정 은빛 물결 억새 보고… 17~25일 합천 황매산 억새축제 6일부터 국감 돌입… 경남 공공기관 통폐합·분리 주요 쟁점 경남과학고 ‘영재학교’ 전환 추진 한화오션 하청 노동자 6명 고공농성 “원청 교섭 응하라” 역사 왜곡 논란에 휩싸인 ‘암살자(들)’ “청년 성장이 기업가 책무”…최평규 SNT 회장, 460억 사재 또 털었다 많이 본 뉴스 일간 주간 [창원 재활용선별장 가보니] 섞어 버린 양심… 명절 쓰레기와 사투 부지 해결도 못한 채 15억 추경 편성한 경남교육청 ‘도마’ 창녕 저수지서 낚시하던 60대 숨져 음주운전으로 복역 후 출소… 신고자 보복 협박 60대 실형 보훈요양원 1년 대기… 기다리다 눈감는 유공자들 [6·3선거 도내 당선자 재산 공개] 강기윤 창원시장 139억·권순기 도교육감 103억 ‘전국 최상위’ 고성 라면 제조 공장서 40대 작업자 로봇에 압착돼 숨져 창원 집트랙, 세계 최장 규모 ‘익스트림 슬라이드’ 만든다 경남도내",
+        "description": "기후변화로 여름 배추 농가가 어려움을 겪고 있는 가운데 거창군이 고온과 가뭄을 극복하고 여름 배추 수확에 성공해 눈길을 끌고 있다.거창군은 ... 경남신문 > 경제 폭염·가뭄 뚫은 거창 배추… 준고랭지 여름 재배 ‘성공작’ 거창군, ‘준고랭지 여름배추 시범사업’ 성공적 추진 기후변화 대응 안정생산…여름배추 수급 안정 기대 기사입력 : 2026-09-30 17:07:59 최종수정 : 2026-09-30 17:12:12 기후변화로 여름 배추 농가가 어려움을 겪고 있는 가운데 거창군이 고온과 가뭄을 극복하고 여름 배추 수확에 성공해 눈길을 끌고 있다. 거창군은 기후변화에 따른 여름철 이상고온과 재해에 대응하고 여름배추의 안정적인 생산 기반을 구축하기 위해 지난 5월 ‘준고랭지 여름배추 안정생산 체계 구축 시범사업’을 추진해 좋은 성과를 거뒀다고 30일 밝혔다. 이번 사업은 ‘기후변화 대응 품종 육성 지원사업’의 일환으로 국립원예특작과학원에 요청해 선정됐다. 준고랭지와 고랭지 지역에 적합한 여름배추 재배 기술을 현장에 적용해 안정적인 생산 가능성을 확인하기 위해 추진됐다. 준고랭지 여름배추 시범사업으로 생산한 배추./거창군/ 사업에서는 내서성 품종, 저온성 필름, 자동 관수 시스템, 재배 기술 등을 지원​해 여름철 고온과 가뭄 등 이상기후에 대응할 수 있는 재배 환경을 조성했다. 올해 강원도 등 주요 고랭지 배추 주산지에서는 여름철 잦은 강우로 작황이 좋지 못한 상황이었으며, 거창 지역 역시 고온과 가뭄이 발생했다. 그러나 시범사업 농가들은 지원된 저온성 필름과 자동 관수 시스템 등을 적극 활용하고 재배 관리에 노력한 결과 양호한 생육을 유지하며 안정적인 생산 성과를 거뒀다. 특히 생산된 여름배추의 일부는 한국농수산식품유통공사(aT) 정부 수매 물량으로 약 43t 출하했다. 정부 수매 물량을 제외한 배추는 농가에서 개별 출하했으며, 높은 가격을 받은 것으로 나타났다. 이번 시범사업을 통해 거창 지역에서도 준고랭지 여름배추의 안정적인 생산과 소득 창출 가능성을 확인했으며, 참여 농가들은 향후에도 여름배추 재배를 지속적으로 희망하는 등 사업에 대한 긍정적인 반응을 보였다. 김규태 농업기술센터소장은 “이번 시범사업을 통해 여름배추의 안정적인 생산과 고소득 창출이 가능함을 확인했고, 앞으로도 기후변화에 대응한 재배 기술 지원을 확대해 농가의 경쟁력을 높여 나가겠다”고 말했다. 이상규 기자 sklee@knnews.co.kr 이상규 기자의 다른기사 검색 맨위로 [기획연재] [경남형 콤팩트 시티] (6·끝) 시군별 주력산업 분담… 부족한 기능, 이웃지역과 연결해야 [귀향시대] [청년이 돌아왔다, 귀향시대] (20·끝) 이제는 귀향 아닌 정착 [무나 공간] [무나공간] 밀양 시니어카페 ‘진장올래’ [주말ON] [주말ON- 김시탁의 전원산책] (28) 가을의 첫 맛, 태추단감 많이 본 뉴스 일간 주간 창원 집트랙, 세계 최장 규모 ‘익스트림 슬라이드’ 만든다 거창 9경 가고… 1~4일 거창한마당대축제 창원산단, 국내 첫 ‘첨단항공엔진 특화단지’ 지정 마산 10대 현안사업 지연…창원상의, 조속한 추진 촉구 은빛 물결 억새 보고… 17~25일 합천 황매산 억새축제 6일부터 국감 돌입… 경남 공공기관 통폐합·분리 주요 쟁점 경남과학고 ‘영재학교’ 전환 추진 한화오션 하청 노동자 6명 고공농성 “원청 교섭 응하라” 역사 왜곡 논란에 휩싸인 ‘암살자(들)’ “청년 성장이 기업가 책무”…최평규 SNT 회장, 460억 사재 또 털었다 많이 본 뉴스 일간 주간 [창원 재활용선별장 가보니] 섞어 버린 양심… 명절 쓰레기와 사투 부지 해결도 못한 채 15억 추경 편성한 경남교육청 ‘도마’ 창녕 저수지서 낚시하던 60대 숨져 음주운전으로 복역 후 출소… 신고자 보복 협박 60대 실형 보훈요양원 1년 대기… 기다리다 눈감는 유공자들 [6·3선거 도내 당선자 재산 공개] 강기윤 창원시장 139억·권순기 도교육감 103억 ‘전국 최상위’ 창원 집트랙, 세계 최장 규모 ‘익스트림 슬라이드’ 만든다 고성 라면 제조 공장서 40대 작업자 로봇에 압착돼 숨져 경남도내",
         "link": "https://www.knnews.co.kr/news/articleView.php?idxno=1551944",
         "originallink": "https://www.knnews.co.kr/news/articleView.php?idxno=1551944",
         "domain": "knnews.co.kr",
@@ -5393,7 +5393,7 @@
         "pub_dt_kst": "2026-09-30T17:18:00+09:00",
         "section": "policy",
         "title": "폭염·가뭄 뚫은 거창 배추… 준고랭지 여름 재배 ‘성공작’",
-        "description": "기후변화로 여름 배추 농가가 어려움을 겪고 있는 가운데 거창군이 고온과 가뭄을 극복하고 여름 배추 수확에 성공해 눈길을 끌고 있다.거창군은 ... 경남신문 > 경제 폭염·가뭄 뚫은 거창 배추… 준고랭지 여름 재배 ‘성공작’ 거창군, ‘준고랭지 여름배추 시범사업’ 성공적 추진 기후변화 대응 안정생산…여름배추 수급 안정 기대 기사입력 : 2026-09-30 17:07:59 최종수정 : 2026-09-30 17:12:12 기후변화로 여름 배추 농가가 어려움을 겪고 있는 가운데 거창군이 고온과 가뭄을 극복하고 여름 배추 수확에 성공해 눈길을 끌고 있다. 거창군은 기후변화에 따른 여름철 이상고온과 재해에 대응하고 여름배추의 안정적인 생산 기반을 구축하기 위해 지난 5월 ‘준고랭지 여름배추 안정생산 체계 구축 시범사업’을 추진해 좋은 성과를 거뒀다고 30일 밝혔다. 이번 사업은 ‘기후변화 대응 품종 육성 지원사업’의 일환으로 국립원예특작과학원에 요청해 선정됐다. 준고랭지와 고랭지 지역에 적합한 여름배추 재배 기술을 현장에 적용해 안정적인 생산 가능성을 확인하기 위해 추진됐다. 준고랭지 여름배추 시범사업으로 생산한 배추./거창군/ 사업에서는 내서성 품종, 저온성 필름, 자동 관수 시스템, 재배 기술 등을 지원​해 여름철 고온과 가뭄 등 이상기후에 대응할 수 있는 재배 환경을 조성했다. 올해 강원도 등 주요 고랭지 배추 주산지에서는 여름철 잦은 강우로 작황이 좋지 못한 상황이었으며, 거창 지역 역시 고온과 가뭄이 발생했다. 그러나 시범사업 농가들은 지원된 저온성 필름과 자동 관수 시스템 등을 적극 활용하고 재배 관리에 노력한 결과 양호한 생육을 유지하며 안정적인 생산 성과를 거뒀다. 특히 생산된 여름배추의 일부는 한국농수산식품유통공사(aT) 정부 수매 물량으로 약 43t 출하했다. 정부 수매 물량을 제외한 배추는 농가에서 개별 출하했으며, 높은 가격을 받은 것으로 나타났다. 이번 시범사업을 통해 거창 지역에서도 준고랭지 여름배추의 안정적인 생산과 소득 창출 가능성을 확인했으며, 참여 농가들은 향후에도 여름배추 재배를 지속적으로 희망하는 등 사업에 대한 긍정적인 반응을 보였다. 김규태 농업기술센터소장은 “이번 시범사업을 통해 여름배추의 안정적인 생산과 고소득 창출이 가능함을 확인했고, 앞으로도 기후변화에 대응한 재배 기술 지원을 확대해 농가의 경쟁력을 높여 나가겠다”고 말했다. 이상규 기자 sklee@knnews.co.kr 이상규 기자의 다른기사 검색 맨위로 [기획연재] [경남형 콤팩트 시티] (6·끝) 시군별 주력산업 분담… 부족한 기능, 이웃지역과 연결해야 [귀향시대] [청년이 돌아왔다, 귀향시대] (20·끝) 이제는 귀향 아닌 정착 [무나 공간] [무나공간] 밀양 시니어카페 ‘진장올래’ [주말ON] [주말ON- 김시탁의 전원산책] (28) 가을의 첫 맛, 태추단감 많이 본 뉴스 일간 주간 창원 집트랙, 세계 최장 규모 ‘익스트림 슬라이드’ 만든다 거창 9경 가고… 1~4일 거창한마당대축제 마산 10대 현안사업 지연…창원상의, 조속한 추진 촉구 창원산단, 국내 첫 ‘첨단항공엔진 특화단지’ 지정 은빛 물결 억새 보고… 17~25일 합천 황매산 억새축제 6일부터 국감 돌입… 경남 공공기관 통폐합·분리 주요 쟁점 경남과학고 ‘영재학교’ 전환 추진 한화오션 하청 노동자 6명 고공농성 “원청 교섭 응하라” 역사 왜곡 논란에 휩싸인 ‘암살자(들)’ “청년 성장이 기업가 책무”…최평규 SNT 회장, 460억 사재 또 털었다 많이 본 뉴스 일간 주간 [창원 재활용선별장 가보니] 섞어 버린 양심… 명절 쓰레기와 사투 부지 해결도 못한 채 15억 추경 편성한 경남교육청 ‘도마’ 창녕 저수지서 낚시하던 60대 숨져 음주운전으로 복역 후 출소… 신고자 보복 협박 60대 실형 보훈요양원 1년 대기… 기다리다 눈감는 유공자들 [6·3선거 도내 당선자 재산 공개] 강기윤 창원시장 139억·권순기 도교육감 103억 ‘전국 최상위’ 고성 라면 제조 공장서 40대 작업자 로봇에 압착돼 숨져 창원 집트랙, 세계 최장 규모 ‘익스트림 슬라이드’ 만든다 경남도내",
+        "description": "기후변화로 여름 배추 농가가 어려움을 겪고 있는 가운데 거창군이 고온과 가뭄을 극복하고 여름 배추 수확에 성공해 눈길을 끌고 있다.거창군은 ... 경남신문 > 경제 폭염·가뭄 뚫은 거창 배추… 준고랭지 여름 재배 ‘성공작’ 거창군, ‘준고랭지 여름배추 시범사업’ 성공적 추진 기후변화 대응 안정생산…여름배추 수급 안정 기대 기사입력 : 2026-09-30 17:07:59 최종수정 : 2026-09-30 17:12:12 기후변화로 여름 배추 농가가 어려움을 겪고 있는 가운데 거창군이 고온과 가뭄을 극복하고 여름 배추 수확에 성공해 눈길을 끌고 있다. 거창군은 기후변화에 따른 여름철 이상고온과 재해에 대응하고 여름배추의 안정적인 생산 기반을 구축하기 위해 지난 5월 ‘준고랭지 여름배추 안정생산 체계 구축 시범사업’을 추진해 좋은 성과를 거뒀다고 30일 밝혔다. 이번 사업은 ‘기후변화 대응 품종 육성 지원사업’의 일환으로 국립원예특작과학원에 요청해 선정됐다. 준고랭지와 고랭지 지역에 적합한 여름배추 재배 기술을 현장에 적용해 안정적인 생산 가능성을 확인하기 위해 추진됐다. 준고랭지 여름배추 시범사업으로 생산한 배추./거창군/ 사업에서는 내서성 품종, 저온성 필름, 자동 관수 시스템, 재배 기술 등을 지원​해 여름철 고온과 가뭄 등 이상기후에 대응할 수 있는 재배 환경을 조성했다. 올해 강원도 등 주요 고랭지 배추 주산지에서는 여름철 잦은 강우로 작황이 좋지 못한 상황이었으며, 거창 지역 역시 고온과 가뭄이 발생했다. 그러나 시범사업 농가들은 지원된 저온성 필름과 자동 관수 시스템 등을 적극 활용하고 재배 관리에 노력한 결과 양호한 생육을 유지하며 안정적인 생산 성과를 거뒀다. 특히 생산된 여름배추의 일부는 한국농수산식품유통공사(aT) 정부 수매 물량으로 약 43t 출하했다. 정부 수매 물량을 제외한 배추는 농가에서 개별 출하했으며, 높은 가격을 받은 것으로 나타났다. 이번 시범사업을 통해 거창 지역에서도 준고랭지 여름배추의 안정적인 생산과 소득 창출 가능성을 확인했으며, 참여 농가들은 향후에도 여름배추 재배를 지속적으로 희망하는 등 사업에 대한 긍정적인 반응을 보였다. 김규태 농업기술센터소장은 “이번 시범사업을 통해 여름배추의 안정적인 생산과 고소득 창출이 가능함을 확인했고, 앞으로도 기후변화에 대응한 재배 기술 지원을 확대해 농가의 경쟁력을 높여 나가겠다”고 말했다. 이상규 기자 sklee@knnews.co.kr 이상규 기자의 다른기사 검색 맨위로 [기획연재] [경남형 콤팩트 시티] (6·끝) 시군별 주력산업 분담… 부족한 기능, 이웃지역과 연결해야 [귀향시대] [청년이 돌아왔다, 귀향시대] (20·끝) 이제는 귀향 아닌 정착 [무나 공간] [무나공간] 밀양 시니어카페 ‘진장올래’ [주말ON] [주말ON- 김시탁의 전원산책] (28) 가을의 첫 맛, 태추단감 많이 본 뉴스 일간 주간 창원 집트랙, 세계 최장 규모 ‘익스트림 슬라이드’ 만든다 거창 9경 가고… 1~4일 거창한마당대축제 창원산단, 국내 첫 ‘첨단항공엔진 특화단지’ 지정 마산 10대 현안사업 지연…창원상의, 조속한 추진 촉구 은빛 물결 억새 보고… 17~25일 합천 황매산 억새축제 6일부터 국감 돌입… 경남 공공기관 통폐합·분리 주요 쟁점 경남과학고 ‘영재학교’ 전환 추진 한화오션 하청 노동자 6명 고공농성 “원청 교섭 응하라” 역사 왜곡 논란에 휩싸인 ‘암살자(들)’ “청년 성장이 기업가 책무”…최평규 SNT 회장, 460억 사재 또 털었다 많이 본 뉴스 일간 주간 [창원 재활용선별장 가보니] 섞어 버린 양심… 명절 쓰레기와 사투 부지 해결도 못한 채 15억 추경 편성한 경남교육청 ‘도마’ 창녕 저수지서 낚시하던 60대 숨져 음주운전으로 복역 후 출소… 신고자 보복 협박 60대 실형 보훈요양원 1년 대기… 기다리다 눈감는 유공자들 [6·3선거 도내 당선자 재산 공개] 강기윤 창원시장 139억·권순기 도교육감 103억 ‘전국 최상위’ 창원 집트랙, 세계 최장 규모 ‘익스트림 슬라이드’ 만든다 고성 라면 제조 공장서 40대 작업자 로봇에 압착돼 숨져 경남도내",
         "link": "https://www.knnews.co.kr/news/articleView.php?idxno=1551944",
         "originallink": "https://www.knnews.co.kr/news/articleView.php?idxno=1551944",
         "domain": "knnews.co.kr",
@@ -5485,7 +5485,7 @@
         "selection_stage": "",
         "selection_note": "",
         "reassigned_from": "",
-        "score": 19.61,
+        "score": 19.21,
         "selection_fit_score": 0.0,
         "is_core": false
       },
@@ -6920,7 +6920,7 @@
         "pub_dt_kst": "2026-09-30T09:23:00+09:00",
         "section": "dist",
         "title": "배추값 오르기 전에 잡는다…롯데마트·슈퍼, 절임배추 물량 20% 확대",
-        "description": "소종섭의 시사쇼 머니마니 실시간 뉴스 SSG닷컴, '2시간 배송' 전국 33곳으로 확대…\"연내 55곳 목표\" 펫 사업 힘주는 소노…소노펫클럽앤리조트, 웰니스 클래스 운영 \"61만원 내돈내산\" 한가인 구매내역 공개, 사망여우 \"경솔했다\" 사과 손해보험 모집종사자 상위 1%…'블루리본 컨설턴트' 1602명 선정 [오늘의신상]자몽에 돔 페리뇽 더했다…신라호텔 가을 한정 '로제 자몽 빙수' AI에 희비 갈린 직장인…삼일PwC \"업무 재설계 필요\" 배추값 오르기 전에 잡는다…롯데마트·슈퍼, 절임배추 물량 20% 확대 코오롱, 수소트럭 활용 친환경 에너지 교육 첫선 롯데온, '경동나비엔 얼리특가전' 진행 배경훈 \"독파모 계속된다…프론티어 AI도 함께 도전\" 산업·IT 배추값 오르기 전에 잡는다…롯데마트·슈퍼, 절임배추 물량 20% 확대 const carouselInner = document.querySelector('.bx--rolling .carousel-inner'); const items = document.querySelectorAll('.bx--rolling .carousel-inner .item'); let currentIndex = 0; const firstClone = items[0].cloneNode(true); carouselInner.appendChild(firstClone); const itemHeight = 60; const totalItems = items.length; function moveCarousel() { currentIndex++; carouselInner.style.transform = `translateY(-${itemHeight * currentIndex}px)`; if (currentIndex === totalItems) { setTimeout(() => { carouselInner.style.transition = 'none'; carouselInner.style.transform = 'translateY(0)'; currentIndex = 0; setTimeout(() => { carouselInner.style.transition = 'transform 0.6s ease-in-out'; }, 50); }, 700); } } setInterval(moveCarousel, 3000); 뉴스 뉴스 증권 경제 부동산 산업·IT 정치 사회 국제 문화 오피니언 해외칼럼 골프 연예·스포츠 포토뉴스 전국 스페셜 기획·이슈 연재 프리미엄 콘텐츠 경제법률 완전정복 법률소식 Visual-News 인사이트 실시간 뉴스 오디오페이퍼 많이 본 뉴스 뉴스레터 전 종목 시세 플랩+ Game Hub if ($('.service-list__banner .swiper-container .item').length > 1) { const serviceRollingSwiper = new Swiper('.service-list__banner .swiper-container', { slidesPerView: 1, loop: true, resizeObserver: true, pagination: { clickable: true, el: '.service-list__banner .swiper-pagination', }, autoplay: { delay: 3000, disableOnInteraction: false, }, }); $('.btn_gnb').on('click', function () { setTimeout(() => { serviceRollingSwiper.update(); //250630-1 수정 serviceRollingSwiper.slideTo(1,0,true)//첫번째슬라이드로 이동 }, 10); }); } 아시아경제 서비스 운세 양낙규의 디펜스클럽 아시아경제CORE 알립니다 아시아경제 교육센터 E아시아경제 검색영역 뉴스검색 삭제아이콘 검색아이콘 function checkSearchSubmit(obj) { if( obj.sn.value && obj.sn.value != '뉴스검색' ) { return t",
+        "description": "소종섭의 시사쇼 머니마니 실시간 뉴스 펫 사업 힘주는 소노…소노펫클럽앤리조트, 웰니스 클래스 운영 \"61만원 내돈내산\" 한가인 구매내역 공개, 사망여우 \"경솔했다\" 사과 손해보험 모집종사자 상위 1%…'블루리본 컨설턴트' 1602명 선정 [오늘의신상]자몽에 돔 페리뇽 더했다…신라호텔 가을 한정 '로제 자몽 빙수' AI에 희비 갈린 직장인…삼일PwC \"업무 재설계 필요\" 배추값 오르기 전에 잡는다…롯데마트·슈퍼, 절임배추 물량 20% 확대 코오롱, 수소트럭 활용 친환경 에너지 교육 첫선 롯데온, '경동나비엔 얼리특가전' 진행 배경훈 \"독파모 계속된다…프론티어 AI도 함께 도전\" 상생협력기금, 벤처투자 첫 모펀드 결성 산업·IT 배추값 오르기 전에 잡는다…롯데마트·슈퍼, 절임배추 물량 20% 확대 const carouselInner = document.querySelector('.bx--rolling .carousel-inner'); const items = document.querySelectorAll('.bx--rolling .carousel-inner .item'); let currentIndex = 0; const firstClone = items[0].cloneNode(true); carouselInner.appendChild(firstClone); const itemHeight = 60; const totalItems = items.length; function moveCarousel() { currentIndex++; carouselInner.style.transform = `translateY(-${itemHeight * currentIndex}px)`; if (currentIndex === totalItems) { setTimeout(() => { carouselInner.style.transition = 'none'; carouselInner.style.transform = 'translateY(0)'; currentIndex = 0; setTimeout(() => { carouselInner.style.transition = 'transform 0.6s ease-in-out'; }, 50); }, 700); } } setInterval(moveCarousel, 3000); 뉴스 뉴스 증권 경제 부동산 산업·IT 정치 사회 국제 문화 오피니언 해외칼럼 골프 연예·스포츠 포토뉴스 전국 스페셜 기획·이슈 연재 프리미엄 콘텐츠 경제법률 완전정복 법률소식 Visual-News 인사이트 실시간 뉴스 오디오페이퍼 많이 본 뉴스 뉴스레터 전 종목 시세 플랩+ Game Hub if ($('.service-list__banner .swiper-container .item').length > 1) { const serviceRollingSwiper = new Swiper('.service-list__banner .swiper-container', { slidesPerView: 1, loop: true, resizeObserver: true, pagination: { clickable: true, el: '.service-list__banner .swiper-pagination', }, autoplay: { delay: 3000, disableOnInteraction: false, }, }); $('.btn_gnb').on('click', function () { setTimeout(() => { serviceRollingSwiper.update(); //250630-1 수정 serviceRollingSwiper.slideTo(1,0,true)//첫번째슬라이드로 이동 }, 10); }); } 아시아경제 서비스 운세 양낙규의 디펜스클럽 아시아경제CORE 알립니다 아시아경제 교육센터 E아시아경제 검색영역 뉴스검색 삭제아이콘 검색아이콘 function checkSearchSubmit(obj) { if( obj.sn.value && obj.sn.value != '뉴스검색' ) { return true; } else { aler",
         "link": "https://n.news.naver.com/mnews/article/277/0005822565?sid=101",
         "originallink": "https://view.asiae.co.kr/article/2026093009074636488",
         "domain": "view.asiae.co.kr",
@@ -7245,7 +7245,7 @@
         "pub_dt_kst": "2026-09-30T13:24:00+09:00",
         "section": "dist",
         "title": "임미애 “공적 플랫폼 이상 거래 4건 중 1건…납득하기 어렵다”",
-        "description": "태그 찾기 var paragraphs = articleContainer.querySelectorAll('p[style*=\"text-align\"]'); if (paragraphs.length = 0; i--) { var position = adPositions[i]; var targetParagraph = paragraphs[position]; if (targetParagraph) { // 광고 컨테이너 생성 var adWrapper = document.createElement('div'); adWrapper.className = 'article-ad-wrapper'; adWrapper.style.cssText = 'margin: 30px 0; padding: 20px 0; text-align: center; clear: both;'; // 애드센스 광고 태그 생성 var adIns = document.createElement('ins'); adIns.className = 'adsbygoogle'; adIns.style.cssText = 'display:block; text-align:center;'; adIns.setAttribute('data-ad-client', config.adClient); adIns.setAttribute('data-ad-slot', config.adSlot); adIns.setAttribute('data-ad-format', config.adFormat); if (config.adFullWidthResponsive) { adIns.setAttribute('data-full-width-responsive', 'true'); } adWrapper.appendChild(adIns); // 문단 다음에 광고 삽입 targetParagraph.parentNode.insertBefore(adWrapper, targetParagraph.nextSibling); adCount++; } } // 애드센스 광고 초기화 (삽입한 광고 개수만큼 push) if (adCount > 0 && typeof adsbygoogle !== 'undefined') { console.log('애드센스 광고 초기화 중... (' + adCount + '개)'); try { for (var i = 0; i .col_left img, .col_left iframe { max-width:840px !important; } 뉴스투데이 소개 보도자료 2026-10-01 06:15 회원가입 로그인 // \"; html1 +=\" div\\\" data-cycle-timeout=\\\"5000\\\">\"; html2 +=\" div\\\" data-cycle-timeout=\\\"5000\\\">\"; html3 += \" \"; html3 += \" \"; html3 += \" div\\\" data-cycle-timeout=\\\"5000\\\">\"; $.each(data, function (i, item) { var imgUrl = item.advertisingImgUrl; imgUrl = (ObjectUtils.isNotEmpty(imgUrl)) ? imgUrl.replace('srv-news2day.kr.object.ncloudstorage.com','cdn.news2day.co.kr') : imgUrl; if(val1 == i){ html1 += \" \"; html1 += \" \"; html1 += \" \"; html1 += \" \"; val1 = i + 3; }else if(val2 == i){ html2 += \" \"; html2 += \" \"; html2 += \" \"; html2 += \" \"; val2 = i + 3; }else if(val3 == i){ html3 += \" \"; html3 += \" \"; html3 += \" \"; html3 += \" \"; val3 = i + 3; } }); html3 += \" \"; html2 += \" \"; html1 += \" \"; html_e += \" \"; $(\"#rolling6\").append(html_s+html1+html2+html3+html",
+        "description": "태그 찾기 var paragraphs = articleContainer.querySelectorAll('p[style*=\"text-align\"]'); if (paragraphs.length = 0; i--) { var position = adPositions[i]; var targetParagraph = paragraphs[position]; if (targetParagraph) { // 광고 컨테이너 생성 var adWrapper = document.createElement('div'); adWrapper.className = 'article-ad-wrapper'; adWrapper.style.cssText = 'margin: 30px 0; padding: 20px 0; text-align: center; clear: both;'; // 애드센스 광고 태그 생성 var adIns = document.createElement('ins'); adIns.className = 'adsbygoogle'; adIns.style.cssText = 'display:block; text-align:center;'; adIns.setAttribute('data-ad-client', config.adClient); adIns.setAttribute('data-ad-slot', config.adSlot); adIns.setAttribute('data-ad-format', config.adFormat); if (config.adFullWidthResponsive) { adIns.setAttribute('data-full-width-responsive', 'true'); } adWrapper.appendChild(adIns); // 문단 다음에 광고 삽입 targetParagraph.parentNode.insertBefore(adWrapper, targetParagraph.nextSibling); adCount++; } } // 애드센스 광고 초기화 (삽입한 광고 개수만큼 push) if (adCount > 0 && typeof adsbygoogle !== 'undefined') { console.log('애드센스 광고 초기화 중... (' + adCount + '개)'); try { for (var i = 0; i .col_left img, .col_left iframe { max-width:840px !important; } 뉴스투데이 소개 보도자료 2026-10-01 06:29 회원가입 로그인 // \"; html1 +=\" div\\\" data-cycle-timeout=\\\"5000\\\">\"; html2 +=\" div\\\" data-cycle-timeout=\\\"5000\\\">\"; html3 += \" \"; html3 += \" \"; html3 += \" div\\\" data-cycle-timeout=\\\"5000\\\">\"; $.each(data, function (i, item) { var imgUrl = item.advertisingImgUrl; imgUrl = (ObjectUtils.isNotEmpty(imgUrl)) ? imgUrl.replace('srv-news2day.kr.object.ncloudstorage.com','cdn.news2day.co.kr') : imgUrl; if(val1 == i){ html1 += \" \"; html1 += \" \"; html1 += \" \"; html1 += \" \"; val1 = i + 3; }else if(val2 == i){ html2 += \" \"; html2 += \" \"; html2 += \" \"; html2 += \" \"; val2 = i + 3; }else if(val3 == i){ html3 += \" \"; html3 += \" \"; html3 += \" \"; html3 += \" \"; val3 = i + 3; } }); html3 += \" \"; html2 += \" \"; html1 += \" \"; html_e += \" \"; $(\"#rolling6\").append(html_s+html1+html2+html3+html",
         "link": "https://www.news2day.co.kr/article/20260930500161",
         "originallink": "https://www.news2day.co.kr/article/20260930500161",
         "domain": "news2day.co.kr",
@@ -7320,7 +7320,7 @@
         "pub_dt_kst": "2026-09-30T17:56:00+09:00",
         "section": "dist",
         "title": "온라인 도매시장 , 이상 거래 6,822억 원…전체 거래 액의 36% 차지",
-        "description": "임미애 의원    ©임미애 【브레이크뉴스 대구】진예솔 기자=최근 2년간 농수산물 온라인 도매시장 거래 중 약 4건 중 1건이 비정상적이거나 이례적 거 시작페이지로 l 즐겨찾기 l RSS l 편집 2026.10.01 [06:00] 【브레이크뉴스 대구】진예솔 기자=최근 2년간 농수산물 온라인 도매시장 거래 중 약 4건 중 1건이 비정상적이거나 이례적 거래로 분류된 것으로 나타났다. 특히 이러한 이상거래의 금액이 전체 거래금액의 36%를 넘어서면서, 거래 규모가 커지는 만큼 시장 내 거래 검증과 관리체계 강화 필요성이 대두되고 있다. 30일 국회 농림축산식품해양수산위원회 임미애 의원(더불어민주당)이 농림축산식품부와 한국농수산식품유통공사(aT)로부터 제출받은 외부점검 보고서를 분석한 결과, 2024~2025년 온라인 도매시장 구매확정 거래 25만705건 중 6만4,190건(25.6%)이 비전형적 또는 이상거래로 집계됐다. 이상거래에 해당하는 금액은 전체 1조8,849억 원 중 6,822억 원(36.2%)에 달했다. 연도별로 보면, 이상거래 규모는 계속 커지고 있다. 2024년에는 2만630건, 2,047억 원이던 이상거래가 2025년에는 4만3,560건, 4,775억 원으로 확대됐다. 건수는 약 2.1배, 금액은 약 2.3배 증가한 셈이다. 2025년 한 해만 놓고 보면 이상거래 금액이 전체 거래액의 38.6%를 차지했다. 특수관계 거래에서도 일부 쏠림 현상이 뚜렷했다. 전체 거래의 약 1.3%(3,369건)만이 특수관계 거래에 해당됐으나, 거래금액은 2,700억 원으로 전체의 14.3%를 차지했다. 건당 평균 거래금액은 약 8,000만 원으로 전체 평균 약 750만 원의 10배를 넘었다. 이 중 판매자와 구매자 임원이 겹치는 거래는 2,331억 원에 달했고, 30% 이상 지분관계가 있는 거래도 560건, 2,013억 원이 포함됐다. 근거리 거래도 적지 않았다. 거래처 간 직선거리 3km 미만 거래가 2만1,370건(8.5%)에 이르렀고, 거래금액 역시 4,419억 원(23.4%)을 기록했다. 순환거래 의심 사례도 드러났다. 45일 이내에 재매입이 이루어진 26개 거래관계, 196건의 거래금액은 119억 원이었다. 이 중 12건, 8억 원 상당에는 운송비 보조금이 실제로 지급된 것으로 파악됐다. 운송비 보조금 지급과정에서도 허점이 드러났다. 2024~2025년에 지급된 운송비 보조금은 3만7,079건, 약 70억 원 수준이었으나, 이 중 차량정보가 누락된 채 지급된 사례가 7,256건, 거래금액 기준 513억 원에 달했다. 외부점검 보고서는 이 같은 사례에 대해, 현행 운송비 지원체계에서 사용자가 입력한 운송정보에 대한 시스템적 통제가 충분하지 않다고 지적했다. 다만 이번 점검 결과 자체로 부정거래나 부정수급이 바로 드러난 것은 아니다. 외부 전문기관이 선별한 1만2,498건을 정밀검토한 결과, 부정수급이나 환수 대상이라고 확정된 사례는 확인되지 않았다. 그러나 공적 장부 대조나 장기간의 다단계 순환거래 추적에 한계가 있어, 추가 검증이 필요하다는 의견도 나왔다. 임미애 의원은 “정부가 설계한 공적 플랫폼에서 이처럼 비정상적인 거래가 빈번한 것은 상식적으로 납득하기 어렵다”며, “보조금 부정수급이 없다고 단정짓기보다는, 온라인 도매시장 규모 증가와 예산 확대에 맞게 정확한 원인 분석과 대책이 마련돼야 한다”고 강조했다. 전문가들은 이번 점검 결과가 온라인 도매시장의 거래 규모뿐 아니라 거래 실질성과 관리체계 검증의 필요성을 환기시킨다고 지적한다. 특히 특수관계, 근거리, 순환거래 등 비전형적 거래가 상당한 규모를 차지하는 만큼, 정부와 aT가 유형별 이상거래 원인을 분석하고 거래·보조금 관리체계를 더욱 촘촘히 보완해야 할 시점이라는 목소리가 나오고 있다. <구글 번역으로 번역한 영문 기사의 전문 입니다. 번역에 오류가 있을 수 있음을 밝힙니다.> Data shows that approximately one in four transactions in the online wholesale market for agricultu",
+        "description": "임미애 의원    ©임미애 【브레이크뉴스 대구】진예솔 기자=최근 2년간 농수산물 온라인 도매시장 거래 중 약 4건 중 1건이 비정상적이거나 이례적 거 시작페이지로 l 즐겨찾기 l RSS l 편집 2026.10.01 [06:19] 【브레이크뉴스 대구】진예솔 기자=최근 2년간 농수산물 온라인 도매시장 거래 중 약 4건 중 1건이 비정상적이거나 이례적 거래로 분류된 것으로 나타났다. 특히 이러한 이상거래의 금액이 전체 거래금액의 36%를 넘어서면서, 거래 규모가 커지는 만큼 시장 내 거래 검증과 관리체계 강화 필요성이 대두되고 있다. 30일 국회 농림축산식품해양수산위원회 임미애 의원(더불어민주당)이 농림축산식품부와 한국농수산식품유통공사(aT)로부터 제출받은 외부점검 보고서를 분석한 결과, 2024~2025년 온라인 도매시장 구매확정 거래 25만705건 중 6만4,190건(25.6%)이 비전형적 또는 이상거래로 집계됐다. 이상거래에 해당하는 금액은 전체 1조8,849억 원 중 6,822억 원(36.2%)에 달했다. 연도별로 보면, 이상거래 규모는 계속 커지고 있다. 2024년에는 2만630건, 2,047억 원이던 이상거래가 2025년에는 4만3,560건, 4,775억 원으로 확대됐다. 건수는 약 2.1배, 금액은 약 2.3배 증가한 셈이다. 2025년 한 해만 놓고 보면 이상거래 금액이 전체 거래액의 38.6%를 차지했다. 특수관계 거래에서도 일부 쏠림 현상이 뚜렷했다. 전체 거래의 약 1.3%(3,369건)만이 특수관계 거래에 해당됐으나, 거래금액은 2,700억 원으로 전체의 14.3%를 차지했다. 건당 평균 거래금액은 약 8,000만 원으로 전체 평균 약 750만 원의 10배를 넘었다. 이 중 판매자와 구매자 임원이 겹치는 거래는 2,331억 원에 달했고, 30% 이상 지분관계가 있는 거래도 560건, 2,013억 원이 포함됐다. 근거리 거래도 적지 않았다. 거래처 간 직선거리 3km 미만 거래가 2만1,370건(8.5%)에 이르렀고, 거래금액 역시 4,419억 원(23.4%)을 기록했다. 순환거래 의심 사례도 드러났다. 45일 이내에 재매입이 이루어진 26개 거래관계, 196건의 거래금액은 119억 원이었다. 이 중 12건, 8억 원 상당에는 운송비 보조금이 실제로 지급된 것으로 파악됐다. 운송비 보조금 지급과정에서도 허점이 드러났다. 2024~2025년에 지급된 운송비 보조금은 3만7,079건, 약 70억 원 수준이었으나, 이 중 차량정보가 누락된 채 지급된 사례가 7,256건, 거래금액 기준 513억 원에 달했다. 외부점검 보고서는 이 같은 사례에 대해, 현행 운송비 지원체계에서 사용자가 입력한 운송정보에 대한 시스템적 통제가 충분하지 않다고 지적했다. 다만 이번 점검 결과 자체로 부정거래나 부정수급이 바로 드러난 것은 아니다. 외부 전문기관이 선별한 1만2,498건을 정밀검토한 결과, 부정수급이나 환수 대상이라고 확정된 사례는 확인되지 않았다. 그러나 공적 장부 대조나 장기간의 다단계 순환거래 추적에 한계가 있어, 추가 검증이 필요하다는 의견도 나왔다. 임미애 의원은 “정부가 설계한 공적 플랫폼에서 이처럼 비정상적인 거래가 빈번한 것은 상식적으로 납득하기 어렵다”며, “보조금 부정수급이 없다고 단정짓기보다는, 온라인 도매시장 규모 증가와 예산 확대에 맞게 정확한 원인 분석과 대책이 마련돼야 한다”고 강조했다. 전문가들은 이번 점검 결과가 온라인 도매시장의 거래 규모뿐 아니라 거래 실질성과 관리체계 검증의 필요성을 환기시킨다고 지적한다. 특히 특수관계, 근거리, 순환거래 등 비전형적 거래가 상당한 규모를 차지하는 만큼, 정부와 aT가 유형별 이상거래 원인을 분석하고 거래·보조금 관리체계를 더욱 촘촘히 보완해야 할 시점이라는 목소리가 나오고 있다. <구글 번역으로 번역한 영문 기사의 전문 입니다. 번역에 오류가 있을 수 있음을 밝힙니다.> Data shows that approximately one in four transactions in the online wholesale market for agricultu",
         "link": "http://www.breaknews.com/1240134",
         "originallink": "http://www.breaknews.com/1240134",
         "domain": "breaknews.com",
@@ -8129,11 +8129,11 @@
             50
           ],
           [
-            "성수품 가격 안정 대책",
+            "원산지 단속 농산물",
             50
           ],
           [
-            "원산지 단속 농산물",
+            "성수품 가격 안정 대책",
             50
           ],
           [
@@ -9286,11 +9286,11 @@
             50
           ],
           [
-            "월동 해충 방제",
+            "냉해 동해 과수 피해",
             50
           ],
           [
-            "냉해 동해 과수 피해",
+            "월동 해충 방제",
             50
           ],
           [
@@ -9747,16 +9747,6 @@
       },
       {
         "section": "policy",
-        "reason": "policy_retail_sales_trend",
-        "press": "고코리아",
-        "domain": "gokorea.kr",
-        "title": "추석 지나도 배추 한 포기 8천원대 여전",
-        "url": "https://www.gokorea.kr/news/articleView.html?idxno=879983",
-        "source_query": "성수품 가격 안정 대책",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "policy",
         "reason": "origin_fraud_enforcement",
         "press": "새전북신문",
         "domain": "sjbnews.com",
@@ -9803,6 +9793,16 @@
         "title": "추석 제수용품 원산지 둔갑 집중 단속 …도내 15곳 적발",
         "url": "http://www.jeonmin.co.kr/news/articleView.html?idxno=447854",
         "source_query": "원산지 단속 농산물",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "policy",
+        "reason": "policy_retail_sales_trend",
+        "press": "고코리아",
+        "domain": "gokorea.kr",
+        "title": "추석 지나도 배추 한 포기 8천원대 여전",
+        "url": "https://www.gokorea.kr/news/articleView.html?idxno=879983",
+        "source_query": "성수품 가격 안정 대책",
         "source_channel": "naver_api"
       },
       {
@@ -10657,21 +10657,21 @@
       },
       {
         "section": "supply",
-        "reason": "apple_non_edible_context",
-        "press": "에너지경제신문",
-        "domain": "ekn.kr",
-        "title": "[똑똑한신상] 대상 청정원, 이그니스 클룹, 서울우유, 동원F&B, 남양유업...",
-        "url": "https://www.ekn.kr/web/view.php?key=20260930026590244",
-        "source_query": "사과 가격",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
         "reason": "livestock_title_dominant",
         "press": "babytimes",
         "domain": "babytimes.co.kr",
         "title": "이마트, 10월 1일부터 '고래잇 페스타'…한우·수산물 최대 50% 할인",
         "url": "http://www.babytimes.co.kr/news/articleView.html?idxno=74250",
+        "source_query": "사과 가격",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "apple_non_edible_context",
+        "press": "에너지경제신문",
+        "domain": "ekn.kr",
+        "title": "[똑똑한신상] 대상 청정원, 이그니스 클룹, 서울우유, 동원F&B, 남양유업...",
+        "url": "https://www.ekn.kr/web/view.php?key=20260930026590244",
         "source_query": "사과 가격",
         "source_channel": "naver_api"
       },
@@ -10817,21 +10817,21 @@
       },
       {
         "section": "supply",
-        "reason": "apple_apology_context",
-        "press": "itdaily",
-        "domain": "itdaily.kr",
-        "title": "오픈AI, 잇단 AI 통제 우려 속 보안 솔루션 강화 나섰다",
-        "url": "https://www.itdaily.kr/news/articleView.html?idxno=241929",
-        "source_query": "사과 저장",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
         "reason": "apple_non_edible_context",
         "press": "이데일리",
         "domain": "edaily.co.kr",
         "title": "한국 경기에 북한 국가…日주간지 “프랑스계 대행업체 직원 실수”",
         "url": "https://www.edaily.co.kr/News/Read?newsId=04913446645585368&mediaCodeNo=257",
+        "source_query": "사과 저장",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "apple_apology_context",
+        "press": "itdaily",
+        "domain": "itdaily.kr",
+        "title": "오픈AI, 잇단 AI 통제 우려 속 보안 솔루션 강화 나섰다",
+        "url": "https://www.itdaily.kr/news/articleView.html?idxno=241929",
         "source_query": "사과 저장",
         "source_channel": "naver_api"
       },
@@ -10957,21 +10957,21 @@
       },
       {
         "section": "supply",
-        "reason": "livestock_title_dominant",
-        "press": "babytimes",
-        "domain": "babytimes.co.kr",
-        "title": "이마트, 10월 1일부터 '고래잇 페스타'…한우·수산물 최대 50% 할인",
-        "url": "http://www.babytimes.co.kr/news/articleView.html?idxno=74250",
-        "source_query": "배 과일 가격",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
         "reason": "livestock_only_supply",
         "press": "에너지경제신문",
         "domain": "ekn.kr",
         "title": "[똑똑한신상] 대상 청정원, 이그니스 클룹, 서울우유, 동원F&B, 남양유업...",
         "url": "https://www.ekn.kr/web/view.php?key=20260930026590244",
+        "source_query": "배 과일 가격",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "livestock_title_dominant",
+        "press": "babytimes",
+        "domain": "babytimes.co.kr",
+        "title": "이마트, 10월 1일부터 '고래잇 페스타'…한우·수산물 최대 50% 할인",
+        "url": "http://www.babytimes.co.kr/news/articleView.html?idxno=74250",
         "source_query": "배 과일 가격",
         "source_channel": "naver_api"
       },
@@ -11807,21 +11807,21 @@
       },
       {
         "section": "supply",
-        "reason": "must_terms_fail",
-        "press": "데일리한국",
-        "domain": "daily.hankooki.com",
-        "title": "[현장] K치킨벨트 여행...교촌치킨 본고장 구미서 즐기는 '치막'",
-        "url": "https://daily.hankooki.com/news/articleView.html?idxno=1410870",
-        "source_query": "무 가격",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
         "reason": "supply_policy_market_brief",
         "press": "포쓰저널",
         "domain": "4th.kr",
         "title": "김장 준비 미리..롯데마트·슈퍼, 절임배추 7만5천 박스 푼다",
         "url": "http://www.4th.kr/news/articleView.html?idxno=2118941",
+        "source_query": "무 가격",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "supply",
+        "reason": "must_terms_fail",
+        "press": "데일리한국",
+        "domain": "daily.hankooki.com",
+        "title": "[현장] K치킨벨트 여행...교촌치킨 본고장 구미서 즐기는 '치막'",
+        "url": "https://daily.hankooki.com/news/articleView.html?idxno=1410870",
         "source_query": "무 가격",
         "source_channel": "naver_api"
       },
@@ -12592,16 +12592,6 @@
         "domain": "babytimes.co.kr",
         "title": "\"미식의 도시 파리에서 즐기는 신라면!\"",
         "url": "http://www.babytimes.co.kr/news/articleView.html?idxno=74249",
-        "source_query": "김치업계",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "supply",
-        "reason": "finance_strict_no_agri_context",
-        "press": "브릿지경제",
-        "domain": "viva100.com",
-        "title": "SKB ‘B tv 핫딜’, 론칭 10개월 만에 누적 판매액 100억원 돌파",
-        "url": "https://www.viva100.com/article/20260930500290",
         "source_query": "김치업계",
         "source_channel": "naver_api"
       },
@@ -16507,21 +16497,21 @@
       },
       {
         "section": "dist",
-        "reason": "dist_county_local_weak_dist_signal",
-        "press": "m-economynews",
-        "domain": "m-economynews.com",
-        "title": "진도군, 레몬페이먼츠와 농산물 판로 확대 및 관광객 유치 업무 협약 체...",
-        "url": "https://www.m-economynews.com/news/article.html?no=71210",
-        "source_query": "농산물 판로 확대",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "dist",
         "reason": "fishery_only",
         "press": "m-economynews",
         "domain": "m-economynews.com",
         "title": "진도군, 농수산투자벤처투자협회와 업무 협약(MOU) 체결",
         "url": "https://www.m-economynews.com/news/article.html?no=71209",
+        "source_query": "농산물 판로 확대",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "dist",
+        "reason": "dist_county_local_weak_dist_signal",
+        "press": "m-economynews",
+        "domain": "m-economynews.com",
+        "title": "진도군, 레몬페이먼츠와 농산물 판로 확대 및 관광객 유치 업무 협약 체...",
+        "url": "https://www.m-economynews.com/news/article.html?no=71210",
         "source_query": "농산물 판로 확대",
         "source_channel": "naver_api"
       },
@@ -16707,21 +16697,21 @@
       },
       {
         "section": "dist",
-        "reason": "must_terms_fail",
-        "press": "아시아투데이",
-        "domain": "asiatoday.co.kr",
-        "title": "영주에 건강기능식품 공장 조성…풍기인삼 소비 기반 확대",
-        "url": "https://www.asiatoday.co.kr/kn/view.php?key=20260930010010488",
-        "source_query": "농산물 판로 확대",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "dist",
         "reason": "dist_program_event_noise",
         "press": "뉴스경남",
         "domain": "newsgn.com",
         "title": "\"산삼에 물들고, 함양에 머물다\"…'제21회 함양산삼축제' 10월 7일 개막",
         "url": "https://www.newsgn.com/news/articleView.html?idxno=576873",
+        "source_query": "농산물 판로 확대",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "dist",
+        "reason": "must_terms_fail",
+        "press": "아시아투데이",
+        "domain": "asiatoday.co.kr",
+        "title": "영주에 건강기능식품 공장 조성…풍기인삼 소비 기반 확대",
+        "url": "https://www.asiatoday.co.kr/kn/view.php?key=20260930010010488",
         "source_query": "농산물 판로 확대",
         "source_channel": "naver_api"
       },
@@ -16737,21 +16727,21 @@
       },
       {
         "section": "dist",
-        "reason": "dist_program_event_noise",
-        "press": "브레이크뉴스",
-        "domain": "breaknews.com",
-        "title": "제21회 함양산삼축제 7일 개막…산삼 캐고 웰니스 즐긴다",
-        "url": "http://www.breaknews.com/1240024",
-        "source_query": "농산물 판로 확대",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "dist",
         "reason": "dist_county_local_weak_dist_signal",
         "press": "에너지경제신문",
         "domain": "ekn.kr",
         "title": "[패트롤] 안동시-영주시-예천군-의성군-봉화군-군위군",
         "url": "https://www.ekn.kr/web/view.php?key=20260930025060306",
+        "source_query": "농산물 판로 확대",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "dist",
+        "reason": "dist_program_event_noise",
+        "press": "브레이크뉴스",
+        "domain": "breaknews.com",
+        "title": "제21회 함양산삼축제 7일 개막…산삼 캐고 웰니스 즐긴다",
+        "url": "http://www.breaknews.com/1240024",
         "source_query": "농산물 판로 확대",
         "source_channel": "naver_api"
       },
@@ -17437,21 +17427,21 @@
       },
       {
         "section": "dist",
-        "reason": "dist_low_value_donation",
-        "press": "대경일보",
-        "domain": "dkilbo.com",
-        "title": "전화식 성주군수, 지역 현안 해결 도비 확보 총력",
-        "url": "https://www.dkilbo.com/news/articleView.html?idxno=555856",
-        "source_query": "농산물 유통 현장",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "dist",
         "reason": "dist_county_local_weak_dist_signal",
         "press": "m-economynews",
         "domain": "m-economynews.com",
         "title": "진도군, 레몬페이먼츠와 농산물 판로 확대 및 관광객 유치 업무 협약 체...",
         "url": "https://www.m-economynews.com/news/article.html?no=71210",
+        "source_query": "농산물 유통 현장",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "dist",
+        "reason": "dist_low_value_donation",
+        "press": "대경일보",
+        "domain": "dkilbo.com",
+        "title": "전화식 성주군수, 지역 현안 해결 도비 확보 총력",
+        "url": "https://www.dkilbo.com/news/articleView.html?idxno=555856",
         "source_query": "농산물 유통 현장",
         "source_channel": "naver_api"
       },
@@ -17501,6 +17491,16 @@
         "press": "연합뉴스",
         "domain": "yna.co.kr",
         "title": "강호동 농협 회장, 인제서 현장 경영 펼쳐",
+        "url": "https://www.yna.co.kr/view/PYH20260930289200062?input=1196m",
+        "source_query": "농산물 유통 현장",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "dist",
+        "reason": "dist_soft_without_infra",
+        "press": "연합뉴스",
+        "domain": "yna.co.kr",
+        "title": "강호동 농협 회장, 인제서 현장 경영 펼쳐",
         "url": "https://www.yna.co.kr/view/PYH20260930289300062?input=1196m",
         "source_query": "농산물 유통 현장",
         "source_channel": "naver_api"
@@ -17517,21 +17517,11 @@
       },
       {
         "section": "dist",
-        "reason": "dist_soft_without_infra",
-        "press": "연합뉴스",
-        "domain": "yna.co.kr",
-        "title": "강호동 농협 회장, 인제서 현장 경영 펼쳐",
-        "url": "https://www.yna.co.kr/view/PYH20260930289200062?input=1196m",
-        "source_query": "농산물 유통 현장",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "dist",
-        "reason": "dist_program_event_noise",
-        "press": "이데일리",
-        "domain": "edaily.co.kr",
-        "title": "“벌금 내고 뺏긴다며 자식도 땅 안 받겠대”…농지 전수조사에 들끓는...",
-        "url": "https://www.edaily.co.kr/News/Read?newsId=04795366645585368&mediaCodeNo=257",
+        "reason": "commodity_corporate_stock_context",
+        "press": "국제뉴스",
+        "domain": "gukjenews.com",
+        "title": "K-Food 팝업스토어 홍콩서 4.3만 명 방문, 2,600만원 매출 기록",
+        "url": "https://www.gukjenews.com/news/articleView.html?idxno=3709687",
         "source_query": "농산물 유통 현장",
         "source_channel": "naver_api"
       },
@@ -17547,11 +17537,11 @@
       },
       {
         "section": "dist",
-        "reason": "commodity_corporate_stock_context",
-        "press": "국제뉴스",
-        "domain": "gukjenews.com",
-        "title": "K-Food 팝업스토어 홍콩서 4.3만 명 방문, 2,600만원 매출 기록",
-        "url": "https://www.gukjenews.com/news/articleView.html?idxno=3709687",
+        "reason": "dist_program_event_noise",
+        "press": "이데일리",
+        "domain": "edaily.co.kr",
+        "title": "“벌금 내고 뺏긴다며 자식도 땅 안 받겠대”…농지 전수조사에 들끓는...",
+        "url": "https://www.edaily.co.kr/News/Read?newsId=04795366645585368&mediaCodeNo=257",
         "source_query": "농산물 유통 현장",
         "source_channel": "naver_api"
       },
@@ -19427,21 +19417,21 @@
       },
       {
         "section": "pest",
-        "reason": "pest_rice_only",
-        "press": "농민신문",
-        "domain": "nongmin.com",
-        "title": "충남·세종농협RPC운영협의회, 수확기 벼 작황 점검…“가공용 수입쌀 ...",
-        "url": "https://www.nongmin.com/article/20260930500304",
-        "source_query": "병해충",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "pest",
         "reason": "pest_no_agri_context",
         "press": "연합뉴스TV",
         "domain": "yonhapnewstv.co.kr",
         "title": "'재선충병 확산' 충남도, 산림청에 내년 방제비 200억 요청",
         "url": "http://www.yonhapnewstv.co.kr/news/AKR20260930162846vdM",
+        "source_query": "병해충",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "pest",
+        "reason": "pest_rice_only",
+        "press": "농민신문",
+        "domain": "nongmin.com",
+        "title": "충남·세종농협RPC운영협의회, 수확기 벼 작황 점검…“가공용 수입쌀 ...",
+        "url": "https://www.nongmin.com/article/20260930500304",
         "source_query": "병해충",
         "source_channel": "naver_api"
       },
@@ -19607,21 +19597,21 @@
       },
       {
         "section": "pest",
-        "reason": "pest_partial_mention",
-        "press": "데일리안",
-        "domain": "dailian.co.kr",
-        "title": "[2026 국감] 지난 5년간 여의도 471배 산림 소실…산불 방지·진화헬기는...",
-        "url": "https://www.dailian.co.kr/news/view/1696160/?sc=Naver",
-        "source_query": "병해충",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "pest",
         "reason": "pest_no_agri_context",
         "press": "국제뉴스",
         "domain": "gukjenews.com",
         "title": "충북도, 환경산림 전담 TF 회의…국립생태원 백두대간 분원 등 신규사업...",
         "url": "https://www.gukjenews.com/news/articleView.html?idxno=3709200",
+        "source_query": "병해충",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "pest",
+        "reason": "pest_partial_mention",
+        "press": "데일리안",
+        "domain": "dailian.co.kr",
+        "title": "[2026 국감] 지난 5년간 여의도 471배 산림 소실…산불 방지·진화헬기는...",
+        "url": "https://www.dailian.co.kr/news/view/1696160/?sc=Naver",
         "source_query": "병해충",
         "source_channel": "naver_api"
       },
@@ -19777,21 +19767,21 @@
       },
       {
         "section": "pest",
-        "reason": "apple_non_edible_context",
-        "press": "서울신문",
-        "domain": "seoul.co.kr",
-        "title": "유엔사 “정전협정 위반” 北 “깡패 자작극”",
-        "url": "https://www.seoul.co.kr/news/politics/diplomacy/2026/10/01/20261001001005?wlog_tag3=naver",
-        "source_query": "사과",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "pest",
         "reason": "hardblock_entertainment",
         "press": "서울신문",
         "domain": "seoul.co.kr",
         "title": "조작기소 특검법 연기 하루 만에… 본회의 상정 두고 與지도부 이견",
         "url": "https://www.seoul.co.kr/news/politics/2026/10/01/20261001005002?wlog_tag3=naver",
+        "source_query": "사과",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "pest",
+        "reason": "apple_non_edible_context",
+        "press": "서울신문",
+        "domain": "seoul.co.kr",
+        "title": "유엔사 “정전협정 위반” 北 “깡패 자작극”",
+        "url": "https://www.seoul.co.kr/news/politics/diplomacy/2026/10/01/20261001001005?wlog_tag3=naver",
         "source_query": "사과",
         "source_channel": "naver_api"
       },
@@ -19837,21 +19827,21 @@
       },
       {
         "section": "pest",
-        "reason": "apple_apology_context",
-        "press": "중앙일보",
-        "domain": "joongang.co.kr",
-        "title": "노무현 “피도 눈물도 없나!”…MB 괴롭힌 ‘광우병 사태’ 전말",
-        "url": "https://www.joongang.co.kr/article/25466220",
-        "source_query": "사과",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "pest",
         "reason": "apple_non_edible_context",
         "press": "조선일보",
         "domain": "chosun.com",
         "title": "100년 전 미제 껌 광고 “베이스볼·승마할 때 좋아”",
         "url": "https://www.chosun.com/culture-life/culture_general/2026/10/01/MAR4FOEXKNF7RDRYD6QJZXMMQ4/",
+        "source_query": "사과",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "pest",
+        "reason": "apple_apology_context",
+        "press": "중앙일보",
+        "domain": "joongang.co.kr",
+        "title": "노무현 “피도 눈물도 없나!”…MB 괴롭힌 ‘광우병 사태’ 전말",
+        "url": "https://www.joongang.co.kr/article/25466220",
         "source_query": "사과",
         "source_channel": "naver_api"
       },
@@ -19867,16 +19857,6 @@
       },
       {
         "section": "pest",
-        "reason": "apple_apology_context",
-        "press": "뉴스1",
-        "domain": "news1.kr",
-        "title": "'400만원' 커플 통장에 손댄 남친, 잔고 13만원뿐…\"가족여행에 썼다\" 황...",
-        "url": "https://www.news1.kr/society/general-society/6306070",
-        "source_query": "사과",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "pest",
         "reason": "apple_non_edible_context",
         "press": "뉴스1",
         "domain": "news1.kr",
@@ -19887,11 +19867,11 @@
       },
       {
         "section": "pest",
-        "reason": "apple_non_edible_context",
-        "press": "동아일보",
-        "domain": "donga.com",
-        "title": "적반하장 北 “지뢰 자작극”… 합참 “요새화 즉각 멈춰라”",
-        "url": "https://www.donga.com/news/Politics/article/all/20261001/134764050/2",
+        "reason": "apple_apology_context",
+        "press": "뉴스1",
+        "domain": "news1.kr",
+        "title": "'400만원' 커플 통장에 손댄 남친, 잔고 13만원뿐…\"가족여행에 썼다\" 황...",
+        "url": "https://www.news1.kr/society/general-society/6306070",
         "source_query": "사과",
         "source_channel": "naver_api"
       },
@@ -19902,6 +19882,16 @@
         "domain": "donga.com",
         "title": "김여정, 지뢰 발뺌하며 되레 협박… 軍 “향후 상황 모두 北책임”",
         "url": "https://www.donga.com/news/Politics/article/all/20261001/134764018/2",
+        "source_query": "사과",
+        "source_channel": "naver_api"
+      },
+      {
+        "section": "pest",
+        "reason": "apple_non_edible_context",
+        "press": "동아일보",
+        "domain": "donga.com",
+        "title": "적반하장 北 “지뢰 자작극”… 합참 “요새화 즉각 멈춰라”",
+        "url": "https://www.donga.com/news/Politics/article/all/20261001/134764050/2",
         "source_query": "사과",
         "source_channel": "naver_api"
       },
@@ -19952,36 +19942,6 @@
         "domain": "voakorea.com",
         "title": "[한국은 지금] 영화 '암살자(들)', 육영수 피격 사건 왜곡 논란… 정치권...",
         "url": "https://www.voakorea.com/a/8206295.html",
-        "source_query": "사과",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "pest",
-        "reason": "apple_non_edible_context",
-        "press": "kidshankook",
-        "domain": "kidshankook.kr",
-        "title": "'축제하면 봄?' 가을이 들으면 화날라!",
-        "url": "https://www.kidshankook.kr/news/articleView.html?idxno=18402",
-        "source_query": "사과",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "pest",
-        "reason": "apple_apology_context",
-        "press": "CPBC",
-        "domain": "news.cpbc.co.kr",
-        "title": "[시사천국] 대북 대응부터 검찰개혁까지…진영을 벗어던진 날카로운 물...",
-        "url": "https://news.cpbc.co.kr/article/1176072?division=NAVER",
-        "source_query": "사과",
-        "source_channel": "naver_api"
-      },
-      {
-        "section": "pest",
-        "reason": "apple_non_edible_context",
-        "press": "gamechosun",
-        "domain": "gamechosun.co.kr",
-        "title": "마침내 정식 출시! '프린세스 메이커: 예언의 아이들' 9월 30일 풀 릴리...",
-        "url": "https://www.gamechosun.co.kr/webzine/article/view.php?no=225875",
         "source_query": "사과",
         "source_channel": "naver_api"
       },
@@ -22527,7 +22487,7 @@
       }
     ],
     "runtime": {
-      "started_at_kst": "2026-10-01T06:08:23+09:00",
+      "started_at_kst": "2026-10-01T06:22:34+09:00",
       "local_dry_run": false,
       "placement_only": false
     },
