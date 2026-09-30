@@ -149,6 +149,21 @@ class NonAgriOrgHeadInaugurationTests(unittest.TestCase):
             self.assertFalse(main.is_non_agri_org_head_inauguration_context(title, desc), title)
 
 
+class RepairTargetCappedByAchievableTests(unittest.TestCase):
+    """복구 런: 장학금 카드를 뺀 교체안 1회차가 pest(사건 2건) 목표 4장 미달로 통째 기각됐다."""
+
+    def test_thin_section_target_follows_story_count(self):
+        targets = main._cap_repair_targets_by_achievable(
+            {"supply": 5, "policy": 5, "dist": 5, "pest": 4},
+            {"supply": 183, "policy": 56, "dist": 22, "pest": 2},
+        )
+        self.assertEqual(targets, {"supply": 5, "policy": 5, "dist": 5, "pest": 2})
+        self.assertEqual(main._repair_section_target(targets, "pest"), 2)
+        self.assertEqual(main._repair_section_target(targets, "supply"), 5)
+        self.assertEqual(main._repair_section_target({}, "dist"), main.MAX_PER_SECTION)
+        self.assertEqual(main._repair_section_target({"pest": 0}, "pest"), 0)
+
+
 class CoopScholarshipRecruitmentNoticeTests(unittest.TestCase):
     """복구 런: 유통 지면 절제 → 재충원이 같은 부류(조합 장학금·채용) 카드를 다시 끌어와 blocking."""
 

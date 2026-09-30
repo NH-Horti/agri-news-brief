@@ -53167,12 +53167,38 @@ def _repair_article_link_keys(article: Article) -> set[str]:
 
 
 def _repair_section_target(section_targets: dict[str, int] | None, section: str) -> int:
-    """교체안이 그 섹션에 돌려줘야 하는 행 수(기본 MAX_PER_SECTION)."""
+    """교체안이 그 섹션에 돌려줘야 하는 행 수(기본 MAX_PER_SECTION).
+
+    목표는 _editorial_repair_section_targets(하한 SOFT_MIN)가 정하고, 사건 수가 그보다 적은
+    얇은 섹션만 _cap_repair_targets_by_achievable 로 더 내려간다. 여기서 MIN_FALLBACK 으로 다시
+    올리면 2026-10-01 pest(사건 2건)처럼 모든 교체안이 post_finalize_section_underfill 로 기각된다.
+    """
+    raw_target = (section_targets or {}).get(section, MAX_PER_SECTION)
     try:
-        target = int((section_targets or {}).get(section, MAX_PER_SECTION) or MAX_PER_SECTION)
+        target = int(MAX_PER_SECTION if raw_target is None else raw_target)
     except (TypeError, ValueError):
         target = MAX_PER_SECTION
-    return max(MIN_FALLBACK_PER_SECTION, min(MAX_PER_SECTION, target))
+    return max(0, min(MAX_PER_SECTION, target))
+
+
+def _cap_repair_targets_by_achievable(
+    section_targets: dict[str, int],
+    achievable_by_section: dict[str, int] | None,
+) -> dict[str, int]:
+    """교체안 섹션 목표를 유효 사건 수(achievable)로 상한한다."""
+    capped = dict(section_targets)
+    for section, achievable in (achievable_by_section or {}).items():
+        try:
+            limit = max(0, int(achievable))
+        except (TypeError, ValueError):
+            continue
+        if section in capped and limit < capped[section]:
+            log.info(
+                "[QUALITY GATE] repair target capped by achievable stories: section=%s target=%d->%d",
+                section, capped[section], limit,
+            )
+            capped[section] = limit
+    return capped
 
 
 def _section_validator_candidates(
@@ -54118,10 +54144,13 @@ def _run_prepublish_quality_gate(
         attempt = repair_proposal_count
         # 섹션별 요구 행 수: raw 풀(+현재 지면 카드)로 검증기를 통과하는 5장이 불가능한
         # 섹션은 목표를 낮춘다. 제안이 기각될 때마다 제외 링크가 늘어나므로 매번 다시 센다.
-        section_targets = _editorial_repair_section_targets(
-            raw_by_section,
-            current_sections,
-            excluded_links_by_section=repair_excluded_links,
+        section_targets = _cap_repair_targets_by_achievable(
+            _editorial_repair_section_targets(
+                raw_by_section,
+                current_sections,
+                excluded_links_by_section=repair_excluded_links,
+            ),
+            achievable_by_section,
         )
         repair = propose_editorial_repair(
             report_date,
