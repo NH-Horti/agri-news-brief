@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-30T04:26:29+09:00",
+  "generated_at": "2026-10-01T04:24:14+09:00",
   "rows": [
     {
       "date": "2026-09-22",
@@ -1417,6 +1417,19 @@
       "users": 1,
       "archive_url": "",
       "source_url": ""
+    },
+    {
+      "date": "2026-09-30",
+      "article_id": "e89f9117c896",
+      "title": "CPTPP 농업 피해액 연 최대 7100억?···축소·부실 분석 '논란'",
+      "report_date": "2026-09-30",
+      "section": "policy",
+      "surface": "briefing_open",
+      "target_domain": "www.agrinet.co.kr",
+      "clicks": 3,
+      "users": 2,
+      "archive_url": "/agri-news-brief/archive/2026-09-30.html#sec-policy",
+      "source_url": "https://www.agrinet.co.kr/news/articleView.html?idxno=407571"
     },
     {
       "date": "2026-06-04",
@@ -4017,6 +4030,71 @@
       "users": 1,
       "archive_url": "/agri-news-brief/archive/2026-09-29.html#commodity-napa_cabbage",
       "source_url": "https://www.aflnews.co.kr/news/articleView.html?idxno=328926"
+    },
+    {
+      "date": "2026-09-30",
+      "article_id": "33cb2073ffaf",
+      "title": "농진청, 마늘· 양파 기계수확부터 저장까지 효율화 기술 점검",
+      "report_date": "2026-09-30",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.newsis.com",
+      "clicks": 2,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-09-30",
+      "article_id": "4dff9f01542e",
+      "title": "“ 유통 기업에서 출하대금 못 받으면 농식품부 장관이 대신 지급”…농...",
+      "report_date": "2026-09-30",
+      "section": "policy",
+      "surface": "briefing_open",
+      "target_domain": "www.nongmin.com",
+      "clicks": 2,
+      "users": 2,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-09-30",
+      "article_id": "87d2a92914bf",
+      "title": "농산물 수급조절위원회 제8기 출범…김장철 배추·무 수급 점검",
+      "report_date": "2026-09-30",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.ajunews.com",
+      "clicks": 2,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-09-30.html#sec-supply",
+      "source_url": "https://www.ajunews.com/view/20260929173959485"
+    },
+    {
+      "date": "2026-09-30",
+      "article_id": "d015369b512d",
+      "title": "깐마늘 불량품 AI로 가려낸다…농진청, 자동 선별기 현장 평가",
+      "report_date": "2026-09-30",
+      "section": "dist",
+      "surface": "briefing_card",
+      "target_domain": "www.dailian.co.kr",
+      "clicks": 2,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-09-30",
+      "article_id": "e89f9117c896",
+      "title": "CPTPP 농업 피해액 연 최대 7100억?···축소·부실 분석 '논란'",
+      "report_date": "2026-09-30",
+      "section": "policy",
+      "surface": "briefing_card",
+      "target_domain": "www.agrinet.co.kr",
+      "clicks": 2,
+      "users": 2,
+      "archive_url": "/agri-news-brief/archive/2026-09-30.html#sec-policy",
+      "source_url": "https://www.agrinet.co.kr/news/articleView.html?idxno=407571"
     },
     {
       "date": "2026-06-04",
@@ -13754,6 +13832,110 @@
       "users": 1,
       "archive_url": "/agri-news-brief/archive/2026-09-29.html#commodity-flowers",
       "source_url": "http://www.amnews.co.kr/news/articleView.html?idxno=74738"
+    },
+    {
+      "date": "2026-09-30",
+      "article_id": "1a8c0c89ee7c",
+      "title": "가을철 시설채소 바이러스 병해 잡는다",
+      "report_date": "2026-09-30",
+      "section": "pest",
+      "surface": "briefing_card",
+      "target_domain": "www.amnews.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-09-30.html#sec-pest",
+      "source_url": "http://www.amnews.co.kr/news/articleView.html?idxno=74767"
+    },
+    {
+      "date": "2026-09-30",
+      "article_id": "33cb2073ffaf",
+      "title": "농진청, 마늘· 양파 기계수확부터 저장까지 효율화 기술 점검",
+      "report_date": "2026-09-30",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.newsis.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-09-30",
+      "article_id": "50c452c22341",
+      "title": "보은과수거점 산지유통 센터 전국 경영평가서 2년 연속 '상위권'",
+      "report_date": "2026-09-30",
+      "section": "dist",
+      "surface": "briefing_open",
+      "target_domain": "www.news1.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-09-30",
+      "article_id": "87d2a92914bf",
+      "title": "농산물 수급조절위원회 제8기 출범…김장철 배추·무 수급 점검",
+      "report_date": "2026-09-30",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.ajunews.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-09-30.html#sec-supply",
+      "source_url": "https://www.ajunews.com/view/20260929173959485"
+    },
+    {
+      "date": "2026-09-30",
+      "article_id": "b56c4129a4ca",
+      "title": "딸기, 소득 짭짤 농가 효자 작목",
+      "report_date": "2026-09-30",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.jjn.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-09-30.html#sec-supply",
+      "source_url": "http://www.jjn.co.kr/news/articleView.html?idxno=1053362"
+    },
+    {
+      "date": "2026-09-30",
+      "article_id": "b56c4129a4ca",
+      "title": "딸기, 소득 짭짤 농가 효자 작목",
+      "report_date": "2026-09-30",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.jjn.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-09-30.html#sec-supply",
+      "source_url": "http://www.jjn.co.kr/news/articleView.html?idxno=1053362"
+    },
+    {
+      "date": "2026-09-30",
+      "article_id": "be61f00ab461",
+      "title": "전남광주 ‘골드 키위 ’, 뉴질랜드·칠레 간다",
+      "report_date": "2026-09-30",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.seoul.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-09-30",
+      "article_id": "f025917fd861",
+      "title": "충북도 ' 농산물 가격 안정 · 지원 조례' 본회의 통과",
+      "report_date": "2026-09-30",
+      "section": "policy",
+      "surface": "briefing_open",
+      "target_domain": "www.agrinet.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-09-30.html#sec-policy",
+      "source_url": "https://www.agrinet.co.kr/news/articleView.html?idxno=407506"
     }
   ]
 }
