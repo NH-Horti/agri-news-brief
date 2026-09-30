@@ -1,8 +1,8 @@
 ## Daily Eval (2026-10-01)
-- Overall: **58.65** (fail)
+- Overall: **75.88** (warn)
 - Operational: **88.60**
 - Reader quality: **83.88** (capped; penalty=4.7, cap=95.0, reasons=preferred_slot_underfill)
-- Quality gate: **58.65** (needs_major_iteration, editorial_blocking_issue; editorial=58.6, operational=88.6)
+- Quality gate: **75.88** (needs_major_iteration, editorial_major_issue; editorial=57.1, operational=88.6)
 - Scores: completeness=89.2, diversity=93.2, source=65.9, summary=100.0, freshness=100.0, retrieval=70.8, section_fit=77.8, core=100.0, commodity=87.0
 - Briefing cards: 17 / Commodity cards: 21
 - Sections: supply:5/5 raw=199, policy:5/5 raw=68, dist:5/5 raw=48, pest:2/5 raw=7
@@ -10,18 +10,18 @@
 
 
 ### Editorial Shadow Eval
-- Editorial: **58.65** (daily target 82, tier=needs_major_iteration, needs_major_iteration)
+- Editorial: **57.15** (daily target 82, tier=needs_major_iteration, needs_major_iteration)
 - Model: gpt-5.6-sol (resolved gpt-5.6-sol)
-- Model-reported score: 58.50; authoritative method=weighted_components_v1
-- Acceptance: needs_iteration (blocking=1, major=5, reasons=editorial_score_min, no_blocking_issues, no_major_issues, critical_components_min, all_components_min, section_count_score_min, no_section_underfill, commodity_board_score_min)
+- Model-reported score: 58.80; authoritative method=weighted_components_v1
+- Acceptance: needs_iteration (blocking=0, major=4, reasons=editorial_score_min, no_major_issues, critical_components_min, all_components_min, section_count_score_min, no_section_underfill, commodity_board_score_min)
 - Section count gate: 87.5 (underfilled)
-- Components: article_selection=55.0, section_fit=61.0, core=64.0, summary=82.0, missed=43.0, noise=42.0
-- Summary: 요약은 명료하지만 중복 기사, 비농업 정책 기사, 판촉성 꼬리기사와 강한 후보 누락이 많다. 특히 공급·유통에서 같은 사안을 두 번씩 담고, pest는 활용 가능한 피해 기사 대신 2건에 그쳐 편집 완성도가 낮다.
-- [major] duplicate_story: 도쿄 35일 연속 비 ‘1886년 이래 최장’…채솟값 뛰고 두통 호소도 - 3번과 동일한 도쿄 장기 강우·채소 가격 전망 기사다.
-- [major] duplicate_story: "온라인 도매시장서 25% '이상거래'…특수관계·순환거래 기승" - 11번과 동일 통계와 조사에 기반한 같은 사건이다.
-- [major] duplicate_story: 기계-영상-인공지능 적용 깐마늘 선별 “자동화 넘어 지능화” - 13번과 같은 농진청 깐마늘 선별 시스템 발표다.
-- [blocking] off_topic: 김선기 KTL 원장 취임…첨단 산업 시험인증·기업 수출 지원 강화 - 농업·원예 정책과 직접 연결되지 않은 일반 산업기관장 취임 기사다.
-- [major] missed_candidate: 위상 높인 농산물 수급조절위 8기 닻 올려… "과수까지 품고 수급관리" - 법정위원회 전환과 과수 수급관리 확대를 다룬 최상위 정책 후보가 누락됐다.
+- Components: article_selection=50.0, section_fit=65.0, core=57.0, summary=88.0, missed=42.0, noise=40.0
+- Summary: 요약은 명료하지만 중복과 약한 보충 기사가 많고, 원문 풀의 강한 정책·경영 후보를 놓쳤다. 특히 supply와 dist의 중복, policy의 비농업 기사, pest의 최소 수량 미달이 편집 완성도를 크게 낮춘다.
+- [major] duplicate_story: 도쿄 35일 연속 비 ‘1886년 이래 최장’…채솟값 뛰고 두통 호소도 - 3번 카드와 동일한 도쿄 장기 강우·채소값 전망 기사다.
+- [major] duplicate_story: 기계-영상-인공지능 적용 깐마늘 선별 “자동화 넘어 지능화” - 13번 카드와 같은 농진청 깐마늘 선별 시스템 발표다.
+- [moderate] duplicate_theme: "온라인 도매시장서 25% '이상거래'…특수관계·순환거래 기승" - 11번과 같은 조사 수치와 쟁점을 다뤄 핵심 슬롯 두 개를 독점한다.
+- [major] wrong_section: 김선기 KTL 원장 취임…첨단 산업 시험인증·기업 수출 지원 강화 - 일반 산업 시험인증기관장 취임 기사로 농업정책 연관성이 희박하다.
+- [major] missed_candidate: 위상 높인 농산물 수급조절위 8기 닻 올려… "과수까지 품고 수급관리" - 법정위원회 전환과 과수 수급관리 확대를 담은 강한 전국 정책 기사다.
 
 ### Improvement Hints
 - 선정 결과가 약한 섹션이 있습니다: pest. 해당 섹션은 raw 후보가 충분하므로 임계치/재배치 규칙을 다시 보는 편이 좋습니다.
