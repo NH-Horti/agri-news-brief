@@ -218,6 +218,8 @@ class TestRegressions(unittest.TestCase):
         self.assertIn("workflow_run:", self.daily_watchdog_text)
         self.assertIn("workflows: ['agri-news-brief (daily)']", self.daily_watchdog_text)
         self.assertIn("!contains(github.event.workflow_run.display_title, 'recovery=true')", self.daily_watchdog_text)
+        # 실패한 복구 런도 워치독을 깨운다(GitHub 스케줄은 2~3시간 늦게 와서 2차 복구가 없었다).
+        self.assertIn("github.event.workflow_run.conclusion != 'success'", self.daily_watchdog_text)
         self.assertIn("actions: write", self.daily_watchdog_text)
         self.assertIn("WORKFLOW_FILE: daily.yml", self.daily_watchdog_text)
         self.assertIn("TZ=Asia/Seoul date +%F", self.daily_watchdog_text)
@@ -258,13 +260,15 @@ class TestRegressions(unittest.TestCase):
         self.assertIn("PREPUBLISH_EDITORIAL_TOKEN_BUDGET:", self.daily_text)
         self.assertIn("--existing-result-json", self.rebuild_text)
         self.assertIn(
-            "PREPUBLISH_QUALITY_MAX_REPAIRS: ${{ inputs.quality_recovery && '5' || '1' }}",
+            "PREPUBLISH_QUALITY_MAX_REPAIRS: ${{ inputs.quality_recovery && '5' || '2' }}",
             self.daily_text,
         )
         self.assertIn(
-            "PREPUBLISH_QUALITY_MAX_PROPOSALS: ${{ inputs.quality_recovery && '10' || '2' }}",
+            "PREPUBLISH_QUALITY_MAX_PROPOSALS: ${{ inputs.quality_recovery && '10' || '3' }}",
             self.daily_text,
         )
+        self.assertIn("PREPUBLISH_EDITORIAL_MAX_CALLS: '6'", self.daily_text)
+        self.assertIn("PREPUBLISH_GUARANTEED_DELIVERY: 'true'", self.daily_text)
         self.assertIn("BODY_CRAWL_MAX_ARTICLES: '120'", self.daily_text)
         self.assertIn("BODY_CRAWL_RETRY_TOTAL: '0'", self.daily_text)
         self.assertIn(

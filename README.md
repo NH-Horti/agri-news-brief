@@ -211,12 +211,28 @@ the daily page, updates the index/state, or sends the normal Kakao briefing, it:
    78, all summaries are present, and no hard reader or editorial issue exists;
    an operator-forced recovery ignores the score floor and permits the audited
    three-safe-card emergency floor for an underfilled section, while keeping
-   summary completeness plus hard reader/editorial safety checks.
+   summary completeness plus hard reader/editorial safety checks;
+7. if every earlier tier still blocks, the daily run publishes a **guaranteed
+   minimum edition** (`publication_mode=guaranteed_minimum`) instead of holding
+   the briefing: cards named by a hard editorial or reader issue are removed
+   without a refill floor, cards whose summary stays empty are dropped, and
+   section minimums and score floors are recorded but no longer block. Only an
+   edition with fewer than `GUARANTEED_DELIVERY_MIN_TOTAL_CARDS` (8) cards — a
+   collection outage — is still held. `PREPUBLISH_GUARANTEED_DELIVERY=false`
+   restores the fail-closed behavior; rebuild/replay paths never use it.
+
+Within the gate, a card whose *summary* is flagged as a factual error or unsafe
+is first re-written from the article's own lead (excised only if flagged again);
+LLM repairs and excisions whose sections lose a card to the final duplicate /
+hard-reject guard are topped up by the deterministic refill chain instead of
+being rejected; and the gate publishes the best state it has seen (publishable
+tier first, then headline score) rather than a later state that got worse.
 
 The model review sees at most ten raw candidates per section, uses concise
 structured output, and disables one-off implicit prompt-cache writes. Normal
-runs allow at most three editorial calls and reserve 60,000 editorial tokens;
-explicit quality recovery doubles that token budget. Rebuild/replay workflows
+runs allow at most six editorial calls (a repair proposal starts only when its
+verification call still fits under that cap) within 130,000 editorial tokens;
+explicit quality recovery allows six calls and 150,000 tokens. Rebuild/replay workflows
 reuse an existing pre-send evaluation instead of paying for the same review a
 second time.
 
@@ -230,9 +246,11 @@ rather than the mere existence or conclusion of an Actions run. It dispatches a
 forced deterministic recovery immediately when a primary finishes without a
 receipt, cancels a primary that is 25 minutes old after 06:30 or 10 minutes old
 after 06:40, and lets a forced recovery replace any older queued primary. The
-05:50/06:20/06:35/06:50/06:55 KST checks are delayed-event backups, automatic
-recovery is capped at two attempts per day, and the 09:15 audit explicitly fails
-if the Kakao receipt timestamp missed 07:00 KST.
+05:50/06:20/06:35/06:50/06:55 KST checks are delayed-event backups (GitHub's
+scheduled events routinely arrive hours late, so a failed recovery run also
+wakes the watchdog through `workflow_run`), automatic recovery is capped at two
+attempts per day, and the 09:15 audit explicitly fails if the Kakao receipt
+timestamp missed 07:00 KST.
 
 The 04:45 KST credential preflight validates Naver, OpenAI quota, and Kakao,
 leaving schedule-delay headroom before both production triggers.

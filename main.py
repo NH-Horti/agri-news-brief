@@ -1151,6 +1151,15 @@ PREPUBLISH_WRONG_SECTION_RELOCATION = (
 PREPUBLISH_FORCE_SLA_FALLBACK = os.getenv(
     "PREPUBLISH_FORCE_SLA_FALLBACK", "false"
 ).strip().lower() in ("1", "true", "yes", "y")
+# 발행 보장(2026-10-01): 일일 런이 정상·SLA 기준을 모두 못 넘어도, 독자에게 해로운 카드(편집·독자
+# hard issue, 요약 누락)를 뺀 최소 지면으로 발행한다. 섹션 최소 장수·점수 하한은 발행을 막지 않는다.
+PREPUBLISH_GUARANTEED_DELIVERY = (
+    (os.getenv("PREPUBLISH_GUARANTEED_DELIVERY", "true") or "true").strip().lower() in ("1", "true", "yes", "y")
+)
+# 이보다 카드가 적으면 수집 장애로 보고 보장 발행도 하지 않는다(빈 지면 방지).
+GUARANTEED_DELIVERY_MIN_TOTAL_CARDS = max(
+    1, int((os.getenv("GUARANTEED_DELIVERY_MIN_TOTAL_CARDS", "8") or "8").strip() or 8)
+)
 PREPUBLISH_SLA_FALLBACK_MIN_SCORE = max(
     0.0,
     min(100.0, float((os.getenv("PREPUBLISH_SLA_FALLBACK_MIN_SCORE", "78") or "78").strip() or 78)),
@@ -25167,6 +25176,9 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str, *, apply_se
         relocated_reason = _relocated_out_block_reason(a, section_key)
         if relocated_reason:
             return relocated_reason
+    # 교체안이 일부러 뺀 카드는 그 교체안의 빈칸을 메우는 재충원으로 되돌아오지 않는다(재충원 중에만 켜짐).
+    if _GATE_REFILL_SKIP_LINK_KEYS and (_repair_article_link_keys(a) & _GATE_REFILL_SKIP_LINK_KEYS):
+        return "editorial_repair_dropped"
     if section_key in ("supply", "policy", "dist") and is_municipal_holiday_omnibus_plan_context(
         a.title or "", a.description or ""
     ):
@@ -31421,15 +31433,23 @@ def _clarify_conflicting_price_basis_summaries(by_section: dict[str, list[Articl
         key = next(iter(managed_commodity_board_keys_for_article(article, max_keys=1)), "")
         if key:
             by_commodity.setdefault(key, []).append(article)
+    up_terms = ("급등", "올랐다", "상승", "강세")
+    down_terms = ("반토막", "급락", "폭락", "하락", "약세")
+
+    def _direction(article: Article) -> str:
+        title = _publish_editorial_title(article)
+        up = any(term in title for term in up_terms)
+        down = any(term in title for term in down_terms)
+        # '경락가 상승·하락 품목' 주간 동향처럼 두 방향이 다 있는 제목은 비교 기준 문구 대상이 아니다.
+        # 예전에는 양쪽 모두로 잡혀 '전년 대비 산지가격 흐름으로…'라는 틀린 문장이 매주 붙었고
+        # (2026-09-01·08·15·22), 편집 평가가 이를 factual_error 로 잡아 그날 최상위 공급 카드가 잘렸다.
+        if up and down:
+            return ""
+        return "up" if up else "down" if down else ""
+
     for articles in by_commodity.values():
-        upward = [
-            article for article in articles
-            if any(term in _publish_editorial_title(article) for term in ("급등", "올랐다", "상승", "강세"))
-        ]
-        downward = [
-            article for article in articles
-            if any(term in _publish_editorial_title(article) for term in ("반토막", "급락", "폭락", "하락", "약세"))
-        ]
+        upward = [article for article in articles if _direction(article) == "up"]
+        downward = [article for article in articles if _direction(article) == "down"]
         if not upward or not downward:
             continue
         for article in upward:
@@ -53634,6 +53654,73 @@ def _enrich_editorial_snapshot_source_tiers(
     return enriched
 
 
+# 요약 사실 오류로 한 번 원문 리드 요약으로 바꾼 카드. 다시 지적되면 그때는 카드를 뺀다.
+_GATE_SUMMARY_FIXED_LINK_KEYS: set[str] = set()
+_SUMMARY_FIXABLE_ISSUE_TYPES = frozenset({"factual_error", "unsafe_summary"})
+
+
+def _replace_flagged_summaries_with_source_text(
+    editorial_result: JsonDict,
+    sections: dict[str, list[Article]],
+    summary_cache: dict[str, SummaryCacheEntry | str],
+) -> list[JsonDict]:
+    """편집 평가가 사실 오류·위험 요약으로 지목한 카드의 요약을 원문 리드(수집 description)로 바꾼다.
+
+    생성 요약이 숫자를 잘못 옮긴 경우(2026-09-29 주간 경락가 동향: 시작가를 평균가로 씀) 기사 자체는
+    그날 최상위 공급 후보다. 원문 문장은 그런 사실 오류를 만들지 않는다. 카드당 한 번만 고친다.
+    """
+    issues = editorial_result.get("issues", []) if isinstance(editorial_result, dict) else []
+    fixes: list[JsonDict] = []
+    for issue in issues if isinstance(issues, list) else []:
+        if not isinstance(issue, dict) or str(issue.get("type") or "").strip().lower() not in _SUMMARY_FIXABLE_ISSUE_TYPES:
+            continue
+        title_key = norm_title_key(str(issue.get("title") or "").replace("...", "").replace("…", ""))
+        if not title_key:
+            continue
+        hinted = [
+            part.strip().lower()
+            for part in re.split(r"[/,|]", str(issue.get("section") or ""))
+            if part.strip().lower() in _section_keys()
+        ]
+        for section in hinted + [s for s in _section_keys() if s not in hinted]:
+            article = next(
+                (
+                    a
+                    for a in sections.get(section, []) or []
+                    if isinstance(a, Article) and _editorial_issue_title_matches(title_key, a)
+                ),
+                None,
+            )
+            if article is None:
+                continue
+            keys = _repair_article_link_keys(article)
+            source_text = (article.description or "").strip()
+            if (keys & _GATE_SUMMARY_FIXED_LINK_KEYS) or len(source_text) < 40 or any(f["article"] is article for f in fixes):
+                break
+            replacement = _normalize_article_summary(article, source_text)
+            if not replacement.strip():
+                break
+            _GATE_SUMMARY_FIXED_LINK_KEYS.update(keys)
+            article.summary = replacement
+            if article.norm_key:
+                summary_cache[article.norm_key] = {"s": replacement, "t": datetime.now(KST).isoformat(timespec="seconds")}
+            fixes.append(
+                {
+                    "article": article,
+                    "section": section,
+                    "title": article.title,
+                    "issue_type": str(issue.get("type") or ""),
+                    "reason": str(issue.get("reason") or "")[:200],
+                }
+            )
+            log.info(
+                "[QUALITY GATE] replaced flagged summary with source lead section=%s issue=%s title=%s",
+                section, issue.get("type"), str(article.title or "")[:80],
+            )
+            break
+    return fixes
+
+
 def _invalidate_editorial_bad_summary_cache(
     editorial_result: JsonDict,
     selected_by_section: dict[str, list[Article]],
@@ -53735,6 +53822,12 @@ _EXCISION_MAX_PER_SECTION_ROUND = 2
 # 편집 평가가 wrong_section 카드를 다른 섹션으로 옮기라고 한 경우, 그 섹션에서 빠진 카드(원본).
 # 원래 섹션 refill 이 같은 카드·같은 사건의 다른 매체판을 다시 끌어오지 못하게 섹션별로 막는다.
 _GATE_RELOCATED_OUT: dict[str, list["Article"]] = {}
+# LLM 교체안이 지면에서 뺀 카드. 그 교체안의 빈칸을 결정적으로 메우는 동안에만 채워 둔다.
+_GATE_REFILL_SKIP_LINK_KEYS: set[str] = set()
+# 어느 평가에서든 hard issue(blocking·off_topic·false_positive·factual_error·unsafe_summary)로 지목돼
+# 잘린 카드. 편집 판정이 비결정적이라 앞 평가가 놓친 카드를 뒤 평가가 잡기도 한다 — 앞 상태로 되돌릴 때도
+# 이 카드는 다시 싣지 않는다.
+_GATE_HARD_FLAGGED_LINK_KEYS: set[str] = set()
 _SECTION_ALIAS_TERMS: dict[str, tuple[str, ...]] = {
     "supply": ("supply", "수급", "공급"),
     "policy": ("policy", "정책"),
@@ -54021,6 +54114,111 @@ def _normalize_section_core_badges(articles: list["Article"]) -> None:
                     article.is_core = False
 
 
+def _top_up_sections_after_guard(
+    sections: dict[str, list["Article"]],
+    raw_by_section: dict[str, list["Article"]],
+    summary_cache: dict[str, SummaryCacheEntry | str],
+    *,
+    allow_openai_summaries: bool = True,
+    skip_link_keys: set[str] | None = None,
+    rounds: int = 2,
+    section_floors: dict[str, int] | None = None,
+    prefer_pool: dict[str, list["Article"]] | None = None,
+) -> dict[str, list["Article"]]:
+    """마무리 가드(_finalize_sections_for_render)가 빼낸 슬롯을 결정적 refill 체인으로 다시 채운다.
+
+    마무리 가드는 리필 없이 중복·하드 리젝 카드를 뺀다. 그 직후 섹션 수를 목표와 비교하면
+    한두 장 빠진 것만으로 교체안 전체가 기각되고(2026-09 교체안 58건 중 49건이
+    post_finalize 사유로 기각), 절제 재충원은 저티어 캡이 버린 자리를 못 메워 섹션이
+    3장으로 줄었다(2026-09-29 수급·정책 3장, 유효 후보 146·49건). 여기서는 같은 체인을
+    한두 번 더 돌려 빈칸을 메운다. 저티어 캡은 교체만 하고 버리지 않는다(allow_drop=False).
+
+    빈칸 채우기는 공짜가 아니다(raw 후보는 지면 카드의 다른 표현판이거나 약한 꼬리일 수 있다 —
+    2026-10-01 하네스 9/23: '온라인도매시장 가입요건 폐지' 카드 옆에 '가입요건 낮춘다' 판이 들어와
+    duplicate_story major). 그래서
+    - section_floors 의 장수까지만, 그 아래로 내려간 섹션만 채우고(다른 섹션의 변화는 되돌린다),
+    - prefer_pool(이미 지면에 있었던, 평가를 거친 카드)이 있으면 그것부터 쓰고 raw 는 그다음이다.
+    skip_link_keys 는 교체안이 일부러 뺀 카드 — raw 재충원으로 되살리지 않는다.
+    """
+    working = sections
+    keys = _section_keys()
+    floors = {
+        section: min(MAX_PER_SECTION, int((section_floors or {}).get(section, MAX_PER_SECTION)))
+        for section in keys
+    }
+    if prefer_pool:
+        # 1) 직전 지면 카드(평가를 거친 카드) 되돌리기: 지면 어디와도 같은 사건이 아니고 발행 게이트를
+        #    통과하는 것만, 섹션 하한까지.
+        restored: dict[str, int] = {}
+        for section in keys:
+            for candidate in prefer_pool.get(section, []) or []:
+                if len(working.get(section) or []) >= floors[section]:
+                    break
+                if not isinstance(candidate, Article):
+                    continue
+                page = [a for s in keys for a in (working.get(s) or []) if isinstance(a, Article)]
+                keys_c = _repair_article_link_keys(candidate)
+                if any(keys_c & _repair_article_link_keys(a) for a in page):
+                    continue
+                if any(_duplicate_story_pair_reason(candidate, a) for a in page):
+                    continue
+                if _is_hard_final_postbuild_reject_reason(_postbuild_article_reject_reason(candidate, section)):
+                    continue
+                working[section] = list(working.get(section) or []) + [candidate]
+                restored[section] = restored.get(section, 0) + 1
+        if restored:
+            log.info("[QUALITY GATE] post-guard top-up (previous_page): %s", restored)
+            working = fill_summaries(working, cache=summary_cache, allow_openai=allow_openai_summaries)
+            _finalize_sections_for_render(working)
+    # 2) raw 후보로 결정적 refill 체인
+    for _round in range(max(0, int(rounds))):
+        before = {s: len([a for a in (working.get(s) or []) if isinstance(a, Article)]) for s in keys}
+        needy = [s for s in keys if before[s] < floors[s]]
+        if not needy:
+            break
+        frozen = {s: list(working.get(s) or []) for s in keys if s not in needy}
+        original_ids = {id(a) for s in needy for a in (working.get(s) or [])}
+        _GATE_REFILL_SKIP_LINK_KEYS.clear()
+        if skip_link_keys:
+            _GATE_REFILL_SKIP_LINK_KEYS.update(skip_link_keys)
+        try:
+            _recover_preferred_section_counts_from_raw(working, raw_by_section, max_items=MAX_PER_SECTION)
+            _final_global_story_dedupe(working, raw_by_section, max_passes=2)
+            _cap_final_low_tier_sources(working, raw_by_section, allow_drop=False)
+            _ensure_final_selection_fit(working)
+            _demote_soft_news_final_cores(working, raw_by_section)
+        except Exception as exc:
+            log.warning("[QUALITY GATE] post-guard top-up failed: %s", exc)
+            break
+        finally:
+            _GATE_REFILL_SKIP_LINK_KEYS.clear()
+        for section in keys:
+            if section in frozen:
+                # 채울 필요가 없던 섹션은 손대지 않는다(필요 이상으로 약한 꼬리를 늘리지 않게).
+                working[section] = frozen[section]
+            else:
+                rows = [a for a in (working.get(section) or []) if isinstance(a, Article)]
+                room = max(0, floors[section] - sum(1 for a in rows if id(a) in original_ids))
+                trimmed: list[Article] = []
+                for article in rows:
+                    if id(article) in original_ids:
+                        trimmed.append(article)
+                    elif room > 0:
+                        trimmed.append(article)
+                        room -= 1
+                working[section] = trimmed[:MAX_PER_SECTION]
+            _normalize_section_core_badges(working[section])
+        working = fill_summaries(working, cache=summary_cache, allow_openai=allow_openai_summaries)
+        _finalize_sections_for_render(working)
+        after = {s: len(working.get(s) or []) for s in keys}
+        gained = {s: after[s] - before[s] for s in keys if after[s] != before[s]}
+        if gained:
+            log.info("[QUALITY GATE] post-guard top-up (raw) round %d: %s", _round + 1, gained)
+        if sum(after.values()) <= sum(before.values()):
+            break
+    return working
+
+
 def _excise_flagged_cards_and_refill(
     sections: dict[str, list["Article"]],
     raw_by_section: dict[str, list["Article"]],
@@ -54029,6 +54227,7 @@ def _excise_flagged_cards_and_refill(
     *,
     allow_openai_summaries: bool = True,
     achievable_by_section: dict[str, int] | None = None,
+    enforce_floor: bool = True,
 ) -> dict[str, list["Article"]] | None:
     """지목된 카드를 빼고 결정적 refill 체인으로 재충원한다. 하한 미달이면 None.
 
@@ -54073,6 +54272,11 @@ def _excise_flagged_cards_and_refill(
     for target in excise_targets:
         _GATE_EXCISED_LINK_KEYS.update(_repair_article_link_keys(target["article"]))
         _GATE_EXCISED_ARTICLES.append(target["article"])
+        if (
+            str(target.get("severity") or "").strip().lower() == "blocking"
+            or str(target.get("issue_type") or "").strip().lower() in _PREPUBLISH_HARD_EDITORIAL_ISSUE_TYPES
+        ):
+            _GATE_HARD_FLAGGED_LINK_KEYS.update(_repair_article_link_keys(target["article"]))
     relocated_out_before = {section: list(items) for section, items in _GATE_RELOCATED_OUT.items()}
     for target, _clone in relocated:
         _GATE_RELOCATED_OUT.setdefault(str(target.get("section") or ""), []).append(target["article"])
@@ -54101,10 +54305,33 @@ def _excise_flagged_cards_and_refill(
         _normalize_section_core_badges(working[section])
     candidate = fill_summaries(working, cache=summary_cache, allow_openai=allow_openai_summaries)
     _finalize_sections_for_render(candidate)
+    # 절제 전보다 줄어든 섹션은 체인을 한 번 더 돌려 채운다(저티어 캡·마무리 가드가 버린 자리).
+    if any(
+        len(candidate.get(section, []) or []) < min(MAX_PER_SECTION, len(sections.get(section) or []))
+        for section in _section_keys()
+    ):
+        candidate = _top_up_sections_after_guard(
+            candidate,
+            raw_by_section,
+            summary_cache,
+            allow_openai_summaries=allow_openai_summaries,
+            section_floors={section: len(sections.get(section) or []) for section in _section_keys()},
+        )
     excised_per_section = Counter(str(t.get("section") or "") for t in excise_targets)
     excised_per_section.update(str(t.get("section") or "") for t, _clone in relocated)
     for section in _section_keys():
         rows = candidate.get(section, []) or []
+        if not enforce_floor:
+            # 보장 발행 경로: 하한 대신 '절제한 카드가 남지 않는 것'만 지킨다.
+            candidate[section] = [
+                a for a in rows
+                if not (
+                    id(a) in excised_ids
+                    or (_repair_article_link_keys(a) & _GATE_EXCISED_LINK_KEYS)
+                    or _relocated_out_block_reason(a, section)
+                )
+            ]
+            continue
         floor = MIN_FALLBACK_PER_SECTION
         if achievable_by_section and section in achievable_by_section:
             try:
@@ -54214,6 +54441,260 @@ def _editorial_result_without_excised(
     return carried
 
 
+def _prepublish_gate_state_rank(result: JsonDict, *, allow_sla_fallback: bool = True) -> tuple[int, float]:
+    """게이트 상태의 우열(작을수록 좋음): (발행 등급, -헤드라인 점수).
+
+    등급 0 = 정상 통과, 1 = SLA 폴백 발행 가능, 2 = 차단. 점수는 편집 평가 비결정성 때문에
+    런마다 흔들리므로 등급을 먼저 본다.
+    """
+    if not PREPUBLISH_FORCE_SLA_FALLBACK and _prepublish_evaluation_passed(result):
+        tier = 0
+    elif allow_sla_fallback and PREPUBLISH_SLA_FALLBACK_ENABLED and not _prepublish_sla_fallback_blockers(result):
+        tier = 1
+    else:
+        tier = 2
+    try:
+        overall = float(result.get("overall_score") or 0.0) if isinstance(result, dict) else 0.0
+    except (TypeError, ValueError):
+        overall = 0.0
+    return tier, -round(overall, 2)
+
+
+def _gate_state_card_attrs(sections: dict[str, list["Article"]]) -> list[tuple["Article", bool, str]]:
+    """상태를 기억할 때 카드의 가변 속성(core 배지·요약)도 함께 적어 둔다 — 뒤 라운드가 같은 객체를 고친다."""
+    return [
+        (article, bool(article.is_core), str(article.summary or ""))
+        for section in _section_keys()
+        for article in sections.get(section, []) or []
+        if isinstance(article, Article)
+    ]
+
+
+def _restore_gate_state_card_attrs(cards: list[tuple["Article", bool, str]]) -> None:
+    for article, is_core, summary in cards:
+        article.is_core = is_core
+        # 사실 오류로 지목돼 원문 리드로 바꾼 요약은 앞 상태의 (틀린) 요약으로 되돌리지 않는다.
+        if not (_repair_article_link_keys(article) & _GATE_SUMMARY_FIXED_LINK_KEYS):
+            article.summary = summary
+
+
+def _guaranteed_delivery_targets(
+    result: JsonDict,
+    sections: dict[str, list["Article"]],
+) -> tuple[list[JsonDict], list[JsonDict]]:
+    """보장 발행에서 반드시 빼야 하는 카드: 편집 hard issue·독자 hard issue 가 지목한 카드.
+
+    (대상, 지면에서 찾지 못한 이슈) 를 돌려준다. 섹션당 상한 없이 전부 고른다.
+    """
+    issues: list[JsonDict] = [dict(issue) for issue in _prepublish_hard_editorial_issues(result)]
+    for sample in (result.get("reader_hard_issue_samples") or []) if isinstance(result, dict) else []:
+        if isinstance(sample, dict) and str(sample.get("title") or "").strip():
+            issues.append(
+                {
+                    "type": "reader_hard_issue",
+                    "severity": "blocking",
+                    "section": str(sample.get("section") or ""),
+                    "title": str(sample.get("title") or ""),
+                    "reason": str(sample.get("reason") or ""),
+                }
+            )
+    targets: list[JsonDict] = []
+    unmatched: list[JsonDict] = []
+    taken: set[int] = set()
+    for issue in issues:
+        title_key = norm_title_key(str(issue.get("title") or "").replace("...", "").replace("…", ""))
+        hinted = [
+            part.strip().lower()
+            for part in re.split(r"[/,|]", str(issue.get("section") or ""))
+            if part.strip().lower() in _section_keys()
+        ]
+        found: tuple[str, Article] | None = None
+        for section in hinted + [s for s in _section_keys() if s not in hinted]:
+            for article in sections.get(section, []) or []:
+                if isinstance(article, Article) and id(article) not in taken and _editorial_issue_title_matches(title_key, article):
+                    found = (section, article)
+                    break
+            if found:
+                break
+        if found is None:
+            unmatched.append(issue)
+            continue
+        section, article = found
+        taken.add(id(article))
+        targets.append(
+            {
+                "section": section,
+                "article": article,
+                "title": article.title,
+                "link": article.canon_url or article.link,
+                "issue_type": str(issue.get("type") or ""),
+                "severity": str(issue.get("severity") or ""),
+                "reason": str(issue.get("reason") or "")[:200],
+            }
+        )
+    return targets, unmatched
+
+
+def _guaranteed_delivery_salvage(
+    report_date: str,
+    start_kst: datetime,
+    end_kst: datetime,
+    archive_dates_desc: list[str],
+    site_path: str,
+    raw_by_section: dict[str, list["Article"]],
+    sections: dict[str, list["Article"]],
+    result: JsonDict,
+    summary_cache: dict[str, SummaryCacheEntry | str],
+    snapshot_payload: JsonDict,
+    *,
+    achievable_by_section: dict[str, int] | None = None,
+    info: JsonDict,
+) -> tuple[dict[str, list["Article"]], str, JsonDict] | None:
+    """발행 차단 상태를 '안전한 최소 지면'으로 바꾼다. 실패하면 None.
+
+    2026-09-22·10-01 은 본 런과 워치독 복구가 모두 막혀 07:36·08:17 에 수동 복구로 나갔다.
+    차단 사유는 남은 편집 hard issue 1건, 얇은 섹션의 최소 장수, 결정적 점수 하한이었다.
+    여기서는 (1) 독자에게 해로운 카드(편집·독자 hard issue)를 하한 없이 빼고 결정적으로 재충원하고,
+    (2) 요약이 끝내 비는 카드를 빼고, (3) 섹션 최소 장수·점수 하한은 발행을 막지 않는다.
+    지면 전체가 GUARANTEED_DELIVERY_MIN_TOTAL_CARDS 장보다 적으면(수집 장애 등) 내보내지 않는다.
+    """
+    allow_openai = _daily_summary_allow_openai(report_date)
+    working: dict[str, list[Article]] = {
+        section: [a for a in (sections.get(section) or []) if isinstance(a, Article)] for section in _section_keys()
+    }
+    current_result = result
+    removed: list[JsonDict] = []
+    ignored: list[JsonDict] = []
+    for _round in range(3):
+        targets, unmatched = _guaranteed_delivery_targets(current_result, working)
+        for issue in unmatched:
+            if issue not in ignored:
+                ignored.append(issue)
+        if not targets:
+            break
+        excised = _excise_flagged_cards_and_refill(
+            working,
+            raw_by_section,
+            targets,
+            summary_cache,
+            allow_openai_summaries=allow_openai,
+            achievable_by_section=achievable_by_section,
+            enforce_floor=False,
+        )
+        if excised is None:
+            target_ids = {id(t["article"]) for t in targets}
+            for target in targets:
+                _GATE_EXCISED_LINK_KEYS.update(_repair_article_link_keys(target["article"]))
+            excised = {s: [a for a in working.get(s, []) if id(a) not in target_ids] for s in _section_keys()}
+        working = excised
+        removed.extend(
+            {k: v for k, v in target.items() if k not in ("article", "weak_title_keys")} for target in targets
+        )
+        html_now = render_daily_page(report_date, start_kst, end_kst, working, archive_dates_desc, site_path)
+        current_result = _compose_prepublish_evaluation(
+            report_date,
+            html_now,
+            snapshot_payload,
+            run_editorial=False,
+            adaptive_reason=f"guaranteed_delivery_salvage_{_round + 1}",
+            achievable_by_section=achievable_by_section,
+        )
+        # 편집 평가는 다시 부르지 않는다: 직전 편집 결과에서 뺀 카드의 이슈만 덜어 이어 쓴다.
+        previous_editorial = result.get("editorial", {}) if isinstance(result, dict) else {}
+        if isinstance(previous_editorial, dict) and previous_editorial.get("status") == "success":
+            carried = _editorial_result_without_excised(previous_editorial, [*removed], current_result)
+            current_result["editorial"] = carried
+            current_result["editorial_score"] = carried.get("score")
+    # 섹션 하한을 채우려고 검증되지 않은 raw 꼬리를 더 넣지 않는다 — 절제 재충원이 이미 절제 전 장수까지
+    # 되돌렸고, 이 지면은 편집 재평가 없이 나간다.
+    # 요약이 끝내 비는 카드는 독자 지면에 내보내지 않는다.
+    missing_summary: list[str] = []
+    for section in _section_keys():
+        kept: list[Article] = []
+        for article in working.get(section, []) or []:
+            if str(article.summary or "").strip():
+                kept.append(article)
+            else:
+                missing_summary.append(str(article.title or "")[:120])
+        working[section] = kept
+    html_final = render_daily_page(report_date, start_kst, end_kst, working, archive_dates_desc, site_path)
+    final_result = _compose_prepublish_evaluation(
+        report_date,
+        html_final,
+        snapshot_payload,
+        run_editorial=False,
+        adaptive_reason="guaranteed_delivery_final",
+        achievable_by_section=achievable_by_section,
+    )
+    # 마지막 재충원이 독자 hard issue 카드를 끌어왔으면 재충원 없이 빼고 한 번 더 잰다.
+    late_targets, _late_unmatched = _guaranteed_delivery_targets(
+        {"reader_hard_issue_samples": final_result.get("reader_hard_issue_samples") or []}, working
+    )
+    if late_targets:
+        late_ids = {id(t["article"]) for t in late_targets}
+        for target in late_targets:
+            _GATE_EXCISED_LINK_KEYS.update(_repair_article_link_keys(target["article"]))
+        working = {s: [a for a in working.get(s, []) if id(a) not in late_ids] for s in _section_keys()}
+        removed.extend(
+            {k: v for k, v in target.items() if k not in ("article", "weak_title_keys")} for target in late_targets
+        )
+        html_final = render_daily_page(report_date, start_kst, end_kst, working, archive_dates_desc, site_path)
+        final_result = _compose_prepublish_evaluation(
+            report_date,
+            html_final,
+            snapshot_payload,
+            run_editorial=False,
+            adaptive_reason="guaranteed_delivery_final_recheck",
+            achievable_by_section=achievable_by_section,
+        )
+    previous_editorial = result.get("editorial", {}) if isinstance(result, dict) else {}
+    if isinstance(previous_editorial, dict) and previous_editorial.get("status") == "success":
+        carried_input = copy.deepcopy(previous_editorial)
+        if ignored:
+            # 지면 어디에서도 찾지 못한 hard issue 는 지면 카드가 아니므로 발행을 막지 않는다(기록만 남김).
+            ignored_keys = {norm_title_key(str(i.get("title") or "")) for i in ignored}
+            hard_ids = {id(issue) for issue in _prepublish_hard_editorial_issues({"editorial": carried_input})}
+            carried_input["issues"] = [
+                issue
+                for issue in carried_input.get("issues", []) or []
+                if not (id(issue) in hard_ids and norm_title_key(str(issue.get("title") or "")) in ignored_keys)
+            ]
+        carried = _editorial_result_without_excised(carried_input, removed, final_result)
+        carried["guaranteed_delivery_ignored_issues"] = ignored
+        final_result["editorial"] = carried
+        final_result["editorial_score"] = carried.get("score")
+        try:
+            from scripts.evaluate_daily_report import apply_editorial_quality_gate
+
+            apply_editorial_quality_gate(final_result, carried)
+        except Exception as exc:
+            log.warning("[QUALITY GATE] guaranteed delivery editorial gate failed: %s", exc)
+    total_cards = sum(len(working.get(s) or []) for s in _section_keys())
+    metrics = final_result.get("metrics", {}) if isinstance(final_result, dict) else {}
+    if not isinstance(metrics, dict):
+        metrics = {}
+    unsafe_left = bool(
+        _prepublish_hard_editorial_issues(final_result)
+        or int(metrics.get("reader_hard_issue_count", 0) or 0) > 0
+    )
+    info.update(
+        {
+            "removed": removed,
+            "ignored_unmatched_issues": [{k: i.get(k) for k in ("type", "severity", "section", "title")} for i in ignored],
+            "dropped_missing_summary": missing_summary,
+            "total_cards": total_cards,
+            "min_total_cards": GUARANTEED_DELIVERY_MIN_TOTAL_CARDS,
+            "unsafe_left": unsafe_left,
+            "publishable": bool(total_cards >= GUARANTEED_DELIVERY_MIN_TOTAL_CARDS and not unsafe_left),
+        }
+    )
+    log.warning(
+        "[QUALITY GATE] guaranteed delivery salvage: removed=%d ignored=%d missing_summary=%d total=%d unsafe_left=%s",
+        len(removed), len(ignored), len(missing_summary), total_cards, unsafe_left,
+    )
+    return working, html_final, final_result
+
+
 def _run_prepublish_quality_gate(
     repo: str,
     token: str,
@@ -54230,6 +54711,7 @@ def _run_prepublish_quality_gate(
     *,
     force_editorial: bool = False,
     allow_sla_fallback: bool = True,
+    guarantee_delivery: bool = False,
 ) -> tuple[dict[str, list[Article]], str, JsonDict]:
     from editorial_eval import propose_editorial_repair
     from report_eval import load_snapshot_payload
@@ -54285,6 +54767,31 @@ def _run_prepublish_quality_gate(
         adaptive_reason=adaptive_reason,
         achievable_by_section=achievable_by_section,
     )
+    # 게이트가 거친 상태 중 가장 나은 것. 절제·교체안이 상태를 오히려 나쁘게 만들면(새 hard issue,
+    # 섹션 축소, 점수 하락) 마지막 상태 대신 이것을 낸다.
+    best_state: JsonDict = {}
+    state_history: list[JsonDict] = []
+
+    def _remember_state(label: str) -> None:
+        nonlocal best_state
+        rank = _prepublish_gate_state_rank(result, allow_sla_fallback=allow_sla_fallback)
+        state_history.append({"label": label, "rank": list(rank)})
+        editorial_now = result.get("editorial", {}) if isinstance(result, dict) else {}
+        verified = isinstance(editorial_now, dict) and editorial_now.get("status") == "success"
+        if not verified and run_editorial:
+            # 모델 평가가 없는 상태의 점수는 편집 감점이 빠져 있어 검증된 상태와 견줄 수 없다.
+            return
+        if not best_state or rank < tuple(best_state["rank"]):
+            best_state = {
+                "label": label,
+                "rank": list(rank),
+                "sections": current_sections,
+                "cards": _gate_state_card_attrs(current_sections),
+                "html": current_html,
+                "result": result,
+            }
+
+    _remember_state("initial")
     repair_attempts: list[JsonDict] = []
     repair_validation_errors: list[JsonDict] = []
     repair_editorial_issues: list[JsonDict] = []
@@ -54304,27 +54811,45 @@ def _run_prepublish_quality_gate(
                 return
             if _prepublish_evaluation_passed(result):
                 return
-            targets = _editorial_excision_targets(editorial_now, current_sections)
-            if not targets:
+            # 요약문의 사실 오류는 기사가 아니라 우리 요약의 결함이다. 카드를 빼면 그날 최상위 후보
+            # (주간 가락시장 경락가 동향)가 사라지고 다음 평가가 missed_candidate 로 되돌려 지적했다
+            # (2026-09-29). 처음 지적된 카드는 원문 리드로 요약을 바꾸고, 다시 지적되면 그때 뺀다.
+            summary_fixes = _replace_flagged_summaries_with_source_text(editorial_now, current_sections, summary_cache)
+            fixed_ids = {id(fix["article"]) for fix in summary_fixes}
+            targets = [
+                target
+                for target in _editorial_excision_targets(editorial_now, current_sections)
+                if id(target["article"]) not in fixed_ids
+            ]
+            if not targets and not summary_fixes:
                 return
-            excised = _excise_flagged_cards_and_refill(
-                current_sections,
-                raw_by_section,
-                targets,
-                summary_cache,
-                allow_openai_summaries=_daily_summary_allow_openai(report_date),
-                achievable_by_section=achievable_by_section,
+            excised = (
+                _excise_flagged_cards_and_refill(
+                    current_sections,
+                    raw_by_section,
+                    targets,
+                    summary_cache,
+                    allow_openai_summaries=_daily_summary_allow_openai(report_date),
+                    achievable_by_section=achievable_by_section,
+                )
+                if targets
+                else None
             )
             attempt = {
                 "attempt": len(excision_attempts) + 1,
                 "targets": [
                     {k: v for k, v in target.items() if k not in ("article", "weak_title_keys")} for target in targets
                 ],
-                "status": "applied" if excised is not None else "rejected_refill_floor",
+                "summary_fixes": [{k: v for k, v in fix.items() if k != "article"} for fix in summary_fixes],
+                "status": "applied" if excised is not None else "summary_fixed" if summary_fixes else "rejected_refill_floor",
             }
             excision_attempts.append(attempt)
-            if excised is None:
+            if excised is None and not summary_fixes:
                 return
+            if excised is None:
+                # 요약만 고쳤다: 지면 구성은 그대로, 재평가로 확인한다. 아래 절제 후처리는 건너뛴다.
+                targets = []
+                excised = {section: list(current_sections.get(section) or []) for section in _section_keys()}
             for target in targets:
                 section = str(target.get("section") or "")
                 if target.get("relocation") == "skipped":
@@ -54361,6 +54886,7 @@ def _run_prepublish_quality_gate(
                     "[QUALITY GATE] excision round %d re-evaluated: overall=%s editorial=%s",
                     attempt["attempt"], attempt["overall_after"], attempt["editorial_after"],
                 )
+                _remember_state(f"excision_{attempt['attempt']}")
                 continue
             attempt["verification"] = "deterministic_carry_forward"
             previous_editorial = editorial_now
@@ -54372,7 +54898,9 @@ def _run_prepublish_quality_gate(
                 adaptive_reason=f"hard_issue_excision_{attempt['attempt']}_unverified",
                 achievable_by_section=achievable_by_section,
             )
-            carried = _editorial_result_without_excised(previous_editorial, targets, result)
+            carried = _editorial_result_without_excised(
+                previous_editorial, [*targets, *({"title": fix["title"]} for fix in summary_fixes)], result
+            )
             result["editorial"] = carried
             result["editorial_score"] = carried.get("score")
             try:
@@ -54381,6 +54909,7 @@ def _run_prepublish_quality_gate(
                 apply_editorial_quality_gate(result, carried)
             except Exception as exc:
                 log.warning("[QUALITY GATE] carried-forward editorial gate failed: %s", exc)
+            _remember_state(f"excision_{attempt['attempt']}_carried")
             return
 
     _run_hard_issue_excisions()
@@ -54415,6 +54944,17 @@ def _run_prepublish_quality_gate(
                 PREPUBLISH_EDITORIAL_MAX_CALLS,
                 tokens,
                 PREPUBLISH_EDITORIAL_TOKEN_BUDGET,
+            )
+            break
+        # 호출 상한은 검증까지 포함한 반복 상한이다. 제안이 마지막 호출이면 그 교체안은 모델 검증 없이
+        # 발행된다(2026-10-01 하네스: 9/30·10/1 두 번째 교체안이 미검증으로 나가 편집 감점이 빠진
+        # 95점대가 찍혔다). 제안과 검증 두 호출이 상한 안에 들어갈 때만 시작한다(토큰 예산과는 무관).
+        calls_now, _tokens_now = _prepublish_editorial_usage_totals()
+        if calls_now + 2 > PREPUBLISH_EDITORIAL_MAX_CALLS:
+            log.warning(
+                "[QUALITY GATE] editorial repair not started: no call left to verify it (calls=%d/%d)",
+                calls_now,
+                PREPUBLISH_EDITORIAL_MAX_CALLS,
             )
             break
         repair_proposal_count += 1
@@ -54542,11 +55082,56 @@ def _run_prepublish_quality_gate(
         repair_attempts[-1]["invalidated_summary_cache_entries"] = len(invalidated_summaries)
         candidate_sections = fill_summaries(repaired_sections, cache=summary_cache)
         _finalize_sections_for_render(candidate_sections)
-        # 목표를 낮춘 섹션은 그 목표로 비교한다(4장짜리 pest 교체안이 5장 미달로 기각되지 않게).
+
+        def _repair_count_floor(section: str) -> int:
+            # 목표를 낮춘 섹션은 그 목표로, 원래 목표보다 얇던 섹션은 현재 지면 수로 비교한다.
+            # 교체안이 지면을 줄이지만 않으면 받아들인다(4장짜리 pest 교체안이 5장 미달로 기각되지 않게).
+            return min(
+                _repair_section_target(section_targets, section),
+                len(current_sections.get(section) or []),
+            )
+
+        if any(
+            len(candidate_sections.get(section, []) or []) < _repair_count_floor(section)
+            for section in _section_keys()
+        ):
+            # 마무리 가드가 교체안 카드 한두 장(같은 사건 매체판·하드 리젝)을 빼도 교체안 전체를 버리지 않고
+            # 빈칸만 메운다 — 직전 지면에 있던(평가를 거친) 카드를 먼저, 모자라면 raw 체인으로.
+            # raw 재충원은 교체안이 일부러 뺀 지면 카드를 되살리지 않는다.
+            proposed_keys = {key for cards in proposed_cards.values() for card in cards for key in (card.get("keys") or set())}
+            previous_page_pool = {
+                section: [
+                    article
+                    for article in current_sections.get(section, []) or []
+                    if isinstance(article, Article) and not (_repair_article_link_keys(article) & proposed_keys)
+                ]
+                for section in _section_keys()
+            }
+            dropped_by_model = {
+                key
+                for articles in previous_page_pool.values()
+                for article in articles
+                for key in _repair_article_link_keys(article)
+            }
+            before_top_up = {s: len(candidate_sections.get(s) or []) for s in _section_keys()}
+            candidate_sections = _top_up_sections_after_guard(
+                candidate_sections,
+                raw_by_section,
+                summary_cache,
+                allow_openai_summaries=_daily_summary_allow_openai(report_date),
+                skip_link_keys=dropped_by_model,
+                section_floors={section: _repair_count_floor(section) for section in _section_keys()},
+                prefer_pool=previous_page_pool,
+            )
+            repair_attempts[-1]["post_finalize_top_up"] = {
+                s: len(candidate_sections.get(s) or []) - before_top_up[s]
+                for s in _section_keys()
+                if len(candidate_sections.get(s) or []) != before_top_up[s]
+            }
         underfilled_sections = [
             section
             for section in _section_keys()
-            if len(candidate_sections.get(section, []) or []) < _repair_section_target(section_targets, section)
+            if len(candidate_sections.get(section, []) or []) < _repair_count_floor(section)
         ]
         if underfilled_sections:
             finalization_errors: list[JsonDict] = []
@@ -54637,9 +55222,76 @@ def _run_prepublish_quality_gate(
                 current_sections, current_html, result = pre_repair_state
                 applied_repair_count -= 1
                 break
+        _remember_state(f"repair_{attempt}")
 
     # LLM 교체안이 새 hard issue를 남겼거나 예산 때문에 손대지 못했다면 한 번 더 잘라낸다.
     _run_hard_issue_excisions()
+
+    # 마지막 상태가 앞서 거친 상태보다 나쁘면(발행 불가가 됐거나 같은 등급에서 점수가 낮으면) 되돌린다.
+    restored_from = ""
+    final_rank = _prepublish_gate_state_rank(result, allow_sla_fallback=allow_sla_fallback)
+    final_verified = isinstance(result.get("editorial"), dict) and result["editorial"].get("status") == "success"
+    if best_state and (final_rank[0] > best_state["rank"][0] or (final_verified and final_rank > tuple(best_state["rank"]))):
+        restored_from = str(best_state["label"])
+        log.warning(
+            "[QUALITY GATE] final state %s is worse than %s %s; publishing the better earlier state",
+            list(final_rank), restored_from, best_state["rank"],
+        )
+        current_sections = best_state["sections"]
+        _restore_gate_state_card_attrs(best_state["cards"])
+        current_html = best_state["html"]
+        result = best_state["result"]
+        hard_flagged = {
+            section: [a for a in current_sections.get(section, []) or [] if _repair_article_link_keys(a) & _GATE_HARD_FLAGGED_LINK_KEYS]
+            for section in _section_keys()
+        }
+        summary_fixed = any(
+            _repair_article_link_keys(a) & _GATE_SUMMARY_FIXED_LINK_KEYS
+            for section in _section_keys()
+            for a in current_sections.get(section, []) or []
+        )
+        if any(hard_flagged.values()) or summary_fixed:
+            # 되돌린 상태에 뒤 평가가 hard issue 로 지목한 카드가 있으면 빼고, 고친 요약을 반영해 다시 잰다.
+            # 편집 결과는 그 카드 이슈만 덜어 이어 쓴다(추가 모델 호출 없음).
+            dropped_titles = [a.title for items in hard_flagged.values() for a in items]
+            current_sections = {
+                section: [a for a in current_sections.get(section, []) or [] if a not in hard_flagged[section]]
+                for section in _section_keys()
+            }
+            current_html = render_daily_page(
+                report_date, start_kst, end_kst, current_sections, archive_dates_desc, site_path
+            )
+            restored_editorial = result.get("editorial", {}) if isinstance(result, dict) else {}
+            result = _compose_prepublish_evaluation(
+                report_date,
+                current_html,
+                snapshot_payload,
+                run_editorial=False,
+                adaptive_reason="restored_best_state_sanitized",
+                achievable_by_section=achievable_by_section,
+            )
+            if isinstance(restored_editorial, dict) and restored_editorial.get("status") == "success":
+                carried = _editorial_result_without_excised(
+                    restored_editorial, [{"title": title} for title in dropped_titles], result
+                )
+                result["editorial"] = carried
+                result["editorial_score"] = carried.get("score")
+                try:
+                    from scripts.evaluate_daily_report import apply_editorial_quality_gate
+
+                    apply_editorial_quality_gate(result, carried)
+                except Exception as exc:
+                    log.warning("[QUALITY GATE] restored-state editorial gate failed: %s", exc)
+            log.warning(
+                "[QUALITY GATE] restored state sanitized: dropped hard-flagged=%s summary_fixed=%s",
+                [str(t or "")[:60] for t in dropped_titles], summary_fixed,
+            )
+        # 되돌린 지면의 카드가 뒤 라운드에서 절제됐더라도 이 지면에서는 유지한다(발행 후 패스가 빼지 않게).
+        for section in _section_keys():
+            for kept in current_sections.get(section, []) or []:
+                kept_keys = _repair_article_link_keys(kept)
+                _GATE_EXCISED_LINK_KEYS.difference_update(kept_keys)
+                _GATE_EXCISION_KEEP_LINK_KEYS.update(kept_keys)
 
     final_editorial = result.get("editorial", {}) if isinstance(result, dict) else {}
     editorial_required_satisfied = bool(
@@ -54662,7 +55314,38 @@ def _run_prepublish_quality_gate(
     )
     fallback_blockers = _prepublish_sla_fallback_blockers(result)
     fallback_minimum_per_section = _prepublish_sla_minimum_per_section()
-    publishable = normal_passed or fallback_passed
+    guaranteed_delivery: JsonDict = {}
+    guaranteed_passed = False
+    if (
+        not normal_passed
+        and not fallback_passed
+        and guarantee_delivery
+        and PREPUBLISH_GUARANTEED_DELIVERY
+    ):
+        # 발행은 반드시 한다. 남은 차단 사유 중 독자에게 해로운 것(편집 hard issue·독자 hard issue·
+        # 요약 누락 카드)은 해당 카드를 빼서 없애고, 점수 하한·섹션 최소 장수는 지면을 막는 대신
+        # 운영 기록으로만 남긴다.
+        guaranteed_delivery = {"blockers_before": list(fallback_blockers)}
+        salvaged = _guaranteed_delivery_salvage(
+            report_date,
+            start_kst,
+            end_kst,
+            archive_dates_desc,
+            site_path,
+            raw_by_section,
+            current_sections,
+            result,
+            summary_cache,
+            snapshot_payload,
+            achievable_by_section=achievable_by_section,
+            info=guaranteed_delivery,
+        )
+        if salvaged is not None:
+            current_sections, current_html, result = salvaged
+            guaranteed_passed = bool(guaranteed_delivery.get("publishable"))
+        fallback_blockers = _prepublish_sla_fallback_blockers(result)
+        guaranteed_delivery["blockers_after"] = list(fallback_blockers)
+    publishable = normal_passed or fallback_passed or guaranteed_passed
     publication_mode = (
         "normal"
         if normal_passed
@@ -54670,6 +55353,8 @@ def _run_prepublish_quality_gate(
         if fallback_passed and PREPUBLISH_FORCE_SLA_FALLBACK
         else "sla_fallback"
         if fallback_passed
+        else "guaranteed_minimum"
+        if guaranteed_passed
         else "blocked"
     )
     gate_status = (
@@ -54679,6 +55364,8 @@ def _run_prepublish_quality_gate(
         if fallback_passed and PREPUBLISH_FORCE_SLA_FALLBACK
         else "sla_fallback_passed"
         if fallback_passed
+        else "guaranteed_delivery_passed"
+        if guaranteed_passed
         else "blocked"
     )
     thin_pool_sections = _prepublish_thin_pool_sections(result, fallback_minimum_per_section)
@@ -54699,6 +55386,9 @@ def _run_prepublish_quality_gate(
         "repair_attempts": repair_attempts,
         "hard_issue_excisions": excision_attempts,
         "hard_issue_excision_limit": PREPUBLISH_MAX_HARD_ISSUE_EXCISIONS,
+        "state_history": state_history,
+        "restored_best_state": restored_from,
+        "guaranteed_delivery": guaranteed_delivery,
         "deadline_kst": PREPUBLISH_QUALITY_DEADLINE_KST,
         "deadline_reached": _prepublish_deadline_reached(report_date),
         "minimum_operational_score": PREPUBLISH_QUALITY_MIN_OPERATIONAL_SCORE,
@@ -54743,6 +55433,14 @@ def _run_prepublish_quality_gate(
             len(_prepublish_hard_editorial_issues(result)),
             len(excision_attempts),
             str(final_editorial.get("status") if isinstance(final_editorial, dict) else "unknown"),
+        )
+    elif guaranteed_passed:
+        log.warning(
+            "[QUALITY GATE] guaranteed delivery: publishing after removing %d unsafe card(s); "
+            "remaining non-safety blockers=%s counts=%s",
+            len(guaranteed_delivery.get("removed") or []),
+            fallback_blockers,
+            {s: len(current_sections.get(s) or []) for s in _section_keys()},
         )
     return current_sections, current_html, result
 
@@ -55031,6 +55729,7 @@ def main() -> None:
             by_section,
             summary_cache,
             saved_snap,
+            guarantee_delivery=True,
         )
         try:
             save_summary_cache(repo, GH_TOKEN, summary_cache)

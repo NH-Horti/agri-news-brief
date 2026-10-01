@@ -122,10 +122,13 @@ jobs:
           PREPUBLISH_QUALITY_GATE_ENABLED: 'true'
           PREPUBLISH_QUALITY_FAIL_CLOSED: 'true'
           PREPUBLISH_QUALITY_ADAPTIVE: 'true'
-          PREPUBLISH_QUALITY_MAX_REPAIRS: ${{ inputs.quality_recovery && '5' || '1' }}
-          PREPUBLISH_QUALITY_MAX_PROPOSALS: ${{ inputs.quality_recovery && '10' || '2' }}
-          PREPUBLISH_EDITORIAL_MAX_CALLS: ${{ inputs.quality_recovery && '6' || '4' }}
-          PREPUBLISH_EDITORIAL_TOKEN_BUDGET: ${{ inputs.quality_recovery && '150000' || '90000' }}
+          # The 06:05 run is the de-facto primary (GitHub's 05:35 schedule fires hours late)
+          # and must publish on its own, so it gets one more verified repair round
+          # (a repair starts only when its verification call still fits under the call cap).
+          PREPUBLISH_QUALITY_MAX_REPAIRS: ${{ inputs.quality_recovery && '5' || '2' }}
+          PREPUBLISH_QUALITY_MAX_PROPOSALS: ${{ inputs.quality_recovery && '10' || '3' }}
+          PREPUBLISH_EDITORIAL_MAX_CALLS: '6'
+          PREPUBLISH_EDITORIAL_TOKEN_BUDGET: ${{ inputs.quality_recovery && '150000' || '130000' }}
           PREPUBLISH_QUALITY_STABLE_DAYS: '20'
           PREPUBLISH_QUALITY_DEADLINE_KST: ${{ inputs.quality_recovery && '23:59' || '06:50' }}
           PREPUBLISH_QUALITY_RESULT_DIR: reports/evals
@@ -133,6 +136,8 @@ jobs:
           PREPUBLISH_SLA_FALLBACK_ENABLED: 'true'
           PREPUBLISH_FORCE_SLA_FALLBACK: ${{ inputs.force_sla_fallback && 'true' || 'false' }}
           PREPUBLISH_SLA_FALLBACK_MIN_SCORE: '78'
+          # Publish a safe minimum edition (unsafe cards removed) instead of holding the briefing.
+          PREPUBLISH_GUARANTEED_DELIVERY: 'true'
           DELIVERY_RECEIPT_DIR: docs/delivery
           DAILY_RECEIPT_EARLY_EXIT_ENABLED: 'true'
           UX_PATCH_DAYS: '7'

@@ -29,13 +29,20 @@ concurrency:
 
 jobs:
   ensure-daily-run:
+    # A failed recovery run must also wake the watchdog: GitHub's own schedule
+    # fires 2-3 hours late in practice, so on 2026-09-22 and 2026-10-01 nothing
+    # retried after the 06:20 recovery failed until an operator stepped in.
+    # The decision script's recovery limit (2 per day) still stops any loop.
     if: >-
       github.ref_name == 'main' &&
       (
         github.event_name != 'workflow_run' ||
         (
           github.event.workflow_run.head_branch == 'main' &&
-          !contains(github.event.workflow_run.display_title, 'recovery=true')
+          (
+            !contains(github.event.workflow_run.display_title, 'recovery=true') ||
+            github.event.workflow_run.conclusion != 'success'
+          )
         )
       )
     runs-on: ubuntu-latest
