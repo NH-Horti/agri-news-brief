@@ -1,47 +1,47 @@
 {
-  "report_date": "2026-09-01",
-  "generated_at_kst": "2026-10-01T13:14:50+09:00",
+  "report_date": "2026-10-01",
+  "generated_at_kst": "2026-10-01T09:57:56+09:00",
   "scores": {
-    "section_alignment": 87.49,
-    "core_quality": 85.0,
-    "commodity_board_quality": 100.0
+    "section_alignment": 92.95,
+    "core_quality": 100.0,
+    "commodity_board_quality": 87.0
   },
   "metrics": {
-    "section_alignment_low_fit_rate": 0.1,
-    "section_alignment_cross_gap_rate": 0.05,
+    "section_alignment_low_fit_rate": 0.125,
+    "section_alignment_cross_gap_rate": 0.0625,
     "content_false_positive_rate": 0.0,
     "reader_hard_issue_count": 0,
     "reader_hard_issue_rate": 0.0,
-    "reader_quality_penalty": 7.2914,
-    "reader_quality_cap": 84.0,
+    "reader_quality_penalty": 1.95,
+    "reader_quality_cap": 95.0,
     "weak_core_rate": 0.0,
     "policy_wrong_section_rate": 0.0,
-    "promotional_filler_rate": 0.0,
+    "promotional_filler_rate": 0.125,
     "promotional_core_rate": 0.0,
     "weak_core_editorial_rate": 0.0,
-    "pest_theme_duplicate_rate": 0.05,
+    "pest_theme_duplicate_rate": 0.0,
     "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 0.4,
+    "editorial_quality_penalty": 0.25,
     "commodity_primary_item_focus_rate": 1.0,
-    "commodity_primary_issue_signal_rate": 1.0,
+    "commodity_primary_issue_signal_rate": 0.8333,
     "commodity_primary_weak_rate": 0.0,
     "commodity_primary_title_item_focus_rate": 1.0,
-    "commodity_primary_title_issue_signal_rate": 0.8571,
-    "commodity_primary_strict_link_rate": 0.8571,
+    "commodity_primary_title_issue_signal_rate": 0.8333,
+    "commodity_primary_strict_link_rate": 0.8333,
     "commodity_primary_low_rank_rate": 0.0,
-    "commodity_primary_count": 7,
-    "commodity_active_today_total": 19,
-    "commodity_active_today_unlinked_total": 12,
-    "commodity_managed_unlinked_total": 26,
+    "commodity_primary_count": 6,
+    "commodity_active_today_total": 12,
+    "commodity_active_today_unlinked_total": 6,
+    "commodity_managed_unlinked_total": 27,
     "commodity_board_daily_min_primary_count": 6,
     "commodity_board_low_coverage": false,
-    "commodity_board_coverage_rate": 0.2121,
+    "commodity_board_coverage_rate": 0.1818,
     "commodity_primary_title_item_missing_rate": 0.0,
     "commodity_primary_body_only_rate": 0.0,
-    "commodity_primary_false_link_rate": 0.1429,
-    "commodity_pool_count": 25,
+    "commodity_primary_false_link_rate": 0.0,
+    "commodity_pool_count": 7,
     "commodity_pool_false_link_rate": 0.0,
-    "commodity_primary_dominant_section_rate": 0.4286
+    "commodity_primary_dominant_section_rate": 1.0
   },
   "selection_guardrails": {
     "driver_tags": [
@@ -83,19 +83,28 @@
   },
   "editorial_quality_samples": [
     {
-      "title": "나주시, 벼 출수기 병해충 예찰 · 방제 강화 당부",
-      "href": "https://www.aflnews.co.kr/news/articleView.html?idxno=327164",
-      "section": "pest",
+      "title": "추석 농축산물 할인 , 장바구니 너머 농가의 이야기도 들어보니",
+      "href": "https://www.korea.kr/news/reporterView.do?newsId=148972639&call_from=naver_news",
+      "section": "policy",
       "is_core": false,
       "reasons": [
-        "pest_theme_duplicate:rice_pest"
+        "promotional_or_event_filler"
+      ]
+    },
+    {
+      "title": "의령 농식품 41개 품목, 미국 소비자 입맛 공략",
+      "href": "https://www.gnnews.co.kr/news/articleView.html?idxno=646600",
+      "section": "dist",
+      "is_core": false,
+      "reasons": [
+        "promotional_or_event_filler"
       ]
     }
   ],
   "reader_hard_issue_samples": [],
   "editorial": {
-    "score": 76.7,
-    "model_reported_score": 78.0,
+    "score": 75.65,
+    "model_reported_score": 77.1,
     "score_method": "weighted_components_v1",
     "quality_tier": "needs_major_iteration",
     "target_score": 82.0,
@@ -117,82 +126,93 @@
         "critical_components_min": false,
         "all_components_min": false,
         "operational_score_min": true,
-        "section_count_score_min": true,
-        "no_section_underfill": true,
-        "commodity_board_score_min": true
+        "section_count_score_min": false,
+        "no_section_underfill": false,
+        "commodity_board_score_min": false
       },
       "failure_reasons": [
         "editorial_score_min",
         "critical_components_min",
-        "all_components_min"
+        "all_components_min",
+        "section_count_score_min",
+        "no_section_underfill",
+        "commodity_board_score_min"
       ]
     },
-    "section_count_score": 100.0,
-    "section_count_status": "target_met",
+    "section_count_score": 85.5,
+    "section_count_status": "underfilled",
     "scores": {
-      "article_selection": 78.0,
-      "section_fit": 80.0,
-      "core_pick_quality": 70.0,
-      "summary_usefulness": 89.0,
+      "article_selection": 74.0,
+      "section_fit": 72.0,
+      "core_pick_quality": 79.0,
+      "summary_usefulness": 88.0,
       "missed_opportunity": 69.0,
-      "noise_control": 75.0
+      "noise_control": 70.0
     },
     "issues": [
       {
-        "type": "weak_core",
+        "type": "wrong_section",
         "severity": "moderate",
-        "section": "policy",
-        "title": "[사실은 이렇습니다] 정부는 외식물가 안정을 위해 농산물 가격 안정에 ...",
-        "reason": "구체적 신규 조치가 부족한 해명자료로 정책 핵심 기사로는 약하다.",
-        "suggested_action": "비핵심으로 강등하고 CPTPP 기사를 핵심으로 승격한다."
+        "section": "supply",
+        "title": "위상 높인 농산물 수급조절위 8기 닻 올려",
+        "reason": "법정위원회 격상과 농안법 시행을 다룬 명백한 정책 기사다.",
+        "suggested_action": "policy로 이동하고 정책 핵심 후보로 검토한다."
       },
       {
         "type": "weak_core",
         "severity": "moderate",
         "section": "policy",
-        "title": "정부, CPTPP 가입 본격화…농민단체 \"농업 희생 전제한 개방 중단하라\"",
-        "reason": "농업 통상과 생산자 영향을 다룬 주요 정책 현안인데 비핵심으로 배치됐다.",
-        "suggested_action": "핵심으로 승격한다."
+        "title": "위상 높인 농산물 수급조절위 8기 닻 올려",
+        "reason": "농산물 수급관리 체계의 전국적 변화를 다뤄 지역 정치 간담회보다 핵심성이 높다.",
+        "suggested_action": "policy로 옮긴 뒤 core로 승격한다."
       },
       {
-        "type": "missed_candidate",
+        "type": "promotional_filler",
         "severity": "moderate",
-        "section": "policy",
-        "title": "할당관세 악용 막는다…'반출 지연' 땐 혜택 환수 추진",
-        "reason": "시장 공급 지연과 관세 혜택 환수를 다룬 구체적 제도 변화로 일반 물가 대담보다 강하다.",
-        "suggested_action": "KBS 물가 대담을 빼고 선발한다."
+        "section": "supply",
+        "title": "수확 뒤 과수 수세 회복···조비, 감사비료 2종 제안",
+        "reason": "특정 업체 비료 제품 제안이 중심인 판촉성 콘텐츠다.",
+        "suggested_action": "거창 여름배추 안정생산 등 비상업적 공급 기사로 교체한다."
       },
       {
-        "type": "noise",
+        "type": "promotional_filler",
         "severity": "moderate",
         "section": "policy",
-        "title": "[생생뉴스] 치솟는 물가에 가계 부담 가중…물가 안정 대책은?",
-        "reason": "일반 경제학자 대담 중심이며 농업정책의 구체적 조치나 운영 정보가 부족하다.",
-        "suggested_action": "구체적인 농업 법안·제도 기사로 교체한다."
+        "title": "추석 농축산물 할인, 장바구니 너머 농가의 이야기도 들어보니",
+        "reason": "할인정책의 효과 분석보다 정책 홍보와 체험담 성격이 강하다.",
+        "suggested_action": "수급조절위원회 기사로 교체한다."
       },
       {
         "type": "wrong_section",
         "severity": "moderate",
-        "section": "dist",
-        "title": "\"뜨거운 여름 덕분에 오히려 달다\" 고당도 나주 햇배 출하",
-        "reason": "유통 운영보다 생산량·작황·품질을 중심으로 한 공급 기사다.",
-        "suggested_action": "공급으로 이동하거나 중국산 배추·김치 유통점검 기사로 교체한다."
-      },
-      {
-        "type": "duplicate_theme",
-        "severity": "minor",
-        "section": "supply",
-        "title": "[사실은 이렇습니다] 추석 대비 농산물 수급은 안정적, 성수품 공급 확...",
-        "reason": "첫 기사와 추석 수급 안정 및 과일 가격 진단이 겹쳐 정보 확장성이 낮다.",
-        "suggested_action": "품목별 가격·출하 또는 수입 배추 안전 이슈로 교체한다."
+        "section": "policy",
+        "title": "천안농협, 폭염·가뭄 피해 예방 영농자재 전달",
+        "reason": "지역 농협의 자재 지원 사례로 정책 제도나 결정과의 연관성이 약하다.",
+        "suggested_action": "삭제하고 전국 단위 정책·제도 기사로 대체한다."
       },
       {
         "type": "promotional_filler",
+        "severity": "moderate",
+        "section": "dist",
+        "title": "“우리아이 첫 김장은 대아청과와”…김치교실 참가자 모집",
+        "reason": "참가자 모집형 지역 행사로 유통 운영 정보가 부족하다.",
+        "suggested_action": "실제 판로 다각화나 온라인도매시장 관리 기사로 교체한다."
+      },
+      {
+        "type": "underfill",
+        "severity": "moderate",
+        "section": "dist",
+        "title": "유통 섹션 4건 편성",
+        "reason": "활용 가능한 후보가 있는데 목표 5건을 채우지 못했다.",
+        "suggested_action": "딸기 체험농장 판로 다각화 등 구체적 판매채널 후보를 추가한다."
+      },
+      {
+        "type": "noise",
         "severity": "minor",
-        "section": "supply",
-        "title": "양구 멜론 본격 출하 …청년농업인 지원 강화",
-        "reason": "지역 특산품 홍보와 지원사업 소개 비중이 높고 전국 수급 신호는 제한적이다.",
-        "suggested_action": "꼬리 기사로만 유지하고 더 강한 전국 후보가 있으면 교체한다."
+        "section": "pest",
+        "title": "담양군, 국립농업과학원과 딸기 스마트팜 현장 점검",
+        "reason": "병해충 예찰·무인방제 요소가 있으나 기사 중심은 일반 스마트팜 현장 점검이다.",
+        "suggested_action": "약한 꼬리 기사로만 유지하고 더 직접적인 병해충 후보가 있으면 교체한다."
       }
     ]
   },
@@ -242,8 +262,8 @@
     "mode": "shadow_replay_loop",
     "proposal_only": true,
     "target_score": 82.0,
-    "current_editorial_score": 76.7,
-    "model_reported_score": 78.0,
+    "current_editorial_score": 75.65,
+    "model_reported_score": 77.1,
     "quality_tier": "needs_major_iteration",
     "target_status": "needs_major_iteration",
     "iteration_budget": 3,
@@ -259,13 +279,13 @@
       "no_section_underfill": true
     },
     "section_count_context": {
-      "score": 100.0,
-      "status": "target_met",
+      "score": 85.5,
+      "status": "underfilled",
       "sections": {
         "supply": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 262,
+          "raw_candidates": 199,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -277,7 +297,7 @@
         "policy": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 58,
+          "raw_candidates": 67,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -287,34 +307,41 @@
           "score": 100.0
         },
         "dist": {
-          "actual": 5,
+          "actual": 4,
           "expected": 5,
-          "raw_candidates": 63,
+          "raw_candidates": 48,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
           "count_floor": 3,
           "core_count": 2,
-          "fill_ratio": 1.0,
-          "score": 100.0
+          "fill_ratio": 0.8,
+          "score": 92.0
         },
         "pest": {
-          "actual": 5,
-          "expected": 5,
-          "raw_candidates": 49,
+          "actual": 2,
+          "expected": 2,
+          "raw_candidates": 7,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
           "count_floor": 3,
-          "core_count": 2,
-          "fill_ratio": 1.0,
-          "score": 100.0
+          "core_count": 1,
+          "fill_ratio": 0.4,
+          "score": 50.0
         }
       },
-      "underfilled_sections": [],
-      "soft_fallback_sections": [],
+      "underfilled_sections": [
+        "dist",
+        "pest"
+      ],
+      "soft_fallback_sections": [
+        "dist"
+      ],
       "minimum_fallback_sections": [],
-      "severe_underfilled_sections": [],
+      "severe_underfilled_sections": [
+        "pest"
+      ],
       "preferred_count": 5,
       "soft_fallback_count": 4,
       "minimum_fallback_count": 3,
@@ -323,10 +350,9 @@
     },
     "guardrail_focus": [
       "core_quality",
-      "missed_opportunity",
-      "article_selection",
       "noise_control",
-      "section_fit"
+      "section_fit",
+      "section_count"
     ],
     "recommended_actions": [
       {
@@ -334,18 +360,6 @@
         "target": "core_fit_min",
         "direction": "tighten",
         "reason": "Core cards should not be filled by merely available articles."
-      },
-      {
-        "kind": "candidate_recall",
-        "target": "raw_candidate_pool",
-        "direction": "expand_or_rerank",
-        "reason": "The raw pool contained stronger alternatives than selected cards."
-      },
-      {
-        "kind": "story_dedupe",
-        "target": "story_signature_gate",
-        "direction": "tighten",
-        "reason": "Multiple cards covered the same issue and reduced briefing breadth."
       },
       {
         "kind": "noise_filter",
@@ -358,6 +372,12 @@
         "target": "section_card_min_fit",
         "direction": "tighten",
         "reason": "A selected card appears to fit another section better."
+      },
+      {
+        "kind": "section_fill",
+        "target": "preferred_section_count",
+        "direction": "restore",
+        "reason": "Every section with enough candidates should reach its preferred card count."
       }
     ],
     "current_selection_guardrails": {
