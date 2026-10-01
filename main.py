@@ -14784,6 +14784,9 @@ def _replay_snapshot_write_enabled() -> bool:
 
 # 페이지 전용 재빌드(카톡 미발송)에서도 발행 전 편집 게이트를 돌릴지.
 REPLAY_RUN_QUALITY_GATE = (os.getenv("REPLAY_RUN_QUALITY_GATE", "false") or "false").strip().lower() in ("1", "true", "yes", "y")
+# 페이지 전용 재빌드(카톡 미발송)도 일일 런과 같은 보장 발행(hard 카드만 빼고 최소 지면)을 쓸지. 운영자가
+# 이미 나간 지면보다 나은 판을 원할 때만 켠다 — 재빌드는 기존 지면을 덮어쓰므로 기본은 끔.
+REPLAY_GUARANTEED_DELIVERY = (os.getenv("REPLAY_GUARANTEED_DELIVERY", "false") or "false").strip().lower() in ("1", "true", "yes", "y")
 
 
 def _replay_allow_openai() -> bool:
@@ -52643,6 +52646,7 @@ def maintenance_replay_date(repo: str, token: str, report_date: str, site_path: 
             # 카톡을 보내는 복구는 정상 통과만 허용한다. 페이지만 교체하는 재빌드는 일일 발행과
             # 같은 SLA 폴백 기준(hard issue 0·결정적 점수 하한)이면 이미 나간 지면보다 낫다.
             allow_sla_fallback=not MAINTENANCE_SEND_KAKAO,
+            guarantee_delivery=bool(REPLAY_GUARANTEED_DELIVERY and not MAINTENANCE_SEND_KAKAO),
         )
         gate = quality_result.get("prepublish_quality_gate", {}) if isinstance(quality_result, dict) else {}
         if not isinstance(gate, dict) or not gate.get("publishable"):

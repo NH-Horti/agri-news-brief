@@ -47,6 +47,11 @@ on:
         required: false
         default: 'false'
         type: string
+      guarantee_delivery:
+        description: 'With run_quality_gate and no Kakao: publish the guaranteed minimum edition (unsafe cards removed) instead of keeping the old page when the gate blocks (true/false)'
+        required: false
+        default: 'false'
+        type: string
 
 permissions:
   contents: write
@@ -213,6 +218,7 @@ jobs:
           REPLAY_WRITE_SNAPSHOT: ${{ steps.vars.outputs.replay_write_snapshot }}
           REPLAY_ALLOW_OPENAI: ${{ inputs.replay_allow_openai == 'true' && 'true' || 'false' }}
           REPLAY_RUN_QUALITY_GATE: ${{ inputs.run_quality_gate == 'true' && 'true' || 'false' }}
+          REPLAY_GUARANTEED_DELIVERY: ${{ inputs.guarantee_delivery == 'true' && 'true' || 'false' }}
           REPLAY_SNAPSHOT_DIR: .agri_replay
           MAX_PER_SECTION: ${{ steps.vars.outputs.max_per_section }}
 
