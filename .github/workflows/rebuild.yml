@@ -222,10 +222,12 @@ jobs:
           EDITORIAL_OPENAI_TIMEOUT_SECONDS: '45'
           EDITORIAL_OPENAI_MAX_ATTEMPTS: '1'
           EDITORIAL_OPENAI_RETRY_DELAY_SECONDS: '0'
-          PREPUBLISH_QUALITY_MAX_REPAIRS: '1'
-          PREPUBLISH_QUALITY_MAX_PROPOSALS: '2'
-          PREPUBLISH_EDITORIAL_MAX_CALLS: '4'
-          PREPUBLISH_EDITORIAL_TOKEN_BUDGET: '90000'
+          # Same bounded budget as the 06:05 daily primary (a repair only starts when
+          # its verification call still fits under the call cap).
+          PREPUBLISH_QUALITY_MAX_REPAIRS: '2'
+          PREPUBLISH_QUALITY_MAX_PROPOSALS: '3'
+          PREPUBLISH_EDITORIAL_MAX_CALLS: '6'
+          PREPUBLISH_EDITORIAL_TOKEN_BUDGET: '130000'
 
           FORCE_RUN_ANYDAY: 'false'
           UX_PATCH_DAYS: ${{ steps.vars.outputs.ux_patch_days }}
