@@ -1,34 +1,34 @@
-## Daily Eval (2026-10-01)
-- Overall: **90.98** (warn)
-- Operational: **94.52**
-- Reader quality: **92.57** (capped; penalty=1.9, cap=95.0, reasons=preferred_slot_underfill)
-- Quality gate: **90.98** (needs_major_iteration, editorial_acceptance_gate_failed; editorial=75.7, operational=94.5)
-- Scores: completeness=96.4, diversity=99.1, source=100.0, summary=100.0, freshness=100.0, retrieval=78.1, section_fit=93.0, core=100.0, commodity=87.0
-- Briefing cards: 16 / Commodity cards: 21
-- Sections: supply:5/5 raw=199, policy:5/5 raw=67, dist:4/5 raw=48, pest:2/2 raw=7
-- Metrics: title_unique=1.00, domain_diversity=0.69, low_tier=0.12, summary_presence=1.00, summary_numeric=0.81, fresh_72h=1.00, fit_avg=2.74, false_positive=0.00, hard_reader_issues=0, weak_core=0.00, editorial_penalty=0.2, commodity_weak=0.00, commodity_items=6, commodity_active_today=12, commodity_active_today_unlinked=6, commodity_coverage=0.18, commodity_strict_link=0.83, commodity_false_link=0.00, commodity_pool_false_link=0.00, commodity_dominant_section=1.00, semantic_penalty=0.0
+## Daily Eval (2026-10-02)
+- Overall: **85.47** (warn)
+- Operational: **93.65**
+- Reader quality: **93.47** (clear; penalty=0.2, cap=100.0, reasons=clear)
+- Quality gate: **85.47** (needs_major_iteration, editorial_major_issue; editorial=62.6, operational=93.7)
+- Scores: completeness=100.0, diversity=84.6, source=80.0, summary=100.0, freshness=100.0, retrieval=80.5, section_fit=100.0, core=81.1, commodity=88.0
+- Briefing cards: 20 / Commodity cards: 16
+- Sections: supply:5/5 raw=194, policy:5/5 raw=51, dist:5/5 raw=29, pest:5/5 raw=21
+- Metrics: title_unique=1.00, domain_diversity=0.55, low_tier=0.20, summary_presence=1.00, summary_numeric=0.70, fresh_72h=1.00, fit_avg=3.53, false_positive=0.00, hard_reader_issues=0, weak_core=0.25, editorial_penalty=0.1, commodity_weak=0.00, commodity_items=5, commodity_active_today=10, commodity_active_today_unlinked=5, commodity_coverage=0.15, commodity_strict_link=1.00, commodity_false_link=0.00, commodity_pool_false_link=0.00, commodity_dominant_section=1.00, semantic_penalty=0.0
 
 
 ### Editorial Shadow Eval
-- Editorial: **75.65** (daily target 82, tier=needs_major_iteration, needs_major_iteration)
+- Editorial: **62.65** (daily target 82, tier=needs_major_iteration, needs_major_iteration)
 - Model: gpt-5.6-sol (resolved gpt-5.6-sol)
-- Model-reported score: 77.10; authoritative method=weighted_components_v1
-- Acceptance: needs_iteration (blocking=0, major=0, reasons=editorial_score_min, critical_components_min, all_components_min, section_count_score_min, no_section_underfill, commodity_board_score_min)
-- Section count gate: 85.5 (underfilled)
-- Components: article_selection=74.0, section_fit=72.0, core=79.0, summary=88.0, missed=69.0, noise=70.0
-- Summary: 핵심 정책·유통 이슈는 일부 잘 잡았지만, 정책 기사를 공급에 배치하고 홍보성·지역 지원 기사를 채워 넣은 탓에 편집 밀도가 낮다. 특히 dist를 4건으로 두면서도 김치교실을 유지한 선택이 아쉽다.
-- [moderate] wrong_section: 위상 높인 농산물 수급조절위 8기 닻 올려 - 법정위원회 격상과 농안법 시행을 다룬 명백한 정책 기사다.
-- [moderate] weak_core: 위상 높인 농산물 수급조절위 8기 닻 올려 - 농산물 수급관리 체계의 전국적 변화를 다뤄 지역 정치 간담회보다 핵심성이 높다.
-- [moderate] promotional_filler: 수확 뒤 과수 수세 회복···조비, 감사비료 2종 제안 - 특정 업체 비료 제품 제안이 중심인 판촉성 콘텐츠다.
-- [moderate] promotional_filler: 추석 농축산물 할인, 장바구니 너머 농가의 이야기도 들어보니 - 할인정책의 효과 분석보다 정책 홍보와 체험담 성격이 강하다.
-- [moderate] wrong_section: 천안농협, 폭염·가뭄 피해 예방 영농자재 전달 - 지역 농협의 자재 지원 사례로 정책 제도나 결정과의 연관성이 약하다.
+- Model-reported score: 63.00; authoritative method=weighted_components_v1
+- Acceptance: needs_iteration (blocking=0, major=4, reasons=editorial_score_min, no_major_issues, critical_components_min, all_components_min, commodity_board_score_min)
+- Section count gate: 100.0 (target_met)
+- Components: article_selection=62.0, section_fit=78.0, core=55.0, summary=88.0, missed=45.0, noise=45.0
+- Summary: 형식과 요약은 양호하지만 공급 섹션의 심각한 기사 중복, 약한 코어 지정, 유통 핵심 후보 누락으로 편집 품질이 크게 떨어진다.
+- [major] duplicate_story: "사과·배는 싸졌는데"…비 자주 오더니 채소값 줄줄이 올랐다 외 2건 - 공급 5건 중 4건이 같은 9월 품목별 물가 흐름을 반복한다.
+- [major] missed_candidate: 가을에도 밭 갈아엎는다…‘양배추’ 농가에 무슨 일이? - 연속 시장격리와 산지가격 하락을 다룬 당일 핵심 수급 기사다.
+- [moderate] wrong_section: 도, 가을철 농산물 판로 확대 추진… 가격하락 대응 - 내용의 중심이 판로 확대와 유통망 다변화여서 유통 섹션에 더 적합하다.
+- [moderate] weak_core: 김제 농협, 두류산업 선도 농협 ‘자리매김’…농가실익 보탬 - 개별 농협 성과 소개 성격이 강해 전국 정책 코어로는 약하다.
+- [moderate] missed_candidate: '법정위원회'로 도약한 농산물 수급조절위, 제8기 출범 - 법정위원회 전환은 수급정책 의사결정 구조의 실질적 변화다.
 
 ### Improvement Hints
+- 핵심기사 품질 편차가 큽니다. core 기사에는 low-fit·tail 후보를 쓰지 말고, fit 상위권이면서 실제 이슈성이 강한 기사만 남기세요.
 - 품목 보드 대표기사가 품목 핵심 이슈를 충분히 대변하지 못합니다. 제목에서 품목명과 수급·가격·병해충 신호가 함께 보이는 기사, representative rank 상위 후보, 비수급 섹션의 직접 이슈 후보를 우선하세요.
-- raw 후보가 충분한데 선호 카드 수(섹션당 5개)에 못 미친 섹션이 있습니다: dist(-1). 빈 5번째 슬롯에는 고품질 수급·유통 cross-fill 후보를 재검토하세요.
-- 편집 품질상 약한 기사 선택이 감지되었습니다 (promotional_filler=12%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요.
+- 품목 보드 대표 품목 수가 적습니다. 다만 weak fallback으로 채우지 말고, 품목명+이슈가 제목에 함께 드러나는 후보를 리콜 쿼리에서 보강하세요.
+- 리콜 시드 결손이 보입니다: policy. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요.
+- 편집 품질상 약한 기사 선택이 감지되었습니다 (promotional_filler=5%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요.
 
 ### Next Summary Feedback
-- 각 기사 요약은 2문장으로 유지하고 첫 문장에 품목·지역·핵심 이슈를 바로 적는다.
-- 기사에 수치가 있으면 1개 이상 남기고, 없으면 대응 주체나 시점을 분명히 적는다.
-- 비슷한 시작 표현을 반복하지 말고 원인과 대응을 분리해서 간결하게 쓴다.
+- 핵심기사 요약은 행사성 문구를 걷어내고 가격·물량·방제 같은 실제 이슈 변수를 첫 문장에 바로 둔다.
