@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-10-01T12:32:50.875737+09:00",
+  "updated_at": "2026-10-01T12:44:15.428568+09:00",
   "items": [
     {
       "id": "bc2597d2b4f1",
@@ -2572,7 +2572,7 @@
       "date": "2026-09-23",
       "section": "policy",
       "section_title": "정책 및 주요 이슈",
-      "rank": 2,
+      "rank": 1,
       "title": "\"올해 추석 차례상 32만원대…작년보다 0.5% 상승\"",
       "press": "이투데이",
       "summary": "올해 추석 차례상 비용은 4인 기준 32만5000원가량으로, 지난해보다 0.5% 오를 전망이다. 정부의 할인 지원과 성수품 공급 확대에도 사과·배 가격은 3주 새 10%대 상승했다.",
@@ -2582,6 +2582,23 @@
       "press_tier": 3,
       "topics": [
         "배"
+      ]
+    },
+    {
+      "id": "ea0b803fae5f",
+      "date": "2026-09-23",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 4,
+      "title": "[국민의 기업] 배·포도 맛본 아세안 인플루언서, K과일 매력 알린다",
+      "press": "중앙일보",
+      "summary": "국내 배·포도 산지와 선별 과정이 아세안 소비자에게 한국산 과일의 맛과 품질을 알리는 콘텐츠로 소개된다. 농식품부와 한국농수산식품유통공사는 지난 9~12일 아세안 인플루언서 초청 팸투어를 진행했다.",
+      "url": "https://n.news.naver.com/mnews/article/025/0003553387?sid=101",
+      "archive": "/agri-news-brief/archive/2026-09-23.html#sec-dist",
+      "score": 58.34,
+      "press_tier": 3,
+      "topics": [
+        "포도"
       ]
     },
     {
@@ -2600,17 +2617,17 @@
       "topics": []
     },
     {
-      "id": "251d3cd036fc",
+      "id": "34c96968f26f",
       "date": "2026-09-23",
-      "section": "policy",
-      "section_title": "정책 및 주요 이슈",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
       "rank": 5,
-      "title": "조금 떨어졌다지만…“추석 차례상 비용 4인 기준 30만9000원”",
-      "press": "헤럴드경제",
-      "summary": "추석 차례상 비용은 소폭 하락했지만 소비자 부담이 여전한 것으로 나타났다. 4인 가족 기준 차례상 마련 비용은 30만9000원으로 제시돼 명절 장바구니 부담을 보여줬다.",
-      "url": "https://n.news.naver.com/mnews/article/016/0002700953?sid=101",
-      "archive": "/agri-news-brief/archive/2026-09-23.html#sec-policy",
-      "score": 49.61,
+      "title": "성적 나쁜 도매시장 법인에 ‘퇴출 압박’…평가 하위 10% 기준 마련",
+      "press": "이투데이",
+      "summary": "농식품부가 도매시장법인·시장도매인 평가 하위 10%를 부진평가로 규정해 지정취소 판단 기준을 명확히 했다. 평가 결과 이의신청을 허용하고 수수료 조정 권고 기준과 경매 외 거래 전담인력 의무도 마련했다.",
+      "url": "https://www.etoday.co.kr/news/view/2628523",
+      "archive": "/agri-news-brief/archive/2026-09-23.html#sec-dist",
+      "score": 43.23,
       "press_tier": 3,
       "topics": []
     },
@@ -2619,7 +2636,7 @@
       "date": "2026-09-23",
       "section": "dist",
       "section_title": "유통 및 현장 (도매시장/APC/수출)",
-      "rank": 4,
+      "rank": 2,
       "title": "‘온라인도매시장’서 누구나 거래한다…판매자 가입요건 폐지, 언제부...",
       "press": "농민신문",
       "summary": "농수산물 온라인도매시장의 판매자 가입요건이 폐지돼 농산물 판매 참여 대상이 확대된다. 농림축산식품부와 한국농수산식품유통공사(aT)는 10월1일부터 이를 시행한다.",
@@ -2630,37 +2647,52 @@
       "topics": []
     },
     {
-      "id": "406a178613af",
+      "id": "102dd3d5722f",
       "date": "2026-09-23",
       "section": "supply",
       "section_title": "품목 및 수급 동향",
-      "rank": 12,
-      "title": "[국민의 기업] 배 ·포도 맛본 아세안 인플루언서, K 과일 매력 알린다",
-      "press": "중앙일보",
+      "rank": 16,
+      "title": "“추석 성묘 때 헌화, 플라스틱 조화 말고 생화로 하세요”",
+      "press": "한겨레",
       "summary": "",
-      "url": "https://www.joongang.co.kr/article/25464335",
-      "archive": "/agri-news-brief/archive/2026-09-23.html#commodity-grape",
-      "score": 35.71,
+      "url": "https://www.hani.co.kr/arti/area/yeongnam/1279056.html",
+      "archive": "/agri-news-brief/archive/2026-09-23.html#commodity-flowers",
+      "score": 20.96,
       "press_tier": 3,
       "topics": [
-        "포도"
+        "화훼"
       ]
     },
     {
-      "id": "89ed19a37806",
+      "id": "19c41ec617ca",
       "date": "2026-09-23",
       "section": "supply",
       "section_title": "품목 및 수급 동향",
       "rank": 5,
-      "title": "“추석 성묘 때 헌화, 플라스틱 조화 말고 생화로 하세요”",
-      "press": "한겨레",
-      "summary": "경남에서 추석 성묘객에게 플라스틱 조화 대신 생화를 권하는 친환경 추모문화 확산 캠페인이 추진된다. 경남도는 캠페인을 집중 전개하며, 김해시는 2022년 봄 공원묘원의 플라스틱 조화를 수거해 폐기한 바 있다.",
-      "url": "https://n.news.naver.com/mnews/article/028/0002824247?sid=102",
+      "title": "웅진식품, 하늘보리·아침햇살 등 20여 종 평균 7% 인상",
+      "press": "YTN",
+      "summary": "웅진식품이 하늘보리·아침햇살 등 음료 20여 종의 가격을 다음 달 1일부터 평균 7% 인상한다. 편의점 기준 아침햇살·초록매실 500㎖는 2천350원에서 2천500원으로 오르며, 원부자재 가격·환율·유가 상승이 배경이다.",
+      "url": "https://n.news.naver.com/mnews/article/052/0002410242?sid=101",
       "archive": "/agri-news-brief/archive/2026-09-23.html#sec-supply",
-      "score": 21.36,
+      "score": 19.62,
+      "press_tier": 3,
+      "topics": []
+    },
+    {
+      "id": "ecdf4bac728d",
+      "date": "2026-09-23",
+      "section": "pest",
+      "section_title": "생육 리스크 및 방제",
+      "rank": 5,
+      "title": "동해시, 스마트농업 테스트베드서 딸기 첫 실증 재배",
+      "press": "연합뉴스",
+      "summary": "강원 동해시가 스마트농업 테스트베드에서 국내 육성 딸기 ‘설향’의 첫 실증 재배를 시작했다. 시는 모종 약 1000주를 정식했으며, 기후변화 대응과 디지털 재배 실증을 거쳐 12월부터 수확한다.",
+      "url": "https://n.news.naver.com/mnews/article/001/0016328685?sid=101",
+      "archive": "/agri-news-brief/archive/2026-09-23.html#sec-pest",
+      "score": 18.11,
       "press_tier": 3,
       "topics": [
-        "화훼"
+        "딸기"
       ]
     },
     {
@@ -2668,13 +2700,13 @@
       "date": "2026-09-23",
       "section": "supply",
       "section_title": "품목 및 수급 동향",
-      "rank": 15,
+      "rank": 14,
       "title": "웅진식품, 내달 음료 가격 평균 7% 인상…초록매실·아침햇살 2500원",
       "press": "이데일리",
       "summary": "",
       "url": "https://www.edaily.co.kr/News/Read?newsId=03814646645582744&mediaCodeNo=257",
       "archive": "/agri-news-brief/archive/2026-09-23.html#commodity-maesil",
-      "score": 16.798,
+      "score": 16.398,
       "press_tier": 3,
       "topics": [
         "매실"
@@ -2685,13 +2717,13 @@
       "date": "2026-09-23",
       "section": "supply",
       "section_title": "품목 및 수급 동향",
-      "rank": 16,
+      "rank": 15,
       "title": "“딸기를 뉴질랜드 키위처럼 수출하려면”...50년 전문가 제안 책에 담...",
       "press": "매일경제",
       "summary": "",
       "url": "https://www.mk.co.kr/article/12159044",
       "archive": "/agri-news-brief/archive/2026-09-23.html#commodity-kiwifruit",
-      "score": 7.68,
+      "score": 7.28,
       "press_tier": 3,
       "topics": [
         "딸기",
@@ -2703,7 +2735,7 @@
       "date": "2026-09-23",
       "section": "policy",
       "section_title": "정책 및 주요 이슈",
-      "rank": 1,
+      "rank": 5,
       "title": "추석 차례상 비용 19만6630원…지난해보다 1.5% 하락",
       "press": "한국농업신문",
       "summary": "전국 추석 차례상 비용은 4인 가족 기준 평균 19만6630원으로 지난해보다 1.5% 낮아졌다. aT 조사에서 과일류는 7.2% 하락한 반면 축산물은 2.5% 상승한 것으로 집계됐다.",
@@ -2718,7 +2750,7 @@
       "date": "2026-09-23",
       "section": "dist",
       "section_title": "유통 및 현장 (도매시장/APC/수출)",
-      "rank": 1,
+      "rank": 3,
       "title": "마늘 ·감귤 선별부터 출하까지 산지유통 스마트 전환 발판",
       "press": "농수축산신문",
       "summary": "제주 마늘·감귤 산지의 선별과 출하 체계가 로봇·인공지능을 활용한 스마트 유통시설로 전환된다. 제주고산농협과 제주위미농협은 2027년 스마트APC 예비 대상자로 선정돼 각각 64억원과 72억원을 신청했다.",
@@ -2732,17 +2764,17 @@
       ]
     },
     {
-      "id": "7a33fd29c683",
+      "id": "51c61a228801",
       "date": "2026-09-23",
-      "section": "dist",
-      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "section": "policy",
+      "section_title": "정책 및 주요 이슈",
       "rank": 2,
-      "title": "온라인도매시장 판매자 가입요건 폐지…10월 1일부터 시행",
-      "press": "농업정보신문",
-      "summary": "농수산물 온라인도매시장이 판매자 가입요건을 없애 중소 산지조직의 시장 진입 문턱을 낮춘다. 농식품부와 aT는 전년도 거래규모 10억원 이상 기준을 폐지하고 10월1일부터 적용한다.",
-      "url": "http://www.nongup.net/news/articleView.html?idxno=33740",
-      "archive": "/agri-news-brief/archive/2026-09-23.html#sec-dist",
-      "score": 43.79,
+      "title": "'추석 물가' 시험대 오른 이형일… 할인 끝난 뒤가 진짜 승부",
+      "press": "뉴스핌",
+      "summary": "추석 물가는 중동 사태에 따른 유가 급등과 전반적인 물가 상승 속에서 정부 경제정책의 시험대로 떠올랐다. 정부는 역대 최대 규모의 할인 지원 예산을 투입했으며 할인 종료 이후의 가격 안정이 과제로 지목됐다.",
+      "url": "https://www.newspim.com/news/view/20260921001129",
+      "archive": "/agri-news-brief/archive/2026-09-23.html#sec-policy",
+      "score": 56.65,
       "press_tier": 2,
       "topics": []
     },
@@ -2751,7 +2783,7 @@
       "date": "2026-09-23",
       "section": "dist",
       "section_title": "유통 및 현장 (도매시장/APC/수출)",
-      "rank": 3,
+      "rank": 1,
       "title": "지리산청학농협, 밤 농가 판로 지키기 나서…수매·판매·수출까지 대응",
       "press": "농수축산신문",
       "summary": "지리산청학농협이 작황 부진과 재고 부담을 겪는 밤 농가를 위해 수매부터 판매·수출까지 판로 확보에 나섰다. 이상기후와 폭염·병해충 피해에 2025년산 재고까지 남아 구매업체의 신규 매입이 신중해졌다.",
@@ -2762,21 +2794,6 @@
       "topics": [
         "밤"
       ]
-    },
-    {
-      "id": "cb79fdd24645",
-      "date": "2026-09-23",
-      "section": "dist",
-      "section_title": "유통 및 현장 (도매시장/APC/수출)",
-      "rank": 5,
-      "title": "도매 법인 수익 늘면 수수료 인하 권고…평가 이의 신청제도 신설",
-      "press": "뉴시스",
-      "summary": "정부가 도매시장법인의 수익이 크게 늘면 출하자 위탁수수료율 인하를 권고할 수 있도록 제도를 손질한다. 최근 5년 평균 영업이익률을 기준으로 삼고, 평가 하위 10% 이하는 부진평가로 규정한다.",
-      "url": "https://n.news.naver.com/mnews/article/003/0014207243?sid=101",
-      "archive": "/agri-news-brief/archive/2026-09-23.html#sec-dist",
-      "score": 39.91,
-      "press_tier": 2,
-      "topics": []
     },
     {
       "id": "ef1fbe4fd4a3",
@@ -2813,7 +2830,7 @@
       "date": "2026-09-23",
       "section": "supply",
       "section_title": "품목 및 수급 동향",
-      "rank": 4,
+      "rank": 2,
       "title": "[국회토론회] 농업인 농산물 제값받기, 농산물 유통 구조 혁신",
       "press": "농축유통신문",
       "summary": "농산물 유통혁신의 중심을 단계 축소보다 산지와 소비지 사이의 물류비 절감으로 옮겨야 한다는 주장이 나왔다. 18일 국회 토론회에서는 공동물류와 일관물류체계가 농가 수취가격 개선 방안으로 제시됐다.",
@@ -2828,39 +2845,24 @@
       "date": "2026-09-23",
       "section": "pest",
       "section_title": "생육 리스크 및 방제",
-      "rank": 13,
+      "rank": 12,
       "title": "복숭아 생산성 높이고 노동시간 줄인다",
       "press": "팜&마켓",
       "summary": "",
       "url": "https://www.farmnmarket.com/news/article.html?no=27918",
       "archive": "/agri-news-brief/archive/2026-09-23.html#commodity-peach",
-      "score": 23.55,
+      "score": 23.15,
       "press_tier": 2,
       "topics": [
         "복숭아"
       ]
     },
     {
-      "id": "f144a6b536b1",
-      "date": "2026-09-23",
-      "section": "pest",
-      "section_title": "생육 리스크 및 방제",
-      "rank": 5,
-      "title": "창녕 남지읍, 가을철 영농 추진 상황 점검",
-      "press": "경남도민신문",
-      "summary": "창녕군 남지읍에서 마늘 파종과 벼 수확이 진행되는 가운데 가을철 영농 추진 상황에 대한 현장 점검이 이뤄졌다. 남지읍은 지난 18일 작업 진행 여부를 살피고 농업인 애로사항을 청취해 필요한 지원사항을 확인했다.",
-      "url": "http://www.gndomin.com/news/articleView.html?idxno=490682",
-      "archive": "/agri-news-brief/archive/2026-09-23.html#sec-pest",
-      "score": 21.52,
-      "press_tier": 2,
-      "topics": []
-    },
-    {
       "id": "41e704c026bc",
       "date": "2026-09-23",
       "section": "supply",
       "section_title": "품목 및 수급 동향",
-      "rank": 2,
+      "rank": 3,
       "title": "박정훈 식량정책실장, 사과 수급 현장 점검",
       "press": "농축유통신문",
       "summary": "강원 양구 사과 재배 현장에서 추석을 앞둔 출하와 수급 동향에 대한 점검이 이뤄졌다. 박정훈 농식품부 식량정책실장은 명절 1주일 전 농가를 찾아 이상기후 등 기후변화 영향도 살폈다.",
@@ -2877,7 +2879,7 @@
       "date": "2026-09-23",
       "section": "supply",
       "section_title": "품목 및 수급 동향",
-      "rank": 3,
+      "rank": 4,
       "title": "거창군 농특산물, 전국 유통망 통한 판로 확대",
       "press": "경남신문",
       "summary": "거창산 포도류가 전국 유통망과 홈플러스익스프레스를 통해 판매되며 지역 농가의 안정적 판로가 확대되고 있다. 샤인머스캣 도매가격이 1㎏당 4000원 이하인 가운데 발주가는 도매시장 가격 이상으로 형성됐다.",
@@ -2900,7 +2902,7 @@
       "summary": "",
       "url": "https://www.gnnews.co.kr/news/articleView.html?idxno=646180",
       "archive": "/agri-news-brief/archive/2026-09-23.html#commodity-flowers",
-      "score": 18.14,
+      "score": 17.74,
       "press_tier": 2,
       "topics": [
         "화훼"
@@ -2934,7 +2936,7 @@
       "summary": "",
       "url": "https://www.newspim.com/news/view/20260922000974",
       "archive": "/agri-news-brief/archive/2026-09-23.html#commodity-strawberry",
-      "score": 13.41,
+      "score": 13.01,
       "press_tier": 2,
       "topics": [
         "딸기"
@@ -2951,7 +2953,7 @@
       "summary": "",
       "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=407440",
       "archive": "/agri-news-brief/archive/2026-09-23.html#commodity-cabbage",
-      "score": 12.905,
+      "score": 12.505,
       "press_tier": 2,
       "topics": [
         "양배추"
@@ -2968,7 +2970,7 @@
       "summary": "",
       "url": "https://www.newsgn.com/news/articleView.html?idxno=575565",
       "archive": "/agri-news-brief/archive/2026-09-23.html#commodity-muskmelon",
-      "score": 9.501,
+      "score": 9.101,
       "press_tier": 2,
       "topics": []
     },
@@ -2983,7 +2985,7 @@
       "summary": "",
       "url": "https://www.ohmynews.com/NWS_Web/View/at_pg.aspx?CNTN_CD=A0003269485&CMPT_CD=P0010",
       "archive": "/agri-news-brief/archive/2026-09-23.html#commodity-cucumber",
-      "score": 4.312,
+      "score": 3.912,
       "press_tier": 2,
       "topics": [
         "오이"
@@ -3033,7 +3035,7 @@
       "summary": "",
       "url": "https://www.ngonews.kr/news/articleView.html?idxno=238996",
       "archive": "/agri-news-brief/archive/2026-09-23.html#commodity-apple",
-      "score": 14.21,
+      "score": 13.81,
       "press_tier": 1,
       "topics": [
         "배"
@@ -3050,7 +3052,7 @@
       "summary": "",
       "url": "https://news.tf.co.kr/read/national/2368939.htm",
       "archive": "/agri-news-brief/archive/2026-09-23.html#commodity-potato",
-      "score": 13.114,
+      "score": 12.714,
       "press_tier": 1,
       "topics": []
     },
@@ -3065,7 +3067,7 @@
       "summary": "",
       "url": "https://www.jejumaeil.net/news/articleView.html?idxno=404978",
       "archive": "/agri-news-brief/archive/2026-09-23.html#commodity-citrus",
-      "score": 12.206,
+      "score": 11.806,
       "press_tier": 1,
       "topics": [
         "감귤/만감"
@@ -3082,7 +3084,7 @@
       "summary": "",
       "url": "https://news.tf.co.kr/read/national/2368746.htm",
       "archive": "/agri-news-brief/archive/2026-09-23.html#commodity-strawberry",
-      "score": 10.21,
+      "score": 9.81,
       "press_tier": 1,
       "topics": [
         "딸기"
@@ -3093,13 +3095,13 @@
       "date": "2026-09-23",
       "section": "supply",
       "section_title": "품목 및 수급 동향",
-      "rank": 14,
+      "rank": 13,
       "title": "웅진식품, 아침햇살•초록 매실 등 주요 제품 가격 평균 7% 인상",
       "press": "브릿지경제",
       "summary": "",
       "url": "https://www.viva100.com/article/20260922500989",
       "archive": "/agri-news-brief/archive/2026-09-23.html#commodity-maesil",
-      "score": 10.093,
+      "score": 9.693,
       "press_tier": 1,
       "topics": [
         "매실"
@@ -3116,7 +3118,24 @@
       "summary": "",
       "url": "https://www.safetynews.co.kr/news/articleView.html?idxno=250703",
       "archive": "/agri-news-brief/archive/2026-09-23.html#commodity-apple",
-      "score": 9.664,
+      "score": 9.264,
+      "press_tier": 1,
+      "topics": [
+        "사과"
+      ]
+    },
+    {
+      "id": "191235e40904",
+      "date": "2026-09-23",
+      "section": "policy",
+      "section_title": "정책 및 주요 이슈",
+      "rank": 11,
+      "title": "당진 사과 농가 \"열과·낙과 피해 지원 확대를\"",
+      "press": "동양일보",
+      "summary": "",
+      "url": "https://www.dynews.co.kr/news/articleView.html?idxno=867011",
+      "archive": "/agri-news-brief/archive/2026-09-23.html#commodity-apple",
+      "score": 8.84,
       "press_tier": 1,
       "topics": [
         "사과"
@@ -3133,27 +3152,10 @@
       "summary": "",
       "url": "https://www.newsam.co.kr/news/article.html?no=44076",
       "archive": "/agri-news-brief/archive/2026-09-23.html#commodity-napa_cabbage",
-      "score": 3.705,
+      "score": 3.305,
       "press_tier": 1,
       "topics": [
         "배추"
-      ]
-    },
-    {
-      "id": "eb5c2be91f94",
-      "date": "2026-09-23",
-      "section": "pest",
-      "section_title": "생육 리스크 및 방제",
-      "rank": 11,
-      "title": "당진 사과 농가 \"열과·낙과 피해 지원 확대를\"",
-      "press": "동양일보",
-      "summary": "",
-      "url": "https://www.dynews.co.kr/news/articleView.html?idxno=867011",
-      "archive": "/agri-news-brief/archive/2026-09-23.html#commodity-apple",
-      "score": 1.84,
-      "press_tier": 1,
-      "topics": [
-        "사과"
       ]
     },
     {
