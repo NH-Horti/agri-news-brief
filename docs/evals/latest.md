@@ -1,31 +1,32 @@
-## Daily Eval (2026-09-22)
-- Overall: **88.37** (warn)
-- Operational: **93.95**
-- Reader quality: **90.53** (clear; penalty=3.4, cap=100.0, reasons=clear)
-- Quality gate: **88.37** (needs_major_iteration, editorial_major_issue; editorial=78.3, operational=94.0)
-- Scores: completeness=100.0, diversity=98.4, source=100.0, summary=100.0, freshness=100.0, retrieval=75.5, section_fit=97.2, core=85.0, commodity=90.0
-- Briefing cards: 20 / Commodity cards: 27
-- Sections: supply:5/5 raw=238, policy:5/5 raw=130, dist:5/5 raw=113, pest:5/5 raw=11
-- Metrics: title_unique=1.00, domain_diversity=0.85, low_tier=0.10, summary_presence=1.00, summary_numeric=0.90, fresh_72h=1.00, fit_avg=4.52, false_positive=0.00, hard_reader_issues=0, weak_core=0.00, editorial_penalty=1.9, commodity_weak=0.00, commodity_items=7, commodity_active_today=12, commodity_active_today_unlinked=5, commodity_coverage=0.21, commodity_strict_link=1.00, commodity_false_link=0.00, commodity_pool_false_link=0.00, commodity_dominant_section=0.71, semantic_penalty=0.0
+## Daily Eval (2026-09-17)
+- Overall: **82.88** (warn)
+- Operational: **90.15**
+- Reader quality: **86.37** (clear; penalty=3.8, cap=100.0, reasons=clear)
+- Quality gate: **82.88** (needs_major_iteration, editorial_major_issue; editorial=73.0, operational=90.2)
+- Scores: completeness=100.0, diversity=88.0, source=40.0, summary=100.0, freshness=100.0, retrieval=78.5, section_fit=92.4, core=89.1, commodity=88.0
+- Briefing cards: 20 / Commodity cards: 44
+- Sections: supply:5/5 raw=237, policy:5/5 raw=113, dist:5/5 raw=57, pest:5/5 raw=19
+- Metrics: title_unique=1.00, domain_diversity=0.85, low_tier=0.30, summary_presence=1.00, summary_numeric=0.95, fresh_72h=1.00, fit_avg=2.86, false_positive=0.00, hard_reader_issues=0, weak_core=0.12, editorial_penalty=0.1, commodity_weak=0.00, commodity_items=8, commodity_active_today=15, commodity_active_today_unlinked=7, commodity_coverage=0.24, commodity_strict_link=1.00, commodity_false_link=0.00, commodity_pool_false_link=0.00, commodity_dominant_section=0.88, semantic_penalty=0.0
 
 
 ### Editorial Shadow Eval
-- Editorial: **78.35** (daily target 82, tier=needs_major_iteration, needs_major_iteration)
+- Editorial: **73.05** (daily target 82, tier=needs_major_iteration, needs_major_iteration)
 - Model: gpt-5.6-sol (resolved gpt-5.6-sol)
-- Model-reported score: 78.00; authoritative method=weighted_components_v1
+- Model-reported score: 73.80; authoritative method=weighted_components_v1
 - Acceptance: needs_iteration (blocking=0, major=1, reasons=editorial_score_min, no_major_issues, critical_components_min, all_components_min, commodity_board_score_min)
 - Section count gate: 100.0 (target_met)
-- Components: article_selection=78.0, section_fit=88.0, core=82.0, summary=86.0, missed=65.0, noise=66.0
-- Summary: 전 섹션 5건과 시의성은 확보했지만, 정책 섹션이 추석 차례상 비용·할인 효과 기사로 과도하게 중복됐다. 유통의 현장 방문성 기사와 병해충의 간담회·일반 해설도 정보 밀도를 낮춘다.
-- [major] duplicate_theme: 1930억 투입해 추석 차례상 비용 9년 만에 낮췄다 - 6번 기사와 차례상 비용 하락 및 할인 재정 효과가 사실상 동일하다.
-- [moderate] duplicate_theme: 추석 1주일 전 기준 차례상 비용 전년比 1.5% 하락 - 차례상 비용 하락 주제가 정책 5건 중 3건을 차지한다.
-- [moderate] promotional_filler: 충북농협, 괴산 군자농협 사과 출하 현장 점검 - 단순 방문·점검 중심이며 물량, 가격, 물류 차질 등 새로운 운영 정보가 부족하다.
-- [moderate] noise: 임미애 의원, 과수 무병묘 생산기반 강화 현장 의견 청취 - 정책간담회 개최 사실이 중심이며 구체적인 병해 위험이나 방제 조치가 없다.
-- [moderate] noise: 뙤약볕에 타들어 가는 농심...과일도 화상 입는다 '일소현상' [지식용어...] - 일반적인 용어 해설로, 같은 섹션의 실제 폭염 피해·복구 기사보다 현장성이 낮다.
+- Components: article_selection=72.0, section_fit=72.0, core=76.0, summary=88.0, missed=61.0, noise=67.0
+- Summary: 형식과 카드 수는 충족했지만, 정책·유통 섹션의 오배치와 약한 지역성 꼬리 기사, 동일 배추 저장 연구의 중복이 품질을 낮췄다. 특히 유통 후보군에 더 강한 물류·수출 기사가 있는데도 이를 놓쳤다.
+- [moderate] duplicate_theme: [같이경제] 추석 물가 …한우 오르고 과일 내리고 - 차례상 물가 기사 3건이 겹쳐 공급 섹션의 정보 폭이 좁다.
+- [moderate] wrong_section: 추석 차례상, 전통시장이 더 저렴해 - 정책보다 가격 동향을 다룬 공급 기사이며 구체적 정책 조치가 약하다.
+- [major] duplicate_story: 농진청, 정부 비축 봄 배추 장기 저장 가능성 확인 - 유통 섹션의 ‘봄배추 장기 저장’과 동일한 농진청 실증연구다.
+- [moderate] noise: 정선 임계농협 농산물산지유통 센터에 비상소화장치 설치 - 시설 안전 단신으로 유통 운영·물류 변화에 대한 편집 가치가 낮다.
+- [moderate] promotional_filler: 송미령 농식품부 장관, 추석 앞두고 전통주 농촌창업 현장 방문 - 장관 현장 방문과 지원 홍보가 중심이며 구체적인 유통 성과가 부족하다.
 
 ### Improvement Hints
+- 최하위 매체 비중이 높습니다. 섹션당 tier-1 1건, 전체 20% 이하를 목표로 하고 같은 이슈의 tier-2+ 원문으로 교체하세요.
 - 품목 보드 대표기사가 품목 핵심 이슈를 충분히 대변하지 못합니다. 제목에서 품목명과 수급·가격·병해충 신호가 함께 보이는 기사, representative rank 상위 후보, 비수급 섹션의 직접 이슈 후보를 우선하세요.
-- 리콜 시드 결손이 보입니다: pest. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요.
+- 리콜 시드 결손이 보입니다: supply. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요.
 - 편집 품질상 약한 기사 선택이 감지되었습니다 (promotional_filler=5%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요.
 
 ### Next Summary Feedback
