@@ -1,32 +1,31 @@
-## Daily Eval (2026-09-14)
-- Overall: **85.45** (warn)
-- Operational: **93.00**
-- Reader quality: **87.97** (capped; penalty=5.0, cap=90.0, reasons=commodity_pool_false_link)
-- Quality gate: **85.45** (needs_major_iteration, editorial_major_issue; editorial=76.9, operational=93.0)
-- Scores: completeness=100.0, diversity=100.0, source=100.0, summary=100.0, freshness=92.9, retrieval=89.8, section_fit=79.5, core=98.4, commodity=94.9
-- Briefing cards: 20 / Commodity cards: 37
-- Sections: supply:5/5 raw=329, policy:5/5 raw=141, dist:5/5 raw=73, pest:5/5 raw=28
-- Metrics: title_unique=1.00, domain_diversity=0.75, low_tier=0.15, summary_presence=1.00, summary_numeric=0.85, fresh_72h=1.00, fit_avg=3.69, false_positive=0.00, hard_reader_issues=0, weak_core=0.00, editorial_penalty=2.4, commodity_weak=0.00, commodity_items=10, commodity_active_today=22, commodity_active_today_unlinked=12, commodity_coverage=0.30, commodity_strict_link=1.00, commodity_false_link=0.00, commodity_pool_false_link=0.07, commodity_dominant_section=0.60, semantic_penalty=0.0
+## Daily Eval (2026-09-01)
+- Overall: **82.68** (warn)
+- Operational: **96.30**
+- Reader quality: **84.00** (capped; penalty=7.3, cap=84.0, reasons=pest_theme_duplicate, commodity_false_link, commodity_false_link_severe)
+- Quality gate: **82.68** (needs_major_iteration, editorial_acceptance_gate_failed; editorial=76.7, operational=96.3)
+- Scores: completeness=100.0, diversity=100.0, source=100.0, summary=100.0, freshness=100.0, retrieval=90.6, section_fit=87.5, core=85.0, commodity=100.0
+- Briefing cards: 20 / Commodity cards: 43
+- Sections: supply:5/5 raw=262, policy:5/5 raw=58, dist:5/5 raw=63, pest:5/5 raw=49
+- Metrics: title_unique=1.00, domain_diversity=0.75, low_tier=0.10, summary_presence=1.00, summary_numeric=0.80, fresh_72h=1.00, fit_avg=3.71, false_positive=0.00, hard_reader_issues=0, weak_core=0.00, editorial_penalty=0.4, commodity_weak=0.00, commodity_items=7, commodity_active_today=19, commodity_active_today_unlinked=12, commodity_coverage=0.21, commodity_strict_link=0.86, commodity_false_link=0.14, commodity_pool_false_link=0.00, commodity_dominant_section=0.43, semantic_penalty=0.0
 
 
 ### Editorial Shadow Eval
-- Editorial: **76.90** (daily target 82, tier=needs_major_iteration, needs_major_iteration)
+- Editorial: **76.70** (daily target 82, tier=needs_major_iteration, needs_major_iteration)
 - Model: gpt-5.6-sol (resolved gpt-5.6-sol)
-- Model-reported score: 77.00; authoritative method=weighted_components_v1
-- Acceptance: needs_iteration (blocking=0, major=1, reasons=editorial_score_min, no_major_issues, critical_components_min, all_components_min)
+- Model-reported score: 78.00; authoritative method=weighted_components_v1
+- Acceptance: needs_iteration (blocking=0, major=0, reasons=editorial_score_min, critical_components_min, all_components_min)
 - Section count gate: 100.0 (target_met)
-- Components: article_selection=78.0, section_fit=82.0, core=70.0, summary=90.0, missed=72.0, noise=68.0
-- Summary: 형식과 기사 수, 요약 품질은 좋지만 유통 섹션의 중복·홍보성 핵심 선정과 정책·공급의 약한 꼬리 기사 때문에 편집 완성도가 낮아졌다.
-- [major] duplicate_story: 가락시장, 느타리버섯·봄동·제주당근 파렛트 출하 의무화 - 바로 앞 카드와 동일한 파렛트 의무화 조치를 반복한다.
-- [moderate] promotional_filler: 청주 농수산물도매시장, 옥산 이전 앞두고 '미래 유통' 담은 새 상징 공개 - BI 공개가 핵심으로 실질적인 시장 운영·물류 변화가 부족하다.
-- [moderate] weak_core: 청주 농수산물도매시장, 옥산 이전 앞두고 '미래 유통' 담은 새 상징 공개 - 홍보성 BI 기사는 유통 섹션 핵심 카드로 부적절하다.
-- [moderate] wrong_section: 농산물가격 안정제, 아쉬움이 큰 이유 - 가격 동향보다 제도 평가가 중심이며 정책 섹션의 동일 제도 기사와도 겹친다.
-- [moderate] promotional_filler: 조지연 의원, 농식품부 장관 만나 경산 농업사업 국비 지원 요청 - 지역 의원의 예산 건의 활동으로 전국 정책 영향이나 확정성이 약하다.
+- Components: article_selection=78.0, section_fit=80.0, core=70.0, summary=89.0, missed=69.0, noise=75.0
+- Summary: 수량과 요약은 안정적이지만 정책 핵심 선정이 약하고, 유통 섹션에 작황 기사가 섞였다. 강한 법·통상 후보를 두고 일반 물가 대담과 정부 해명자료를 중용한 점이 가장 큰 약점이다.
+- [moderate] weak_core: [사실은 이렇습니다] 정부는 외식물가 안정을 위해 농산물 가격 안정에 ... - 구체적 신규 조치가 부족한 해명자료로 정책 핵심 기사로는 약하다.
+- [moderate] weak_core: 정부, CPTPP 가입 본격화…농민단체 "농업 희생 전제한 개방 중단하라" - 농업 통상과 생산자 영향을 다룬 주요 정책 현안인데 비핵심으로 배치됐다.
+- [moderate] missed_candidate: 할당관세 악용 막는다…'반출 지연' 땐 혜택 환수 추진 - 시장 공급 지연과 관세 혜택 환수를 다룬 구체적 제도 변화로 일반 물가 대담보다 강하다.
+- [moderate] noise: [생생뉴스] 치솟는 물가에 가계 부담 가중…물가 안정 대책은? - 일반 경제학자 대담 중심이며 농업정책의 구체적 조치나 운영 정보가 부족하다.
+- [moderate] wrong_section: "뜨거운 여름 덕분에 오히려 달다" 고당도 나주 햇배 출하 - 유통 운영보다 생산량·작황·품질을 중심으로 한 공급 기사다.
 
 ### Improvement Hints
-- 섹션 오배치 의심 기사가 보입니다. section-fit이 낮거나 다른 섹션에서 더 적합한 후보가 있었던 기사들을 우선 재배치하세요.
 - 품목 보드 대표기사가 품목 핵심 이슈를 충분히 대변하지 못합니다. 제목에서 품목명과 수급·가격·병해충 신호가 함께 보이는 기사, representative rank 상위 후보, 비수급 섹션의 직접 이슈 후보를 우선하세요.
-- 편집 품질상 약한 기사 선택이 감지되었습니다 (promotional_filler=5%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요.
+- 편집 품질상 약한 기사 선택이 감지되었습니다 (pest_theme_duplicate=5%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요.
 - 농업과 무관한 기사가 브리핑에 포함되어 있습니다 (비율 5%). 해외 경제지표, 관광 홍보, 비농업 기사가 선정되지 않도록 is_relevant 게이트를 점검하세요.
 
 ### Next Summary Feedback
