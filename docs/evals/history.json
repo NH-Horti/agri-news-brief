@@ -409,25 +409,23 @@
     },
     {
       "report_date": "2026-09-16",
-      "generated_at_kst": "2026-09-16T09:42:39+09:00",
-      "overall_score": 83.17,
-      "operational_score": 93.37,
-      "reader_quality_score": 84.42,
-      "reader_quality_gate_status": "capped",
-      "reader_quality_gate_reasons": [
-        "pest_theme_duplicate"
-      ],
-      "editorial_score": 77.0,
-      "editorial_model_reported_score": 78.2,
+      "generated_at_kst": "2026-10-01T13:01:41+09:00",
+      "overall_score": 89.94,
+      "operational_score": 94.22,
+      "reader_quality_score": 90.44,
+      "reader_quality_gate_status": "clear",
+      "reader_quality_gate_reasons": [],
+      "editorial_score": 81.3,
+      "editorial_model_reported_score": 81.3,
       "editorial_score_method": "weighted_components_v1",
-      "editorial_quality_tier": "needs_major_iteration",
+      "editorial_quality_tier": "needs_iteration",
       "editorial_acceptance_passed": false,
-      "editorial_status": "needs_major_iteration",
-      "quality_gate_status": "needs_major_iteration",
+      "editorial_status": "needs_iteration",
+      "quality_gate_status": "needs_iteration",
       "quality_gate_reason": "editorial_acceptance_gate_failed",
       "status": "warn",
-      "section_alignment": 91.67,
-      "core_quality": 92.11,
+      "section_alignment": 90.3,
+      "core_quality": 88.16,
       "commodity_board_quality": 100.0,
       "briefing_total": 20,
       "commodity_total": 34,
@@ -441,14 +439,14 @@
       "low_tier_source_excess_count": 0,
       "content_false_positive_rate": 0.0,
       "reader_hard_issue_count": 0,
-      "reader_quality_penalty": 8.95,
-      "editorial_quality_penalty": 2.75,
+      "reader_quality_penalty": 3.78,
+      "editorial_quality_penalty": 2.1,
       "commodity_primary_false_link_rate": 0.0,
       "commodity_pool_false_link_rate": 0.0,
       "policy_wrong_section_rate": 0.0,
       "promotional_filler_rate": 0.05,
-      "promotional_core_rate": 0.125,
-      "pest_theme_duplicate_rate": 0.05,
+      "promotional_core_rate": 0.1111,
+      "pest_theme_duplicate_rate": 0.0,
       "guardrail_driver_tags": []
     },
     {
@@ -4191,5 +4189,5 @@
       "briefing_title_unique_rate": 1.0
     }
   ],
-  "updated_at_kst": "2026-10-01T12:56:57+09:00"
+  "updated_at_kst": "2026-10-01T13:01:41+09:00"
 }
