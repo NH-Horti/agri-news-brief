@@ -1,53 +1,50 @@
 {
-  "report_date": "2026-09-17",
-  "generated_at_kst": "2026-10-01T12:31:40+09:00",
+  "report_date": "2026-09-23",
+  "generated_at_kst": "2026-10-01T12:43:46+09:00",
   "scores": {
-    "section_alignment": 92.41,
-    "core_quality": 89.06,
-    "commodity_board_quality": 88.0
+    "section_alignment": 91.67,
+    "core_quality": 85.0,
+    "commodity_board_quality": 99.0
   },
   "metrics": {
-    "section_alignment_low_fit_rate": 0.15,
-    "section_alignment_cross_gap_rate": 0.05,
+    "section_alignment_low_fit_rate": 0.0,
+    "section_alignment_cross_gap_rate": 0.0,
     "content_false_positive_rate": 0.0,
     "reader_hard_issue_count": 0,
     "reader_hard_issue_rate": 0.0,
-    "reader_quality_penalty": 3.78,
+    "reader_quality_penalty": 0.0,
     "reader_quality_cap": 100.0,
-    "weak_core_rate": 0.125,
+    "weak_core_rate": 0.0,
     "policy_wrong_section_rate": 0.0,
-    "promotional_filler_rate": 0.05,
+    "promotional_filler_rate": 0.0,
     "promotional_core_rate": 0.0,
     "weak_core_editorial_rate": 0.0,
     "pest_theme_duplicate_rate": 0.0,
     "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 0.1,
+    "editorial_quality_penalty": 0.0,
     "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0,
     "commodity_primary_title_item_focus_rate": 1.0,
-    "commodity_primary_title_issue_signal_rate": 1.0,
-    "commodity_primary_strict_link_rate": 1.0,
+    "commodity_primary_title_issue_signal_rate": 0.8333,
+    "commodity_primary_strict_link_rate": 0.8333,
     "commodity_primary_low_rank_rate": 0.0,
-    "commodity_primary_count": 8,
-    "commodity_active_today_total": 15,
-    "commodity_active_today_unlinked_total": 7,
-    "commodity_managed_unlinked_total": 25,
+    "commodity_primary_count": 6,
+    "commodity_active_today_total": 16,
+    "commodity_active_today_unlinked_total": 10,
+    "commodity_managed_unlinked_total": 27,
     "commodity_board_daily_min_primary_count": 6,
     "commodity_board_low_coverage": false,
-    "commodity_board_coverage_rate": 0.2424,
+    "commodity_board_coverage_rate": 0.1818,
     "commodity_primary_title_item_missing_rate": 0.0,
     "commodity_primary_body_only_rate": 0.0,
     "commodity_primary_false_link_rate": 0.0,
-    "commodity_pool_count": 15,
+    "commodity_pool_count": 12,
     "commodity_pool_false_link_rate": 0.0,
-    "commodity_primary_dominant_section_rate": 0.875
+    "commodity_primary_dominant_section_rate": 0.3333
   },
   "selection_guardrails": {
-    "driver_tags": [
-      "low_tier_source_concentration",
-      "commodity_board"
-    ],
+    "driver_tags": [],
     "section_card_min_fit": {
       "default": 0.8,
       "supply": 0.82,
@@ -75,28 +72,18 @@
     "disable_relaxed_core_fill": false,
     "final_low_tier_max_per_section": 1,
     "final_low_tier_max_total": 4,
-    "commodity_active_min_rank": 2,
-    "commodity_program_core_min_rank": 3,
+    "commodity_active_min_rank": 1,
+    "commodity_program_core_min_rank": 1,
     "commodity_require_issue_signal": false,
     "commodity_require_direct_item_focus": false,
     "commodity_strict_primary_only": true,
     "commodity_disable_primary_fallback": true
   },
-  "editorial_quality_samples": [
-    {
-      "title": "송미령 농식품부 장관, 추석 앞두고 전통주 농촌창업 현장 방문",
-      "href": "https://www.ajunews.com/view/20260916171613190",
-      "section": "dist",
-      "is_core": false,
-      "reasons": [
-        "promotional_or_event_filler"
-      ]
-    }
-  ],
+  "editorial_quality_samples": [],
   "reader_hard_issue_samples": [],
   "editorial": {
-    "score": 73.05,
-    "model_reported_score": 73.8,
+    "score": 73.35,
+    "model_reported_score": 74.7,
     "score_method": "weighted_components_v1",
     "quality_tier": "needs_major_iteration",
     "target_score": 82.0,
@@ -120,100 +107,96 @@
         "operational_score_min": true,
         "section_count_score_min": true,
         "no_section_underfill": true,
-        "commodity_board_score_min": false
+        "commodity_board_score_min": true
       },
       "failure_reasons": [
         "editorial_score_min",
         "no_major_issues",
         "critical_components_min",
-        "all_components_min",
-        "commodity_board_score_min"
+        "all_components_min"
       ]
     },
     "section_count_score": 100.0,
     "section_count_status": "target_met",
     "scores": {
       "article_selection": 72.0,
-      "section_fit": 72.0,
-      "core_pick_quality": 76.0,
-      "summary_usefulness": 88.0,
-      "missed_opportunity": 61.0,
-      "noise_control": 67.0
+      "section_fit": 76.0,
+      "core_pick_quality": 70.0,
+      "summary_usefulness": 82.0,
+      "missed_opportunity": 67.0,
+      "noise_control": 76.0
     },
     "issues": [
       {
         "type": "duplicate_theme",
+        "severity": "major",
+        "section": "policy",
+        "title": "추석 차례상 비용 하락?...체감 경기는 '팍팍' [뉴스UP]",
+        "reason": "정책 5건 중 4건이 추석 차례상 물가를 반복하며 수치도 조사 기준 설명 없이 충돌한다.",
+        "suggested_action": "차례상 기사는 2건 이하로 줄이고 조사방법 차이 분석이나 다른 정책 의제로 교체한다."
+      },
+      {
+        "type": "weak_core",
         "severity": "moderate",
         "section": "supply",
-        "title": "[같이경제] 추석 물가 …한우 오르고 과일 내리고",
-        "reason": "차례상 물가 기사 3건이 겹쳐 공급 섹션의 정보 폭이 좁다.",
-        "suggested_action": "출하·생산 또는 스마트팜 생산 기사로 교체한다."
+        "title": "박정훈 식량정책실장, 사과 수급 현장 점검",
+        "reason": "구체적인 수급 수치나 조치가 없는 단순 현장 방문 기사다.",
+        "suggested_action": "core에서 demote하고 가격·출하량 분석 기사를 core로 올린다."
       },
       {
         "type": "wrong_section",
         "severity": "moderate",
-        "section": "policy",
-        "title": "추석 차례상, 전통시장이 더 저렴해",
-        "reason": "정책보다 가격 동향을 다룬 공급 기사이며 구체적 정책 조치가 약하다.",
-        "suggested_action": "공급으로 이동하거나 공식 추석 민생안정대책으로 교체한다."
-      },
-      {
-        "type": "duplicate_story",
-        "severity": "major",
-        "section": "policy/dist",
-        "title": "농진청, 정부 비축 봄 배추 장기 저장 가능성 확인",
-        "reason": "유통 섹션의 ‘봄배추 장기 저장’과 동일한 농진청 실증연구다.",
-        "suggested_action": "한 건만 유지하고 다른 정책 현안으로 대체한다."
-      },
-      {
-        "type": "noise",
-        "severity": "moderate",
-        "section": "dist",
-        "title": "정선 임계농협 농산물산지유통 센터에 비상소화장치 설치",
-        "reason": "시설 안전 단신으로 유통 운영·물류 변화에 대한 편집 가치가 낮다.",
-        "suggested_action": "가락시장 성수기 교통 특별대책으로 교체한다."
+        "section": "supply",
+        "title": "거창군 농특산물, 전국 유통망 통한 판로 확대",
+        "reason": "전국 유통망 입점과 판매가격을 다룬 판로 기사로 dist 적합도가 더 높다.",
+        "suggested_action": "dist로 이동하거나 공급량·작황 중심 기사로 교체한다."
       },
       {
         "type": "promotional_filler",
         "severity": "moderate",
         "section": "dist",
-        "title": "송미령 농식품부 장관, 추석 앞두고 전통주 농촌창업 현장 방문",
-        "reason": "장관 현장 방문과 지원 홍보가 중심이며 구체적인 유통 성과가 부족하다.",
-        "suggested_action": "샤인머스켓 첫 수출 선적 기사로 교체한다."
-      },
-      {
-        "type": "wrong_section",
-        "severity": "moderate",
-        "section": "pest",
-        "title": "충북농협, 우박 피해 사과 판로 지원 '착한소비 캠페인'",
-        "reason": "우박 피해가 배경이지만 기사의 핵심은 할인 판매와 판로 지원이다.",
-        "suggested_action": "유통으로 이동하거나 실제 병해충 위험 기사로 교체한다."
-      },
-      {
-        "type": "weak_core",
-        "severity": "moderate",
-        "section": "pest",
-        "title": "병해충 예찰 2주 걸리던 제주, AI로 하루 한 번 갱신…전국 우수사례 선...",
-        "reason": "수상·시스템 사례보다 실제 피해가 확인된 벼멸구 확산 기사의 긴급성이 높다.",
-        "suggested_action": "이 카드를 core에서 demote하고 ‘사천시, 벼멸구 확산 차단…’을 core로 promote한다."
+        "title": "[국민의 기업] 배·포도 맛본 아세안 인플루언서, K과일 매력 알린다",
+        "reason": "팸투어 홍보 성격이 강하고 실제 계약·수출 물량 성과가 없다.",
+        "suggested_action": "150t 중국 수출 기사나 멀칭필름 수급 안정 기사로 교체한다."
       },
       {
         "type": "missed_candidate",
         "severity": "moderate",
         "section": "dist",
-        "title": "가락시장, 추석 성수기 교통 특별대책 시행",
-        "reason": "출하차량 대기와 시장 물류를 직접 다뤄 선택된 시설 안전·방문 기사보다 운영성이 높다.",
-        "suggested_action": "유통 섹션의 약한 꼬리 기사와 교체한다."
+        "title": "동계농협 ‘동계 밤’ 12년 연속 중국 수출",
+        "reason": "150t 규모의 구체적 수출 실적이 팸투어보다 유통·수출 운영 가치가 높다.",
+        "suggested_action": "인플루언서 팸투어 카드 대신 선발한다."
+      },
+      {
+        "type": "wrong_section",
+        "severity": "moderate",
+        "section": "pest",
+        "title": "동해시, 스마트농업 테스트베드서 딸기 첫 실증 재배",
+        "reason": "병해충이나 생육 피해 위험이 아닌 일반 스마트농업 실증 소식이다.",
+        "suggested_action": "제외하고 명시적 병해충·생육 위험 기사로 대체한다."
+      },
+      {
+        "type": "noise",
+        "severity": "moderate",
+        "section": "pest",
+        "title": "농업 현장 애로 해결한 적극행정 포상",
+        "reason": "과수화상병 방제제보다 직원 포상 행사가 중심이어서 방제 정보성이 낮다.",
+        "suggested_action": "방제제 성능·적용 계획을 직접 다룬 기사로 교체하거나 제외한다."
+      },
+      {
+        "type": "weak_core",
+        "severity": "moderate",
+        "section": "pest",
+        "title": "수입금지 중국 식물류 적발 9.9배↑… ‘생물안보’ 경고등",
+        "reason": "구체적 검역 적발 증가와 병해충 유입 위험을 담아 현재 비핵심 카드 중 중요도가 가장 높다.",
+        "suggested_action": "core로 promote한다."
       }
     ]
   },
   "editorial_suggested_guardrails": {
     "driver_tags": [
-      "low_tier_source_concentration",
-      "commodity_board",
       "editorial_section_fit",
       "editorial_noise_filter",
-      "editorial_duplicate_topic",
       "editorial_core_pick"
     ],
     "section_card_min_fit": {
@@ -225,7 +208,7 @@
     },
     "section_low_fit_rescue_min": 0.35,
     "high_score_low_fit_rescue_margin": 4.2,
-    "tail_score_floor_delta": 0.8,
+    "tail_score_floor_delta": 0.4,
     "core_fit_min": {
       "default": 1.3,
       "supply": 1.5,
@@ -243,8 +226,8 @@
     "disable_relaxed_core_fill": true,
     "final_low_tier_max_per_section": 1,
     "final_low_tier_max_total": 4,
-    "commodity_active_min_rank": 2,
-    "commodity_program_core_min_rank": 3,
+    "commodity_active_min_rank": 1,
+    "commodity_program_core_min_rank": 1,
     "commodity_require_issue_signal": false,
     "commodity_require_direct_item_focus": false,
     "commodity_strict_primary_only": true,
@@ -255,8 +238,8 @@
     "mode": "shadow_replay_loop",
     "proposal_only": true,
     "target_score": 82.0,
-    "current_editorial_score": 73.05,
-    "model_reported_score": 73.8,
+    "current_editorial_score": 73.35,
+    "model_reported_score": 74.7,
     "quality_tier": "needs_major_iteration",
     "target_status": "needs_major_iteration",
     "iteration_budget": 3,
@@ -278,31 +261,31 @@
         "supply": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 237,
+          "raw_candidates": 217,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
           "count_floor": 3,
-          "core_count": 2,
+          "core_count": 3,
           "fill_ratio": 1.0,
           "score": 100.0
         },
         "policy": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 113,
+          "raw_candidates": 147,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
           "count_floor": 3,
-          "core_count": 2,
+          "core_count": 3,
           "fill_ratio": 1.0,
           "score": 100.0
         },
         "dist": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 57,
+          "raw_candidates": 84,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
@@ -314,12 +297,12 @@
         "pest": {
           "actual": 5,
           "expected": 5,
-          "raw_candidates": 19,
+          "raw_candidates": 32,
           "preferred_count": 5,
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
           "count_floor": 3,
-          "core_count": 2,
+          "core_count": 1,
           "fill_ratio": 1.0,
           "score": 100.0
         }
@@ -374,10 +357,7 @@
       }
     ],
     "current_selection_guardrails": {
-      "driver_tags": [
-        "low_tier_source_concentration",
-        "commodity_board"
-      ],
+      "driver_tags": [],
       "section_card_min_fit": {
         "default": 0.8,
         "supply": 0.82,
@@ -405,8 +385,8 @@
       "disable_relaxed_core_fill": false,
       "final_low_tier_max_per_section": 1,
       "final_low_tier_max_total": 4,
-      "commodity_active_min_rank": 2,
-      "commodity_program_core_min_rank": 3,
+      "commodity_active_min_rank": 1,
+      "commodity_program_core_min_rank": 1,
       "commodity_require_issue_signal": false,
       "commodity_require_direct_item_focus": false,
       "commodity_strict_primary_only": true,
