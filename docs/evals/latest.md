@@ -1,29 +1,31 @@
-## Daily Eval (2026-09-16)
-- Overall: **89.94** (warn)
-- Operational: **94.22**
-- Reader quality: **90.44** (clear; penalty=3.8, cap=100.0, reasons=clear)
-- Quality gate: **89.94** (needs_iteration, editorial_acceptance_gate_failed; editorial=81.3, operational=94.2)
-- Scores: completeness=100.0, diversity=96.0, source=80.0, summary=100.0, freshness=100.0, retrieval=87.9, section_fit=90.3, core=88.2, commodity=100.0
-- Briefing cards: 20 / Commodity cards: 34
-- Sections: supply:5/5 raw=267, policy:5/5 raw=130, dist:5/5 raw=91, pest:5/5 raw=27
-- Metrics: title_unique=1.00, domain_diversity=0.70, low_tier=0.20, summary_presence=1.00, summary_numeric=0.70, fresh_72h=1.00, fit_avg=4.09, false_positive=0.00, hard_reader_issues=0, weak_core=0.11, editorial_penalty=2.1, commodity_weak=0.00, commodity_items=7, commodity_active_today=17, commodity_active_today_unlinked=10, commodity_coverage=0.21, commodity_strict_link=1.00, commodity_false_link=0.00, commodity_pool_false_link=0.00, commodity_dominant_section=0.43, semantic_penalty=0.0
+## Daily Eval (2026-09-14)
+- Overall: **85.45** (warn)
+- Operational: **93.00**
+- Reader quality: **87.97** (capped; penalty=5.0, cap=90.0, reasons=commodity_pool_false_link)
+- Quality gate: **85.45** (needs_major_iteration, editorial_major_issue; editorial=76.9, operational=93.0)
+- Scores: completeness=100.0, diversity=100.0, source=100.0, summary=100.0, freshness=92.9, retrieval=89.8, section_fit=79.5, core=98.4, commodity=94.9
+- Briefing cards: 20 / Commodity cards: 37
+- Sections: supply:5/5 raw=329, policy:5/5 raw=141, dist:5/5 raw=73, pest:5/5 raw=28
+- Metrics: title_unique=1.00, domain_diversity=0.75, low_tier=0.15, summary_presence=1.00, summary_numeric=0.85, fresh_72h=1.00, fit_avg=3.69, false_positive=0.00, hard_reader_issues=0, weak_core=0.00, editorial_penalty=2.4, commodity_weak=0.00, commodity_items=10, commodity_active_today=22, commodity_active_today_unlinked=12, commodity_coverage=0.30, commodity_strict_link=1.00, commodity_false_link=0.00, commodity_pool_false_link=0.07, commodity_dominant_section=0.60, semantic_penalty=0.0
 
 
 ### Editorial Shadow Eval
-- Editorial: **81.30** (daily target 82, tier=needs_iteration, needs_iteration)
+- Editorial: **76.90** (daily target 82, tier=needs_major_iteration, needs_major_iteration)
 - Model: gpt-5.6-sol (resolved gpt-5.6-sol)
-- Model-reported score: 81.30; authoritative method=weighted_components_v1
-- Acceptance: needs_iteration (blocking=0, major=0, reasons=editorial_score_min, critical_components_min)
+- Model-reported score: 77.00; authoritative method=weighted_components_v1
+- Acceptance: needs_iteration (blocking=0, major=1, reasons=editorial_score_min, no_major_issues, critical_components_min, all_components_min)
 - Section count gate: 100.0 (target_met)
-- Components: article_selection=81.0, section_fit=87.0, core=76.0, summary=90.0, missed=78.0, noise=76.0
-- Summary: 정량·운영 정보와 섹션 수는 충실하지만, 일부 현장행사성 기사와 일반 회의가 포함됐고 dist·supply의 핵심기사 지정이 약하다. 정책 섹션도 추석 물가 주제가 다소 과밀하다.
-- [moderate] weak_core: 추석 출하 과일 안정 생산 기술지원 박차 - 단일 산지 방문·기술지원 기사로 전국 수급 핵심기사로는 영향력이 제한적이다.
-- [moderate] promotional_filler: 홍성군농업기술센터, 마늘 파종 기계화로 농가 인력난 돌파구 마련 - 지역 농기계 연시회 중심이며 생산비 절감 효과도 구체적으로 제시되지 않았다.
-- [moderate] weak_core: 경남 원예조공법인, 온라인도매시장 대응·연합판매 경쟁력 강화 - 워크숍 개최와 협의가 중심이라 실제 유통 운영 변화가 부족하다.
-- [moderate] weak_core: 가락시장 '파렛트 물류' 전환 가속 - 품목별 의무화 일정이 확정된 직접적인 물류 운영 변화로 핵심성이 높다.
-- [moderate] duplicate_theme: 모처럼 농축산물 가격 안정...추석 차례상 비용도 '뚝' - 성수품 공급 확대·축산물 가격 대응 기사와 함께 추석 물가 주제가 세 자리를 차지한다.
+- Components: article_selection=78.0, section_fit=82.0, core=70.0, summary=90.0, missed=72.0, noise=68.0
+- Summary: 형식과 기사 수, 요약 품질은 좋지만 유통 섹션의 중복·홍보성 핵심 선정과 정책·공급의 약한 꼬리 기사 때문에 편집 완성도가 낮아졌다.
+- [major] duplicate_story: 가락시장, 느타리버섯·봄동·제주당근 파렛트 출하 의무화 - 바로 앞 카드와 동일한 파렛트 의무화 조치를 반복한다.
+- [moderate] promotional_filler: 청주 농수산물도매시장, 옥산 이전 앞두고 '미래 유통' 담은 새 상징 공개 - BI 공개가 핵심으로 실질적인 시장 운영·물류 변화가 부족하다.
+- [moderate] weak_core: 청주 농수산물도매시장, 옥산 이전 앞두고 '미래 유통' 담은 새 상징 공개 - 홍보성 BI 기사는 유통 섹션 핵심 카드로 부적절하다.
+- [moderate] wrong_section: 농산물가격 안정제, 아쉬움이 큰 이유 - 가격 동향보다 제도 평가가 중심이며 정책 섹션의 동일 제도 기사와도 겹친다.
+- [moderate] promotional_filler: 조지연 의원, 농식품부 장관 만나 경산 농업사업 국비 지원 요청 - 지역 의원의 예산 건의 활동으로 전국 정책 영향이나 확정성이 약하다.
 
 ### Improvement Hints
+- 섹션 오배치 의심 기사가 보입니다. section-fit이 낮거나 다른 섹션에서 더 적합한 후보가 있었던 기사들을 우선 재배치하세요.
+- 품목 보드 대표기사가 품목 핵심 이슈를 충분히 대변하지 못합니다. 제목에서 품목명과 수급·가격·병해충 신호가 함께 보이는 기사, representative rank 상위 후보, 비수급 섹션의 직접 이슈 후보를 우선하세요.
 - 편집 품질상 약한 기사 선택이 감지되었습니다 (promotional_filler=5%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요.
 - 농업과 무관한 기사가 브리핑에 포함되어 있습니다 (비율 5%). 해외 경제지표, 관광 홍보, 비농업 기사가 선정되지 않도록 is_relevant 게이트를 점검하세요.
 
