@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-10-01T12:20:11.539017+09:00",
+  "updated_at": "2026-10-01T12:26:52.044043+09:00",
   "items": [
     {
       "id": "bc2597d2b4f1",
@@ -3161,13 +3161,13 @@
       "date": "2026-09-22",
       "section": "pest",
       "section_title": "생육 리스크 및 방제",
-      "rank": 1,
+      "rank": 2,
       "title": "폭염·가뭄·우박 피해 농가 , 추석 전 재해복구비 305억 원 지원",
       "press": "정책브리핑",
       "summary": "전국 인삼·단감·배·대파 재배지에서 폭염·가뭄으로 잎마름과 일소·열과 피해가 발생했다. 정부는 피해 농가 1만4689곳에 추석 전 재해복구비 305억원을 지원한다.",
       "url": "https://www.korea.kr/news/policyNewsView.do?newsId=148972325&call_from=naver_news",
       "archive": "/agri-news-brief/archive/2026-09-22.html#sec-pest",
-      "score": 18.52,
+      "score": 18.12,
       "press_tier": 4,
       "topics": [
         "단감",
@@ -3175,21 +3175,36 @@
       ]
     },
     {
-      "id": "5a35122c18d3",
+      "id": "4bdaf76a92f2",
       "date": "2026-09-22",
       "section": "dist",
       "section_title": "유통 및 현장 (도매시장/APC/수출)",
-      "rank": 8,
+      "rank": 4,
       "title": "충북농협, 괴산 군자농협 사과 출하 현장 점검",
       "press": "농민신문",
-      "summary": "",
-      "url": "https://www.nongmin.com/article/20260921500108",
-      "archive": "/agri-news-brief/archive/2026-09-22.html#commodity-apple",
+      "summary": "충북 괴산 군자농협 APC에서 추석 성수기 사과 출하를 앞두고 선별·포장 등 상품화 과정에 대한 현장 점검이 이뤄졌다. 충북농협본부는 18일 산지를 찾아 본격 출하기를 맞은 괴산 사과의 품질과 출하 상황을 살폈다.",
+      "url": "https://n.news.naver.com/mnews/article/662/0000104784?sid=102",
+      "archive": "/agri-news-brief/archive/2026-09-22.html#sec-dist",
       "score": 74.59,
       "press_tier": 3,
       "topics": [
         "사과"
       ]
+    },
+    {
+      "id": "8c4b25c580aa",
+      "date": "2026-09-22",
+      "section": "policy",
+      "section_title": "정책 및 주요 이슈",
+      "rank": 3,
+      "title": "추석 1주일 전 기준 차례상 비용 전년比 1.5% 하락",
+      "press": "농민신문",
+      "summary": "추석을 1주일 앞둔 차례상 비용은 4인 가족 평균 19만6630원으로 지난해 같은 시점보다 1.5% 낮아졌다. aT는 18일을 기준으로 명절 성수품 가격을 조사해 올해 차림 비용의 하락세를 확인했다.",
+      "url": "https://n.news.naver.com/mnews/article/662/0000104748?sid=101",
+      "archive": "/agri-news-brief/archive/2026-09-22.html#sec-policy",
+      "score": 67.46,
+      "press_tier": 3,
+      "topics": []
     },
     {
       "id": "d11adad18d35",
@@ -3207,17 +3222,17 @@
       "topics": []
     },
     {
-      "id": "517de354d052",
+      "id": "95b3617edc75",
       "date": "2026-09-22",
       "section": "policy",
       "section_title": "정책 및 주요 이슈",
       "rank": 4,
-      "title": "경산시, “추석 앞두고 농가에 힘 보태”…5억여원 지원",
-      "press": "농민신문",
-      "summary": "경북 경산시가 추석을 앞두고 농작물 재해와 유류비 상승으로 어려움을 겪는 농가에 5억여원을 지원한다. 재해 피해 329농가에 4억9420만원, 시설원예 103농가에 긴급대책비 958만원을 지급한다.",
-      "url": "https://n.news.naver.com/mnews/article/662/0000104779?sid=102",
+      "title": "1930억 투입해 추석 차례상 비용 9년 만에 낮췄다",
+      "press": "이투데이",
+      "summary": "올해 추석 차례상 비용은 4인 기준 31만3089원으로 9년 만에 낮아졌고 과일은 7.3% 하락했다. 정부는 할인 지원에 1930억원을 투입하고 성수품 공급을 늘렸으며 관련 할인은 30일까지 이어간다.",
+      "url": "https://www.etoday.co.kr/news/view/2628134",
       "archive": "/agri-news-brief/archive/2026-09-22.html#sec-policy",
-      "score": 49.75,
+      "score": 58.43,
       "press_tier": 3,
       "topics": []
     },
@@ -3226,7 +3241,7 @@
       "date": "2026-09-22",
       "section": "supply",
       "section_title": "품목 및 수급 동향",
-      "rank": 3,
+      "rank": 2,
       "title": "제주 노지감귤 품질기준 ‘작년과 같게’…고당도 규격외품 출하기회 확...",
       "press": "농민신문",
       "summary": "제주 2026년산 노지 온주밀감의 상품 품질기준이 지난해와 동일하게 유지되고 고당도 규격외품의 출하 기회도 넓어진다. 제주도는 상품 기준과 함께 가공용 감귤 수매단가도 전년 수준으로 결정했다.",
@@ -3254,39 +3269,53 @@
       "topics": []
     },
     {
-      "id": "cf3d7d2358af",
+      "id": "bd41ba3585fc",
       "date": "2026-09-22",
       "section": "supply",
       "section_title": "품목 및 수급 동향",
-      "rank": 5,
+      "rank": 7,
       "title": "이번 추석 과일값 괜찮네…선물 아직 안 샀다면 \"사과세트 어떠세요?\"",
       "press": "MBN",
-      "summary": "올해 추석용 사과와 샤인머스캣 가격이 내려 과일 선물세트의 구매 매력이 커진 것으로 나타났다. 여름 고온으로 과실 크기는 다소 작아졌지만 당도가 높아 대형마트가 다양한 명절 세트를 선보였다.",
-      "url": "https://n.news.naver.com/mnews/article/057/0001969999?sid=101",
-      "archive": "/agri-news-brief/archive/2026-09-22.html#sec-supply",
-      "score": 40.798,
+      "summary": "",
+      "url": "http://www.mbn.co.kr/pages/news/newsView.php?news_seq_no=5220498",
+      "archive": "/agri-news-brief/archive/2026-09-22.html#commodity-apple",
+      "score": 40.398,
       "press_tier": 3,
       "topics": [
-        "사과",
-        "포도"
+        "사과"
       ]
     },
     {
-      "id": "612183aeb7a0",
+      "id": "5ac26c9ddb6e",
       "date": "2026-09-22",
       "section": "supply",
       "section_title": "품목 및 수급 동향",
-      "rank": 2,
+      "rank": 3,
       "title": "열 식히고 품종 바꿔...고랭지 배추 수급 총력",
       "press": "이데일리",
-      "summary": "",
-      "url": "https://www.edaily.co.kr/News/Read?newsId=01630166645582744&mediaCodeNo=257",
-      "archive": "/agri-news-brief/archive/2026-09-22.html#commodity-napa_cabbage",
+      "summary": "고랭지 배추는 폭염·가뭄·집중호우로 주산지 생산 여건이 나빠져 수급과 가격 변동성이 커지고 있다. 산지에서는 재배지의 열을 낮추고 품종을 바꾸는 방식으로 작황 부진에 대응하고 있다.",
+      "url": "https://n.news.naver.com/mnews/article/018/0006373987?sid=101",
+      "archive": "/agri-news-brief/archive/2026-09-22.html#sec-supply",
       "score": 34.67,
       "press_tier": 3,
       "topics": [
         "배추"
       ]
+    },
+    {
+      "id": "f2b64f8f0288",
+      "date": "2026-09-22",
+      "section": "pest",
+      "section_title": "생육 리스크 및 방제",
+      "rank": 1,
+      "title": "레드향 열과 피해 벌써 20%…올해도 되풀이",
+      "press": "KBS",
+      "summary": "제주 레드향 재배지에서 과피가 갈라지는 열과 피해가 되풀이되며 발생률이 벌써 20%를 넘어섰다. 강한 햇볕에 껍질이 얇아진 상태에서 과육이 계속 자라는 현상이 피해 원인으로 꼽힌다.",
+      "url": "https://n.news.naver.com/mnews/article/056/0012261052?sid=101",
+      "archive": "/agri-news-brief/archive/2026-09-22.html#sec-pest",
+      "score": 32.0,
+      "press_tier": 3,
+      "topics": []
     },
     {
       "id": "182a44eb796b",
@@ -3299,7 +3328,7 @@
       "summary": "",
       "url": "https://www.etoday.co.kr/news/view/2627728",
       "archive": "/agri-news-brief/archive/2026-09-22.html#commodity-napa_cabbage",
-      "score": 16.249,
+      "score": 15.849,
       "press_tier": 3,
       "topics": [
         "배추"
@@ -3310,7 +3339,7 @@
       "date": "2026-09-22",
       "section": "pest",
       "section_title": "생육 리스크 및 방제",
-      "rank": 4,
+      "rank": 5,
       "title": "박지원 \"진도 대파 무름병, 농업재해로 인정\"",
       "press": "연합뉴스",
       "summary": "전남 진도 대파 재배지의 무름병 피해가 농업재해로 인정됐으며, 529개 농가 61㏊에서 피해가 집계됐다. 고온·다습한 토양에서 주로 발생하는 병으로, 지원금은 농약·종자 등에 쓰인다.",
@@ -3323,22 +3352,34 @@
       ]
     },
     {
-      "id": "37444348eda9",
+      "id": "e9194c02a1e2",
       "date": "2026-09-22",
       "section": "policy",
       "section_title": "정책 및 주요 이슈",
-      "rank": 3,
-      "title": "‘애호박 1개 3,000원’ 추석 앞두고 채솟값 급등",
-      "press": "강원일보",
-      "summary": "강원지역 애호박과 배추 소매가격이 추석을 앞두고 급등해 차례상 준비 부담이 커지고 있다. 애호박은 개당 3100원으로 한 달 새 2배 넘게 올랐고, 배추는 포기당 8110원으로 2주 이내 10% 상승했다.",
-      "url": "https://n.news.naver.com/mnews/article/087/0001219772?sid=101",
+      "rank": 1,
+      "title": "추석 차례상 비용 9년 만에 하락?… 1900억원 쏟은 ' 할인 효과'",
+      "press": "한국일보",
+      "summary": "2026년 추석 차례상 비용은 소비자단체와 aT의 4인 기준 조사에서 2017년 이후 9년 만에 하락했다. 정부는 1900억 원대 할인 지원과 공급 확대를 이유로 들었지만, 재정에 따른 일시적 효과라는 지적도 나왔다.",
+      "url": "https://n.news.naver.com/mnews/article/469/0000955344?sid=101",
       "archive": "/agri-news-brief/archive/2026-09-22.html#sec-policy",
-      "score": 57.95,
+      "score": 64.05,
       "press_tier": 2,
-      "topics": [
-        "애호박(쥬키니)",
-        "호박"
-      ]
+      "topics": []
+    },
+    {
+      "id": "205214df47aa",
+      "date": "2026-09-22",
+      "section": "policy",
+      "section_title": "정책 및 주요 이슈",
+      "rank": 2,
+      "title": "추석 할인 예산 1490억·마트 40%… 1인 한도 풀리고 30일까지 연장",
+      "press": "매일신문",
+      "summary": "추석 물가 지원으로 전국 마트 4000곳의 국산 농축산물이 최대 40% 할인되고 1인 한도도 한시적으로 폐지된다. 정부는 할인 예산 1490억원을 투입하며 전통시장 300곳의 환급 행사와 마트 할인을 30일까지 운영한다.",
+      "url": "https://n.news.naver.com/mnews/article/088/0001029786?sid=101",
+      "archive": "/agri-news-brief/archive/2026-09-22.html#sec-policy",
+      "score": 58.03,
+      "press_tier": 2,
+      "topics": []
     },
     {
       "id": "1f83434cf6f5",
@@ -3348,7 +3389,7 @@
       "rank": 1,
       "title": "[2026년 9월 4주] 주요 농산물 경락가 상승·하락 품목 - 양배추·참외(일...",
       "press": "농수축산신문",
-      "summary": "서울 가락시장에서 양배추가 주간 상승률 1위를 기록하는 등 주요 농산물 가격이 품목별로 엇갈렸다. 단기 도매 흐름으로, 전년 대비 산지가격 약세 기사와 비교 기준이 다르다. 전년 대비 산지가격 흐름으로, 최근 단기 도매 급등 기사와 비교 기준이 다르다.",
+      "summary": "서울 가락시장 주요 농산물 가격이 출하량과 주산지 작황 변화에 따라 품목별로 엇갈렸다. 14~21일 거래에서 양배추는 평균 4310원으로 상승률 115.6%를 기록했다.",
       "url": "https://www.aflnews.co.kr/news/articleView.html?idxno=328643",
       "archive": "/agri-news-brief/archive/2026-09-22.html#sec-supply",
       "score": 54.15,
@@ -3363,7 +3404,7 @@
       "date": "2026-09-22",
       "section": "dist",
       "section_title": "유통 및 현장 (도매시장/APC/수출)",
-      "rank": 3,
+      "rank": 2,
       "title": "“이 가격, 어디서 붙었나”… 소비자 3명 중 1명 “농산물 유통비용 알...",
       "press": "JIBS제주방송",
       "summary": "서울·인천·경기·부산 소비자는 농산물 구매 시 신선도를 가장 중시했고 유통단계별 가격 공개 요구도 높았다. 조사 참여자의 32.7%가 비용 구조 공개를 원했으며 온라인 유통비용률은 11.1%포인트 낮았다.",
@@ -3378,7 +3419,7 @@
       "date": "2026-09-22",
       "section": "dist",
       "section_title": "유통 및 현장 (도매시장/APC/수출)",
-      "rank": 2,
+      "rank": 3,
       "title": "제주 감귤· 마늘 , '선별부터 출하까지' 산지유통 스마트 전환 본격화",
       "press": "헤드라인제주",
       "summary": "제주 감귤·마늘 주산지의 선별부터 출하까지 산지유통 전 과정에 로봇과 인공지능 도입이 추진된다. 고산농협과 위미농협은 2027년 스마트APC 예비 대상자로 선정돼 각각 64억원과 72억원 사업을 신청했다.",
@@ -3390,21 +3431,6 @@
         "감귤/만감",
         "마늘"
       ]
-    },
-    {
-      "id": "d2d53d2c2d10",
-      "date": "2026-09-22",
-      "section": "policy",
-      "section_title": "정책 및 주요 이슈",
-      "rank": 1,
-      "title": "올해 추석 차례상 비용 하락…정부 민생 안정대책 효과",
-      "press": "BBS불교방송",
-      "summary": "올해 추석 차례상 비용은 과일·수산물 등 성수품 수급 안정과 할인 지원에 힘입어 지난해보다 낮아졌다. 소비자단체 조사에서 4인 가족 기준 제수용품 25개 구매비는 31만3089원으로 집계됐다.",
-      "url": "https://news.bbsi.co.kr/news/articleView.html?idxno=4107975",
-      "archive": "/agri-news-brief/archive/2026-09-22.html#sec-policy",
-      "score": 37.8,
-      "press_tier": 2,
-      "topics": []
     },
     {
       "id": "45f060972748",
@@ -3422,38 +3448,21 @@
       "topics": []
     },
     {
-      "id": "efaf984dc1f0",
+      "id": "385c8ad48e2b",
       "date": "2026-09-22",
-      "section": "policy",
-      "section_title": "정책 및 주요 이슈",
-      "rank": 2,
-      "title": "제주 농어민들 \"정부, 농어민 생존 위협하는 CPTPP 가입 논의 중단하라...",
-      "press": "헤드라인제주",
-      "summary": "제주 농어민단체들이 CPTPP 가입 검토가 지역 농어업의 생존을 위협한다며 논의 중단을 요구했다. 농업인단체협의회와 농민·어선주 단체 등은 21일 제주도청 앞 기자회견에서 정부를 규탄했다.",
-      "url": "https://www.headlinejeju.co.kr/news/articleView.html?idxno=599358",
-      "archive": "/agri-news-brief/archive/2026-09-22.html#sec-policy",
-      "score": 34.48,
-      "press_tier": 2,
-      "topics": []
-    },
-    {
-      "id": "2f91cd27f7de",
-      "date": "2026-09-22",
-      "section": "dist",
-      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
       "rank": 5,
-      "title": "제주 농산물유통공사는 불발, 그럼 전담부서 방향은?",
-      "press": "제주의소리",
-      "summary": "제주 감귤·월동채소 유통을 맡을 농산물유통공사 설립이 불발되면서 전담부서 추진 방향이 쟁점으로 떠올랐다. 감귤 약 50%, 무·양배추·당근·브로콜리 등 월동채소 80%가 소비지 도매시장 수급에 따라 가격이 결정되는 구조다.",
-      "url": "https://www.jejusori.net/news/articleView.html?idxno=506761",
-      "archive": "/agri-news-brief/archive/2026-09-22.html#sec-dist",
-      "score": 23.208,
+      "title": "‘애 호박 1개 3,000원’ 추석 앞두고 채솟값 급등",
+      "press": "강원일보",
+      "summary": "강원지역 애호박과 배추 소매가격이 추석을 앞두고 급등해 차례상 준비 부담이 커지고 있다. 애호박은 개당 3100원으로 한 달 새 2배 넘게 올랐고, 배추는 포기당 8110원으로 2주 이내 10% 상승했다.",
+      "url": "https://n.news.naver.com/mnews/article/087/0001219772?sid=101",
+      "archive": "/agri-news-brief/archive/2026-09-22.html#sec-supply",
+      "score": 25.95,
       "press_tier": 2,
       "topics": [
-        "감귤/만감",
-        "당근",
-        "무",
-        "양배추"
+        "애호박(쥬키니)",
+        "호박"
       ]
     },
     {
@@ -3467,7 +3476,7 @@
       "summary": "",
       "url": "https://chmbc.co.kr/article/MxpsVSi4ka",
       "archive": "/agri-news-brief/archive/2026-09-22.html#commodity-apple",
-      "score": 22.3,
+      "score": 21.9,
       "press_tier": 2,
       "topics": [
         "사과"
@@ -3478,13 +3487,13 @@
       "date": "2026-09-22",
       "section": "supply",
       "section_title": "품목 및 수급 동향",
-      "rank": 3,
+      "rank": 2,
       "title": "배추 농사, 기계화로 생산비 42% 줄인다",
       "press": "팜&마켓",
       "summary": "",
       "url": "https://www.farmnmarket.com/news/article.html?no=27908",
       "archive": "/agri-news-brief/archive/2026-09-22.html#commodity-napa_cabbage",
-      "score": 15.141,
+      "score": 14.741,
       "press_tier": 2,
       "topics": [
         "배추"
@@ -3495,52 +3504,16 @@
       "date": "2026-09-22",
       "section": "supply",
       "section_title": "품목 및 수급 동향",
-      "rank": 17,
+      "rank": 16,
       "title": "진주시 '생화로 추모하자' 남는 것은 자연과 기억이다",
       "press": "경남도민신문",
       "summary": "",
       "url": "http://www.gndomin.com/news/articleView.html?idxno=490375",
       "archive": "/agri-news-brief/archive/2026-09-22.html#commodity-flowers",
-      "score": 13.5,
+      "score": 13.1,
       "press_tier": 2,
       "topics": [
         "화훼"
-      ]
-    },
-    {
-      "id": "20533878c01a",
-      "date": "2026-09-22",
-      "section": "supply",
-      "section_title": "품목 및 수급 동향",
-      "rank": 14,
-      "title": "\"헌화는 우리 생화로\"…전국 공원·묘원 조화 근절 캠페인 확산",
-      "press": "농수축산신문",
-      "summary": "",
-      "url": "https://www.aflnews.co.kr/news/articleView.html?idxno=328646",
-      "archive": "/agri-news-brief/archive/2026-09-22.html#commodity-flowers",
-      "score": 12.71,
-      "press_tier": 2,
-      "topics": [
-        "화훼"
-      ]
-    },
-    {
-      "id": "f225db0f1653",
-      "date": "2026-09-22",
-      "section": "supply",
-      "section_title": "품목 및 수급 동향",
-      "rank": 2,
-      "title": "[Issue+] AI가 바꾸는 수확후 관리, 데이터·장비 연결이 관건",
-      "press": "농수축산신문",
-      "summary": "사과·배·포도 등 원예작물의 수확 후 관리에 인공지능을 접목하려면 데이터와 장비의 연계가 핵심으로 제시됐다. 저장유통과는 생육환경과 수확 시 경도·당도 등을 아우르는 품질정보화와 표준체계 구축을 추진한다.",
-      "url": "https://www.aflnews.co.kr/news/articleView.html?idxno=328549",
-      "archive": "/agri-news-brief/archive/2026-09-22.html#sec-supply",
-      "score": 12.697,
-      "press_tier": 2,
-      "topics": [
-        "배",
-        "사과",
-        "포도"
       ]
     },
     {
@@ -3548,13 +3521,13 @@
       "date": "2026-09-22",
       "section": "supply",
       "section_title": "품목 및 수급 동향",
-      "rank": 16,
+      "rank": 15,
       "title": "플라스틱 조화 대신 ‘생화 한 송이’…마음으로 올리는 친환경 성묘",
       "press": "경북매일",
       "summary": "",
       "url": "https://www.kbmaeil.com/article/20260921500613",
       "archive": "/agri-news-brief/archive/2026-09-22.html#commodity-flowers",
-      "score": 12.22,
+      "score": 11.82,
       "press_tier": 2,
       "topics": [
         "화훼"
@@ -3571,7 +3544,7 @@
       "summary": "전남 진도에서 배추 파종부터 정식·방제·수확까지 농기계를 활용하는 공동영농 모델이 공개돼 보급에 나선다. 농업기술원은 농업인 등 100여명에게 생산비 42%, 노동력 56%를 줄이는 기계화 기술을 선보였다.",
       "url": "https://www.aflnews.co.kr/news/articleView.html?idxno=328596",
       "archive": "/agri-news-brief/archive/2026-09-22.html#sec-policy",
-      "score": 11.64,
+      "score": 11.24,
       "press_tier": 2,
       "topics": [
         "배추"
@@ -3582,13 +3555,13 @@
       "date": "2026-09-22",
       "section": "supply",
       "section_title": "품목 및 수급 동향",
-      "rank": 15,
+      "rank": 14,
       "title": "\"플라스틱 조화 대신 생화로 헌화하세요\"",
       "press": "한국농업신문",
       "summary": "",
       "url": "http://www.newsfarm.co.kr/news/articleView.html?idxno=102394",
       "archive": "/agri-news-brief/archive/2026-09-22.html#commodity-flowers",
-      "score": 11.31,
+      "score": 10.91,
       "press_tier": 2,
       "topics": [
         "화훼"
@@ -3599,30 +3572,45 @@
       "date": "2026-09-22",
       "section": "dist",
       "section_title": "유통 및 현장 (도매시장/APC/수출)",
-      "rank": 9,
+      "rank": 8,
       "title": "충북농협, 괴산 사과 출하 현장 점검…품질-상품화 강화",
       "press": "국제뉴스",
       "summary": "",
       "url": "https://www.gukjenews.com/news/articleView.html?idxno=3701619",
       "archive": "/agri-news-brief/archive/2026-09-22.html#commodity-apple",
-      "score": 53.85,
+      "score": 53.45,
       "press_tier": 1,
       "topics": [
         "사과"
       ]
     },
     {
+      "id": "775aa8bcaac2",
+      "date": "2026-09-22",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 5,
+      "title": "제주도, '농산물 유통 통합 관리 전담 기구' 타당성 용역 추진",
+      "press": "삼다일보",
+      "summary": "제주도가 분산된 농산물 유통 체계를 연계하고 물류비를 낮출 통합관리 전담 기구 설립 검토에 나선다. 올해 하반기 타당성 연구용역을 추진해 제주형 운영 방안을 마련하고 생산자의 시장 대응력과 유통 효율을 높일 계획이다.",
+      "url": "http://www.samdailbo.com/news/articleView.html?idxno=270573",
+      "archive": "/agri-news-brief/archive/2026-09-22.html#sec-dist",
+      "score": 26.42,
+      "press_tier": 1,
+      "topics": []
+    },
+    {
       "id": "489d8df14d9c",
       "date": "2026-09-22",
       "section": "dist",
       "section_title": "유통 및 현장 (도매시장/APC/수출)",
-      "rank": 4,
+      "rank": 9,
       "title": "충북농협, 추석 명절 맞이 괴산 사과 선별·출하 상황 점검 및 농가 애로...",
       "press": "브레이크뉴스",
-      "summary": "충북농협이 추석 성수기 괴산 사과의 선별·출하 상황을 점검하고 원활한 수급 지원에 나섰다. 괴산군 연풍면 군자농협 산지유통센터를 찾아 현장 출하 여건과 농가 애로사항을 살폈다.",
+      "summary": "",
       "url": "http://www.breaknews.com/1238384",
-      "archive": "/agri-news-brief/archive/2026-09-22.html#sec-dist",
-      "score": 38.25,
+      "archive": "/agri-news-brief/archive/2026-09-22.html#commodity-apple",
+      "score": 22.93,
       "press_tier": 1,
       "topics": [
         "사과"
@@ -3633,7 +3621,7 @@
       "date": "2026-09-22",
       "section": "pest",
       "section_title": "생육 리스크 및 방제",
-      "rank": 2,
+      "rank": 4,
       "title": "뙤약볕에 타들어 가는 농심...과일도 화상 입는다 '일소현상' [지식용어...",
       "press": "sisunnews",
       "summary": "전국 과수농가에서 폭염과 가뭄으로 수확 전 과실이 검게 타 상품성을 잃는 일소 피해 우려가 커졌다. 일소현상은 농작물이 30도를 웃도는 직사광선과 고온에 장시간 노출돼 표면 조직이 손상되는 현상이다.",
@@ -3648,13 +3636,13 @@
       "date": "2026-09-22",
       "section": "supply",
       "section_title": "품목 및 수급 동향",
-      "rank": 4,
+      "rank": 3,
       "title": "진도군, '예비비 8000만 원 투입'... 배추 밭 가뭄 해소 농업 간담회",
       "press": "뉴스워커",
       "summary": "",
       "url": "https://www.newsworker.co.kr/news/articleView.html?idxno=505484",
       "archive": "/agri-news-brief/archive/2026-09-22.html#commodity-napa_cabbage",
-      "score": 9.398,
+      "score": 8.998,
       "press_tier": 1,
       "topics": [
         "배추"
@@ -3671,7 +3659,7 @@
       "summary": "",
       "url": "https://www.thepowernews.co.kr/view.php?ud=202609211328002481c923548bdf_7",
       "archive": "/agri-news-brief/archive/2026-09-22.html#commodity-grape",
-      "score": 9.153,
+      "score": 8.753,
       "press_tier": 1,
       "topics": [
         "포도"
@@ -3688,7 +3676,7 @@
       "summary": "",
       "url": "http://www.metroseoul.co.kr/article/20260921500319",
       "archive": "/agri-news-brief/archive/2026-09-22.html#commodity-peach",
-      "score": 7.668,
+      "score": 7.268,
       "press_tier": 1,
       "topics": [
         "복숭아"
@@ -3705,7 +3693,7 @@
       "summary": "",
       "url": "https://www.kbsm.net/news/view.php?idx=535118",
       "archive": "/agri-news-brief/archive/2026-09-22.html#commodity-grape",
-      "score": 7.089,
+      "score": 6.689,
       "press_tier": 1,
       "topics": [
         "포도"
@@ -3716,13 +3704,13 @@
       "date": "2026-09-22",
       "section": "supply",
       "section_title": "품목 및 수급 동향",
-      "rank": 5,
+      "rank": 4,
       "title": "[작품속 경제리뷰] 김유정 소설 동백꽃, 점순이는 왜 감자 건넸나",
       "press": "financialreview",
       "summary": "",
       "url": "http://www.financialreview.co.kr/news/articleView.html?idxno=44997",
       "archive": "/agri-news-brief/archive/2026-09-22.html#commodity-potato",
-      "score": 3.593,
+      "score": 3.193,
       "press_tier": 1,
       "topics": []
     },
@@ -3731,13 +3719,13 @@
       "date": "2026-09-22",
       "section": "supply",
       "section_title": "품목 및 수급 동향",
-      "rank": 7,
+      "rank": 6,
       "title": "논산시, 서초구에 '2027 논산세계 딸기산업 엑스포' 공식 초청",
       "press": "GOCJ",
       "summary": "",
       "url": "http://www.gocj.net/news/articleView.html?idxno=152644",
       "archive": "/agri-news-brief/archive/2026-09-22.html#commodity-strawberry",
-      "score": 3.142,
+      "score": 2.742,
       "press_tier": 1,
       "topics": [
         "딸기"
@@ -3748,13 +3736,13 @@
       "date": "2026-09-22",
       "section": "supply",
       "section_title": "품목 및 수급 동향",
-      "rank": 6,
+      "rank": 5,
       "title": "함양군 '로컬푸드' 도시청년 발길…흙 묻은 양파 에서 미래를",
       "press": "newsprime",
       "summary": "",
       "url": "http://www.newsprime.co.kr/news/article.html?no=748509",
       "archive": "/agri-news-brief/archive/2026-09-22.html#commodity-onion",
-      "score": 2.491,
+      "score": 2.091,
       "press_tier": 1,
       "topics": [
         "양파"
