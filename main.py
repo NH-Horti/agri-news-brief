@@ -40,6 +40,7 @@ import difflib
 import logging
 import hashlib
 from collections import Counter
+import dataclasses
 from dataclasses import dataclass
 from datetime import datetime, timedelta, date, timezone
 from email.utils import parsedate_to_datetime
@@ -1142,6 +1143,10 @@ PREPUBLISH_SLA_FALLBACK_ENABLED = os.getenv(
 # 재충원하는 최대 라운드 수. 0이면 끈다.
 PREPUBLISH_MAX_HARD_ISSUE_EXCISIONS = max(
     0, min(4, int((os.getenv("PREPUBLISH_MAX_HARD_ISSUE_EXCISIONS", "2") or "2").strip() or 2))
+)
+# 편집 평가가 wrong_section 카드에 이동 지시를 붙이면 절제 대신 지시한 섹션으로 옮긴다(2026-10-01).
+PREPUBLISH_WRONG_SECTION_RELOCATION = (
+    (os.getenv("PREPUBLISH_WRONG_SECTION_RELOCATION", "true") or "true").strip().lower() in ("1", "true", "yes", "y")
 )
 PREPUBLISH_FORCE_SLA_FALLBACK = os.getenv(
     "PREPUBLISH_FORCE_SLA_FALLBACK", "false"
@@ -25158,6 +25163,10 @@ def _postbuild_article_reject_reason(a: "Article", section_key: str, *, apply_se
         and any(_duplicate_story_pair_reason(a, excised) for excised in _GATE_EXCISED_ARTICLES)
     ):
         return "editorial_issue_excised_duplicate"
+    if _GATE_RELOCATED_OUT:
+        relocated_reason = _relocated_out_block_reason(a, section_key)
+        if relocated_reason:
+            return relocated_reason
     if section_key in ("supply", "policy", "dist") and is_municipal_holiday_omnibus_plan_context(
         a.title or "", a.description or ""
     ):
@@ -53723,6 +53732,66 @@ _EXCISABLE_MAJOR_ISSUE_TYPES = frozenset(
     {"duplicate_story", "promotional_filler", "noise", "wrong_section", "off_topic", "false_positive"}
 )
 _EXCISION_MAX_PER_SECTION_ROUND = 2
+# 편집 평가가 wrong_section 카드를 다른 섹션으로 옮기라고 한 경우, 그 섹션에서 빠진 카드(원본).
+# 원래 섹션 refill 이 같은 카드·같은 사건의 다른 매체판을 다시 끌어오지 못하게 섹션별로 막는다.
+_GATE_RELOCATED_OUT: dict[str, list["Article"]] = {}
+_SECTION_ALIAS_TERMS: dict[str, tuple[str, ...]] = {
+    "supply": ("supply", "수급", "공급"),
+    "policy": ("policy", "정책"),
+    "dist": ("dist", "유통"),
+    "pest": ("pest", "병해충"),
+}
+# "policy로 이동", "정책으로 이동하고", "supply로 보내거나", "pest의 비핵심 꼬리 카드로 이동",
+# "dist tail로 내리거나". 섹션 이름은 동사 바로 앞(24자 이내)에서 찾는다.
+_RELOCATE_KO_VERB_RX = re.compile(r"(?:으로|로)\s*(?:이동|옮기|옮겨|보내|재배치|내리|내려|돌리|돌려)")
+_RELOCATE_EN_VERB_RX = re.compile(r"\b(?:move|moved|relocate|reassign)\b", re.IGNORECASE)
+_RELOCATE_LOOKBACK_CHARS = 24
+
+
+def _editorial_relocation_sections(issue: JsonDict, current_section: str = "") -> list[str]:
+    """wrong_section 이슈의 suggested_action 에서 옮겨 갈 섹션(가까운 순)을 읽는다.
+
+    2026-10-01 '농산물 수급조절위 8기' 카드는 supply wrong_section 으로 지목되며
+    "정책으로 이동하고 정책의 약한 홍보성 기사를 제외한다"는 지시가 붙었지만 게이트가 절제만 해서
+    당일 최상위 정책 후보가 지면에서 사라졌다(missed_candidate). 이동 동사가 없는 지시
+    ("제외하고 ~로 교체")는 이동 대상이 아니다.
+    """
+    text = unicodedata.normalize("NFKC", str(issue.get("suggested_action") or ""))
+    if not text:
+        return []
+    text_l = text.lower()
+    found: list[tuple[int, str]] = []
+    for match in _RELOCATE_KO_VERB_RX.finditer(text_l):
+        window_start = max(0, match.start() - _RELOCATE_LOOKBACK_CHARS)
+        window = text_l[window_start:match.start()]
+        for section, aliases in _SECTION_ALIAS_TERMS.items():
+            positions = [window.rfind(alias) for alias in aliases]
+            best = max(positions)
+            if best >= 0:
+                # 동사에 가까울수록(창 끝에 가까울수록) 앞 순위
+                found.append((match.start() - (window_start + best), section))
+    for match in _RELOCATE_EN_VERB_RX.finditer(text_l):
+        window = text_l[match.end():match.end() + _RELOCATE_LOOKBACK_CHARS]
+        for section, aliases in _SECTION_ALIAS_TERMS.items():
+            positions = [window.find(alias) for alias in aliases if window.find(alias) >= 0]
+            if positions:
+                found.append((min(positions), section))
+    ordered: list[str] = []
+    for _distance, section in sorted(found):
+        if section != current_section and section not in ordered:
+            ordered.append(section)
+    return ordered
+
+
+def _relocated_out_block_reason(article: "Article", section_key: str) -> str:
+    moved_out = _GATE_RELOCATED_OUT.get(section_key) or []
+    if not moved_out:
+        return ""
+    keys = _repair_article_link_keys(article)
+    for moved in moved_out:
+        if (keys & _repair_article_link_keys(moved)) or _duplicate_story_pair_reason(article, moved):
+            return "editorial_issue_relocated_out"
+    return ""
 
 
 def _editorial_issue_is_excisable(issue: JsonDict) -> bool:
@@ -53767,10 +53836,35 @@ def _editorial_excision_targets(
     issues = editorial_result.get("issues", []) if isinstance(editorial_result, dict) else []
     if not isinstance(issues, list):
         return []
+
+    def _is_relocate_only(issue: JsonDict) -> bool:
+        # moderate wrong_section 은 절제 대상이 아니지만, 평가가 옮길 섹션을 명시했으면 이동만 시도한다.
+        return (
+            PREPUBLISH_WRONG_SECTION_RELOCATION
+            and str(issue.get("type") or "").strip().lower() == "wrong_section"
+            and str(issue.get("severity") or "").strip().lower() == "moderate"
+            and bool(_editorial_relocation_sections(issue))
+        )
+
     candidates = sorted(
-        (issue for issue in issues if isinstance(issue, dict) and _editorial_issue_is_excisable(issue)),
-        key=_editorial_issue_priority,
+        (
+            issue
+            for issue in issues
+            if isinstance(issue, dict) and (_editorial_issue_is_excisable(issue) or _is_relocate_only(issue))
+        ),
+        key=lambda issue: 4 if _is_relocate_only(issue) else _editorial_issue_priority(issue),
     )
+    # 꽉 찬 섹션으로 옮길 때 먼저 밀어낼 카드: 평가가 이미 약하다고 지목한 카드들
+    weak_title_keys = [
+        key
+        for key in (
+            norm_title_key(str(issue.get("title") or "").replace("...", "").replace("…", ""))
+            for issue in issues
+            if isinstance(issue, dict)
+            and str(issue.get("type") or "").strip().lower() not in ("missed_candidate", "wrong_section")
+        )
+        if key
+    ]
     targets: list[JsonDict] = []
     taken: set[int] = set()
     per_section: dict[str, int] = {}
@@ -53798,19 +53892,115 @@ def _editorial_excision_targets(
                 break
             taken.add(id(found))
             per_section[section] = per_section.get(section, 0) + 1
-            targets.append(
-                {
-                    "section": section,
-                    "article": found,
-                    "title": found.title,
-                    "link": found.canon_url or found.link,
-                    "issue_type": str(issue.get("type") or ""),
-                    "severity": str(issue.get("severity") or ""),
-                    "reason": str(issue.get("reason") or "")[:200],
-                }
-            )
+            target: JsonDict = {
+                "section": section,
+                "article": found,
+                "title": found.title,
+                "link": found.canon_url or found.link,
+                "issue_type": str(issue.get("type") or ""),
+                "severity": str(issue.get("severity") or ""),
+                "reason": str(issue.get("reason") or "")[:200],
+            }
+            if PREPUBLISH_WRONG_SECTION_RELOCATION and str(issue.get("type") or "").strip().lower() == "wrong_section":
+                relocate_to = _editorial_relocation_sections(issue, section)
+                if relocate_to:
+                    target["relocate_to"] = relocate_to
+                    target["relocate_only"] = _is_relocate_only(issue)
+                    target["weak_title_keys"] = weak_title_keys
+            targets.append(target)
             break
+    # 이동 전용(moderate) 이슈만으로는 라운드를 열지 않는다. 라운드마다 편집 재평가 호출과 절제 라운드
+    # 상한을 하나씩 쓰기 때문에, 2026-10-01 A/B replay 에서 moderate 이동이 2라운드를 차지하자
+    # 뒤이은 LLM 교체안이 끌어온 wrong_section·중복 카드를 치울 라운드가 남지 않아 점수가 88.6→80 으로
+    # 떨어졌다. 이동 전용 이슈는 어차피 열리는 절제 라운드에 함께 실린다.
+    if targets and all(target.get("relocate_only") for target in targets):
+        return []
     return targets
+
+
+def _relocation_displacement_victim(
+    items: list["Article"],
+    moved: "Article",
+    weak_title_keys: list[str],
+) -> "Article | None":
+    """꽉 찬 목적 섹션에서 이동 카드에 자리를 내줄 카드. 없으면 None(이동 포기).
+
+    평가가 약하다고 지목한 비핵심 카드를 먼저, 없으면 이동 카드보다 점수가 낮은 가장 약한
+    비핵심 카드를 고른다. 핵심 카드는 밀어내지 않는다.
+    """
+    non_core = [a for a in items if isinstance(a, Article) and not a.is_core and a is not moved]
+    if not non_core:
+        return None
+    flagged = [a for a in non_core if any(_editorial_issue_title_matches(key, a) for key in weak_title_keys)]
+    if flagged:
+        return min(flagged, key=lambda a: float(a.score or 0.0))
+    weakest = min(non_core, key=lambda a: float(a.score or 0.0))
+    if float(moved.score or 0.0) >= float(weakest.score or 0.0):
+        return weakest
+    return None
+
+
+def _relocate_flagged_card(
+    working: dict[str, list["Article"]],
+    target: JsonDict,
+) -> "Article | None":
+    """wrong_section 카드를 평가가 지시한 섹션으로 옮긴다(working 은 이미 이 카드가 빠진 상태).
+
+    목적 섹션 게이트(postbuild)를 통과하고, 같은 사건이 지면 어디에도 없을 때만 옮긴다.
+    성공하면 목적 섹션용 복사본을 돌려주고 target 에 relocated_to/displaced_title 을 적는다.
+    """
+    original = target["article"]
+    if not isinstance(original, Article):
+        return None
+    source = str(target.get("section") or "")
+    for destination in target.get("relocate_to") or []:
+        if destination not in working or destination == source:
+            continue
+        if any(
+            _duplicate_story_pair_reason(original, other)
+            for section in _section_keys()
+            for other in working.get(section, []) or []
+            if isinstance(other, Article)
+        ):
+            target["relocation"] = "failed_duplicate_on_page"
+            return None
+        clone: Article = dataclasses.replace(
+            original,
+            section=destination,
+            reassigned_from=source,
+            origin_section=original.origin_section or source,
+            selection_fit_score=0.0,
+            selection_stage="editorial_relocation",
+        )
+        fit = _fresh_section_fit(clone, destination)
+        if fit > 0.0:
+            clone.selection_fit_score = round(fit, 3)
+        reason = _postbuild_article_reject_reason(clone, destination)
+        if reason == "selection_feedback_core_fit" and clone.is_core:
+            clone.is_core = False
+            reason = _postbuild_article_reject_reason(clone, destination)
+        if reason not in ("", "selection_feedback_low_fit"):
+            target.setdefault("relocation_rejections", []).append(f"{destination}:{reason}")
+            continue
+        items = working.get(destination, []) or []
+        if len(items) >= MAX_PER_SECTION:
+            victim = _relocation_displacement_victim(items, clone, list(target.get("weak_title_keys") or []))
+            if victim is None:
+                target.setdefault("relocation_rejections", []).append(f"{destination}:full_no_weaker_card")
+                continue
+            items = [a for a in items if a is not victim]
+            target["displaced_title"] = victim.title
+        if clone.is_core:
+            last_core = max((i for i, a in enumerate(items) if a.is_core), default=-1)
+            items.insert(last_core + 1, clone)
+        else:
+            items.append(clone)
+        working[destination] = items
+        target["relocation"] = "moved"
+        target["relocated_to"] = destination
+        return clone
+    target.setdefault("relocation", "failed_no_destination")
+    return None
 
 
 def _normalize_section_core_badges(articles: list["Article"]) -> None:
@@ -53851,12 +54041,49 @@ def _excise_flagged_cards_and_refill(
         section: [a for a in (sections.get(section) or []) if isinstance(a, Article)]
         for section in _section_keys()
     }
-    excised_ids = {id(t["article"]) for t in targets}
+    target_ids = {id(t["article"]) for t in targets}
+    original_positions = {
+        id(article): (section, index)
+        for section in _section_keys()
+        for index, article in enumerate(working[section])
+        if id(article) in target_ids
+    }
+    for section in _section_keys():
+        working[section] = [a for a in working[section] if id(a) not in target_ids]
+    # wrong_section 카드는 평가가 지시한 섹션으로 먼저 옮겨 본다. 실패하면 절제 대상이면 절제,
+    # 이동 전용(moderate)이면 원래 자리로 되돌린다.
+    excise_targets: list[JsonDict] = []
+    relocated: list[tuple[JsonDict, Article]] = []
     for target in targets:
+        if not target.get("relocate_to"):
+            excise_targets.append(target)
+            continue
+        clone = _relocate_flagged_card(working, target)
+        if clone is not None:
+            relocated.append((target, clone))
+            continue
+        if target.get("relocate_only"):
+            target["relocation"] = "skipped"
+            section, index = original_positions.get(id(target["article"]), (str(target.get("section") or ""), 0))
+            if section in working:
+                working[section].insert(min(index, len(working[section])), target["article"])
+            continue
+        excise_targets.append(target)
+    excised_ids = {id(t["article"]) for t in excise_targets}
+    for target in excise_targets:
         _GATE_EXCISED_LINK_KEYS.update(_repair_article_link_keys(target["article"]))
         _GATE_EXCISED_ARTICLES.append(target["article"])
+    relocated_out_before = {section: list(items) for section, items in _GATE_RELOCATED_OUT.items()}
+    for target, _clone in relocated:
+        _GATE_RELOCATED_OUT.setdefault(str(target.get("section") or ""), []).append(target["article"])
+
+    def _rollback_relocations() -> None:
+        _GATE_RELOCATED_OUT.clear()
+        _GATE_RELOCATED_OUT.update(relocated_out_before)
+
+    if not excise_targets and not relocated:
+        return None
     for section in _section_keys():
-        working[section] = [a for a in working[section] if id(a) not in excised_ids]
         for kept in working[section]:
             _GATE_EXCISION_KEEP_LINK_KEYS.update(_repair_article_link_keys(kept))
     try:
@@ -53867,13 +54094,15 @@ def _excise_flagged_cards_and_refill(
         _demote_soft_news_final_cores(working, raw_by_section)
     except Exception as exc:
         log.warning("[QUALITY GATE] excision refill failed: %s", exc)
+        _rollback_relocations()
         return None
     for section in _section_keys():
         working[section] = working[section][:MAX_PER_SECTION]
         _normalize_section_core_badges(working[section])
     candidate = fill_summaries(working, cache=summary_cache, allow_openai=allow_openai_summaries)
     _finalize_sections_for_render(candidate)
-    excised_per_section = Counter(str(t.get("section") or "") for t in targets)
+    excised_per_section = Counter(str(t.get("section") or "") for t in excise_targets)
+    excised_per_section.update(str(t.get("section") or "") for t, _clone in relocated)
     for section in _section_keys():
         rows = candidate.get(section, []) or []
         floor = MIN_FALLBACK_PER_SECTION
@@ -53892,23 +54121,61 @@ def _excise_flagged_cards_and_refill(
                 "[QUALITY GATE] excision left section=%s at %d/%d; keeping previous selection",
                 section, len(rows), floor,
             )
+            _rollback_relocations()
             return None
-        if any(id(a) in excised_ids or (_repair_article_link_keys(a) & _GATE_EXCISED_LINK_KEYS) for a in rows):
+        if any(
+            id(a) in excised_ids
+            or (_repair_article_link_keys(a) & _GATE_EXCISED_LINK_KEYS)
+            or _relocated_out_block_reason(a, section)
+            for a in rows
+        ):
             log.warning("[QUALITY GATE] excised card resurfaced in section=%s; keeping previous selection", section)
+            _rollback_relocations()
             return None
     for section in _section_keys():
         for kept in candidate.get(section, []) or []:
             _GATE_EXCISION_KEEP_LINK_KEYS.update(_repair_article_link_keys(kept))
-    for target in targets:
+    for target, clone in relocated:
+        destination = str(target.get("relocated_to") or "")
+        clone_keys = _repair_article_link_keys(clone)
+        if not any(_repair_article_link_keys(a) & clone_keys for a in candidate.get(destination, []) or []):
+            target["relocation"] = "moved_then_dropped"
+        log.info(
+            "[QUALITY GATE] relocated section=%s->%s issue=%s/%s displaced=%s status=%s title=%s",
+            target.get("section"), destination, target.get("issue_type"), target.get("severity"),
+            str(target.get("displaced_title") or "-")[:60], target.get("relocation"), str(target.get("title") or "")[:100],
+        )
+    for target in excise_targets:
         log.info(
             "[QUALITY GATE] excised section=%s issue=%s/%s title=%s",
             target.get("section"), target.get("issue_type"), target.get("severity"), str(target.get("title") or "")[:100],
         )
     log.info(
-        "[QUALITY GATE] excised %d flagged card(s); refilled=%d dedupe=%d/%d source=%d",
-        len(targets), refilled, dedupe_removed, dedupe_refilled, source_changed,
+        "[QUALITY GATE] excised %d / relocated %d flagged card(s); refilled=%d dedupe=%d/%d source=%d",
+        len(excise_targets), len(relocated), refilled, dedupe_removed, dedupe_refilled, source_changed,
     )
     return candidate
+
+
+def _unverified_repair_regresses(verified_result: JsonDict, unverified_result: JsonDict) -> bool:
+    """미검증 교체안 결과가 직전 모델 검증 상태보다 나쁜가.
+
+    직전 상태가 모델 평가에 성공했고 hard issue 없이 SLA 기준으로 발행 가능할 때만 비교한다.
+    직전 상태가 발행 불가(hard issue 등)였다면 교체안이 유일한 출구일 수 있으므로 되돌리지 않는다.
+    """
+    if not isinstance(verified_result, dict) or not isinstance(unverified_result, dict):
+        return False
+    editorial = verified_result.get("editorial", {})
+    if not isinstance(editorial, dict) or editorial.get("status") != "success":
+        return False
+    if _prepublish_sla_fallback_blockers(verified_result):
+        return False
+    try:
+        before = float(verified_result.get("operational_score") or 0.0)
+        after = float(unverified_result.get("operational_score") or 0.0)
+    except (TypeError, ValueError):
+        return False
+    return after < before
 
 
 def _editorial_result_without_excised(
@@ -53920,7 +54187,9 @@ def _editorial_result_without_excised(
     from editorial_eval import _apply_editorial_acceptance_gate
 
     carried = copy.deepcopy(editorial_result) if isinstance(editorial_result, dict) else {}
-    removed_keys = [norm_title_key(str(t.get("title") or "")) for t in targets]
+    removed_keys = [
+        norm_title_key(str(t.get("title") or "")) for t in targets if t.get("relocation") != "skipped"
+    ] + [norm_title_key(str(t.get("displaced_title") or "")) for t in targets if t.get("displaced_title")]
     kept: list[JsonDict] = []
     dropped = 0
     for issue in carried.get("issues", []) or []:
@@ -54049,7 +54318,7 @@ def _run_prepublish_quality_gate(
             attempt = {
                 "attempt": len(excision_attempts) + 1,
                 "targets": [
-                    {k: v for k, v in target.items() if k != "article"} for target in targets
+                    {k: v for k, v in target.items() if k not in ("article", "weak_title_keys")} for target in targets
                 ],
                 "status": "applied" if excised is not None else "rejected_refill_floor",
             }
@@ -54058,6 +54327,8 @@ def _run_prepublish_quality_gate(
                 return
             for target in targets:
                 section = str(target.get("section") or "")
+                if target.get("relocation") == "skipped":
+                    continue
                 if section in repair_excluded_links:
                     repair_excluded_links[section].update(_repair_article_link_keys(target["article"]))
             current_sections = excised
@@ -54083,6 +54354,12 @@ def _run_prepublish_quality_gate(
                     run_editorial=True,
                     adaptive_reason=f"hard_issue_excision_{attempt['attempt']}",
                     achievable_by_section=achievable_by_section,
+                )
+                attempt["overall_after"] = result.get("overall_score") if isinstance(result, dict) else None
+                attempt["editorial_after"] = result.get("editorial_score") if isinstance(result, dict) else None
+                log.info(
+                    "[QUALITY GATE] excision round %d re-evaluated: overall=%s editorial=%s",
+                    attempt["attempt"], attempt["overall_after"], attempt["editorial_after"],
                 )
                 continue
             attempt["verification"] = "deterministic_carry_forward"
@@ -54312,6 +54589,7 @@ def _run_prepublish_quality_gate(
             if attempt < repair_proposal_limit:
                 continue
             break
+        pre_repair_state = (current_sections, current_html, result)
         current_sections = candidate_sections
         applied_repair_count += 1
         repair_attempts[-1]["applied_repair"] = applied_repair_count
@@ -54345,6 +54623,20 @@ def _run_prepublish_quality_gate(
                 adaptive_reason="editorial_budget_exhausted_after_repair",
                 achievable_by_section=achievable_by_section,
             )
+            if _unverified_repair_regresses(pre_repair_state[2], result):
+                # 모델 검증을 못 받은 교체안이 이미 발행 가능했던 검증 상태보다 결정적 점수가 낮으면
+                # 되돌린다. 2026-10-01 replay: 검증 88.9(hard 0) 상태에 미검증 교체안이 정책·유통 같은
+                # 사건 중복과 wrong_section 카드를 들여와 최종 80.7 로 발행됐다.
+                log.warning(
+                    "[QUALITY GATE] unverified repair lowered operational score %.2f -> %.2f; "
+                    "keeping the last model-verified selection",
+                    float(pre_repair_state[2].get("operational_score") or 0.0),
+                    float(result.get("operational_score") or 0.0),
+                )
+                repair_attempts[-1]["status"] = "reverted_unverified_regression"
+                current_sections, current_html, result = pre_repair_state
+                applied_repair_count -= 1
+                break
 
     # LLM 교체안이 새 hard issue를 남겼거나 예산 때문에 손대지 못했다면 한 번 더 잘라낸다.
     _run_hard_issue_excisions()
