@@ -1,38 +1,38 @@
 {
   "report_date": "2026-09-28",
-  "generated_at_kst": "2026-10-01T12:05:36+09:00",
+  "generated_at_kst": "2026-10-01T12:12:36+09:00",
   "status": "warn",
-  "overall_score": 88.65,
-  "operational_score": 93.38,
-  "reader_quality_score": 89.96,
+  "overall_score": 87.67,
+  "operational_score": 94.39,
+  "reader_quality_score": 90.16,
   "reader_quality_gate": {
     "status": "clear",
-    "headline_score": 89.96,
-    "operational_score": 93.38,
-    "penalty": 3.42,
+    "headline_score": 90.16,
+    "operational_score": 94.39,
+    "penalty": 4.23,
     "cap": 100.0,
     "reasons": []
   },
   "scores": {
     "completeness": 100.0,
-    "diversity": 96.0,
-    "source_quality": 80.0,
+    "diversity": 100.0,
+    "source_quality": 100.0,
     "summary_quality": 100.0,
     "freshness": 90.0,
     "retrieval_support": 90.0,
     "section_alignment": 100.0,
-    "core_quality": 85.0,
-    "commodity_board_quality": 85.0,
-    "reader_quality": 89.96
+    "core_quality": 97.75,
+    "commodity_board_quality": 81.89,
+    "reader_quality": 90.16
   },
   "counts": {
     "briefing_total": 20,
-    "commodity_total": 40,
-    "commodity_primary_total": 10,
+    "commodity_total": 39,
+    "commodity_primary_total": 9,
     "commodity_pool_total": 18,
-    "commodity_active_today_total": 19,
+    "commodity_active_today_total": 18,
     "commodity_active_today_unlinked_total": 9,
-    "commodity_managed_unlinked_total": 23,
+    "commodity_managed_unlinked_total": 24,
     "briefing_by_section": {
       "supply": 5,
       "policy": 5,
@@ -40,13 +40,13 @@
       "pest": 5
     },
     "core_by_section": {
-      "supply": 3,
+      "supply": 2,
       "policy": 2,
       "dist": 2,
-      "pest": 3
+      "pest": 2
     },
     "commodity_by_section": {
-      "supply": 32,
+      "supply": 31,
       "policy": 2,
       "dist": 2,
       "pest": 4
@@ -81,12 +81,12 @@
       "dist": 0,
       "pest": 0
     },
-    "low_tier_source_total": 4,
+    "low_tier_source_total": 3,
     "low_tier_source_by_section": {
       "supply": 1,
       "policy": 1,
       "dist": 0,
-      "pest": 2
+      "pest": 1
     },
     "achievable_briefing_by_section": {
       "supply": 329,
@@ -97,8 +97,8 @@
   },
   "metrics": {
     "briefing_title_unique_rate": 1.0,
-    "briefing_domain_diversity_rate": 0.7,
-    "low_tier_source_rate": 0.2,
+    "briefing_domain_diversity_rate": 0.85,
+    "low_tier_source_rate": 0.15,
     "low_tier_source_excess_count": 0,
     "source_quality_penalty": 0.0,
     "surface_reuse_penalty": 0.0,
@@ -107,13 +107,13 @@
     "summary_numeric_rate": 0.85,
     "summary_opening_diversity": 1.0,
     "matched_article_rate": 1.0,
-    "within_48h_rate": 0.5,
+    "within_48h_rate": 0.4,
     "within_72h_rate": 1.0,
     "stale_over_96h_rate": 0.0,
     "freshness_window_mode": "weekend_span",
     "freshness_gap_offset_hours": 48.0,
     "seed_coverage_score": 0.6667,
-    "section_alignment_fit_avg": 4.441,
+    "section_alignment_fit_avg": 3.7685,
     "section_alignment_low_fit_rate": 0.05,
     "section_alignment_cross_gap_rate": 0.0,
     "section_alignment_weak_stage_rate": 0.0,
@@ -121,7 +121,7 @@
     "reader_hard_issue_count": 0,
     "reader_hard_issue_rate": 0.0,
     "reader_hard_core_issue_count": 0,
-    "reader_quality_penalty": 3.42,
+    "reader_quality_penalty": 4.23,
     "reader_quality_cap": 100.0,
     "preferred_slot_reader_penalty_weight": 1.5,
     "off_scope_foreign_rate": 0.0,
@@ -132,42 +132,42 @@
     "story_duplicate_penalty": 0.0,
     "policy_wrong_section_rate": 0.0,
     "promotional_filler_rate": 0.05,
-    "promotional_core_rate": 0.1,
-    "weak_core_editorial_rate": 0.1,
+    "promotional_core_rate": 0.125,
+    "weak_core_editorial_rate": 0.125,
     "pest_theme_duplicate_rate": 0.0,
     "policy_theme_duplicate_rate": 0.0,
     "policy_theme_duplicate_count": 0,
     "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 1.9,
+    "editorial_quality_penalty": 2.35,
     "preferred_slot_gap_rate": 0.0,
     "preferred_slot_gap_total": 0,
     "preferred_slot_penalty": 0.0,
-    "core_fit_avg": 4.938,
-    "core_rank_percentile_avg": 0.9282,
-    "core_stage_core_rate": 0.2,
+    "core_fit_avg": 4.2762,
+    "core_rank_percentile_avg": 0.8684,
+    "core_stage_core_rate": 1.0,
     "weak_core_rate": 0.0,
     "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0,
-    "commodity_primary_fit_avg": 2.484,
-    "commodity_primary_rank_avg": 3.5,
+    "commodity_primary_fit_avg": 2.2933,
+    "commodity_primary_rank_avg": 3.5556,
     "commodity_primary_title_item_focus_rate": 1.0,
-    "commodity_primary_title_issue_signal_rate": 0.8,
-    "commodity_primary_strict_link_rate": 0.8,
+    "commodity_primary_title_issue_signal_rate": 0.7778,
+    "commodity_primary_strict_link_rate": 0.7778,
     "commodity_primary_low_rank_rate": 0.0,
-    "commodity_primary_count": 10,
-    "commodity_active_today_total": 19,
+    "commodity_primary_count": 9,
+    "commodity_active_today_total": 18,
     "commodity_active_today_unlinked_total": 9,
-    "commodity_managed_unlinked_total": 23,
+    "commodity_managed_unlinked_total": 24,
     "commodity_board_daily_min_primary_count": 6,
     "commodity_board_low_coverage": false,
-    "commodity_board_coverage_rate": 0.303,
+    "commodity_board_coverage_rate": 0.2727,
     "commodity_primary_title_item_missing_rate": 0.0,
     "commodity_primary_body_only_rate": 0.0,
     "commodity_primary_false_link_rate": 0.0,
     "commodity_pool_count": 18,
     "commodity_pool_false_link_rate": 0.0,
-    "commodity_primary_dominant_section_rate": 0.8,
+    "commodity_primary_dominant_section_rate": 0.7778,
     "commodity_primary_section_balance_score": 0.0
   },
   "section_scores": {
@@ -203,26 +203,36 @@
     },
     "core_quality": {
       "supply": 1.0,
-      "policy": 1.0,
-      "dist": 1.0,
-      "pest": 0.9449
+      "policy": 0.9349,
+      "dist": 0.9725,
+      "pest": 0.9598
     }
   },
   "freshness_samples": [
+    {
+      "title": "'2026년산 동계 밤' 중국 수출 쾌거",
+      "section": "dist",
+      "age_hours": 116.6
+    },
     {
       "title": "함평군, '현장 밀착 상담'... 벼멸구 방제부터 폭염 안전까지 총력",
       "section": "pest",
       "age_hours": 116.4
     },
     {
-      "title": "도매시장 경쟁 촉진 및 공공성 강화 기반 마련",
-      "section": "dist",
-      "age_hours": 115.7
+      "title": "청도농협, 복숭아 병해충 방제 영농교육",
+      "section": "pest",
+      "age_hours": 115.5
     },
     {
-      "title": "농협다운 농협 품목농협이 세운다 - 지방 도매시장 체질 개선 없이 '농산...",
+      "title": "농협다운 농협 품목농협이 세운다 - 지방 도매시장 체질 개선 없이 ‘농산물 유통 혁신’ 없다",
       "section": "dist",
       "age_hours": 115.4
+    },
+    {
+      "title": "올해 제주 마늘 재배 면적 '6% 감소' 예상",
+      "section": "supply",
+      "age_hours": 115.3
     },
     {
       "title": "가락몰 차례상 대형마트보다 21.6% 저렴",
@@ -235,19 +245,9 @@
       "age_hours": 115.2
     },
     {
-      "title": "과수 무병묘 생산기반 확보 시급",
-      "section": "pest",
-      "age_hours": 115.2
-    },
-    {
-      "title": "생산 늘어난 성주 참외 , 조수입 6529억원…농가 순수입도 12.6%↑",
+      "title": "예천군, 마늘· 양파 ‘깊이거름주기’ 효과 주목…생산량 최대 52% 증가",
       "section": "supply",
-      "age_hours": 111.5
-    },
-    {
-      "title": "신녕농협 마늘 경매장 성장세…농가 판로 넓힌다",
-      "section": "dist",
-      "age_hours": 111.5
+      "age_hours": 113.6
     }
   ],
   "content_false_positive_samples": [],
@@ -336,15 +336,15 @@
   ],
   "adaptive_evaluation": {
     "full_editorial_eval": true,
-    "reason": "repair_attempt_1",
+    "reason": "hard_issue_excision_2",
     "stable_days_required": 20
   },
   "editorial": {
     "status": "success",
     "rubric_version": 3,
     "model": "gpt-5.6-sol",
-    "generated_at_kst": "2026-10-01T12:05:55+09:00",
-    "score": 76.75,
+    "generated_at_kst": "2026-10-01T12:12:58+09:00",
+    "score": 77.05,
     "model_reported_score": 78.2,
     "score_method": "weighted_components_v1",
     "component_weights": {
@@ -361,94 +361,93 @@
     "stretch_score": 95.0,
     "target_status": "needs_major_iteration",
     "scores": {
-      "article_selection": 80.0,
-      "section_fit": 79.0,
-      "core_pick_quality": 65.0,
-      "summary_usefulness": 92.0,
-      "missed_opportunity": 70.0,
-      "noise_control": 76.0
+      "article_selection": 76.0,
+      "section_fit": 83.0,
+      "core_pick_quality": 72.0,
+      "summary_usefulness": 91.0,
+      "missed_opportunity": 65.0,
+      "noise_control": 78.0
     },
-    "summary": "분량과 요약은 안정적이지만, 공급·유통 간 배치 오류와 병해충 핵심기사 선정이 약하다. 특히 지역 안내성 기사를 핵심으로 올리고 더 구체적인 유통 운영 기사를 놓친 점이 품질을 낮춘다.",
+    "summary": "형식과 요약은 안정적이고 섹션별 5건도 충족했다. 그러나 정책·유통에서 원자료상 더 강한 최신 기사를 놓치고 지역 행사·단순 안내를 채웠으며, 일부 코어 지정도 우선순위가 뒤바뀌었다.",
     "issues": [
       {
-        "type": "wrong_section",
-        "severity": "moderate",
-        "section": "supply",
+        "type": "missed_candidate",
+        "severity": "major",
+        "section": "dist",
         "title": "가락시장 파렛트 출하 의무화 확대…느타리버섯·봄동·제주당근 대상",
-        "reason": "출하·하역·물류비 개선을 다룬 전형적인 유통 운영 기사다.",
-        "suggested_action": "dist로 이동하고 공급에는 품목 수급·가격 기사를 배치한다."
+        "reason": "물류비와 하역 효율에 직접 영향을 주는 구체적 운영 변화인데 단순 휴장 안내보다 우선순위가 높다.",
+        "suggested_action": "‘노은 오정 도매시장 추석 휴장’을 이 기사로 교체한다."
       },
       {
         "type": "missed_candidate",
         "severity": "moderate",
-        "section": "dist",
-        "title": "가락시장 파렛트 출하 의무화 확대…느타리버섯·봄동·제주당근 대상",
-        "reason": "구체적인 시행일과 대상 품목이 있는 물류 변화로 일부 현 선정기사보다 실무성이 높다.",
-        "suggested_action": "지역 마늘경매장 기사 대신 dist에 선발한다."
+        "section": "policy",
+        "title": "성수품 공급 늘리고 할인지원은 확대…희비 엇갈린 추석 장바구니 물가",
+        "reason": "정부 공급·할인지원 효과와 품목별 가격을 함께 다룬 최신 고적합 기사다.",
+        "suggested_action": "가락몰 가격 비교 또는 할인 지원 칼럼을 대체한다."
       },
       {
         "type": "weak_core",
         "severity": "moderate",
-        "section": "pest",
-        "title": "옥천군농업기술센터, 포도 수확 후 \"병해충 방제 ·충분한 물주기\" 당부",
-        "reason": "지역 단위의 일반적 사후관리 안내여서 핵심기사로는 파급력이 부족하다.",
-        "suggested_action": "core에서 demote하고 비핵심 꼬리기사로 유지한다."
+        "section": "policy",
+        "title": "[프리즘] 소비자·농가도 웃게 할 농축산물 할인 지원",
+        "reason": "의견 칼럼이어서 최신 정책 집행·예산 기사보다 코어 근거가 약하다. 코어에서 내려야 한다.",
+        "suggested_action": "비코어로 강등하고 경관보전직불금 또는 기후대응 기사를 코어로 승격한다."
       },
       {
         "type": "weak_core",
         "severity": "moderate",
         "section": "pest",
         "title": "함평군, '현장 밀착 상담'... 벼멸구 방제부터 폭염 안전까지 총력",
-        "reason": "6개월간 상담 실적을 소개하는 지자체 활동 홍보에 가깝고 현재 위험 신호가 약하다.",
-        "suggested_action": "core에서 demote하고 ‘고온·병해충 강한 이지플’을 core로 promote한다."
+        "reason": "6개월간의 포괄적 상담 실적 중심으로 현재 병해충 위험 신호가 약하다. 코어에서 내려야 한다.",
+        "suggested_action": "비코어로 강등하고 배 열과 피해만 코어로 두거나 ‘이지플’을 코어로 승격한다."
       },
       {
-        "type": "weak_core",
+        "type": "wrong_section",
         "severity": "moderate",
-        "section": "supply",
-        "title": "예산군, 농산물 가격 하락 농가에 가격 안정기금 지원",
-        "reason": "유용한 지역 지원 정보지만 전국 수급 영향이 제한돼 공급 핵심기사로는 약하다.",
-        "suggested_action": "core에서 demote하고 제주 마늘 재배의향 감소를 core로 promote한다."
+        "section": "policy",
+        "title": "가락몰 차례상 대형마트보다 21.6% 저렴",
+        "reason": "정책 변화보다 판매 채널별 가격 경쟁력을 다룬 유통·소비 기사에 가깝다.",
+        "suggested_action": "유통으로 이동하거나 최신 성수품 정책 기사로 교체한다."
+      },
+      {
+        "type": "promotional_filler",
+        "severity": "moderate",
+        "section": "dist",
+        "title": "'2026년산 동계 밤' 중국 수출 쾌거",
+        "reason": "소규모 지역 수출 행사 중심이며 행사일도 18일로 브리핑 기간보다 앞선다.",
+        "suggested_action": "신녕농협 마늘 경매장 성장 또는 농협 유통개혁 기사로 교체한다."
+      },
+      {
+        "type": "noise",
+        "severity": "moderate",
+        "section": "dist",
+        "title": "노은 오정 도매시장 추석 휴장",
+        "reason": "지역 일정 공지에 불과해 전국 독자용 유통 브리핑 가치가 낮다.",
+        "suggested_action": "파렛트 출하 의무화나 전속출하 유통개혁 기사로 교체한다."
       },
       {
         "type": "promotional_filler",
         "severity": "minor",
-        "section": "dist",
-        "title": "신녕농협 마늘 경매장 성장세…농가 판로 넓힌다",
-        "reason": "거래 실적은 구체적이나 단일 지역 농협의 성과 소개 성격이 강하다.",
-        "suggested_action": "파렛트 의무화나 농협 유통체계 개편 기사로 교체한다."
-      },
-      {
-        "type": "missed_candidate",
-        "severity": "moderate",
-        "section": "dist",
-        "title": "농협경제지주, 전속출하 중심 유통개혁 추진…도농 직거래망도 확대",
-        "reason": "생산·판매 계열화와 직거래망 확대라는 전국 단위 유통 변화로 지역 성과 기사보다 중요하다.",
-        "suggested_action": "신녕농협 경매장 기사보다 우선 선발한다."
-      },
-      {
-        "type": "weak_core",
-        "severity": "minor",
-        "section": "policy",
-        "title": "[프리즘] 소비자·농가도 웃게 할 농축산물 할인 지원",
-        "reason": "수치 근거는 유용하지만 사설성 제안으로 정책 실행 기사보다 핵심성이 낮다.",
-        "suggested_action": "core에서 demote하고 CPTPP 가입 검토 기사를 core로 promote한다."
+        "section": "supply",
+        "title": "예천군, 마늘· 양파 ‘깊이거름주기’ 효과 주목…생산량 최대 52% 증가",
+        "reason": "단일 지역 시범사업 성과 홍보 성격이 강하고 수급 현황을 직접 보여주지 않는다.",
+        "suggested_action": "전국·주산지 가격 및 생산 전망 기사가 있으면 교체한다."
       }
     ],
     "section_notes": {
-      "supply": "수급 핵심 소재는 갖췄지만 파렛트 물류 기사의 오배치와 지역 기금의 핵심 지정이 아쉽다.",
-      "policy": "물가 대책과 통상 이슈 구성이 적절하나 사설보다 CPTPP 같은 실질 정책 변화를 핵심으로 삼아야 한다.",
-      "dist": "온라인도매시장과 도매시장 제도 기사는 좋지만, 구체적 물류 변화보다 지역 성과 기사를 택했다.",
-      "pest": "열과 피해는 강한 핵심기사다. 나머지 후보군은 약하지만 일반 안내·활동 홍보를 핵심으로 지정한 것은 부적절하다."
+      "supply": "마늘 면적 감소와 비축 양파 폐기는 유용하지만 지역 지원·시범사업 비중이 높아 전국 수급 흐름이 약하다.",
+      "policy": "직불금·기후대응·CPTPP는 강하지만 최신 성수품 정책 기사를 누락했고 칼럼을 코어로 둔 점이 아쉽다.",
+      "dist": "온라인도매시장과 지방 도매시장 기사는 좋다. 반면 파렛트 의무화·마늘 경매장 같은 강한 운영 기사를 두고 휴장 공지와 지역 수출 행사를 선택했다.",
+      "pest": "배 열과 피해는 좋은 코어다. 원자료 풀이 약해 교육·품종 보급을 꼬리로 활용한 것은 허용 가능하나 함평 상담 실적은 코어로 약하다."
     },
     "improvement_suggestions": [
-      "파렛트 출하 의무화 기사를 dist로 옮기고 공급에는 수급·가격 후보를 보강한다.",
-      "병해충 core는 실제 피해, 확산, 대응 변화 순으로 지정한다.",
-      "지역기관 활동 실적은 비핵심 꼬리기사로만 사용한다.",
-      "전국 단위 유통체계 개편을 지역 농협 성과 기사보다 우선한다.",
-      "정책 core에서는 칼럼보다 통상·법령·정부 시행 결정을 우선한다."
+      "유통은 행사·휴장 공지보다 물류 규정, 거래 실적, 유통체계 개편을 우선한다.",
+      "정책 코어는 칼럼보다 예산·제도·정부 조치가 명확한 스트레이트 기사로 구성한다.",
+      "후보 적합도 상위 기사가 빠질 때 수동 검토 절차를 둔다.",
+      "기사 발행일뿐 아니라 실제 행사일도 기간 적합성에 반영한다."
     ],
-    "raw_response_excerpt": "{\"score\":78.2,\"scores\":{\"article_selection\":80,\"section_fit\":79,\"core_pick_quality\":65,\"summary_usefulness\":92,\"missed_opportunity\":70,\"noise_control\":76},\"summary\":\"분량과 요약은 안정적이지만, 공급·유통 간 배치 오류와 병해충 핵심기사 선정이 약하다. 특히 지역 안내성 기사를 핵심으로 올리고 더 구체적인 유통 운영 기사를 놓친 점이 품질을 낮춘다.\",\"issues\":[{\"type\":\"wrong_section\",\"severity\":\"moderate\",\"section\":\"supply\",\"title\":\"가락시장 파렛트 출하 의무화 확대…느타리버섯·봄동·제주당근 대상\",\"reason\":\"출하·하역·물류비 개선을 다룬 전형적인 유통 운영 기사다.\",\"suggested_action\":\"dist로 이동하고 공급에는 품목 수급·가격 기사를 배치한다.\"},{\"type\":\"missed_candidate\",\"severity\":\"moderate\",\"section\":\"dist\",\"title\":\"가락시장 파렛트 출하 의무화 확대…느타리버섯·봄동·제주당근 대상\",\"reason\":\"구체적인 시행일과 대상 품목이 있는 물류 변화로 일부 현 선정기사보다 실무성이 높다.\",\"suggested_action\":\"지역 마늘경매장 기사 대신 dist에 선발한다.\"},{\"type\":\"weak_core\",\"severity\":\"moderate\",\"section\":\"pest\",\"title\":\"옥천군농업기술센터, 포도 수확 후 \\\"병해충 방제 ·충분한 물주기\\\" 당부\",\"reason\":\"지역 단위의 일반적 사후관리 안내여서 핵심기사로는 파급력이 부족하다.\",\"suggested_action\":\"core에서 demote하고 비핵심 꼬리기사로 유지한다.\"},{\"type\":\"weak_core\",\"severity\":\"moderate\",\"section\":\"pest\",\"title\":\"함평군, '현장 밀착 상담'... 벼멸구 방제부터 폭염 안전까지 총력\",\"reason\":\"6개월간 상담 실적을 소개하는 지자체 활동 홍보에 가깝고 현재 위험 신호가 약하다.\",\"suggested_action\":\"core에서 demote하고 ‘고온·병해충 강한 이지플’을 core로 promote한다.\"},{\"type\":\"weak_core\",\"severity\":\"m...",
+    "raw_response_excerpt": "{\"score\":78.2,\"scores\":{\"article_selection\":76,\"section_fit\":83,\"core_pick_quality\":72,\"summary_usefulness\":91,\"missed_opportunity\":65,\"noise_control\":78},\"summary\":\"형식과 요약은 안정적이고 섹션별 5건도 충족했다. 그러나 정책·유통에서 원자료상 더 강한 최신 기사를 놓치고 지역 행사·단순 안내를 채웠으며, 일부 코어 지정도 우선순위가 뒤바뀌었다.\",\"issues\":[{\"type\":\"missed_candidate\",\"severity\":\"major\",\"section\":\"dist\",\"title\":\"가락시장 파렛트 출하 의무화 확대…느타리버섯·봄동·제주당근 대상\",\"reason\":\"물류비와 하역 효율에 직접 영향을 주는 구체적 운영 변화인데 단순 휴장 안내보다 우선순위가 높다.\",\"suggested_action\":\"‘노은 오정 도매시장 추석 휴장’을 이 기사로 교체한다.\"},{\"type\":\"missed_candidate\",\"severity\":\"moderate\",\"section\":\"policy\",\"title\":\"성수품 공급 늘리고 할인지원은 확대…희비 엇갈린 추석 장바구니 물가\",\"reason\":\"정부 공급·할인지원 효과와 품목별 가격을 함께 다룬 최신 고적합 기사다.\",\"suggested_action\":\"가락몰 가격 비교 또는 할인 지원 칼럼을 대체한다.\"},{\"type\":\"weak_core\",\"severity\":\"moderate\",\"section\":\"policy\",\"title\":\"[프리즘] 소비자·농가도 웃게 할 농축산물 할인 지원\",\"reason\":\"의견 칼럼이어서 최신 정책 집행·예산 기사보다 코어 근거가 약하다. 코어에서 내려야 한다.\",\"suggested_action\":\"비코어로 강등하고 경관보전직불금 또는 기후대응 기사를 코어로 승격한다.\"},{\"type\":\"weak_core\",\"severity\":\"moderate\",\"section\":\"pest\",\"title\":\"함평군, '현장 밀착 상담'... 벼멸구 방제부터 폭염 안전까지 총력\",\"reason\":\"6개월간의 포괄적 상담 실적 중심으로 현재 병해충 위험 신호가 약하다. 코어에서 내려야 한다.\",\"suggested_action\":\"비코어로 강등하고 배 열과 피해만 코어로 두거나 ‘이지플’을 코어로 승격한다.\"},{\"type\":...",
     "section_count_score": 100.0,
     "section_count_status": "target_met",
     "section_count_context": {
@@ -463,7 +462,7 @@
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
           "count_floor": 3,
-          "core_count": 3,
+          "core_count": 2,
           "fill_ratio": 1.0,
           "score": 100.0
         },
@@ -499,7 +498,7 @@
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
           "count_floor": 3,
-          "core_count": 3,
+          "core_count": 2,
           "fill_ratio": 1.0,
           "score": 100.0
         }
@@ -521,13 +520,13 @@
       "excellent_score": 92.0,
       "stretch_score": 95.0,
       "blocking_issue_count": 0,
-      "major_issue_count": 0,
+      "major_issue_count": 1,
       "critical_component_min": 80.0,
       "all_component_min": 75.0,
       "checks": {
         "editorial_score_min": false,
         "no_blocking_issues": true,
-        "no_major_issues": true,
+        "no_major_issues": false,
         "critical_components_min": false,
         "all_components_min": false,
         "operational_score_min": true,
@@ -537,6 +536,7 @@
       },
       "failure_reasons": [
         "editorial_score_min",
+        "no_major_issues",
         "critical_components_min",
         "all_components_min",
         "commodity_board_score_min"
@@ -544,21 +544,21 @@
     },
     "model_snapshot": "gpt-5.6-sol",
     "usage": {
-      "input_tokens": 20295,
+      "input_tokens": 20212,
       "cached_input_tokens": 0,
       "cache_write_input_tokens": 0,
-      "output_tokens": 1290,
-      "total_tokens": 21585,
-      "estimated_cost_usd": 0.140175,
+      "output_tokens": 1520,
+      "total_tokens": 21732,
+      "estimated_cost_usd": 0.14666,
       "pricing_basis": "gpt-5.6-sol-standard-under-272k-2026-07"
     }
   },
-  "editorial_score": 76.75,
+  "editorial_score": 77.05,
   "editorial_improvement_plan": {
     "mode": "shadow_replay_loop",
     "proposal_only": true,
     "target_score": 82.0,
-    "current_editorial_score": 76.75,
+    "current_editorial_score": 77.05,
     "model_reported_score": 78.2,
     "quality_tier": "needs_major_iteration",
     "target_status": "needs_major_iteration",
@@ -586,7 +586,7 @@
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
           "count_floor": 3,
-          "core_count": 3,
+          "core_count": 2,
           "fill_ratio": 1.0,
           "score": 100.0
         },
@@ -622,7 +622,7 @@
           "soft_fallback_count": 4,
           "minimum_fallback_count": 3,
           "count_floor": 3,
-          "core_count": 3,
+          "core_count": 2,
           "fill_ratio": 1.0,
           "score": 100.0
         }
@@ -712,16 +712,17 @@
   "quality_gate": {
     "status": "needs_major_iteration",
     "target_score": 82.0,
-    "operational_score": 93.38,
-    "reader_quality_score": 89.96,
-    "editorial_score": 76.75,
-    "headline_score": 88.65,
-    "reason": "editorial_acceptance_gate_failed",
-    "bounded_penalty": 1.31,
+    "operational_score": 94.39,
+    "reader_quality_score": 90.16,
+    "editorial_score": 77.05,
+    "headline_score": 87.67,
+    "reason": "editorial_major_issue",
+    "bounded_penalty": 2.49,
     "blocking_issue_count": 0,
-    "major_issue_count": 0,
+    "major_issue_count": 1,
     "acceptance_failure_reasons": [
       "editorial_score_min",
+      "no_major_issues",
       "critical_components_min",
       "all_components_min",
       "commodity_board_score_min"
@@ -741,21 +742,21 @@
       "pest": 22
     },
     "thin_pool_sections": {},
-    "repair_count": 2,
-    "applied_repair_count": 2,
+    "repair_count": 1,
+    "applied_repair_count": 1,
     "repair_proposal_limit": 3,
     "repair_attempts": [
       {
         "attempt": 1,
         "status": "success",
-        "reason": "전국 성수품 대책을 정책 핵심으로 반영하고, 유통은 도매시장 제도·온라인시장·정량 경매 실적 중심으로 교체했다. 행사성 수출·휴장 안내와 함평 상담 실적은 제외했으며, 필수 링크와 비핵심 제한을 모두 준수했다.",
+        "reason": "필수 성수품 정책 기사를 반영하고 칼럼을 비코어로 강등했다. 유통에서는 휴장 공지와 행사성 수출 기사를 제외하고 도매시장 제도 개정, 온라인시장 진입 완화, 정량 거래실적을 우선했다. 병해충은 배 열과 피해와 구체적 방제·무병묘 대응을 코어로 선정했으며 섹션별 저등급 출처는 1개 이하로 제한했다.",
         "usage": {
-          "input_tokens": 21708,
+          "input_tokens": 21384,
           "cached_input_tokens": 0,
           "cache_write_input_tokens": 0,
-          "output_tokens": 1134,
-          "total_tokens": 22842,
-          "estimated_cost_usd": 0.14256,
+          "output_tokens": 1187,
+          "total_tokens": 22571,
+          "estimated_cost_usd": 0.14253,
           "pricing_basis": "gpt-5.6-sol-standard-under-272k-2026-07"
         },
         "model_verification_funded": true,
@@ -765,38 +766,24 @@
           "dist": 5,
           "pest": 5
         },
+        "partially_applied_sections": [
+          "dist",
+          "pest",
+          "supply"
+        ],
+        "retained_sections": [
+          "policy"
+        ],
+        "local_validation_errors": [
+          {
+            "section": "policy",
+            "reason": "low_tier_source_section_cap",
+            "link": "https://getnews.co.kr/news/articleView.html?idxno=881751",
+            "title": "[추석기획]추석 차례상 비용, 9년 만에 하락... 정부 물가대책 반영됐나"
+          }
+        ],
         "invalidated_summary_cache_entries": 0,
-        "post_finalize_top_up": {
-          "pest": 1
-        },
         "applied_repair": 1
-      },
-      {
-        "attempt": 2,
-        "status": "success",
-        "reason": "필수 정책 카드를 core로 반영하고, 공급의 물류 오배치와 유통의 지역 경매장 홍보성 기사를 제거했다. 정책 core는 실행 대책·통상 이슈 중심으로, 병해충 core는 실제 피해와 내재해 품종 대응 중심으로 재편했으며 모든 non_core 제약과 저등급 출처 한도를 준수했다.",
-        "usage": {
-          "input_tokens": 21354,
-          "cached_input_tokens": 0,
-          "cache_write_input_tokens": 0,
-          "output_tokens": 1452,
-          "total_tokens": 22806,
-          "estimated_cost_usd": 0.15033,
-          "pricing_basis": "gpt-5.6-sol-standard-under-272k-2026-07"
-        },
-        "model_verification_funded": false,
-        "section_card_targets": {
-          "supply": 5,
-          "policy": 5,
-          "dist": 5,
-          "pest": 5
-        },
-        "invalidated_summary_cache_entries": 0,
-        "post_finalize_top_up": {
-          "supply": 1,
-          "pest": 1
-        },
-        "applied_repair": 2
       }
     ],
     "hard_issue_excisions": [
@@ -809,54 +796,32 @@
             "link": "https://newsis.com/view/NISX20260924_0003802904",
             "issue_type": "duplicate_story",
             "severity": "major",
-            "reason": "17번 카드와 피해 지역·농가 수·지원액이 동일한 사건이다."
-          },
+            "reason": "안동MBC 카드와 피해 지역·농가·금액이 같은 사건이다."
+          }
+        ],
+        "summary_fixes": [],
+        "status": "applied",
+        "verification": "model_reevaluated",
+        "overall_after": 83.72,
+        "editorial_after": 71.9
+      },
+      {
+        "attempt": 2,
+        "targets": [
           {
             "section": "policy",
             "title": "3.2만t 버려진 정부 비축농산물…野이성권 \"정부, 상황 파악 못해\"",
             "link": "https://mt.co.kr/politics/2026/09/24/2026092417010914482",
             "issue_type": "duplicate_story",
             "severity": "major",
-            "reason": "공급 섹션의 비축농산물 폐기 기사와 동일 자료·쟁점을 반복한다."
+            "reason": "공급 섹션의 KBS 기사와 동일한 비축농산물 폐기 사안이다."
           }
         ],
         "summary_fixes": [],
         "status": "applied",
         "verification": "model_reevaluated",
-        "overall_after": 83.6,
-        "editorial_after": 70.15
-      },
-      {
-        "attempt": 2,
-        "targets": [
-          {
-            "section": "dist",
-            "title": "충북농협, 직거래 장터 서 “명절맞이 송편 드세요”",
-            "link": "https://nongmin.com/article/20260922500611",
-            "issue_type": "promotional_filler",
-            "severity": "major",
-            "reason": "일회성 나눔 행사로 유통 운영 정보가 거의 없으며 강한 후보를 밀어냈다."
-          },
-          {
-            "section": "supply",
-            "title": "가락시장 파렛트 출하 의무화 확대…느타리버섯·봄동·제주당근 대상",
-            "link": "https://youngnong.co.kr/news/articleView.html?idxno=70438",
-            "issue_type": "wrong_section",
-            "severity": "moderate",
-            "reason": "출하 물류와 도매시장 운영을 다룬 전형적인 유통 기사다.",
-            "relocate_to": [
-              "dist"
-            ],
-            "relocate_only": true,
-            "relocation_rejections": [
-              "dist:dist_reader_role_misfit"
-            ],
-            "relocation": "skipped"
-          }
-        ],
-        "summary_fixes": [],
-        "status": "applied",
-        "verification": "deterministic_carry_forward"
+        "overall_after": 87.67,
+        "editorial_after": 77.05
       }
     ],
     "hard_issue_excision_limit": 2,
@@ -865,39 +830,32 @@
         "label": "initial",
         "rank": [
           1,
-          -81.65
+          -81.59
         ]
       },
       {
         "label": "excision_1",
         "rank": [
           1,
-          -83.6
+          -83.72
+        ]
+      },
+      {
+        "label": "excision_2",
+        "rank": [
+          1,
+          -87.67
         ]
       },
       {
         "label": "repair_1",
         "rank": [
-          1,
-          -88.65
-        ]
-      },
-      {
-        "label": "repair_2",
-        "rank": [
-          1,
-          -85.7
-        ]
-      },
-      {
-        "label": "excision_2_carried",
-        "rank": [
-          1,
-          -87.23
+          2,
+          -76.3
         ]
       }
     ],
-    "restored_best_state": "repair_1",
+    "restored_best_state": "excision_2",
     "guaranteed_delivery": {},
     "deadline_kst": "06:50",
     "deadline_reached": true,
@@ -915,25 +873,25 @@
     "model": "gpt-5.6-sol",
     "usage_events": [
       {
-        "stage": "summary",
-        "model": "gpt-5.6-sol",
-        "input_tokens": 1062,
-        "cached_input_tokens": 0,
-        "cache_write_input_tokens": 1059,
-        "output_tokens": 736,
-        "total_tokens": 1798,
-        "estimated_cost_usd": 0.028714,
-        "pricing_basis": "gpt-5.6-sol-standard-under-272k-2026-07"
-      },
-      {
         "stage": "editorial_eval",
         "model": "gpt-5.6-sol",
         "input_tokens": 20238,
         "cached_input_tokens": 0,
         "cache_write_input_tokens": 0,
-        "output_tokens": 1483,
-        "total_tokens": 21721,
-        "estimated_cost_usd": 0.14568,
+        "output_tokens": 1273,
+        "total_tokens": 21511,
+        "estimated_cost_usd": 0.13938,
+        "pricing_basis": "gpt-5.6-sol-standard-under-272k-2026-07"
+      },
+      {
+        "stage": "editorial_eval",
+        "model": "gpt-5.6-sol",
+        "input_tokens": 20220,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 1296,
+        "total_tokens": 21516,
+        "estimated_cost_usd": 0.13998,
         "pricing_basis": "gpt-5.6-sol-standard-under-272k-2026-07"
       },
       {
@@ -942,72 +900,39 @@
         "input_tokens": 20212,
         "cached_input_tokens": 0,
         "cache_write_input_tokens": 0,
-        "output_tokens": 1320,
-        "total_tokens": 21532,
-        "estimated_cost_usd": 0.14066,
+        "output_tokens": 1520,
+        "total_tokens": 21732,
+        "estimated_cost_usd": 0.14666,
         "pricing_basis": "gpt-5.6-sol-standard-under-272k-2026-07"
       },
       {
         "stage": "editorial_repair",
         "model": "gpt-5.6-sol",
-        "input_tokens": 21708,
+        "input_tokens": 21384,
         "cached_input_tokens": 0,
         "cache_write_input_tokens": 0,
-        "output_tokens": 1134,
-        "total_tokens": 22842,
-        "estimated_cost_usd": 0.14256,
+        "output_tokens": 1187,
+        "total_tokens": 22571,
+        "estimated_cost_usd": 0.14253,
         "pricing_basis": "gpt-5.6-sol-standard-under-272k-2026-07"
       },
       {
         "stage": "editorial_eval",
         "model": "gpt-5.6-sol",
-        "input_tokens": 20295,
+        "input_tokens": 20268,
         "cached_input_tokens": 0,
         "cache_write_input_tokens": 0,
-        "output_tokens": 1290,
-        "total_tokens": 21585,
-        "estimated_cost_usd": 0.140175,
-        "pricing_basis": "gpt-5.6-sol-standard-under-272k-2026-07"
-      },
-      {
-        "stage": "editorial_repair",
-        "model": "gpt-5.6-sol",
-        "input_tokens": 21354,
-        "cached_input_tokens": 0,
-        "cache_write_input_tokens": 0,
-        "output_tokens": 1452,
-        "total_tokens": 22806,
-        "estimated_cost_usd": 0.15033,
-        "pricing_basis": "gpt-5.6-sol-standard-under-272k-2026-07"
-      },
-      {
-        "stage": "summary",
-        "model": "gpt-5.6-sol",
-        "input_tokens": 1011,
-        "cached_input_tokens": 0,
-        "cache_write_input_tokens": 0,
-        "output_tokens": 447,
-        "total_tokens": 1458,
-        "estimated_cost_usd": 0.018465,
-        "pricing_basis": "gpt-5.6-sol-standard-under-272k-2026-07"
-      },
-      {
-        "stage": "editorial_eval",
-        "model": "gpt-5.6-sol",
-        "input_tokens": 20295,
-        "cached_input_tokens": 0,
-        "cache_write_input_tokens": 0,
-        "output_tokens": 1281,
-        "total_tokens": 21576,
-        "estimated_cost_usd": 0.139905,
+        "output_tokens": 1291,
+        "total_tokens": 21559,
+        "estimated_cost_usd": 0.14007,
         "pricing_basis": "gpt-5.6-sol-standard-under-272k-2026-07"
       }
     ],
-    "editorial_usage_calls": 6,
-    "editorial_usage_tokens": 132062,
+    "editorial_usage_calls": 5,
+    "editorial_usage_tokens": 108889,
     "editorial_max_calls": 6,
     "editorial_token_budget": 130000,
     "editorial_budget_available": false,
-    "estimated_cost_usd": 0.906489
+    "estimated_cost_usd": 0.70862
   }
 }
