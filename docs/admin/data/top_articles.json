@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-01T04:24:14+09:00",
+  "generated_at": "2026-10-02T04:34:10+09:00",
   "rows": [
     {
       "date": "2026-09-22",
@@ -11,8 +11,8 @@
       "target_domain": "www.aflnews.co.kr",
       "clicks": 9,
       "users": 2,
-      "archive_url": "/agri-news-brief/archive/2026-09-22.html#sec-supply",
-      "source_url": "https://www.aflnews.co.kr/news/articleView.html?idxno=328549"
+      "archive_url": "",
+      "source_url": ""
     },
     {
       "date": "2026-09-01",
@@ -1389,8 +1389,8 @@
       "target_domain": "www.wonyesanup.co.kr",
       "clicks": 3,
       "users": 3,
-      "archive_url": "/agri-news-brief/archive/2026-09-28.html#sec-dist",
-      "source_url": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=65895"
+      "archive_url": "",
+      "source_url": ""
     },
     {
       "date": "2026-09-28",
@@ -1430,45 +1430,6 @@
       "users": 2,
       "archive_url": "/agri-news-brief/archive/2026-09-30.html#sec-policy",
       "source_url": "https://www.agrinet.co.kr/news/articleView.html?idxno=407571"
-    },
-    {
-      "date": "2026-06-04",
-      "article_id": "16282e7f5c67",
-      "title": "양파 값 폭락에 농가 울상..생산비도 못 건져",
-      "report_date": "2026-06-04",
-      "section": "supply",
-      "surface": "briefing_card",
-      "target_domain": "mpmbc.co.kr",
-      "clicks": 2,
-      "users": 1,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-06-04",
-      "article_id": "16282e7f5c67",
-      "title": "양파 값 폭락에 농가 울상..생산비도 못 건져",
-      "report_date": "2026-06-04",
-      "section": "supply",
-      "surface": "briefing_open",
-      "target_domain": "mpmbc.co.kr",
-      "clicks": 2,
-      "users": 1,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-06-04",
-      "article_id": "b29fb974a3b8",
-      "title": "양파 값 다시 내리막···중만생종 223ha 산지 폐기",
-      "report_date": "2026-06-04",
-      "section": "supply",
-      "surface": "briefing_open",
-      "target_domain": "www.agrinet.co.kr",
-      "clicks": 2,
-      "users": 1,
-      "archive_url": "",
-      "source_url": ""
     },
     {
       "date": "2026-06-05",
@@ -3859,8 +3820,8 @@
       "target_domain": "www.newsfarm.co.kr",
       "clicks": 2,
       "users": 1,
-      "archive_url": "/agri-news-brief/archive/2026-09-16.html#sec-supply",
-      "source_url": "http://www.newsfarm.co.kr/news/articleView.html?idxno=102367"
+      "archive_url": "",
+      "source_url": ""
     },
     {
       "date": "2026-09-18",
@@ -3963,8 +3924,8 @@
       "target_domain": "www.aflnews.co.kr",
       "clicks": 2,
       "users": 1,
-      "archive_url": "/agri-news-brief/archive/2026-09-22.html#sec-supply",
-      "source_url": "https://www.aflnews.co.kr/news/articleView.html?idxno=328549"
+      "archive_url": "",
+      "source_url": ""
     },
     {
       "date": "2026-09-23",
@@ -4028,7 +3989,7 @@
       "target_domain": "www.aflnews.co.kr",
       "clicks": 2,
       "users": 1,
-      "archive_url": "/agri-news-brief/archive/2026-09-29.html#commodity-napa_cabbage",
+      "archive_url": "/agri-news-brief/archive/2026-09-29.html#sec-supply",
       "source_url": "https://www.aflnews.co.kr/news/articleView.html?idxno=328926"
     },
     {
@@ -4097,95 +4058,30 @@
       "source_url": "https://www.agrinet.co.kr/news/articleView.html?idxno=407571"
     },
     {
-      "date": "2026-06-04",
-      "article_id": "05414311b35d",
-      "title": "옥천군농업기술센터, 폭염 속 포도 생리장해 주의 당부",
-      "report_date": "2026-06-04",
-      "section": "supply",
-      "surface": "briefing_card",
-      "target_domain": "www.ccdailynews.com",
-      "clicks": 1,
-      "users": 1,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-06-04",
-      "article_id": "3b6ac98a5ed4",
-      "title": "배 한 알에 담긴 농민의 책임감",
-      "report_date": "2026-06-04",
-      "section": "supply",
-      "surface": "briefing_card",
-      "target_domain": "www.farmnmarket.com",
-      "clicks": 1,
-      "users": 1,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-06-04",
-      "article_id": "6d53d8bf2e7d",
-      "title": "불탄 듯 말라가는 과수원... 화상병 공포 전국 확산",
-      "report_date": "2026-06-02",
-      "section": "pest",
-      "surface": "briefing_card",
-      "target_domain": "www.hankookilbo.com",
-      "clicks": 1,
-      "users": 1,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-06-04",
-      "article_id": "b29fb974a3b8",
-      "title": "양파 값 다시 내리막···중만생종 223ha 산지 폐기",
-      "report_date": "2026-06-04",
-      "section": "supply",
-      "surface": "briefing_card",
-      "target_domain": "www.agrinet.co.kr",
-      "clicks": 1,
-      "users": 1,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-06-04",
-      "article_id": "b60c4bcb80fa",
-      "title": "전북자치도, 양파 수급안정 총력… 현장점검 나서",
-      "report_date": "2026-06-04",
+      "date": "2026-10-01",
+      "article_id": "19ccb26163c9",
+      "title": "외부 충격에 민감한 깐마늘…인공지능으로 불량품 골라낸다",
+      "report_date": "2026-10-01",
       "section": "dist",
       "surface": "briefing_card",
-      "target_domain": "www.newsfarm.co.kr",
-      "clicks": 1,
+      "target_domain": "www.nongmin.com",
+      "clicks": 2,
       "users": 1,
       "archive_url": "",
       "source_url": ""
     },
     {
-      "date": "2026-06-04",
-      "article_id": "b60c4bcb80fa",
-      "title": "전북자치도, 양파 수급안정 총력… 현장점검 나서",
-      "report_date": "2026-06-04",
-      "section": "dist",
-      "surface": "briefing_open",
-      "target_domain": "www.newsfarm.co.kr",
-      "clicks": 1,
-      "users": 1,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-06-04",
-      "article_id": "c7c9d1fe2c64",
-      "title": "인력난 해소·스마트팜 확산…농협 강호동 \"정부의 든든한 농정 파트너...",
-      "report_date": "2026-06-04",
-      "section": "policy",
+      "date": "2026-10-01",
+      "article_id": "b1682a1687d7",
+      "title": "롯데마트·슈퍼, 김장철 앞두고 절임 배추 물량 20% 늘린다",
+      "report_date": "2026-10-01",
+      "section": "supply",
       "surface": "briefing_card",
-      "target_domain": "www.shinailbo.co.kr",
-      "clicks": 1,
+      "target_domain": "www.etoday.co.kr",
+      "clicks": 2,
       "users": 1,
-      "archive_url": "",
-      "source_url": ""
+      "archive_url": "/agri-news-brief/archive/2026-10-01.html#sec-supply",
+      "source_url": "https://www.etoday.co.kr/news/view/2630500"
     },
     {
       "date": "2026-06-05",
@@ -12699,8 +12595,8 @@
       "target_domain": "www.aflnews.co.kr",
       "clicks": 1,
       "users": 1,
-      "archive_url": "/agri-news-brief/archive/2026-09-15.html#sec-policy",
-      "source_url": "https://www.aflnews.co.kr/news/articleView.html?idxno=328009"
+      "archive_url": "",
+      "source_url": ""
     },
     {
       "date": "2026-09-15",
@@ -12959,7 +12855,7 @@
       "target_domain": "www.agrinet.co.kr",
       "clicks": 1,
       "users": 1,
-      "archive_url": "/agri-news-brief/archive/2026-09-16.html#sec-supply",
+      "archive_url": "/agri-news-brief/archive/2026-09-16.html#commodity-carrot",
       "source_url": "https://www.agrinet.co.kr/news/articleView.html?idxno=407257"
     },
     {
@@ -13024,8 +12920,8 @@
       "target_domain": "news.kbs.co.kr",
       "clicks": 1,
       "users": 1,
-      "archive_url": "/agri-news-brief/archive/2026-09-17.html#commodity-muskmelon",
-      "source_url": "https://news.kbs.co.kr/news/pc/view/view.do?ncd=8664859"
+      "archive_url": "",
+      "source_url": ""
     },
     {
       "date": "2026-09-17",
@@ -13050,8 +12946,8 @@
       "target_domain": "www.khan.co.kr",
       "clicks": 1,
       "users": 1,
-      "archive_url": "",
-      "source_url": ""
+      "archive_url": "/agri-news-brief/archive/2026-09-17.html#commodity-apple",
+      "source_url": "https://www.khan.co.kr/article/202609161048001"
     },
     {
       "date": "2026-09-17",
@@ -13063,7 +12959,7 @@
       "target_domain": "www.samdailbo.com",
       "clicks": 1,
       "users": 1,
-      "archive_url": "/agri-news-brief/archive/2026-09-17.html#sec-dist",
+      "archive_url": "/agri-news-brief/archive/2026-09-17.html#commodity-citrus",
       "source_url": "http://www.samdailbo.com/news/articleView.html?idxno=270366"
     },
     {
@@ -13089,7 +12985,7 @@
       "target_domain": "www.ccdailynews.com",
       "clicks": 1,
       "users": 1,
-      "archive_url": "/agri-news-brief/archive/2026-09-17.html#sec-supply",
+      "archive_url": "/agri-news-brief/archive/2026-09-17.html#commodity-zucchini",
       "source_url": "https://www.ccdailynews.com/news/articleView.html?idxno=2441324"
     },
     {
@@ -13167,7 +13063,7 @@
       "target_domain": "www.headlinejeju.co.kr",
       "clicks": 1,
       "users": 1,
-      "archive_url": "/agri-news-brief/archive/2026-09-17.html#sec-supply",
+      "archive_url": "/agri-news-brief/archive/2026-09-17.html#commodity-citrus",
       "source_url": "https://www.headlinejeju.co.kr/news/articleView.html?idxno=599103"
     },
     {
@@ -13206,8 +13102,8 @@
       "target_domain": "www.newsfarm.co.kr",
       "clicks": 1,
       "users": 1,
-      "archive_url": "/agri-news-brief/archive/2026-09-18.html#sec-pest",
-      "source_url": "http://www.newsfarm.co.kr/news/articleView.html?idxno=102379"
+      "archive_url": "",
+      "source_url": ""
     },
     {
       "date": "2026-09-18",
@@ -13245,8 +13141,8 @@
       "target_domain": "www.aflnews.co.kr",
       "clicks": 1,
       "users": 1,
-      "archive_url": "/agri-news-brief/archive/2026-09-18.html#sec-dist",
-      "source_url": "https://www.aflnews.co.kr/news/articleView.html?idxno=328411"
+      "archive_url": "",
+      "source_url": ""
     },
     {
       "date": "2026-09-18",
@@ -13258,8 +13154,8 @@
       "target_domain": "www.amnews.co.kr",
       "clicks": 1,
       "users": 1,
-      "archive_url": "/agri-news-brief/archive/2026-09-18.html#sec-policy",
-      "source_url": "http://www.amnews.co.kr/news/articleView.html?idxno=74596"
+      "archive_url": "",
+      "source_url": ""
     },
     {
       "date": "2026-09-18",
@@ -13297,8 +13193,8 @@
       "target_domain": "www.etoday.co.kr",
       "clicks": 1,
       "users": 1,
-      "archive_url": "/agri-news-brief/archive/2026-09-18.html#sec-dist",
-      "source_url": "https://www.etoday.co.kr/news/view/2625958"
+      "archive_url": "",
+      "source_url": ""
     },
     {
       "date": "2026-09-18",
@@ -13544,8 +13440,8 @@
       "target_domain": "www.jejusori.net",
       "clicks": 1,
       "users": 1,
-      "archive_url": "/agri-news-brief/archive/2026-09-22.html#sec-dist",
-      "source_url": "https://www.jejusori.net/news/articleView.html?idxno=506761"
+      "archive_url": "",
+      "source_url": ""
     },
     {
       "date": "2026-09-22",
@@ -13570,7 +13466,7 @@
       "target_domain": "www.breaknews.com",
       "clicks": 1,
       "users": 1,
-      "archive_url": "/agri-news-brief/archive/2026-09-22.html#sec-dist",
+      "archive_url": "/agri-news-brief/archive/2026-09-22.html#commodity-apple",
       "source_url": "http://www.breaknews.com/1238384"
     },
     {
@@ -13622,8 +13518,8 @@
       "target_domain": "www.mbn.co.kr",
       "clicks": 1,
       "users": 1,
-      "archive_url": "",
-      "source_url": ""
+      "archive_url": "/agri-news-brief/archive/2026-09-22.html#commodity-apple",
+      "source_url": "http://www.mbn.co.kr/pages/news/newsView.php?news_seq_no=5220498"
     },
     {
       "date": "2026-09-22",
@@ -13674,8 +13570,8 @@
       "target_domain": "news.bbsi.co.kr",
       "clicks": 1,
       "users": 1,
-      "archive_url": "/agri-news-brief/archive/2026-09-22.html#sec-policy",
-      "source_url": "https://news.bbsi.co.kr/news/articleView.html?idxno=4107975"
+      "archive_url": "",
+      "source_url": ""
     },
     {
       "date": "2026-09-22",
@@ -13687,8 +13583,8 @@
       "target_domain": "www.headlinejeju.co.kr",
       "clicks": 1,
       "users": 1,
-      "archive_url": "/agri-news-brief/archive/2026-09-22.html#sec-policy",
-      "source_url": "https://www.headlinejeju.co.kr/news/articleView.html?idxno=599358"
+      "archive_url": "",
+      "source_url": ""
     },
     {
       "date": "2026-09-23",
@@ -13713,8 +13609,8 @@
       "target_domain": "www.nongup.net",
       "clicks": 1,
       "users": 1,
-      "archive_url": "/agri-news-brief/archive/2026-09-23.html#sec-dist",
-      "source_url": "http://www.nongup.net/news/articleView.html?idxno=33740"
+      "archive_url": "",
+      "source_url": ""
     },
     {
       "date": "2026-09-28",
@@ -13765,8 +13661,8 @@
       "target_domain": "www.nongmin.com",
       "clicks": 1,
       "users": 1,
-      "archive_url": "",
-      "source_url": ""
+      "archive_url": "/agri-news-brief/archive/2026-09-28.html#commodity-garlic",
+      "source_url": "https://www.nongmin.com/article/20260923500322"
     },
     {
       "date": "2026-09-28",
@@ -13791,7 +13687,7 @@
       "target_domain": "www.farmnmarket.com",
       "clicks": 1,
       "users": 1,
-      "archive_url": "/agri-news-brief/archive/2026-09-28.html#sec-supply",
+      "archive_url": "/agri-news-brief/archive/2026-09-28.html#commodity-garlic",
       "source_url": "https://www.farmnmarket.com/news/article.html?no=27967"
     },
     {
@@ -13936,6 +13832,19 @@
       "users": 1,
       "archive_url": "/agri-news-brief/archive/2026-09-30.html#sec-policy",
       "source_url": "https://www.agrinet.co.kr/news/articleView.html?idxno=407506"
+    },
+    {
+      "date": "2026-10-01",
+      "article_id": "98613a702d02",
+      "title": "위상 높인 농산물 수급조절위 8기 닻 올려… \"과수까지 품고 수급관리 ...",
+      "report_date": "2026-10-01",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.farminsight.net",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-10-01.html#sec-supply",
+      "source_url": "https://www.farminsight.net/news/articleView.html?idxno=16964"
     }
   ]
 }
