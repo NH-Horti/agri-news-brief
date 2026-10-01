@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-10-01T08:16:59.785081+09:00",
+  "updated_at": "2026-10-01T09:58:55.435994+09:00",
   "items": [
     {
       "id": "60efefce67ba",
@@ -71,7 +71,7 @@
       "date": "2026-10-01",
       "section": "supply",
       "section_title": "품목 및 수급 동향",
-      "rank": 3,
+      "rank": 4,
       "title": "도쿄 35일 연속 비에 '기상병' 호소…채소값도 급증",
       "press": "연합뉴스TV",
       "summary": "일본 도쿄를 비롯한 각지에서 장기 강우와 일조량 부족으로 주요 채소 가격 상승이 예상된다. 도쿄 도심의 비는 관측 사상 최장인 35일 연속 이어졌고 채소 가격은 30% 이상 오를 전망이다.",
@@ -143,6 +143,21 @@
       "archive": "/agri-news-brief/archive/2026-10-01.html#commodity-muskmelon",
       "score": 6.794,
       "press_tier": 3,
+      "topics": []
+    },
+    {
+      "id": "98613a702d02",
+      "date": "2026-10-01",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 3,
+      "title": "위상 높인 농산물 수급조절위 8기 닻 올려… \"과수까지 품고 수급관리 ...",
+      "press": "팜인사이트",
+      "summary": "농산물 수급조절위원회가 과수까지 관리 대상을 넓히며 법정위원회로 격상된 제8기 체제를 출범했다. 농식품부는 9월 29일 위원회를 새로 구성했으며, 8월 27일 시행된 개정 농안법이 제도 기반이 됐다.",
+      "url": "https://www.farminsight.net/news/articleView.html?idxno=16964",
+      "archive": "/agri-news-brief/archive/2026-10-01.html#sec-supply",
+      "score": 60.83,
+      "press_tier": 2,
       "topics": []
     },
     {
@@ -233,7 +248,7 @@
       "summary": "",
       "url": "https://www.aflnews.co.kr/news/articleView.html?idxno=329015",
       "archive": "/agri-news-brief/archive/2026-10-01.html#commodity-kiwifruit",
-      "score": 16.256,
+      "score": 16.056,
       "press_tier": 2,
       "topics": [
         "키위"
@@ -250,7 +265,7 @@
       "summary": "전남 담양군 월산면 딸기 스마트팜에서 생산성 향상 기술의 적용 현황과 현장 실증 과정이 점검됐다. 담양군과 국립농업과학원은 생육 자동계측·지능형 환경제어·스마트 벌통 등의 운영 상황을 살폈다.",
       "url": "https://www.aflnews.co.kr/news/articleView.html?idxno=329026",
       "archive": "/agri-news-brief/archive/2026-10-01.html#sec-pest",
-      "score": 13.52,
+      "score": 13.32,
       "press_tier": 2,
       "topics": [
         "딸기"
@@ -261,7 +276,7 @@
       "date": "2026-10-01",
       "section": "supply",
       "section_title": "품목 및 수급 동향",
-      "rank": 4,
+      "rank": 5,
       "title": "수확 뒤 과수 수세 회복···조비, 감사비료 2종 제안",
       "press": "한국농업신문",
       "summary": "사과·배·포도 등 과수는 수확 뒤 수세 회복과 이듬해 초기 생육을 위한 양분 관리가 요구된다. 조비는 저온기 양분 공급용 치요다550과 과수 전용 복합비료 더존플러스를 감사비료로 제안했다.",
@@ -280,13 +295,13 @@
       "date": "2026-10-01",
       "section": "supply",
       "section_title": "품목 및 수급 동향",
-      "rank": 2,
+      "rank": 3,
       "title": "롯데마트·슈퍼, 절임 배추 조기 예약 돌입…\" 배추 값 들썩이기 전 잡는다...",
       "press": "newsdream",
       "summary": "",
       "url": "http://www.newsdream.kr/news/articleView.html?idxno=119066",
       "archive": "/agri-news-brief/archive/2026-10-01.html#commodity-napa_cabbage",
-      "score": 36.63,
+      "score": 36.43,
       "press_tier": 1,
       "topics": [
         "배추"
@@ -297,13 +312,13 @@
       "date": "2026-10-01",
       "section": "supply",
       "section_title": "품목 및 수급 동향",
-      "rank": 4,
+      "rank": 1,
       "title": "김장철 앞두고 배추 값 오를까···롯데마트·슈퍼, 절임 배추 물량 20% 늘...",
       "press": "뉴스프리존",
       "summary": "",
       "url": "https://www.newsfreezone.co.kr/news/articleView.html?idxno=711569",
       "archive": "/agri-news-brief/archive/2026-10-01.html#commodity-napa_cabbage",
-      "score": 35.25,
+      "score": 35.05,
       "press_tier": 1,
       "topics": [
         "배추"
@@ -380,7 +395,7 @@
       "date": "2026-10-01",
       "section": "supply",
       "section_title": "품목 및 수급 동향",
-      "rank": 3,
+      "rank": 4,
       "title": "\"물량 20% 늘리고 CA 옥수수까지\"… 롯데마트·슈퍼, 20kg 절임 배추 사전...",
       "press": "thepublic",
       "summary": "",
@@ -414,13 +429,13 @@
       "date": "2026-10-01",
       "section": "supply",
       "section_title": "품목 및 수급 동향",
-      "rank": 1,
+      "rank": 2,
       "title": "배추 작황 불안에 물량 20% 늘렸다…롯데마트·슈퍼, 김장 사전예약",
       "press": "newsquest",
       "summary": "",
       "url": "https://www.newsquest.co.kr/news/articleView.html?idxno=301740",
       "archive": "/agri-news-brief/archive/2026-10-01.html#commodity-napa_cabbage",
-      "score": 19.3,
+      "score": 19.1,
       "press_tier": 1,
       "topics": [
         "배추"
@@ -489,26 +504,9 @@
       "summary": "",
       "url": "https://www.munhwa.com/article/11620375",
       "archive": "/agri-news-brief/archive/2026-10-01.html#commodity-tomato",
-      "score": 7.4,
+      "score": 7.2,
       "press_tier": 1,
       "topics": []
-    },
-    {
-      "id": "81df97ae4ef0",
-      "date": "2026-10-01",
-      "section": "supply",
-      "section_title": "품목 및 수급 동향",
-      "rank": 17,
-      "title": "삼육대 남윤희, 세계 무대서 화훼 장식 동메달…이제 학업으로",
-      "press": "withinnews",
-      "summary": "",
-      "url": "http://www.withinnews.co.kr/news/view.html?section=1&category=139&item=&no=40555",
-      "archive": "/agri-news-brief/archive/2026-10-01.html#commodity-flowers",
-      "score": 5.054,
-      "press_tier": 1,
-      "topics": [
-        "화훼"
-      ]
     },
     {
       "id": "b4929a26d3d2",
@@ -522,6 +520,23 @@
       "url": "https://www.munhwa.com/article/11620596",
       "archive": "/agri-news-brief/archive/2026-10-01.html#commodity-flowers",
       "score": 4.961,
+      "press_tier": 1,
+      "topics": [
+        "화훼"
+      ]
+    },
+    {
+      "id": "81df97ae4ef0",
+      "date": "2026-10-01",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 17,
+      "title": "삼육대 남윤희, 세계 무대서 화훼 장식 동메달…이제 학업으로",
+      "press": "withinnews",
+      "summary": "",
+      "url": "http://www.withinnews.co.kr/news/view.html?section=1&category=139&item=&no=40555",
+      "archive": "/agri-news-brief/archive/2026-10-01.html#commodity-flowers",
+      "score": 4.854,
       "press_tier": 1,
       "topics": [
         "화훼"
