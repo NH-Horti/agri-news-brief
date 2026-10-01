@@ -1,7 +1,491 @@
 {
   "version": 1,
-  "updated_at": "2026-10-01T13:15:23.236982+09:00",
+  "updated_at": "2026-10-02T06:19:24.902012+09:00",
   "items": [
+    {
+      "id": "a846531692b5",
+      "date": "2026-10-02",
+      "section": "policy",
+      "section_title": "정책 및 주요 이슈",
+      "rank": 3,
+      "title": "정부가 독과점 부추기나…“ 농산물 할인 지원 , 이마트 쏠림 심화”",
+      "press": "농민신문",
+      "summary": "정부 농축수산물 할인지원 사업이 이마트 등 일부 대형마트에 집중됐다는 지적이 제기됐다. 이마트 지원액은 698억원으로 지난해의 3배를 넘었으며 소비자 바우처 등 대안이 제시됐다.",
+      "url": "https://n.news.naver.com/mnews/article/662/0000105360?sid=102",
+      "archive": "/agri-news-brief/archive/2026-10-02.html#sec-policy",
+      "score": 68.0,
+      "press_tier": 3,
+      "topics": []
+    },
+    {
+      "id": "8bdffb3e3d4a",
+      "date": "2026-10-02",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 1,
+      "title": "‘원조 한류’, 세계로 향하는 국산 신선배",
+      "press": "농민신문",
+      "summary": "충남 아산 농협 산지유통센터에서 국산 신선배가 미국 수출을 위한 선별·포장 과정을 거치고 있다. 수출용 상자에는 한국산임을 알리는 ‘K-PEAR Product of Korea’ 문구가 표시됐다.",
+      "url": "https://n.news.naver.com/mnews/article/662/0000105348?sid=101",
+      "archive": "/agri-news-brief/archive/2026-10-02.html#sec-dist",
+      "score": 47.64,
+      "press_tier": 3,
+      "topics": []
+    },
+    {
+      "id": "ccb026c78748",
+      "date": "2026-10-02",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 2,
+      "title": "“수입꽃 판로 열어주는 꼴”… 화훼 농가, 공판장 상장검토 중단 촉구",
+      "press": "농민신문",
+      "summary": "화훼농가들이 공영공판장의 수입꽃 상장 검토가 국내산 가격 경쟁력을 떨어뜨릴 수 있다며 중단을 촉구했다. 수입꽃상장반대대책위는 외국산 꽃에 공영 판로를 제공해 농가 생존을 위협한다고 주장했다.",
+      "url": "https://n.news.naver.com/mnews/article/662/0000105345?sid=101",
+      "archive": "/agri-news-brief/archive/2026-10-02.html#sec-dist",
+      "score": 43.31,
+      "press_tier": 3,
+      "topics": [
+        "화훼"
+      ]
+    },
+    {
+      "id": "b6404bb4673d",
+      "date": "2026-10-02",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 3,
+      "title": "\"사과·배는 싸졌는데\"…비 자주 오더니 채소값 줄줄이 올랐다",
+      "press": "한국경제",
+      "summary": "가을 수확이 시작되면서 사과·배 가격은 낮아진 반면 채소류 가격은 잇달아 상승했다. 잦은 비가 채소 가격 오름세에 영향을 주며 곡물·과일·건어물의 물가 흐름도 엇갈렸다. 단기 도매 흐름으로, 전년 대비 산지가격 약세 기사와 비교 기준이 다르다.",
+      "url": "https://n.news.naver.com/mnews/article/015/0005338206?sid=101",
+      "archive": "/agri-news-brief/archive/2026-10-02.html#sec-supply",
+      "score": 42.7,
+      "press_tier": 3,
+      "topics": [
+        "배",
+        "사과"
+      ]
+    },
+    {
+      "id": "5666648dbde0",
+      "date": "2026-10-02",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 1,
+      "title": "마늘 경매장 괄목성장 ‘눈길’",
+      "press": "농민신문",
+      "summary": "",
+      "url": "https://www.nongmin.com/article/20260930500456",
+      "archive": "/agri-news-brief/archive/2026-10-02.html#commodity-garlic",
+      "score": 37.89,
+      "press_tier": 3,
+      "topics": [
+        "마늘"
+      ]
+    },
+    {
+      "id": "b90caa9ecd02",
+      "date": "2026-10-02",
+      "section": "policy",
+      "section_title": "정책 및 주요 이슈",
+      "rank": 1,
+      "title": "김제 농협 , 두류산업 선도 농협 ‘자리매김’…농가실익 보탬",
+      "press": "농민신문",
+      "summary": "전북 김제농협이 논콩 재배 기술과 생산성을 높이며 두류산업 선도농협으로 입지를 다지고 있다. 지난해 정부비축용 콩 7000t을 수매하고 전국 협의회 발족과 조합원 실익 증대에 나섰다.",
+      "url": "https://n.news.naver.com/mnews/article/662/0000105361?sid=102",
+      "archive": "/agri-news-brief/archive/2026-10-02.html#sec-policy",
+      "score": 29.59,
+      "press_tier": 3,
+      "topics": []
+    },
+    {
+      "id": "43e706ac59d0",
+      "date": "2026-10-02",
+      "section": "pest",
+      "section_title": "생육 리스크 및 방제",
+      "rank": 4,
+      "title": "[청년농이 뛴다] 친환경 참다래 고집…습해 강한 품종에 접붙여",
+      "press": "농민신문",
+      "summary": "전남 보성의 청년농이 무농약 참다래 ‘해금’을 습해에 강한 ‘바운티’ 대목에 접붙여 재배한다. 친환경 방식을 유지하면서 습해로 인한 나무 고사를 줄이고 착과 상태도 개선했다.",
+      "url": "https://n.news.naver.com/mnews/article/662/0000105451?sid=101",
+      "archive": "/agri-news-brief/archive/2026-10-02.html#sec-pest",
+      "score": 23.39,
+      "press_tier": 3,
+      "topics": [
+        "키위"
+      ]
+    },
+    {
+      "id": "9bc656d38b1a",
+      "date": "2026-10-02",
+      "section": "policy",
+      "section_title": "정책 및 주요 이슈",
+      "rank": 2,
+      "title": "“돈 떼이는 농가 없어야”… 농산물 ‘출하대금 지급보장법’ 입법 추진",
+      "press": "농민신문",
+      "summary": "농산물 출하대금 미지급으로 인한 농가와 산지출하조직의 피해를 막는 입법이 추진된다. 송옥주 의원이 대표 발의한 개정안은 농산물 매입자의 대금 전액 현금결제를 의무화한다.",
+      "url": "https://n.news.naver.com/mnews/article/662/0000105413?sid=101",
+      "archive": "/agri-news-brief/archive/2026-10-02.html#sec-policy",
+      "score": 23.09,
+      "press_tier": 3,
+      "topics": []
+    },
+    {
+      "id": "003f70a0a2ce",
+      "date": "2026-10-02",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 4,
+      "title": "이천 대월농협, 조합원 생산 건고추 전량 매입",
+      "press": "농민신문",
+      "summary": "경기 이천 대월농협이 조합원들이 생산한 2026년산 건고추를 전량 매입해 판로 부담을 덜었다. 9월21∼22일 진행된 매입에는 29농가가 참여해 2062㎏, 3436근을 출하했다.",
+      "url": "https://n.news.naver.com/mnews/article/662/0000105420?sid=102",
+      "archive": "/agri-news-brief/archive/2026-10-02.html#sec-dist",
+      "score": 19.85,
+      "press_tier": 3,
+      "topics": [
+        "건고추",
+        "고추"
+      ]
+    },
+    {
+      "id": "9cbc3afa7947",
+      "date": "2026-10-02",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 1,
+      "title": "가을 수확철인데 장바구니 물가는 '엇박자'…과일 내리고 채소 오르고",
+      "press": "매일신문",
+      "summary": "가을 수확철 사과·배·포도 가격은 출하 증가로 내렸지만 채소류와 햅쌀 가격은 올랐다. 9월 늦더위와 잦은 비가 채소 생육·수확을 방해했고 햅쌀은 추석 수요가 겹쳤다.",
+      "url": "https://n.news.naver.com/mnews/article/088/0001031749?sid=101",
+      "archive": "/agri-news-brief/archive/2026-10-02.html#sec-supply",
+      "score": 44.9,
+      "press_tier": 2,
+      "topics": [
+        "배",
+        "사과",
+        "포도"
+      ]
+    },
+    {
+      "id": "cb6647c67df1",
+      "date": "2026-10-02",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 4,
+      "title": "수확철인데 장바구니는 왜… 채소·쌀 오르고 사과 ·배·포도 내렸다",
+      "press": "JIBS제주방송",
+      "summary": "9월 채소·쌀·꽃게 가격은 오른 반면 사과·배·포도와 참깨·햇멸치 가격은 하락했다. 늦더위와 잦은 비로 채소 출하가 흔들렸고 과일은 본격 수확으로 공급이 늘었다.",
+      "url": "https://n.news.naver.com/mnews/article/661/0000084175?sid=101",
+      "archive": "/agri-news-brief/archive/2026-10-02.html#sec-supply",
+      "score": 39.94,
+      "press_tier": 2,
+      "topics": [
+        "배",
+        "사과",
+        "포도"
+      ]
+    },
+    {
+      "id": "0ac147901cf3",
+      "date": "2026-10-02",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 3,
+      "title": "농안법 하위법령 개정… 도매시장 거래기준 정비",
+      "press": "농축유통신문",
+      "summary": "농식품부가 도매시장 경쟁 촉진과 공공성 강화를 위해 농안법 하위법령의 거래기준을 정비했다. 정가·수의매매 전담인력 기준과 위탁수수료율 조정 권고 기준, 평가 이의신청 절차가 마련됐다.",
+      "url": "http://www.amnews.co.kr/news/articleView.html?idxno=74798",
+      "archive": "/agri-news-brief/archive/2026-10-02.html#sec-dist",
+      "score": 39.13,
+      "press_tier": 2,
+      "topics": []
+    },
+    {
+      "id": "126b8bd7d6af",
+      "date": "2026-10-02",
+      "section": "policy",
+      "section_title": "정책 및 주요 이슈",
+      "rank": 4,
+      "title": "농가 소득 늘었지만 경영비 증가에 평균 소득 7.7% 감소",
+      "press": "농수축산신문",
+      "summary": "지난해 51개 농산물의 총수입이 늘었지만 경영비 부담으로 주요 작목 평균소득은 감소했다. 총수입은 1.2% 증가한 반면 농자재비·인건비 등 경영비가 9.2% 늘어 소득은 7.7% 줄었다.",
+      "url": "https://www.aflnews.co.kr/news/articleView.html?idxno=329119",
+      "archive": "/agri-news-brief/archive/2026-10-02.html#sec-policy",
+      "score": 32.371,
+      "press_tier": 2,
+      "topics": []
+    },
+    {
+      "id": "17425c5bcc40",
+      "date": "2026-10-02",
+      "section": "pest",
+      "section_title": "생육 리스크 및 방제",
+      "rank": 3,
+      "title": "공주시, 가을철 영농부산물 파쇄 지원",
+      "press": "팜&마켓",
+      "summary": "충남 공주시가 가을철 영농부산물의 불법 소각을 줄이기 위해 파쇄 지원을 시행한다. 과수화상병 확산 방지를 위해 발생지역 반경 2㎞ 이내 과수 전정가지는 원칙적으로 지원에서 제외한다.",
+      "url": "https://www.farmnmarket.com/news/article.html?no=28016",
+      "archive": "/agri-news-brief/archive/2026-10-02.html#sec-pest",
+      "score": 29.18,
+      "press_tier": 2,
+      "topics": []
+    },
+    {
+      "id": "923e0b4f9e83",
+      "date": "2026-10-02",
+      "section": "pest",
+      "section_title": "생육 리스크 및 방제",
+      "rank": 5,
+      "title": "본격적인 시설재배 시작, 바이러스병 예방해야",
+      "press": "농수축산신문",
+      "summary": "가을철 오이·참외·토마토 시설재배가 시작되면서 정식 초기 바이러스병 예방 필요성이 커졌다. 경농은 매개충 방제용 ‘디져스 유제’와 바이러스 입자 불활성화 자재 ‘팜월드’의 병행을 제시했다.",
+      "url": "https://www.aflnews.co.kr/news/articleView.html?idxno=329118",
+      "archive": "/agri-news-brief/archive/2026-10-02.html#sec-pest",
+      "score": 22.03,
+      "press_tier": 2,
+      "topics": [
+        "오이",
+        "참외",
+        "토마토"
+      ]
+    },
+    {
+      "id": "98900b811abc",
+      "date": "2026-10-02",
+      "section": "policy",
+      "section_title": "정책 및 주요 이슈",
+      "rank": 5,
+      "title": "농림위성, 농업관측 시대 연다",
+      "press": "팜&마켓",
+      "summary": "농림위성이 채소 등 수급 민감 작물과 벼·콩의 재배·생산 현황을 관측하는 데 활용된다. 재배면적과 생육 이상, 수확·출하, 수량을 파악해 생산 전망과 수급·식량정책을 지원한다.",
+      "url": "https://www.farmnmarket.com/news/article.html?no=28031",
+      "archive": "/agri-news-brief/archive/2026-10-02.html#sec-policy",
+      "score": 20.15,
+      "press_tier": 2,
+      "topics": []
+    },
+    {
+      "id": "7a63dfd20f47",
+      "date": "2026-10-02",
+      "section": "pest",
+      "section_title": "생육 리스크 및 방제",
+      "rank": 1,
+      "title": "가을 풋 고추 , 온·습도 관리와 초기 병해충 예찰이 관건",
+      "press": "농수축산신문",
+      "summary": "충남 시설 풋고추는 가을철 큰 일교차와 일조량 감소로 낙화·기형과·착과 불량 위험이 커졌다. 충남도농업기술원은 낮 과열 방지와 야간 보온·난방, 초기 병해충 예찰을 당부했다.",
+      "url": "https://www.aflnews.co.kr/news/articleView.html?idxno=329092",
+      "archive": "/agri-news-brief/archive/2026-10-02.html#sec-pest",
+      "score": 19.57,
+      "press_tier": 2,
+      "topics": [
+        "고추",
+        "풋고추"
+      ]
+    },
+    {
+      "id": "536e5dbafdcb",
+      "date": "2026-10-02",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 6,
+      "title": "고온과 저온을 견뎌냈다! 농가의 땀으로 빚은 거창 사과·포도",
+      "press": "뉴스경남",
+      "summary": "",
+      "url": "https://www.newsgn.com/news/articleView.html?idxno=577122",
+      "archive": "/agri-news-brief/archive/2026-10-02.html#commodity-apple",
+      "score": 16.192,
+      "press_tier": 2,
+      "topics": [
+        "사과",
+        "포도"
+      ]
+    },
+    {
+      "id": "2f75e8ec7271",
+      "date": "2026-10-02",
+      "section": "pest",
+      "section_title": "생육 리스크 및 방제",
+      "rank": 8,
+      "title": "단감 , 일소피해 줄이려고 올해 처음 봉지 씌워",
+      "press": "팜&마켓",
+      "summary": "",
+      "url": "https://www.farmnmarket.com/news/article.html?no=27893",
+      "archive": "/agri-news-brief/archive/2026-10-02.html#commodity-sweet_persimmon",
+      "score": 14.2,
+      "press_tier": 2,
+      "topics": [
+        "단감"
+      ]
+    },
+    {
+      "id": "d2eb5045bd89",
+      "date": "2026-10-02",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 3,
+      "title": "해남군, 오이 줄기유인 자동화 장비 시범 운영",
+      "press": "한국농어민신문",
+      "summary": "",
+      "url": "https://www.agrinet.co.kr/news/articleView.html?idxno=407605",
+      "archive": "/agri-news-brief/archive/2026-10-02.html#commodity-cucumber",
+      "score": 13.598,
+      "press_tier": 2,
+      "topics": [
+        "오이"
+      ]
+    },
+    {
+      "id": "a3192d6a6a7c",
+      "date": "2026-10-02",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 5,
+      "title": "사과 생산 46%↑·콩값 하락 우려…전북, 판매처 선점",
+      "press": "뉴스프리존",
+      "summary": "",
+      "url": "https://www.newsfreezone.co.kr/news/articleView.html?idxno=711850",
+      "archive": "/agri-news-brief/archive/2026-10-02.html#commodity-apple",
+      "score": 33.03,
+      "press_tier": 1,
+      "topics": []
+    },
+    {
+      "id": "e098d65205ee",
+      "date": "2026-10-02",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 2,
+      "title": "도, 가을철 농산물 판로 확대 추진… 가격하락 대응",
+      "press": "전주일보",
+      "summary": "전북도가 쌀·콩·사과·배의 수확기 출하 집중과 가격 하락에 대응해 판로 확대에 나선다. 농가소득 안정과 유통 다변화를 위해 이달부터 12월까지 3개월간 대책을 추진한다. 전년 대비 산지가격 흐름으로, 최근 단기 도매 급등 기사와 비교 기준이 다르다.",
+      "url": "http://www.jjn.co.kr/news/articleView.html?idxno=1053582",
+      "archive": "/agri-news-brief/archive/2026-10-02.html#sec-supply",
+      "score": 29.937,
+      "press_tier": 1,
+      "topics": [
+        "배",
+        "사과"
+      ]
+    },
+    {
+      "id": "5ba962e75023",
+      "date": "2026-10-02",
+      "section": "policy",
+      "section_title": "정책 및 주요 이슈",
+      "rank": 9,
+      "title": "\" 화훼 농가 생존권 위협하는 '수입 꽃 상장' 반대\"",
+      "press": "mygoyang",
+      "summary": "",
+      "url": "http://www.mygoyang.com/news/articleView.html?idxno=90545",
+      "archive": "/agri-news-brief/archive/2026-10-02.html#commodity-flowers",
+      "score": 28.35,
+      "press_tier": 1,
+      "topics": [
+        "화훼"
+      ]
+    },
+    {
+      "id": "16e1b12a8a2e",
+      "date": "2026-10-02",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 5,
+      "title": "채소값 오르고 사과·배 내렸다…9월 생활물가 '가을 수확'에 희비",
+      "press": "더파워뉴스",
+      "summary": "9월 사과·배·포도와 햇멸치 가격은 내렸지만 채소류와 젓갈류 가격은 상승세를 보였다. 채소는 일조량 부족과 수확 차질로 공급이 줄었고 젓갈류는 원료 수급과 저장비 부담이 커졌다.",
+      "url": "https://www.thepowernews.co.kr/view.php?ud=202610011229326586de3f0aa1be_7",
+      "archive": "/agri-news-brief/archive/2026-10-02.html#sec-supply",
+      "score": 20.94,
+      "press_tier": 1,
+      "topics": [
+        "배",
+        "사과",
+        "포도"
+      ]
+    },
+    {
+      "id": "8e9b5ca79418",
+      "date": "2026-10-02",
+      "section": "pest",
+      "section_title": "생육 리스크 및 방제",
+      "rank": 2,
+      "title": "경북도, 소나무 재선충병 피해 '4년새 7배'…\" 방제 , 확산 못 따라가\"",
+      "press": "경북신문",
+      "summary": "경북의 소나무재선충병 피해가 4년 사이 7배로 늘어 기존 방제가 확산 속도를 따라가지 못하고 있다. 경계지역 예찰·방제와 집단 발생지 수종 전환, 병해충 유입 차단이 대응책으로 제시됐다.",
+      "url": "https://www.kbsm.net/news/view.php?idx=536183",
+      "archive": "/agri-news-brief/archive/2026-10-02.html#sec-pest",
+      "score": 17.28,
+      "press_tier": 1,
+      "topics": []
+    },
+    {
+      "id": "5966a4a7e6a3",
+      "date": "2026-10-02",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 5,
+      "title": "농산물 ' 판로 ' 넓힌다…대형마트 유통망 확대",
+      "press": "LG헬로비전뉴스",
+      "summary": "전북도가 쌀·논콩 등 가을 농산물의 정부 수매 확대와 대형마트 유통망 확보를 추진한다. 올해 벼는 53만3000t, 논콩은 3만8000t으로 전망돼 쌀 1만t과 콩 2만t 추가 수매를 건의한다.",
+      "url": "http://news.lghellovision.net/news/articleView.html?idxno=557033",
+      "archive": "/agri-news-brief/archive/2026-10-02.html#sec-dist",
+      "score": 16.3,
+      "press_tier": 1,
+      "topics": []
+    },
+    {
+      "id": "653bb180066a",
+      "date": "2026-10-02",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 7,
+      "title": "제주에서 키운 국산 골드키위 '감황'...10월 본격 출하",
+      "press": "뉴스후플러스",
+      "summary": "",
+      "url": "https://www.newswhoplus.com/news/articleView.html?idxno=70837",
+      "archive": "/agri-news-brief/archive/2026-10-02.html#commodity-kiwifruit",
+      "score": 9.776,
+      "press_tier": 1,
+      "topics": [
+        "키위"
+      ]
+    },
+    {
+      "id": "571f23d62aaf",
+      "date": "2026-10-02",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 4,
+      "title": "[경상칼럼] 참외 의 고장을 넘어, 세계를 향하는 K-푸드의 진원지로",
+      "press": "경상매일신문",
+      "summary": "",
+      "url": "https://www.ksmnews.co.kr/news/view.php?idx=624030",
+      "archive": "/agri-news-brief/archive/2026-10-02.html#commodity-oriental_melon",
+      "score": 6.355,
+      "press_tier": 1,
+      "topics": [
+        "참외"
+      ]
+    },
+    {
+      "id": "5db22906d46c",
+      "date": "2026-10-02",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 2,
+      "title": "“쪽파가 작은 대파일까?” 번식 방식부터 다르다",
+      "press": "vegannews",
+      "summary": "",
+      "url": "https://www.vegannews.co.kr/news/article.html?no=390001",
+      "archive": "/agri-news-brief/archive/2026-10-02.html#commodity-green_onion",
+      "score": 6.21,
+      "press_tier": 1,
+      "topics": [
+        "대파"
+      ]
+    },
     {
       "id": "60efefce67ba",
       "date": "2026-10-01",
