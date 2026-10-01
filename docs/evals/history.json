@@ -887,9 +887,9 @@
     },
     {
       "report_date": "2026-09-01",
-      "generated_at_kst": "2026-09-01T06:19:22+09:00",
-      "overall_score": 84.0,
-      "operational_score": 95.7,
+      "generated_at_kst": "2026-10-01T13:14:50+09:00",
+      "overall_score": 82.68,
+      "operational_score": 96.3,
       "reader_quality_score": 84.0,
       "reader_quality_gate_status": "capped",
       "reader_quality_gate_reasons": [
@@ -897,20 +897,20 @@
         "commodity_false_link",
         "commodity_false_link_severe"
       ],
-      "editorial_score": null,
-      "editorial_model_reported_score": null,
-      "editorial_score_method": null,
-      "editorial_quality_tier": null,
-      "editorial_acceptance_passed": null,
-      "editorial_status": null,
-      "quality_gate_status": null,
-      "quality_gate_reason": null,
+      "editorial_score": 76.7,
+      "editorial_model_reported_score": 78.0,
+      "editorial_score_method": "weighted_components_v1",
+      "editorial_quality_tier": "needs_major_iteration",
+      "editorial_acceptance_passed": false,
+      "editorial_status": "needs_major_iteration",
+      "quality_gate_status": "needs_major_iteration",
+      "quality_gate_reason": "editorial_acceptance_gate_failed",
       "status": "warn",
-      "section_alignment": 91.67,
+      "section_alignment": 87.49,
       "core_quality": 85.0,
-      "commodity_board_quality": 96.08,
+      "commodity_board_quality": 100.0,
       "briefing_total": 20,
-      "commodity_total": 45,
+      "commodity_total": 43,
       "commodity_active_today_total": 19,
       "commodity_active_today_unlinked_total": 12,
       "commodity_managed_unlinked_total": 26,
@@ -921,12 +921,12 @@
       "low_tier_source_excess_count": 0,
       "content_false_positive_rate": 0.0,
       "reader_hard_issue_count": 0,
-      "reader_quality_penalty": 8.9114,
-      "editorial_quality_penalty": 1.3,
+      "reader_quality_penalty": 7.2914,
+      "editorial_quality_penalty": 0.4,
       "commodity_primary_false_link_rate": 0.1429,
       "commodity_pool_false_link_rate": 0.0,
-      "policy_wrong_section_rate": 0.05,
-      "promotional_filler_rate": 0.05,
+      "policy_wrong_section_rate": 0.0,
+      "promotional_filler_rate": 0.0,
       "promotional_core_rate": 0.0,
       "pest_theme_duplicate_rate": 0.05,
       "guardrail_driver_tags": [
@@ -4190,5 +4190,5 @@
       "briefing_title_unique_rate": 1.0
     }
   ],
-  "updated_at_kst": "2026-10-01T13:09:45+09:00"
+  "updated_at_kst": "2026-10-01T13:14:50+09:00"
 }
