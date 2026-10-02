@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-02T04:34:10+09:00",
+  "generated_at": "2026-10-03T04:21:30+09:00",
   "rows": [
     {
       "date": "2026-09-22",
@@ -1430,32 +1430,6 @@
       "users": 2,
       "archive_url": "/agri-news-brief/archive/2026-09-30.html#sec-policy",
       "source_url": "https://www.agrinet.co.kr/news/articleView.html?idxno=407571"
-    },
-    {
-      "date": "2026-06-05",
-      "article_id": "af0b4ff3ce21",
-      "title": "올여름 폭염·호우 우려…정부, 배추· 무 2.1만t 공급 등 수급 안정",
-      "report_date": "2026-06-05",
-      "section": "supply",
-      "surface": "briefing_card",
-      "target_domain": "www.ajunews.com",
-      "clicks": 2,
-      "users": 1,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-06-05",
-      "article_id": "c332a37dd049",
-      "title": "'공급과잉 양파 ' 수출로 수급 안정…대만에 초도물량 100t 수출",
-      "report_date": "2026-06-05",
-      "section": "supply",
-      "surface": "briefing_open",
-      "target_domain": "view.asiae.co.kr",
-      "clicks": 2,
-      "users": 2,
-      "archive_url": "",
-      "source_url": ""
     },
     {
       "date": "2026-06-08",
@@ -4082,84 +4056,6 @@
       "users": 1,
       "archive_url": "/agri-news-brief/archive/2026-10-01.html#sec-supply",
       "source_url": "https://www.etoday.co.kr/news/view/2630500"
-    },
-    {
-      "date": "2026-06-05",
-      "article_id": "0115fe6dda9d",
-      "title": "온라인 도매시장 출하 업무협약 체결",
-      "report_date": "2026-06-05",
-      "section": "dist",
-      "surface": "briefing_card",
-      "target_domain": "www.wonyesanup.co.kr",
-      "clicks": 1,
-      "users": 1,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-06-05",
-      "article_id": "1cd9c8f8d97e",
-      "title": "예천 개포면, 첫 풋고추 출하로 소비자 입맛 사로잡아",
-      "report_date": "2026-06-05",
-      "section": "supply",
-      "surface": "briefing_open",
-      "target_domain": "www.kbmaeil.com",
-      "clicks": 1,
-      "users": 1,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-06-05",
-      "article_id": "c332a37dd049",
-      "title": "'공급과잉 양파 ' 수출로 수급 안정…대만에 초도물량 100t 수출",
-      "report_date": "2026-06-05",
-      "section": "supply",
-      "surface": "briefing_card",
-      "target_domain": "view.asiae.co.kr",
-      "clicks": 1,
-      "users": 1,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-06-05",
-      "article_id": "d232b3f7da28",
-      "title": "배추 저장, 새 해법 찾는다",
-      "report_date": "2026-06-05",
-      "section": "supply",
-      "surface": "briefing_card",
-      "target_domain": "www.fsnews.co.kr",
-      "clicks": 1,
-      "users": 1,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-06-05",
-      "article_id": "f8498f8ca399",
-      "title": "양파 가격 폭락에 정부 수매비축 2만톤",
-      "report_date": "2026-06-05",
-      "section": "supply",
-      "surface": "briefing_card",
-      "target_domain": "www.naeil.com",
-      "clicks": 1,
-      "users": 1,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-06-05",
-      "article_id": "f8498f8ca399",
-      "title": "양파 가격 폭락에 정부 수매비축 2만톤",
-      "report_date": "2026-06-05",
-      "section": "supply",
-      "surface": "briefing_open",
-      "target_domain": "www.naeil.com",
-      "clicks": 1,
-      "users": 1,
-      "archive_url": "",
-      "source_url": ""
     },
     {
       "date": "2026-06-08",
@@ -13845,6 +13741,84 @@
       "users": 1,
       "archive_url": "/agri-news-brief/archive/2026-10-01.html#sec-supply",
       "source_url": "https://www.farminsight.net/news/articleView.html?idxno=16964"
+    },
+    {
+      "date": "2026-10-02",
+      "article_id": "0ac147901cf3",
+      "title": "농안법 하위법령 개정… 도매시장 거래기준 정비",
+      "report_date": "2026-10-02",
+      "section": "dist",
+      "surface": "briefing_card",
+      "target_domain": "www.amnews.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-10-02.html#sec-dist",
+      "source_url": "http://www.amnews.co.kr/news/articleView.html?idxno=74798"
+    },
+    {
+      "date": "2026-10-02",
+      "article_id": "5d9f52947166",
+      "title": "가을 수확철인데 장바구니 물가는 '엇박자'…과일 내리고 채소 오르고",
+      "report_date": "2026-10-02",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.imaeil.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-10-02",
+      "article_id": "87e2e6402cc7",
+      "title": "\"사과·배는 싸졌는데\"…비 자주 오더니 채소값 줄줄이 올랐다",
+      "report_date": "2026-10-02",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "www.hankyung.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-10-02",
+      "article_id": "a7330ab5d23a",
+      "title": "[청년농이 뛴다] 친환경 참다래 고집…습해 강한 품종에 접붙여",
+      "report_date": "2026-10-02",
+      "section": "pest",
+      "surface": "briefing_card",
+      "target_domain": "www.nongmin.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-10-02",
+      "article_id": "c181e1a5e8eb",
+      "title": "“수입꽃 판로 열어주는 꼴”… 화훼 농가, 공판장 상장검토 중단 촉구",
+      "report_date": "2026-10-02",
+      "section": "dist",
+      "surface": "briefing_open",
+      "target_domain": "www.nongmin.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-10-02",
+      "article_id": "f383847206ec",
+      "title": "이천 대월농협, 조합원 생산 건고추 전량 매입",
+      "report_date": "2026-10-02",
+      "section": "dist",
+      "surface": "briefing_open",
+      "target_domain": "www.nongmin.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
     }
   ]
 }
