@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-07T04:34:21+09:00",
+  "generated_at": "2026-10-08T05:00:12+09:00",
   "section_jump": [
     {
       "date": "2026-07-01",
@@ -12,12 +12,6 @@
       "count": 3,
       "section": "pest",
       "surface": "briefing_chip"
-    },
-    {
-      "date": "2026-06-10",
-      "count": 2,
-      "section": "fruit_veg",
-      "surface": "commodity_group_chip"
     },
     {
       "date": "2026-06-23",
@@ -52,12 +46,6 @@
     {
       "date": "2026-09-03",
       "count": 2,
-      "section": "supply",
-      "surface": "briefing_chip"
-    },
-    {
-      "date": "2026-06-10",
-      "count": 1,
       "section": "supply",
       "surface": "briefing_chip"
     },
@@ -274,12 +262,6 @@
       "to_view": "commodity"
     },
     {
-      "date": "2026-06-10",
-      "count": 3,
-      "from_view": "briefing",
-      "to_view": "commodity"
-    },
-    {
       "date": "2026-06-15",
       "count": 3,
       "from_view": "briefing",
@@ -428,12 +410,6 @@
       "count": 2,
       "from_view": "briefing",
       "to_view": "commodity"
-    },
-    {
-      "date": "2026-06-10",
-      "count": 1,
-      "from_view": "commodity",
-      "to_view": "briefing"
     },
     {
       "date": "2026-06-11",
@@ -711,13 +687,6 @@
       "to_date": "(not set)"
     },
     {
-      "date": "2026-06-10",
-      "count": 2,
-      "nav_type": "archive_index",
-      "from_date": "2026-06-10",
-      "to_date": "(not set)"
-    },
-    {
       "date": "2026-06-11",
       "count": 2,
       "nav_type": "archive_index",
@@ -779,27 +748,6 @@
       "nav_type": "next_date",
       "from_date": "2026-08-05",
       "to_date": "2026-08-06"
-    },
-    {
-      "date": "2026-06-10",
-      "count": 1,
-      "nav_type": "archive_card",
-      "from_date": "2026-06-10",
-      "to_date": "2026-06-10"
-    },
-    {
-      "date": "2026-06-10",
-      "count": 1,
-      "nav_type": "archive_index",
-      "from_date": "2026-06-09",
-      "to_date": "(not set)"
-    },
-    {
-      "date": "2026-06-10",
-      "count": 1,
-      "nav_type": "latest_brief",
-      "from_date": "(not set)",
-      "to_date": "2026-06-10"
     },
     {
       "date": "2026-06-12",
@@ -1206,6 +1154,13 @@
       "nav_type": "prev_date",
       "from_date": "2026-09-21",
       "to_date": "2026-09-18"
+    },
+    {
+      "date": "2026-10-07",
+      "count": 1,
+      "nav_type": "prev_date",
+      "from_date": "2026-10-07",
+      "to_date": "2026-10-06"
     }
   ]
 }
