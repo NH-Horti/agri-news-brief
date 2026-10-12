@@ -1,6 +1,51 @@
 {
   "reports": [
     {
+      "report_date": "2026-10-13",
+      "generated_at_kst": "2026-10-13T06:18:07+09:00",
+      "overall_score": 91.64,
+      "operational_score": 92.86,
+      "reader_quality_score": 92.14,
+      "reader_quality_gate_status": "clear",
+      "reader_quality_gate_reasons": [],
+      "editorial_score": 82.6,
+      "editorial_model_reported_score": 82.6,
+      "editorial_score_method": "weighted_components_v1",
+      "editorial_quality_tier": "daily_pass",
+      "editorial_acceptance_passed": false,
+      "editorial_status": "needs_iteration",
+      "quality_gate_status": "needs_iteration",
+      "quality_gate_reason": "editorial_acceptance_gate_failed",
+      "status": "warn",
+      "section_alignment": 97.19,
+      "core_quality": 72.71,
+      "commodity_board_quality": 87.0,
+      "briefing_total": 20,
+      "commodity_total": 30,
+      "commodity_active_today_total": 12,
+      "commodity_active_today_unlinked_total": 6,
+      "commodity_managed_unlinked_total": 27,
+      "summary_presence_rate": 1.0,
+      "within_72h_rate": 1.0,
+      "briefing_title_unique_rate": 1.0,
+      "low_tier_source_rate": 0.2,
+      "low_tier_source_excess_count": 0,
+      "content_false_positive_rate": 0.0,
+      "reader_hard_issue_count": 0,
+      "reader_quality_penalty": 0.72,
+      "editorial_quality_penalty": 0.4,
+      "commodity_primary_false_link_rate": 0.0,
+      "commodity_pool_false_link_rate": 0.0,
+      "policy_wrong_section_rate": 0.0,
+      "promotional_filler_rate": 0.2,
+      "promotional_core_rate": 0.0,
+      "pest_theme_duplicate_rate": 0.0,
+      "guardrail_driver_tags": [
+        "core_quality",
+        "commodity_board"
+      ]
+    },
+    {
       "report_date": "2026-10-12",
       "generated_at_kst": "2026-10-12T06:20:32+09:00",
       "overall_score": 90.35,
@@ -4415,5 +4460,5 @@
       "briefing_title_unique_rate": 1.0
     }
   ],
-  "updated_at_kst": "2026-10-12T06:20:32+09:00"
+  "updated_at_kst": "2026-10-13T06:18:07+09:00"
 }
