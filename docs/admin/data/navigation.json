@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-12T03:57:25+09:00",
+  "generated_at": "2026-10-13T07:09:05+09:00",
   "section_jump": [
     {
       "date": "2026-07-01",
@@ -48,12 +48,6 @@
       "count": 2,
       "section": "supply",
       "surface": "briefing_chip"
-    },
-    {
-      "date": "2026-06-15",
-      "count": 1,
-      "section": "fruit_veg",
-      "surface": "commodity_group_chip"
     },
     {
       "date": "2026-06-16",
@@ -216,12 +210,6 @@
     {
       "date": "2026-08-24",
       "count": 4,
-      "from_view": "briefing",
-      "to_view": "commodity"
-    },
-    {
-      "date": "2026-06-15",
-      "count": 3,
       "from_view": "briefing",
       "to_view": "commodity"
     },
@@ -637,13 +625,6 @@
       "nav_type": "archive_index",
       "from_date": "2026-08-24",
       "to_date": "(not set)"
-    },
-    {
-      "date": "2026-06-15",
-      "count": 2,
-      "nav_type": "prev_date",
-      "from_date": "2026-06-12",
-      "to_date": "2026-06-11"
     },
     {
       "date": "2026-06-20",
