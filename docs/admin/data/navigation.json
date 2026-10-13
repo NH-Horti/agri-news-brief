@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-13T07:09:05+09:00",
+  "generated_at": "2026-10-14T05:15:46+09:00",
   "section_jump": [
     {
       "date": "2026-07-01",
@@ -46,24 +46,6 @@
     {
       "date": "2026-09-03",
       "count": 2,
-      "section": "supply",
-      "surface": "briefing_chip"
-    },
-    {
-      "date": "2026-06-16",
-      "count": 1,
-      "section": "dist",
-      "surface": "briefing_chip"
-    },
-    {
-      "date": "2026-06-16",
-      "count": 1,
-      "section": "pest",
-      "surface": "briefing_chip"
-    },
-    {
-      "date": "2026-06-16",
-      "count": 1,
       "section": "supply",
       "surface": "briefing_chip"
     },
@@ -244,12 +226,6 @@
       "to_view": "commodity"
     },
     {
-      "date": "2026-06-16",
-      "count": 2,
-      "from_view": "briefing",
-      "to_view": "commodity"
-    },
-    {
       "date": "2026-06-26",
       "count": 2,
       "from_view": "briefing",
@@ -353,6 +329,12 @@
     },
     {
       "date": "2026-09-28",
+      "count": 2,
+      "from_view": "briefing",
+      "to_view": "commodity"
+    },
+    {
+      "date": "2026-10-12",
       "count": 2,
       "from_view": "briefing",
       "to_view": "commodity"
@@ -599,6 +581,12 @@
     },
     {
       "date": "2026-10-08",
+      "count": 1,
+      "from_view": "briefing",
+      "to_view": "commodity"
+    },
+    {
+      "date": "2026-10-13",
       "count": 1,
       "from_view": "briefing",
       "to_view": "commodity"
