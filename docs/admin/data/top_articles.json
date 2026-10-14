@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-14T05:15:46+09:00",
+  "generated_at": "2026-10-15T03:39:32+09:00",
   "rows": [
     {
       "date": "2026-09-22",
@@ -1417,45 +1417,6 @@
       "users": 2,
       "archive_url": "/agri-news-brief/archive/2026-10-08.html#sec-pest",
       "source_url": "https://www.aflnews.co.kr/news/articleView.html?idxno=329387"
-    },
-    {
-      "date": "2026-06-17",
-      "article_id": "1913202e378d",
-      "title": "“1㎏ 상품 600원대”…밭떼기 거래 침체로 ‘양파값’ 반등 없어",
-      "report_date": "2026-06-17",
-      "section": "dist",
-      "surface": "briefing_card",
-      "target_domain": "www.nongmin.com",
-      "clicks": 2,
-      "users": 1,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-06-17",
-      "article_id": "28e7dd6a5633",
-      "title": "국산 양파 경쟁력 강화 방안 논의 본격화",
-      "report_date": "2026-06-17",
-      "section": "policy",
-      "surface": "briefing_card",
-      "target_domain": "www.newsfarm.co.kr",
-      "clicks": 2,
-      "users": 1,
-      "archive_url": "/agri-news-brief/archive/2026-06-17.html#sec-policy",
-      "source_url": "http://www.newsfarm.co.kr/news/articleView.html?idxno=101346"
-    },
-    {
-      "date": "2026-06-17",
-      "article_id": "28e7dd6a5633",
-      "title": "국산 양파 경쟁력 강화 방안 논의 본격화",
-      "report_date": "2026-06-17",
-      "section": "policy",
-      "surface": "briefing_open",
-      "target_domain": "www.newsfarm.co.kr",
-      "clicks": 2,
-      "users": 2,
-      "archive_url": "/agri-news-brief/archive/2026-06-17.html#sec-policy",
-      "source_url": "http://www.newsfarm.co.kr/news/articleView.html?idxno=101346"
     },
     {
       "date": "2026-06-19",
@@ -3941,43 +3902,17 @@
       "source_url": ""
     },
     {
-      "date": "2026-06-17",
-      "article_id": "1913202e378d",
-      "title": "“1㎏ 상품 600원대”…밭떼기 거래 침체로 ‘양파값’ 반등 없어",
-      "report_date": "2026-06-17",
-      "section": "dist",
-      "surface": "briefing_open",
-      "target_domain": "www.nongmin.com",
-      "clicks": 1,
+      "date": "2026-10-14",
+      "article_id": "62af286ff4e4",
+      "title": "강원 농산물 공공 비축 기지 노후…신규 건설 보류",
+      "report_date": "2026-10-14",
+      "section": "policy",
+      "surface": "briefing_card",
+      "target_domain": "news.kbs.co.kr",
+      "clicks": 2,
       "users": 1,
       "archive_url": "",
       "source_url": ""
-    },
-    {
-      "date": "2026-06-17",
-      "article_id": "be7a99d459a2",
-      "title": "[품목포커스/청양계 풋고추 ] 가공·식자재 업체 발주 꾸준···전년보다...",
-      "report_date": "2026-06-17",
-      "section": "supply",
-      "surface": "briefing_open",
-      "target_domain": "www.agrinet.co.kr",
-      "clicks": 1,
-      "users": 1,
-      "archive_url": "/agri-news-brief/archive/2026-06-17.html#sec-supply",
-      "source_url": "https://www.agrinet.co.kr/news/articleView.html?idxno=405030"
-    },
-    {
-      "date": "2026-06-17",
-      "article_id": "e3ac4f7de25b",
-      "title": "국민주권정부 1년, 농정 전환 성과와 과제는",
-      "report_date": "2026-06-17",
-      "section": "policy",
-      "surface": "briefing_open",
-      "target_domain": "www.newsfarm.co.kr",
-      "clicks": 1,
-      "users": 1,
-      "archive_url": "/agri-news-brief/archive/2026-06-17.html#sec-policy",
-      "source_url": "http://www.newsfarm.co.kr/news/articleView.html?idxno=101359"
     },
     {
       "date": "2026-06-18",
@@ -13234,6 +13169,45 @@
       "users": 1,
       "archive_url": "",
       "source_url": ""
+    },
+    {
+      "date": "2026-10-14",
+      "article_id": "62af286ff4e4",
+      "title": "강원 농산물 공공 비축 기지 노후…신규 건설 보류",
+      "report_date": "2026-10-14",
+      "section": "policy",
+      "surface": "briefing_open",
+      "target_domain": "news.kbs.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-10-14",
+      "article_id": "6f71a2085277",
+      "title": "[전문가 칼럼] 생산을 줄이면 가격이 오르나? 수급 사업도 정상화하자!",
+      "report_date": "2026-10-14",
+      "section": "policy",
+      "surface": "briefing_card",
+      "target_domain": "www.newsfarm.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-10-14.html#sec-policy",
+      "source_url": "http://www.newsfarm.co.kr/news/articleView.html?idxno=102597"
+    },
+    {
+      "date": "2026-10-14",
+      "article_id": "6f71a2085277",
+      "title": "[전문가 칼럼] 생산을 줄이면 가격이 오르나? 수급 사업도 정상화하자!",
+      "report_date": "2026-10-14",
+      "section": "policy",
+      "surface": "briefing_open",
+      "target_domain": "www.newsfarm.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-10-14.html#sec-policy",
+      "source_url": "http://www.newsfarm.co.kr/news/articleView.html?idxno=102597"
     }
   ]
 }
