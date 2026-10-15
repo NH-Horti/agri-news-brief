@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-15T03:39:32+09:00",
+  "generated_at": "2026-10-16T03:19:49+09:00",
   "section_jump": [
     {
       "date": "2026-07-01",
@@ -46,12 +46,6 @@
     {
       "date": "2026-09-03",
       "count": 2,
-      "section": "supply",
-      "surface": "briefing_chip"
-    },
-    {
-      "date": "2026-06-18",
-      "count": 1,
       "section": "supply",
       "surface": "briefing_chip"
     },
@@ -340,12 +334,6 @@
       "to_view": "commodity"
     },
     {
-      "date": "2026-06-18",
-      "count": 1,
-      "from_view": "briefing",
-      "to_view": "commodity"
-    },
-    {
       "date": "2026-06-22",
       "count": 1,
       "from_view": "commodity",
@@ -587,6 +575,12 @@
     },
     {
       "date": "2026-10-13",
+      "count": 1,
+      "from_view": "briefing",
+      "to_view": "commodity"
+    },
+    {
+      "date": "2026-10-15",
       "count": 1,
       "from_view": "briefing",
       "to_view": "commodity"
