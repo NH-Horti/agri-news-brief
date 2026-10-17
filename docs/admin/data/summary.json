@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-17T03:05:27+09:00",
+  "generated_at": "2026-10-18T02:14:22+09:00",
   "windows": {
     "7": {
       "totals": {
@@ -19,52 +19,52 @@
         "avg_engagement_sec": 219.34
       },
       "range": {
-        "from": "2026-10-11",
-        "to": "2026-10-17"
+        "from": "2026-10-12",
+        "to": "2026-10-18"
       }
     },
     "30": {
       "totals": {
-        "visits": 145,
+        "visits": 137,
         "users": 21,
-        "pageviews": 350,
-        "article_clicks": 283,
-        "article_ctr": 0.808571,
-        "avg_engagement_sec": 176.77
+        "pageviews": 322,
+        "article_clicks": 261,
+        "article_ctr": 0.810559,
+        "avg_engagement_sec": 175.97
       },
       "prev": {
-        "visits": 259,
+        "visits": 251,
         "users": 28,
-        "pageviews": 662,
-        "article_clicks": 430,
-        "article_ctr": 0.649547,
-        "avg_engagement_sec": 221.8
+        "pageviews": 650,
+        "article_clicks": 422,
+        "article_ctr": 0.649231,
+        "avg_engagement_sec": 215.52
       },
       "range": {
-        "from": "2026-09-18",
-        "to": "2026-10-17"
+        "from": "2026-09-19",
+        "to": "2026-10-18"
       }
     },
     "90": {
       "totals": {
-        "visits": 640,
-        "users": 41,
-        "pageviews": 1675,
-        "article_clicks": 1139,
-        "article_ctr": 0.68,
-        "avg_engagement_sec": 193.08
+        "visits": 630,
+        "users": 40,
+        "pageviews": 1640,
+        "article_clicks": 1114,
+        "article_ctr": 0.679268,
+        "avg_engagement_sec": 193.27
       },
       "prev": {
-        "visits": 721,
+        "visits": 727,
         "users": 43,
-        "pageviews": 1873,
-        "article_clicks": 1026,
-        "article_ctr": 0.547784,
-        "avg_engagement_sec": 226.68
+        "pageviews": 1896,
+        "article_clicks": 1049,
+        "article_ctr": 0.55327,
+        "avg_engagement_sec": 226.96
       },
       "range": {
-        "from": "2026-07-20",
-        "to": "2026-10-17"
+        "from": "2026-07-21",
+        "to": "2026-10-18"
       }
     }
   }
