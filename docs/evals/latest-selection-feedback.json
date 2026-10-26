@@ -1,62 +1,62 @@
 {
-  "report_date": "2026-10-26",
-  "generated_at_kst": "2026-10-26T06:18:46+09:00",
+  "report_date": "2026-10-27",
+  "generated_at_kst": "2026-10-27T06:20:55+09:00",
   "scores": {
-    "section_alignment": 67.41,
-    "core_quality": 100.0,
-    "commodity_board_quality": 97.49
+    "section_alignment": 87.49,
+    "core_quality": 99.07,
+    "commodity_board_quality": 100.0
   },
   "metrics": {
-    "section_alignment_low_fit_rate": 0.15,
+    "section_alignment_low_fit_rate": 0.1,
     "section_alignment_cross_gap_rate": 0.05,
-    "content_false_positive_rate": 0.0,
+    "content_false_positive_rate": 0.05,
     "reader_hard_issue_count": 0,
     "reader_hard_issue_rate": 0.0,
-    "reader_quality_penalty": 0.36,
-    "reader_quality_cap": 100.0,
+    "reader_quality_penalty": 13.95,
+    "reader_quality_cap": 90.0,
     "weak_core_rate": 0.0,
     "policy_wrong_section_rate": 0.0,
-    "promotional_filler_rate": 0.1,
-    "promotional_core_rate": 0.0,
-    "weak_core_editorial_rate": 0.0,
-    "pest_theme_duplicate_rate": 0.0,
+    "promotional_filler_rate": 0.05,
+    "promotional_core_rate": 0.125,
+    "weak_core_editorial_rate": 0.125,
+    "pest_theme_duplicate_rate": 0.05,
     "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 0.2,
+    "editorial_quality_penalty": 2.75,
     "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0,
     "commodity_primary_title_item_focus_rate": 1.0,
-    "commodity_primary_title_issue_signal_rate": 0.9231,
-    "commodity_primary_strict_link_rate": 0.9231,
+    "commodity_primary_title_issue_signal_rate": 1.0,
+    "commodity_primary_strict_link_rate": 1.0,
     "commodity_primary_low_rank_rate": 0.0,
-    "commodity_primary_count": 13,
-    "commodity_active_today_total": 16,
+    "commodity_primary_count": 9,
+    "commodity_active_today_total": 12,
     "commodity_active_today_unlinked_total": 3,
-    "commodity_managed_unlinked_total": 20,
+    "commodity_managed_unlinked_total": 24,
     "commodity_board_daily_min_primary_count": 6,
     "commodity_board_low_coverage": false,
-    "commodity_board_coverage_rate": 0.3939,
+    "commodity_board_coverage_rate": 0.2727,
     "commodity_primary_title_item_missing_rate": 0.0,
     "commodity_primary_body_only_rate": 0.0,
     "commodity_primary_false_link_rate": 0.0,
-    "commodity_pool_count": 3,
+    "commodity_pool_count": 7,
     "commodity_pool_false_link_rate": 0.0,
-    "commodity_primary_dominant_section_rate": 0.5385
+    "commodity_primary_dominant_section_rate": 0.4444
   },
   "selection_guardrails": {
     "driver_tags": [
-      "section_alignment"
+      "semantic_false_positive"
     ],
     "section_card_min_fit": {
-      "default": 0.88,
+      "default": 0.8,
       "supply": 0.9,
-      "policy": 0.9,
+      "policy": 0.88,
       "dist": 1.05,
-      "pest": 0.84
+      "pest": 0.78
     },
-    "section_low_fit_rescue_min": 0.3,
-    "high_score_low_fit_rescue_margin": 4.0,
-    "tail_score_floor_delta": 0.6,
+    "section_low_fit_rescue_min": 0.35,
+    "high_score_low_fit_rescue_margin": 4.4,
+    "tail_score_floor_delta": 0.5,
     "core_fit_min": {
       "default": 1.2,
       "supply": 1.4,
@@ -83,21 +83,21 @@
   },
   "editorial_quality_samples": [
     {
-      "title": "진주 농민단체 \"쌀값 폭락 대책 ·농어촌기본소득 조례 마련하라\"",
-      "href": "https://www.gnnews.co.kr/news/articleView.html?idxno=648150",
-      "section": "policy",
-      "is_core": false,
+      "title": "\"앱으로 도매시장 농산물 주문\"…CJ프레시웨이, '새벽 경매 직거래관' 개...",
+      "href": "https://view.asiae.co.kr/article/2026102608411206941",
+      "section": "dist",
+      "is_core": true,
       "reasons": [
         "promotional_or_event_filler"
       ]
     },
     {
-      "title": "[2026 국감Ⅰ종합감사] 청년농 상환 부담·직불금 부실 관리·논콩정책 ...",
-      "href": "https://www.agrinet.co.kr/news/articleView.html?idxno=408207",
-      "section": "policy",
+      "title": "과수화상병 국산 방제약 개발 길 열린다…병해충 연구 이용 허용",
+      "href": "https://www.dailian.co.kr/news/view/1706150/?sc=Naver",
+      "section": "pest",
       "is_core": false,
       "reasons": [
-        "promotional_or_event_filler"
+        "pest_theme_duplicate:fire_blight"
       ]
     }
   ],
