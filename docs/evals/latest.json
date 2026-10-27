@@ -1,45 +1,45 @@
 {
-  "report_date": "2026-10-27",
-  "generated_at_kst": "2026-10-27T06:20:55+09:00",
-  "status": "warn",
-  "overall_score": 73.15,
-  "operational_score": 87.1,
-  "reader_quality_score": 73.15,
+  "report_date": "2026-10-28",
+  "generated_at_kst": "2026-10-28T06:16:32+09:00",
+  "status": "pass",
+  "overall_score": 92.89,
+  "operational_score": 93.64,
+  "reader_quality_score": 92.89,
   "reader_quality_gate": {
     "status": "capped",
-    "headline_score": 73.15,
-    "operational_score": 87.1,
-    "penalty": 13.95,
-    "cap": 90.0,
+    "headline_score": 92.89,
+    "operational_score": 93.64,
+    "penalty": 0.75,
+    "cap": 95.0,
     "reasons": [
-      "pest_theme_duplicate"
+      "preferred_slot_underfill"
     ]
   },
   "scores": {
-    "completeness": 100.0,
-    "diversity": 95.69,
-    "source_quality": 80.0,
-    "summary_quality": 97.0,
+    "completeness": 96.4,
+    "diversity": 95.16,
+    "source_quality": 75.79,
+    "summary_quality": 96.84,
     "freshness": 100.0,
-    "retrieval_support": 83.37,
-    "section_alignment": 87.49,
-    "core_quality": 99.07,
-    "commodity_board_quality": 100.0,
-    "reader_quality": 73.15
+    "retrieval_support": 78.33,
+    "section_alignment": 96.94,
+    "core_quality": 87.67,
+    "commodity_board_quality": 96.08,
+    "reader_quality": 92.89
   },
   "counts": {
-    "briefing_total": 20,
-    "commodity_total": 37,
-    "commodity_primary_total": 9,
-    "commodity_pool_total": 7,
-    "commodity_active_today_total": 12,
-    "commodity_active_today_unlinked_total": 3,
-    "commodity_managed_unlinked_total": 24,
+    "briefing_total": 19,
+    "commodity_total": 31,
+    "commodity_primary_total": 7,
+    "commodity_pool_total": 15,
+    "commodity_active_today_total": 15,
+    "commodity_active_today_unlinked_total": 8,
+    "commodity_managed_unlinked_total": 26,
     "briefing_by_section": {
       "supply": 5,
       "policy": 5,
       "dist": 5,
-      "pest": 5
+      "pest": 4
     },
     "core_by_section": {
       "supply": 2,
@@ -48,16 +48,16 @@
       "pest": 2
     },
     "commodity_by_section": {
-      "supply": 16,
-      "policy": 8,
-      "dist": 12,
+      "supply": 18,
+      "policy": 4,
+      "dist": 8,
       "pest": 1
     },
     "raw_by_section": {
-      "supply": 312,
-      "policy": 105,
-      "dist": 85,
-      "pest": 25
+      "supply": 282,
+      "policy": 75,
+      "dist": 83,
+      "pest": 16
     },
     "expected_briefing_by_section": {
       "supply": 5,
@@ -81,32 +81,32 @@
       "supply": 0,
       "policy": 0,
       "dist": 0,
-      "pest": 0
+      "pest": 1
     },
     "low_tier_source_total": 4,
     "low_tier_source_by_section": {
-      "supply": 0,
+      "supply": 1,
       "policy": 1,
-      "dist": 1,
+      "dist": 0,
       "pest": 2
     },
     "achievable_briefing_by_section": {
-      "supply": 280,
-      "policy": 90,
-      "dist": 62,
-      "pest": 21
+      "supply": 250,
+      "policy": 71,
+      "dist": 48,
+      "pest": 10
     }
   },
   "metrics": {
     "briefing_title_unique_rate": 1.0,
-    "briefing_domain_diversity_rate": 1.0,
-    "low_tier_source_rate": 0.2,
+    "briefing_domain_diversity_rate": 0.7895,
+    "low_tier_source_rate": 0.2105,
     "low_tier_source_excess_count": 0,
     "source_quality_penalty": 0.0,
-    "surface_reuse_penalty": 0.0526,
+    "surface_reuse_penalty": 0.0,
     "summary_presence_rate": 1.0,
-    "summary_length_ok_rate": 0.9,
-    "summary_numeric_rate": 0.6,
+    "summary_length_ok_rate": 0.8947,
+    "summary_numeric_rate": 0.7895,
     "summary_opening_diversity": 1.0,
     "matched_article_rate": 1.0,
     "within_48h_rate": 1.0,
@@ -114,70 +114,70 @@
     "stale_over_96h_rate": 0.0,
     "freshness_window_mode": "regular",
     "freshness_gap_offset_hours": 0.0,
-    "seed_coverage_score": 0.5625,
-    "section_alignment_fit_avg": 3.5875,
-    "section_alignment_low_fit_rate": 0.1,
-    "section_alignment_cross_gap_rate": 0.05,
-    "section_alignment_weak_stage_rate": 0.0,
-    "content_false_positive_rate": 0.05,
+    "seed_coverage_score": 0.6042,
+    "section_alignment_fit_avg": 3.6532,
+    "section_alignment_low_fit_rate": 0.0526,
+    "section_alignment_cross_gap_rate": 0.0526,
+    "section_alignment_weak_stage_rate": 0.0526,
+    "content_false_positive_rate": 0.0,
     "reader_hard_issue_count": 0,
     "reader_hard_issue_rate": 0.0,
     "reader_hard_core_issue_count": 0,
-    "reader_quality_penalty": 13.95,
-    "reader_quality_cap": 90.0,
-    "preferred_slot_reader_penalty_weight": 1.5,
-    "off_scope_foreign_rate": 0.05,
+    "reader_quality_penalty": 0.75,
+    "reader_quality_cap": 95.0,
+    "preferred_slot_reader_penalty_weight": 0.75,
+    "off_scope_foreign_rate": 0.0,
     "story_duplicate_rate": 0.0,
     "cross_section_duplicate_rate": 0.0,
-    "content_irrelevant_rate": 0.05,
-    "semantic_false_positive_penalty": 6.0,
+    "content_irrelevant_rate": 0.0,
+    "semantic_false_positive_penalty": 0.0,
     "story_duplicate_penalty": 0.0,
     "policy_wrong_section_rate": 0.0,
-    "promotional_filler_rate": 0.05,
-    "promotional_core_rate": 0.125,
-    "weak_core_editorial_rate": 0.125,
-    "pest_theme_duplicate_rate": 0.05,
+    "promotional_filler_rate": 0.0,
+    "promotional_core_rate": 0.0,
+    "weak_core_editorial_rate": 0.0,
+    "pest_theme_duplicate_rate": 0.0,
     "policy_theme_duplicate_rate": 0.0,
     "policy_theme_duplicate_count": 0,
     "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 2.75,
-    "preferred_slot_gap_rate": 0.0,
-    "preferred_slot_gap_total": 0,
-    "preferred_slot_penalty": 0.0,
-    "core_fit_avg": 4.745,
-    "core_rank_percentile_avg": 0.887,
+    "editorial_quality_penalty": 0.0,
+    "preferred_slot_gap_rate": 0.05,
+    "preferred_slot_gap_total": 1,
+    "preferred_slot_penalty": 1.1,
+    "core_fit_avg": 3.2688,
+    "core_rank_percentile_avg": 0.7799,
     "core_stage_core_rate": 1.0,
-    "weak_core_rate": 0.0,
+    "weak_core_rate": 0.125,
     "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0,
-    "commodity_primary_fit_avg": 2.7356,
-    "commodity_primary_rank_avg": 3.3333,
+    "commodity_primary_fit_avg": 3.2471,
+    "commodity_primary_rank_avg": 3.2857,
     "commodity_primary_title_item_focus_rate": 1.0,
-    "commodity_primary_title_issue_signal_rate": 1.0,
-    "commodity_primary_strict_link_rate": 1.0,
+    "commodity_primary_title_issue_signal_rate": 0.8571,
+    "commodity_primary_strict_link_rate": 0.8571,
     "commodity_primary_low_rank_rate": 0.0,
-    "commodity_primary_count": 9,
-    "commodity_active_today_total": 12,
-    "commodity_active_today_unlinked_total": 3,
-    "commodity_managed_unlinked_total": 24,
+    "commodity_primary_count": 7,
+    "commodity_active_today_total": 15,
+    "commodity_active_today_unlinked_total": 8,
+    "commodity_managed_unlinked_total": 26,
     "commodity_board_daily_min_primary_count": 6,
     "commodity_board_low_coverage": false,
-    "commodity_board_coverage_rate": 0.2727,
+    "commodity_board_coverage_rate": 0.2121,
     "commodity_primary_title_item_missing_rate": 0.0,
     "commodity_primary_body_only_rate": 0.0,
     "commodity_primary_false_link_rate": 0.0,
-    "commodity_pool_count": 7,
+    "commodity_pool_count": 15,
     "commodity_pool_false_link_rate": 0.0,
-    "commodity_primary_dominant_section_rate": 0.4444,
-    "commodity_primary_section_balance_score": 1.0
+    "commodity_primary_dominant_section_rate": 0.5714,
+    "commodity_primary_section_balance_score": 0.6735
   },
   "section_scores": {
     "briefing_fill": {
       "supply": 1.0,
       "policy": 1.0,
       "dist": 1.0,
-      "pest": 1.0
+      "pest": 0.8
     },
     "core_fill": {
       "supply": 1.0,
@@ -189,120 +189,102 @@
       "supply": 1.0,
       "policy": 1.0,
       "dist": 1.0,
-      "pest": 0.8
+      "pest": 0.44
     },
     "seed_coverage": {
-      "supply": 0.5,
-      "policy": 0.5833,
-      "dist": 0.5833,
-      "pest": 0.5833
+      "supply": 0.75,
+      "policy": 0.4167,
+      "dist": 0.75,
+      "pest": 0.5
     },
     "section_alignment": {
-      "supply": 0.8364,
+      "supply": 1.0,
       "policy": 0.8364,
       "dist": 1.0,
       "pest": 1.0
     },
     "core_quality": {
       "supply": 1.0,
-      "policy": 0.949,
-      "dist": 1.0,
-      "pest": 0.9429
+      "policy": 0.55,
+      "dist": 0.8993,
+      "pest": 1.0
     }
   },
   "freshness_samples": [
     {
-      "title": "영양군·남영양농업협동조합, 채소류 출하조절시설 지원사업 공모 선정",
+      "title": "“CPTPP 완전 철회를”…대통령과의 대화서 농민들 의견 들어보니",
       "section": "policy",
-      "age_hours": 23.3
+      "age_hours": 23.0
     },
     {
-      "title": "\"앱으로 도매시장 농산물 주문\"…CJ프레시웨이, '새벽 경매 직거래관' 개...",
+      "title": "태풍 ‘참피’로 제주 농경지 침수 피해",
+      "section": "pest",
+      "age_hours": 23.0
+    },
+    {
+      "title": "딸기 는 겨울이 제철?…\"50일 빨리 따도 11브릭스 나와요\"",
       "section": "dist",
-      "age_hours": 21.3
+      "age_hours": 21.1
     },
     {
-      "title": "\" 도매시장 농산물도 온라인으로\" CJ프레시웨이, '식봄' 직거래관 운영",
-      "section": "dist",
-      "age_hours": 20.7
+      "title": "\"농산물 출하, 경험 아닌 데이터로\"…품질백서 구축",
+      "section": "supply",
+      "age_hours": 20.4
     },
     {
-      "title": "\"동물학대자 사육금지 도입\"…농식품부 소관 법률 5건 개정",
+      "title": "농진청, '과수 전용 흰색 수성페인트' 보급 확대…겨울철 동해 예방",
+      "section": "pest",
+      "age_hours": 18.9
+    },
+    {
+      "title": "전북도, 농산물 최저 가격 보장...10년간 3100농가에 139억원 지원",
       "section": "policy",
-      "age_hours": 19.0
+      "age_hours": 18.7
     },
     {
-      "title": "과수화상병 약제 국산화 뒷받침… 방제 대상 병해충 연구 이용 허용",
+      "title": "한의학연, 버려지던 감 꼭지서 탄저병 친환경 방제 원리 규명",
       "section": "pest",
       "age_hours": 18.6
     },
     {
-      "title": "엄격한 심사…화성시, 샤인머스캣 톱5 우수 농가 뽑았다",
-      "section": "supply",
-      "age_hours": 17.4
-    },
-    {
-      "title": "日 양상추값 2~3배 급등…농협, 국산 90톤 수출",
-      "section": "dist",
-      "age_hours": 16.3
-    },
-    {
-      "title": "과수화상병 국산 방제약 개발 길 열린다…병해충 연구 이용 허용",
-      "section": "pest",
-      "age_hours": 15.8
+      "title": "전국 최초 농산물 최저 가격 제 시행 10년…전북도, 139억원 지원",
+      "section": "policy",
+      "age_hours": 18.3
     }
   ],
-  "content_false_positive_samples": [
-    {
-      "title": "엄격한 심사…화성시, 샤인머스캣 톱5 우수 농가 뽑았다",
-      "href": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008814976&plink=ORI&cooper=NAVER",
-      "section": "supply",
-      "reason": "foreign_unmanaged_commodity"
-    }
-  ],
+  "content_false_positive_samples": [],
   "reader_hard_issue_samples": [],
   "story_duplicate_samples": [],
-  "commodity_primary_linkage_samples": [],
-  "commodity_pool_linkage_samples": [],
-  "editorial_quality_samples": [
+  "commodity_primary_linkage_samples": [
     {
-      "title": "\"앱으로 도매시장 농산물 주문\"…CJ프레시웨이, '새벽 경매 직거래관' 개...",
-      "href": "https://view.asiae.co.kr/article/2026102608411206941",
-      "section": "dist",
-      "is_core": true,
+      "title": "김장 배추 생산 작년보다 19% 증가 전망",
+      "item_label": "배추",
+      "section": "supply",
+      "surface": "commodity_primary",
+      "representative_rank": 3,
       "reasons": [
-        "promotional_or_event_filler"
-      ]
-    },
-    {
-      "title": "과수화상병 국산 방제약 개발 길 열린다…병해충 연구 이용 허용",
-      "href": "https://www.dailian.co.kr/news/view/1706150/?sc=Naver",
-      "section": "pest",
-      "is_core": false,
-      "reasons": [
-        "pest_theme_duplicate:fire_blight"
+        "title_issue_missing"
       ]
     }
   ],
+  "commodity_pool_linkage_samples": [],
+  "editorial_quality_samples": [],
   "improvement_hints": [
-    "금융·정치성 오탐이 브리핑에 섞였습니다 (비율 5%). 제목 기준 원예·시장 실무 신호가 약한 주가·공약형 기사는 수집, 최종 선정, 품목 보드 단계에서 함께 차단하세요.",
-    "편집 품질상 약한 기사 선택이 감지되었습니다 (promotional_filler=5%, pest_theme_duplicate=5%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요.",
-    "농업과 무관한 기사가 브리핑에 포함되어 있습니다 (비율 5%). 해외 경제지표, 관광 홍보, 비농업 기사가 선정되지 않도록 is_relevant 게이트를 점검하세요."
+    "리콜 시드 결손이 보입니다: policy. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요.",
+    "raw 후보가 충분한데 선호 카드 수(섹션당 5개)에 못 미친 섹션이 있습니다: pest(-1). 빈 5번째 슬롯에는 고품질 수급·유통 cross-fill 후보를 재검토하세요."
   ],
   "selection_guardrails": {
-    "driver_tags": [
-      "semantic_false_positive"
-    ],
+    "driver_tags": [],
     "section_card_min_fit": {
       "default": 0.8,
-      "supply": 0.9,
-      "policy": 0.88,
-      "dist": 1.05,
+      "supply": 0.82,
+      "policy": 0.82,
+      "dist": 0.95,
       "pest": 0.78
     },
-    "section_low_fit_rescue_min": 0.35,
-    "high_score_low_fit_rescue_margin": 4.4,
-    "tail_score_floor_delta": 0.5,
+    "section_low_fit_rescue_min": 0.15,
+    "high_score_low_fit_rescue_margin": 3.0,
+    "tail_score_floor_delta": 0.0,
     "core_fit_min": {
       "default": 1.2,
       "supply": 1.4,
@@ -328,29 +310,27 @@
     "commodity_disable_primary_fallback": true
   },
   "summary_prompt_feedback": [
-    "각 기사 요약은 2문장으로 유지하고 첫 문장에 품목·지역·핵심 이슈를 바로 적는다.",
-    "기사에 수치가 있으면 1개 이상 남기고, 없으면 대응 주체나 시점을 분명히 적는다.",
-    "비슷한 시작 표현을 반복하지 말고 원인과 대응을 분리해서 간결하게 쓴다."
+    "각 기사 요약은 2문장으로 유지하고, 85~140자 안에서 품목·지역·핵심 변수만 남긴다."
   ],
   "adaptive_evaluation": {
     "full_editorial_eval": false,
-    "reason": "guaranteed_delivery_final",
+    "reason": "openai_quota_unavailable",
     "stable_days_required": 20
   },
   "editorial": {
     "status": "skipped",
-    "reason": "guaranteed_delivery_final",
+    "reason": "openai_quota_unavailable",
     "model": "gpt-5.6-sol"
   },
   "prepublish_quality_gate": {
-    "status": "guaranteed_delivery_passed",
+    "status": "sla_fallback_passed",
     "publishable": true,
-    "publication_mode": "guaranteed_minimum",
+    "publication_mode": "sla_fallback",
     "achievable_briefing_by_section": {
-      "supply": 280,
-      "policy": 90,
-      "dist": 62,
-      "pest": 21
+      "supply": 250,
+      "policy": 71,
+      "dist": 48,
+      "pest": 10
     },
     "thin_pool_sections": {},
     "repair_count": 0,
@@ -363,27 +343,13 @@
       {
         "label": "initial",
         "rank": [
-          2,
-          -73.15
+          1,
+          -92.89
         ]
       }
     ],
     "restored_best_state": "",
-    "guaranteed_delivery": {
-      "blockers_before": [
-        "score_floor:reader"
-      ],
-      "removed": [],
-      "ignored_unmatched_issues": [],
-      "dropped_missing_summary": [],
-      "total_cards": 20,
-      "min_total_cards": 8,
-      "unsafe_left": false,
-      "publishable": true,
-      "blockers_after": [
-        "score_floor:reader"
-      ]
-    },
+    "guaranteed_delivery": {},
     "deadline_kst": "06:50",
     "deadline_reached": false,
     "minimum_operational_score": 85.0,
@@ -395,9 +361,7 @@
     "sla_fallback_minimum_score": 78.0,
     "sla_fallback_score_enforced": true,
     "sla_fallback_minimum_per_section": 4,
-    "sla_fallback_blockers": [
-      "score_floor:reader"
-    ],
+    "sla_fallback_blockers": [],
     "hard_editorial_issue_count": 0,
     "model": "gpt-5.6-sol",
     "usage_events": [],
