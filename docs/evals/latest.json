@@ -1,38 +1,38 @@
 {
-  "report_date": "2026-10-29",
-  "generated_at_kst": "2026-10-29T06:17:22+09:00",
+  "report_date": "2026-10-30",
+  "generated_at_kst": "2026-10-30T06:18:44+09:00",
   "status": "pass",
-  "overall_score": 97.8,
-  "operational_score": 97.8,
-  "reader_quality_score": 97.8,
+  "overall_score": 92.7,
+  "operational_score": 94.14,
+  "reader_quality_score": 92.7,
   "reader_quality_gate": {
     "status": "clear",
-    "headline_score": 97.8,
-    "operational_score": 97.8,
-    "penalty": 0.0,
+    "headline_score": 92.7,
+    "operational_score": 94.14,
+    "penalty": 1.44,
     "cap": 100.0,
     "reasons": []
   },
   "scores": {
     "completeness": 100.0,
-    "diversity": 100.0,
-    "source_quality": 100.0,
-    "summary_quality": 98.5,
+    "diversity": 96.0,
+    "source_quality": 80.0,
+    "summary_quality": 89.5,
     "freshness": 100.0,
-    "retrieval_support": 86.87,
+    "retrieval_support": 76.6,
     "section_alignment": 97.19,
-    "core_quality": 92.67,
-    "commodity_board_quality": 98.77,
-    "reader_quality": 97.8
+    "core_quality": 97.18,
+    "commodity_board_quality": 94.86,
+    "reader_quality": 92.7
   },
   "counts": {
     "briefing_total": 20,
-    "commodity_total": 33,
-    "commodity_primary_total": 9,
-    "commodity_pool_total": 8,
-    "commodity_active_today_total": 14,
-    "commodity_active_today_unlinked_total": 5,
-    "commodity_managed_unlinked_total": 24,
+    "commodity_total": 25,
+    "commodity_primary_total": 10,
+    "commodity_pool_total": 9,
+    "commodity_active_today_total": 17,
+    "commodity_active_today_unlinked_total": 7,
+    "commodity_managed_unlinked_total": 23,
     "briefing_by_section": {
       "supply": 5,
       "policy": 5,
@@ -46,16 +46,16 @@
       "pest": 1
     },
     "commodity_by_section": {
-      "supply": 17,
+      "supply": 16,
       "policy": 1,
-      "dist": 7,
-      "pest": 8
+      "dist": 5,
+      "pest": 3
     },
     "raw_by_section": {
-      "supply": 283,
-      "policy": 68,
-      "dist": 90,
-      "pest": 42
+      "supply": 251,
+      "policy": 71,
+      "dist": 59,
+      "pest": 18
     },
     "expected_briefing_by_section": {
       "supply": 5,
@@ -81,30 +81,30 @@
       "dist": 0,
       "pest": 0
     },
-    "low_tier_source_total": 3,
+    "low_tier_source_total": 4,
     "low_tier_source_by_section": {
-      "supply": 0,
+      "supply": 1,
       "policy": 1,
-      "dist": 1,
-      "pest": 1
+      "dist": 0,
+      "pest": 2
     },
     "achievable_briefing_by_section": {
-      "supply": 243,
-      "policy": 59,
-      "dist": 47,
-      "pest": 28
+      "supply": 221,
+      "policy": 63,
+      "dist": 34,
+      "pest": 10
     }
   },
   "metrics": {
     "briefing_title_unique_rate": 1.0,
-    "briefing_domain_diversity_rate": 0.7,
-    "low_tier_source_rate": 0.15,
+    "briefing_domain_diversity_rate": 0.75,
+    "low_tier_source_rate": 0.2,
     "low_tier_source_excess_count": 0,
     "source_quality_penalty": 0.0,
     "surface_reuse_penalty": 0.0,
     "summary_presence_rate": 1.0,
-    "summary_length_ok_rate": 0.95,
-    "summary_numeric_rate": 0.75,
+    "summary_length_ok_rate": 0.65,
+    "summary_numeric_rate": 0.7,
     "summary_opening_diversity": 1.0,
     "matched_article_rate": 1.0,
     "within_48h_rate": 1.0,
@@ -112,25 +112,25 @@
     "stale_over_96h_rate": 0.0,
     "freshness_window_mode": "regular",
     "freshness_gap_offset_hours": 0.0,
-    "seed_coverage_score": 0.5625,
-    "section_alignment_fit_avg": 3.9475,
-    "section_alignment_low_fit_rate": 0.0,
+    "seed_coverage_score": 0.5,
+    "section_alignment_fit_avg": 3.561,
+    "section_alignment_low_fit_rate": 0.05,
     "section_alignment_cross_gap_rate": 0.05,
     "section_alignment_weak_stage_rate": 0.0,
     "content_false_positive_rate": 0.0,
     "reader_hard_issue_count": 0,
     "reader_hard_issue_rate": 0.0,
     "reader_hard_core_issue_count": 0,
-    "reader_quality_penalty": 0.0,
+    "reader_quality_penalty": 1.44,
     "reader_quality_cap": 100.0,
-    "preferred_slot_reader_penalty_weight": 0.75,
+    "preferred_slot_reader_penalty_weight": 1.5,
     "off_scope_foreign_rate": 0.0,
     "story_duplicate_rate": 0.0,
     "cross_section_duplicate_rate": 0.0,
     "content_irrelevant_rate": 0.0,
     "semantic_false_positive_penalty": 0.0,
     "story_duplicate_penalty": 0.0,
-    "policy_wrong_section_rate": 0.0,
+    "policy_wrong_section_rate": 0.05,
     "promotional_filler_rate": 0.0,
     "promotional_core_rate": 0.0,
     "weak_core_editorial_rate": 0.0,
@@ -138,37 +138,37 @@
     "policy_theme_duplicate_rate": 0.0,
     "policy_theme_duplicate_count": 0,
     "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 0.0,
+    "editorial_quality_penalty": 0.8,
     "preferred_slot_gap_rate": 0.0,
     "preferred_slot_gap_total": 0,
     "preferred_slot_penalty": 0.0,
-    "core_fit_avg": 4.3157,
-    "core_rank_percentile_avg": 0.8623,
+    "core_fit_avg": 3.8314,
+    "core_rank_percentile_avg": 0.8606,
     "core_stage_core_rate": 1.0,
-    "weak_core_rate": 0.1429,
+    "weak_core_rate": 0.0,
     "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0,
-    "commodity_primary_fit_avg": 3.3978,
-    "commodity_primary_rank_avg": 3.1111,
+    "commodity_primary_fit_avg": 3.07,
+    "commodity_primary_rank_avg": 3.4,
     "commodity_primary_title_item_focus_rate": 1.0,
-    "commodity_primary_title_issue_signal_rate": 1.0,
-    "commodity_primary_strict_link_rate": 1.0,
+    "commodity_primary_title_issue_signal_rate": 0.9,
+    "commodity_primary_strict_link_rate": 0.9,
     "commodity_primary_low_rank_rate": 0.0,
-    "commodity_primary_count": 9,
-    "commodity_active_today_total": 14,
-    "commodity_active_today_unlinked_total": 5,
-    "commodity_managed_unlinked_total": 24,
+    "commodity_primary_count": 10,
+    "commodity_active_today_total": 17,
+    "commodity_active_today_unlinked_total": 7,
+    "commodity_managed_unlinked_total": 23,
     "commodity_board_daily_min_primary_count": 6,
     "commodity_board_low_coverage": false,
-    "commodity_board_coverage_rate": 0.2727,
+    "commodity_board_coverage_rate": 0.303,
     "commodity_primary_title_item_missing_rate": 0.0,
     "commodity_primary_body_only_rate": 0.0,
     "commodity_primary_false_link_rate": 0.0,
-    "commodity_pool_count": 8,
+    "commodity_pool_count": 9,
     "commodity_pool_false_link_rate": 0.0,
-    "commodity_primary_dominant_section_rate": 0.4444,
-    "commodity_primary_section_balance_score": 1.0
+    "commodity_primary_dominant_section_rate": 0.6,
+    "commodity_primary_section_balance_score": 0.5714
   },
   "section_scores": {
     "briefing_fill": {
@@ -187,77 +187,100 @@
       "supply": 1.0,
       "policy": 1.0,
       "dist": 1.0,
-      "pest": 1.0
+      "pest": 0.52
     },
     "seed_coverage": {
       "supply": 0.4167,
-      "policy": 0.5833,
-      "dist": 0.6667,
-      "pest": 0.5833
+      "policy": 0.75,
+      "dist": 0.5833,
+      "pest": 0.25
     },
     "section_alignment": {
       "supply": 1.0,
-      "policy": 1.0,
+      "policy": 0.8364,
       "dist": 1.0,
       "pest": 1.0
     },
     "core_quality": {
       "supply": 1.0,
-      "policy": 0.9821,
-      "dist": 0.6849,
-      "pest": 0.9524
+      "policy": 0.9457,
+      "dist": 0.9322,
+      "pest": 0.9127
     }
   },
   "freshness_samples": [
     {
-      "title": "기름, 간장, 물엿 속고 먹었다... 옥수수 한알까지 감시해야 할 판",
-      "section": "supply",
-      "age_hours": 22.5
-    },
-    {
-      "title": "제주 광역수급관리센터, 첫 '겨울무 광역주산지협의체' 개최",
-      "section": "supply",
-      "age_hours": 20.6
-    },
-    {
-      "title": "경북 상주 외서농협, 배 수출 ‘활기’",
+      "title": "상주 신고배, 올해 첫 미국 수출 …13.6t 선적",
       "section": "dist",
-      "age_hours": 18.9
+      "age_hours": 23.3
     },
     {
-      "title": "농산물 가격 안정 위해 도매시장 '예약거래'확대 필요",
+      "title": "봉화군, 사과 과수화상병 4차 예찰 실시 나서…500농가 예방 관리 강화",
+      "section": "pest",
+      "age_hours": 22.0
+    },
+    {
+      "title": "농업회사법인 밭, 냉해 겪은 감자 농가에 ‘상생 지원금’ 전달",
+      "section": "pest",
+      "age_hours": 21.0
+    },
+    {
+      "title": "“농가 부담 던다”…중앙청과, 고창 흥덕농협에 물류·영농기자재 지원",
+      "section": "policy",
+      "age_hours": 20.7
+    },
+    {
+      "title": "동화청과, 강원 사과 농가에 도매시장 출하 전략 전수",
       "section": "dist",
+      "age_hours": 19.4
+    },
+    {
+      "title": "정선군, 농산물 최저 가격 기준 완화 조례 개정",
+      "section": "policy",
       "age_hours": 18.7
     },
     {
-      "title": "10월 채소류 농업관측",
-      "section": "supply",
-      "age_hours": 18.1
-    },
-    {
-      "title": "\"CPTPP 가입 불가피\" … 농가 피해 대책 확대돼야",
-      "section": "policy",
-      "age_hours": 18.1
-    },
-    {
-      "title": "국감서 드러난 농정 현안, 실효성 있는 입법·예산으로 매듭지어야",
-      "section": "policy",
-      "age_hours": 18.1
-    },
-    {
-      "title": "' 과수 화상병' 국산 방제약제 개발길 열려",
+      "title": "케이(K)-농산물, ‘농약 안전관리’ 강화로 비관세장벽 넘었다",
       "section": "pest",
       "age_hours": 18.1
+    },
+    {
+      "title": "“비밀은 가까운 곳에”…감 탄저병 잡는 효모균 ‘이곳’에서 찾았다",
+      "section": "pest",
+      "age_hours": 18.0
     }
   ],
   "content_false_positive_samples": [],
   "reader_hard_issue_samples": [],
   "story_duplicate_samples": [],
-  "commodity_primary_linkage_samples": [],
+  "commodity_primary_linkage_samples": [
+    {
+      "title": "김장철 앞두고 재료값 '희비'…배추 내리고 새우젓 오르고",
+      "item_label": "배추",
+      "section": "supply",
+      "surface": "commodity_primary",
+      "representative_rank": 3,
+      "reasons": [
+        "title_issue_missing"
+      ]
+    }
+  ],
   "commodity_pool_linkage_samples": [],
-  "editorial_quality_samples": [],
+  "editorial_quality_samples": [
+    {
+      "title": "“농가 부담 던다”…중앙청과, 고창 흥덕농협에 물류·영농기자재 지원",
+      "href": "https://www.nongmin.com/article/20261028500222",
+      "section": "policy",
+      "is_core": false,
+      "reasons": [
+        "policy_price_report_without_policy_action"
+      ]
+    }
+  ],
   "improvement_hints": [
-    "리콜 시드 결손이 보입니다: supply. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요."
+    "요약 문장 품질 편차가 큽니다. 품목·지역·수치·대응을 앞 문장에 명시하도록 프롬프트 피드백을 자동 반영하세요.",
+    "리콜 시드 결손이 보입니다: supply, pest. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요.",
+    "편집 품질상 약한 기사 선택이 감지되었습니다 (policy_wrong_section=5%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요."
   ],
   "selection_guardrails": {
     "driver_tags": [],
@@ -296,9 +319,7 @@
     "commodity_disable_primary_fallback": true
   },
   "summary_prompt_feedback": [
-    "각 기사 요약은 2문장으로 유지하고 첫 문장에 품목·지역·핵심 이슈를 바로 적는다.",
-    "기사에 수치가 있으면 1개 이상 남기고, 없으면 대응 주체나 시점을 분명히 적는다.",
-    "비슷한 시작 표현을 반복하지 말고 원인과 대응을 분리해서 간결하게 쓴다."
+    "각 기사 요약은 2문장으로 유지하고, 85~140자 안에서 품목·지역·핵심 변수만 남긴다."
   ],
   "adaptive_evaluation": {
     "full_editorial_eval": false,
@@ -315,10 +336,10 @@
     "publishable": true,
     "publication_mode": "normal",
     "achievable_briefing_by_section": {
-      "supply": 243,
-      "policy": 59,
-      "dist": 47,
-      "pest": 28
+      "supply": 221,
+      "policy": 63,
+      "dist": 34,
+      "pest": 10
     },
     "thin_pool_sections": {},
     "repair_count": 0,
@@ -332,7 +353,7 @@
         "label": "initial",
         "rank": [
           0,
-          -97.8
+          -92.7
         ]
       }
     ],
