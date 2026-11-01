@@ -2,7 +2,9 @@ param(
     [string]$RedirectUri = "",
     [string]$Code = "",
     [string[]]$EnvFile = @(".env.local", ".env.final.local", ".env.dev.local"),
-    [string]$Repo = "NH-Horti/agri-news-brief",
+    # The Kakao refresh token is shared by every repo listed here; a renewal or
+    # reissue must reach all of them or the others die with KOE322.
+    [string[]]$Repo = @("NH-Horti/agri-news-brief", "NH-Horti/garak-fruit-brief"),
     [string]$Scope = "talk_message",
     [switch]$OpenBrowser,
     [switch]$PromptLogin,
@@ -188,11 +190,13 @@ if ($UpdateGitHubSecret) {
     if (-not $gh) {
         throw "GitHub CLI (gh) was not found."
     }
-    $refreshToken | gh secret set KAKAO_REFRESH_TOKEN --repo $Repo
-    if ($LASTEXITCODE -ne 0) {
-        throw "gh secret set failed."
+    foreach ($targetRepo in $Repo) {
+        $refreshToken | gh secret set KAKAO_REFRESH_TOKEN --repo $targetRepo
+        if ($LASTEXITCODE -ne 0) {
+            throw "gh secret set failed for $targetRepo."
+        }
+        Write-Host "Updated GitHub secret KAKAO_REFRESH_TOKEN in $targetRepo"
     }
-    Write-Host "Updated GitHub secret KAKAO_REFRESH_TOKEN in $Repo"
 }
 
 Write-Host "Kakao refresh token was reissued successfully. Token value was not printed."

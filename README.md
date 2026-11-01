@@ -254,6 +254,20 @@ timestamp missed 07:00 KST.
 
 The 04:45 KST credential preflight validates Naver, OpenAI quota, and Kakao,
 leaving schedule-delay headroom before both production triggers.
+
+Kakao refresh tokens live 60 days, and the first refresh call made with less
+than a month left returns a renewed token while invalidating the stored one.
+The token is shared with `NH-Horti/garak-fruit-brief`, so whichever repo
+refreshes first after day 30 holds the only valid copy. Both the daily run and
+the preflight therefore save a renewed token to every repo listed in
+`KAKAO_SECRET_TARGET_REPOS` through `gh secret set`, using the
+`KAKAO_SECRETS_PAT` secret (a fine-grained personal access token with
+"Secrets: read and write" on both repos). Without that PAT the run fails loudly
+and the preflight sends a KakaoTalk alert instead; the manual fallback is
+`scripts/rotate-kakao-refresh-token.ps1 -RedirectUri http://localhost:8080`
+(then rerun with `-Code <redirect URL> -UpdateGitHubSecret -UpdateEnvFiles`),
+which updates both repos. Outages on 2026-08-31, 2026-09-30, and 2026-11-02
+were all this renewal landing in a runner and being lost.
 If OpenAI returns `insufficient_quota` during generation, the run opens a local
 circuit breaker, stops repeated model calls, uses deterministic two-sentence
 summaries, and continues through the SLA delivery policy.
