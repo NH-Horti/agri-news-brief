@@ -507,6 +507,24 @@ class PrepublishQualityGateTests(unittest.TestCase):
         self.assertEqual(len(seen), 1)
         self.assertTrue(seen[0]["force_editorial"])
         self.assertTrue(seen[0]["allow_sla_fallback"])
+        self.assertFalse(seen[0]["guarantee_delivery"])
+
+        seen.clear()
+        with (
+            patch.object(main, "MAINTENANCE_SEND_KAKAO", False),
+            patch.object(main, "REPLAY_RUN_QUALITY_GATE", True),
+            patch.object(main, "REPLAY_GUARANTEED_DELIVERY", True),
+            patch.object(main, "PLACEMENT_ONLY", False),
+            patch.object(main, "_build_sections_for_report", return_value=(selected, {}, start_kst, end_kst)),
+            patch.object(main, "load_replay_snapshot", return_value=(selected, start_kst, end_kst, {}, {}, Path("snapshot.json"))),
+            patch.object(main, "_list_archive_dates", return_value={"2026-09-15"}),
+            patch.object(main, "get_pages_base_url", return_value="https://example.com/brief"),
+            patch.object(main, "_run_prepublish_quality_gate", side_effect=run_gate),
+            patch.object(main, "_publish_maintenance_report"),
+        ):
+            main.maintenance_replay_date("owner/repo", "token", "2026-09-29", "docs", allow_openai=True)
+        # 페이지 전용 재빌드는 운영자가 켤 때만 보장 발행을 쓴다(카톡 재발송 경로는 항상 끔).
+        self.assertTrue(seen[0]["guarantee_delivery"])
 
 
 if __name__ == "__main__":

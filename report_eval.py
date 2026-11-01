@@ -1416,6 +1416,10 @@ def evaluate_report(
     )
 
     snapshot_end = parse_kst_datetime(snapshot_payload.get("window", {}).get("end_kst"))
+    # 연휴 뒤 첫 지면은 수집 창이 주말(72h)보다 길다(2026-09-28: 추석 연휴 5일 창 120h).
+    # 그 창의 첫날 기사도 독자에게는 직전 지면 이후 처음 보는 소식이므로, 주말을 넘는 창 길이만큼
+    # 나이 기준을 늦춘다. 고정 기준으로 재면 창 안의 기사 절반이 '96h 초과'로 잡혀 freshness 25점이었다.
+    freshness_gap_offset_hours = max(0.0, _snapshot_window_hours(snapshot_payload) - 72.0)
     by_url, by_title = _build_snapshot_indexes(snapshot_payload)
     section_raw_pools = {
         section: list(raw_by_section.get(section, [])) if isinstance(raw_by_section.get(section, []), list) else []
@@ -1444,11 +1448,12 @@ def evaluate_report(
         if not snapshot_end or not pub_dt:
             continue
         age_hours = max(0.0, (snapshot_end - pub_dt).total_seconds() / 3600.0)
-        if age_hours <= 48.0:
+        edition_age_hours = max(0.0, age_hours - freshness_gap_offset_hours)
+        if edition_age_hours <= 48.0:
             within_48h += 1
-        if age_hours <= 72.0:
+        if edition_age_hours <= 72.0:
             within_72h += 1
-        if age_hours > 96.0:
+        if edition_age_hours > 96.0:
             stale_older_than_96h += 1
         freshness_samples.append(
             {
@@ -2311,6 +2316,7 @@ def evaluate_report(
             "within_72h_rate": round(within_72h_rate, 4),
             "stale_over_96h_rate": round(stale_rate, 4),
             "freshness_window_mode": freshness_window_mode,
+            "freshness_gap_offset_hours": round(freshness_gap_offset_hours, 1),
             "seed_coverage_score": round(seed_score, 4),
             "section_alignment_fit_avg": round(section_alignment_fit_avg, 4),
             "section_alignment_low_fit_rate": round(section_alignment_low_fit_rate, 4),

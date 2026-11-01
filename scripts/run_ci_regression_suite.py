@@ -14,6 +14,7 @@ TEST_TARGETS = [
     "tests.test_regressions",
     "tests.test_delivery_watchdog_decision",
     "tests.test_prepublish_quality",
+    "tests.test_guaranteed_delivery",
     "tests.test_kakao_runtime_behavior",
     "tests.test_report_eval",
     "tests.test_editorial_eval",

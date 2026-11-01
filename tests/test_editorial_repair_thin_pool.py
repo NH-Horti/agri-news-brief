@@ -222,7 +222,8 @@ class TestRepairValidatorHonorsSectionTargets(unittest.TestCase):
         self.assertEqual(main._repair_section_target({"pest": 4}, "pest"), 4)
         self.assertEqual(main._repair_section_target({"pest": 4}, "supply"), main.MAX_PER_SECTION)
         self.assertEqual(main._repair_section_target({"pest": 99}, "pest"), main.MAX_PER_SECTION)
-        self.assertEqual(main._repair_section_target({"pest": 1}, "pest"), main.MIN_FALLBACK_PER_SECTION)
+        # 사건 수로 내려간 얇은 섹션 목표는 MIN_FALLBACK 으로 다시 올리지 않는다(2026-10-01)
+        self.assertEqual(main._repair_section_target({"pest": 1}, "pest"), 1)
         self.assertEqual(main._repair_section_target({"pest": None}, "pest"), main.MAX_PER_SECTION)
 
 

@@ -110,6 +110,30 @@ class SharedPestThemeTests(unittest.TestCase):
         )
         self.assertEqual(first, second)
 
+    def test_body_fire_blight_mention_does_not_override_title_bucket(self) -> None:
+        """본문에 '과수화상병 등'이 곁들여 나오는 과수 기사를 fire_blight 로 묶지 않는다(2026-09-23·28)."""
+        body = "과수화상병 등 주요 병해충 피해를 줄이기 위해 무병묘 생산이 필요하다."
+        self.assertEqual(
+            crop_risk_vocab.classify_pest_theme("“수확 앞둔 배 30~40% 쩍쩍”…안성 배농가 덮친 열과 피해", body),
+            "crop_배",
+        )
+        self.assertEqual(crop_risk_vocab.classify_pest_theme("고온·병해충 강한 이지플...충주사과 명성 되찾는다", body), "crop_사과")
+        # 제목이 화상병이면 fire_blight. 본문의 부수 언급만으로는 화상병 버킷이 되지 않는다.
+        self.assertEqual(crop_risk_vocab.classify_pest_theme("안동 과수화상병 확진 농가 늘어", ""), "fire_blight")
+        self.assertEqual(crop_risk_vocab.classify_pest_theme("과수 무병묘 생산기반 확보 시급", body), "general_pest")
+        self.assertEqual(crop_risk_vocab.classify_pest_theme("농업 현장 애로 해결한 적극행정 포상", "농진청이 과수화상병 방제제 상용화 등 애로를 해결했다."), "general_pest")
+        self.assertEqual(crop_risk_vocab.classify_pest_theme("사과밭 '붉은 죽음' 다시 번진다", "", fire_blight_hint=True), "fire_blight")
+        self.assertEqual(
+            crop_risk_vocab.classify_pest_theme("수입금지 중국 식물류 적발 9.9배↑… ‘생물안보’ 경고등", "금지 병해충이 검출됐다."),
+            "plant_quarantine",
+        )
+        # 기관명 '검역본부'는 검역 기사 신호가 아니다
+        self.assertEqual(crop_risk_vocab.classify_pest_theme("농림축산검역본부, 돌발해충 확산 경보", ""), "outbreak_pest")
+
+    def test_multiplier_is_not_the_pear_crop_token(self) -> None:
+        self.assertEqual(crop_risk_vocab.crop_bucket("수입금지 중국 식물류 적발 9.9배↑"), "")
+        self.assertEqual(crop_risk_vocab.crop_bucket("배 과원 방제 당부"), "배")
+
     def test_named_pest_beats_generic_bucket(self) -> None:
         self.assertEqual(crop_risk_vocab.classify_pest_theme("씨스트선충 확산 막아라", "배추 병해충"), "nematode")
         self.assertEqual(crop_risk_vocab.classify_pest_theme("고추 응애 피해 우려", "방제 당부"), "mite")

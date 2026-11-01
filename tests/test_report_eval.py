@@ -1091,6 +1091,47 @@ class ReportEvalTests(unittest.TestCase):
         self.assertGreater(monday["scores"]["freshness"], regular["scores"]["freshness"])
         self.assertGreaterEqual(monday["scores"]["freshness"], 85.0)
 
+    def test_post_holiday_edition_measures_age_from_the_edition_gap(self) -> None:
+        """추석 연휴 뒤 첫 지면(2026-09-28, 창 120h): 창 첫날 기사를 '96h 초과'로 감점하지 않는다."""
+        summary = "배 산지 출하량과 도매시장 반입 흐름을 점검하고 가격 변동 가능성을 설명했다. 농가 대응도 전했다."
+        html = "\n".join(
+            f"""
+            <div data-surface="briefing_card" data-section="supply" data-article-title="배 연휴 출하 점검 {idx}"
+              data-href="https://example.com/pear-{idx}" data-article-id="brief-{idx}" data-target-domain="example.com">
+              <div class="sum">{summary}</div>
+            </div>
+            """
+            for idx in range(4)
+        )
+        raw_items = [
+            {
+                "section": "supply",
+                "title": f"배 연휴 출하 점검 {idx}",
+                "link": f"https://example.com/pear-{idx}",
+                "description": "배 산지 출하량을 점검했다.",
+                "selection_fit_score": 1.4,
+                "selection_stage": "core_final",
+                "score": 85.0,
+                # 9/23 아침 ~ 9/26: 연휴 창의 앞쪽 절반
+                "pub_dt_kst": f"2026-09-2{3 + idx}T10:00:00+09:00",
+            }
+            for idx in range(4)
+        ]
+        snapshot_payload = {
+            "window": {"start_kst": "2026-09-23T06:00:00+09:00", "end_kst": "2026-09-28T06:00:00+09:00"},
+            "raw_by_section": {"supply": raw_items, "policy": [], "dist": [], "pest": []},
+        }
+        result = report_eval.evaluate_report("2026-09-28", html, snapshot_payload)
+        self.assertEqual(result["metrics"]["freshness_gap_offset_hours"], 48.0)
+        self.assertEqual(result["metrics"]["stale_over_96h_rate"], 0.0)
+        self.assertGreaterEqual(result["scores"]["freshness"], 85.0)
+        # 평일(24h 창)은 기준이 그대로다.
+        weekday = report_eval.evaluate_report(
+            "2026-09-30", html, {**snapshot_payload, "window": {"start_kst": "2026-09-29T06:00:00+09:00", "end_kst": "2026-09-30T06:00:00+09:00"}}
+        )
+        self.assertEqual(weekday["metrics"]["freshness_gap_offset_hours"], 0.0)
+        self.assertGreater(weekday["metrics"]["stale_over_96h_rate"], 0.0)
+
     def test_eval_flags_foreign_unmanaged_commodity(self) -> None:
         html = """
         <div

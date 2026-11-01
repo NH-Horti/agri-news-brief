@@ -164,7 +164,8 @@ def normalize(text: str) -> str:
 def _has_crop_token(title: str, token: str) -> bool:
     if token not in _SHORT_CROP_TOKENS:
         return token in title
-    return re.search(rf"(?<![가-힣]){re.escape(token)}(?![가-힣])", title) is not None
+    # 숫자 바로 뒤의 '배'는 배수('적발 9.9배↑')다.
+    return re.search(rf"(?<![가-힣0-9.]){re.escape(token)}(?![가-힣])", title) is not None
 
 
 def crop_bucket(title: str) -> str:
@@ -235,6 +236,14 @@ def named_pest_bucket(text: str) -> str:
     return ""
 
 
+def _title_plant_quarantine(title_l: str) -> bool:
+    """제목이 검역·수입금지 식물 적발 기사인가('농림축산검역본부'라는 기관명은 제외)."""
+    title_l = title_l.replace("검역본부", "")
+    if "검역" in title_l or "생물안보" in title_l:
+        return True
+    return "수입금지" in title_l and any(term in title_l for term in ("식물", "묘목", "종자", "씨앗"))
+
+
 def classify_pest_theme(title: str, body: str = "", *, fire_blight_hint: bool = False) -> str:
     """pest 카드의 편집 테마 버킷.
 
@@ -247,6 +256,13 @@ def classify_pest_theme(title: str, body: str = "", *, fire_blight_hint: bool = 
     fire_blight_hint 는 main.py 의 과수화상병 농가피해 문맥 판정 결과다.
     평가 쪽에는 해당 판정기가 없으므로 기본값 False 로 두고, 화상병 표기가
     본문에 있으면 어느 쪽에서든 같은 버킷이 된다.
+
+    화상병 버킷은 제목으로만 정한다. 과수 기사 본문은 '과수화상병 등 주요 병해충'처럼
+    화상병을 곁들여 언급하는 일이 흔해서(2026-09 pest 풀에서 제목에 화상병이 없는데
+    본문에만 있는 기사 30여 건이 전부 부수 언급: 영농부산물 파쇄 지원·무병묘·검역 적발·
+    배 열과 피해·적극행정 포상·인터뷰), 본문으로 버킷을 정하면 서로 다른 기사가 3장 이상
+    fire_blight 로 묶여 중복 감점(2026-09-23·09-28 reader 캡 90)과 가드의 꼬리 절단을 받았다.
+    fire_blight_hint 는 이제 제목의 '붉은 죽음' 같은 우회 표현에만 쓴다(가드와 심판이 같은 값을 내도록).
     """
     title_l = normalize(title)
     text = normalize(f"{title} {body}")
@@ -255,8 +271,10 @@ def classify_pest_theme(title: str, body: str = "", *, fire_blight_hint: bool = 
 
     if "식물검역증명서" in text or ("해외 직구 씨앗" in text and "검역" in text):
         return "plant_quarantine"
-    if fire_blight_hint or "과수화상병" in text or "화상병" in text:
+    if "화상병" in title_l or (fire_blight_hint and "붉은 죽음" in title_l):
         return "fire_blight"
+    if _title_plant_quarantine(title_l):
+        return "plant_quarantine"
     if "역병" in title_l:
         return "phytophthora"
     if "돌발해충" in title_l:
