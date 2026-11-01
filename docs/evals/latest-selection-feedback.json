@@ -1,50 +1,53 @@
 {
-  "report_date": "2026-10-30",
-  "generated_at_kst": "2026-10-30T06:18:44+09:00",
+  "report_date": "2026-11-02",
+  "generated_at_kst": "2026-11-02T06:18:23+09:00",
   "scores": {
-    "section_alignment": 97.19,
-    "core_quality": 97.18,
-    "commodity_board_quality": 94.86
+    "section_alignment": 100.0,
+    "core_quality": 89.35,
+    "commodity_board_quality": 88.0
   },
   "metrics": {
-    "section_alignment_low_fit_rate": 0.05,
-    "section_alignment_cross_gap_rate": 0.05,
+    "section_alignment_low_fit_rate": 0.0,
+    "section_alignment_cross_gap_rate": 0.0,
     "content_false_positive_rate": 0.0,
     "reader_hard_issue_count": 0,
     "reader_hard_issue_rate": 0.0,
-    "reader_quality_penalty": 1.44,
+    "reader_quality_penalty": 3.6,
     "reader_quality_cap": 100.0,
-    "weak_core_rate": 0.0,
-    "policy_wrong_section_rate": 0.05,
+    "weak_core_rate": 0.125,
+    "policy_wrong_section_rate": 0.0,
     "promotional_filler_rate": 0.0,
     "promotional_core_rate": 0.0,
     "weak_core_editorial_rate": 0.0,
     "pest_theme_duplicate_rate": 0.0,
     "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 0.8,
+    "editorial_quality_penalty": 0.0,
     "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0,
     "commodity_primary_title_item_focus_rate": 1.0,
-    "commodity_primary_title_issue_signal_rate": 0.9,
-    "commodity_primary_strict_link_rate": 0.9,
+    "commodity_primary_title_issue_signal_rate": 0.8571,
+    "commodity_primary_strict_link_rate": 0.8571,
     "commodity_primary_low_rank_rate": 0.0,
-    "commodity_primary_count": 10,
-    "commodity_active_today_total": 17,
-    "commodity_active_today_unlinked_total": 7,
-    "commodity_managed_unlinked_total": 23,
+    "commodity_primary_count": 14,
+    "commodity_active_today_total": 20,
+    "commodity_active_today_unlinked_total": 6,
+    "commodity_managed_unlinked_total": 19,
     "commodity_board_daily_min_primary_count": 6,
     "commodity_board_low_coverage": false,
-    "commodity_board_coverage_rate": 0.303,
+    "commodity_board_coverage_rate": 0.4242,
     "commodity_primary_title_item_missing_rate": 0.0,
     "commodity_primary_body_only_rate": 0.0,
     "commodity_primary_false_link_rate": 0.0,
-    "commodity_pool_count": 9,
+    "commodity_pool_count": 15,
     "commodity_pool_false_link_rate": 0.0,
-    "commodity_primary_dominant_section_rate": 0.6
+    "commodity_primary_dominant_section_rate": 0.8571
   },
   "selection_guardrails": {
-    "driver_tags": [],
+    "driver_tags": [
+      "low_tier_source_concentration",
+      "commodity_board"
+    ],
     "section_card_min_fit": {
       "default": 0.8,
       "supply": 0.82,
@@ -72,24 +75,14 @@
     "disable_relaxed_core_fill": false,
     "final_low_tier_max_per_section": 1,
     "final_low_tier_max_total": 4,
-    "commodity_active_min_rank": 1,
-    "commodity_program_core_min_rank": 1,
+    "commodity_active_min_rank": 2,
+    "commodity_program_core_min_rank": 3,
     "commodity_require_issue_signal": false,
     "commodity_require_direct_item_focus": false,
     "commodity_strict_primary_only": true,
     "commodity_disable_primary_fallback": true
   },
-  "editorial_quality_samples": [
-    {
-      "title": "“농가 부담 던다”…중앙청과, 고창 흥덕농협에 물류·영농기자재 지원",
-      "href": "https://www.nongmin.com/article/20261028500222",
-      "section": "policy",
-      "is_core": false,
-      "reasons": [
-        "policy_price_report_without_policy_action"
-      ]
-    }
-  ],
+  "editorial_quality_samples": [],
   "reader_hard_issue_samples": [],
   "editorial_improvement_plan": {}
 }
