@@ -262,7 +262,11 @@ refreshes first after day 30 holds the only valid copy. Both the daily run and
 the preflight therefore save a renewed token to every repo listed in
 `KAKAO_SECRET_TARGET_REPOS` through `gh secret set`, using the
 `KAKAO_SECRETS_PAT` secret (a fine-grained personal access token with
-"Secrets: read and write" on both repos). Without that PAT the run fails loudly
+"Secrets: read and write" on both repos). The preflight also checks the PAT
+every weekday (missing, rejected, or expiring within 14 days) and announces
+problems through KakaoTalk while the Kakao token still works; dispatch it with
+`probe_secrets_pat=true` after rotating the PAT to prove it can write secrets
+in both repos. Without that PAT the run fails loudly
 and the preflight sends a KakaoTalk alert instead; the manual fallback is
 `scripts/rotate-kakao-refresh-token.ps1 -RedirectUri http://localhost:8080`
 (then rerun with `-Code <redirect URL> -UpdateGitHubSecret -UpdateEnvFiles`),
