@@ -198,6 +198,26 @@ class TestRegressions(unittest.TestCase):
         self.assertIn("https://kapi.kakao.com/v2/api/talk/memo/default/send", self.secrets_check_text)
         self.assertIn('print(f"::add-mask::{secret_value}")', self.secrets_check_text)
 
+    def test_kakao_refresh_token_renewal_is_persisted_to_both_repos(self):
+        # 2026-11-02: the shared token's day-30 renewal landed in a garak-fruit-brief runner on a
+        # Saturday and was lost, so both repos failed with KOE322 until a manual reissue. Renewed
+        # tokens are now saved to every sharing repo with KAKAO_SECRETS_PAT, and the preflight
+        # watches that PAT (missing / rejected / expiring) so the next outage is announced first.
+        target_repos = "KAKAO_SECRET_TARGET_REPOS: 'NH-Horti/agri-news-brief NH-Horti/garak-fruit-brief'"
+        self.assertIn("- name: Persist renewed Kakao refresh token", self.daily_text)
+        self.assertIn("GH_TOKEN: ${{ secrets.KAKAO_SECRETS_PAT }}", self.daily_text)
+        self.assertIn(target_repos, self.daily_text)
+        self.assertIn('gh secret set KAKAO_REFRESH_TOKEN --repo "$repo"', self.daily_text)
+        self.assertIn("""if [ "$renewed" = 'true' ] && [ "$persisted" != 'true' ]; then""", self.daily_text)
+        self.assertIn("KAKAO_SECRETS_PAT: ${{ secrets.KAKAO_SECRETS_PAT }}", self.secrets_check_text)
+        self.assertIn(target_repos, self.secrets_check_text)
+        self.assertIn('write_output("kakao_status", "renewed_persisted")', self.secrets_check_text)
+        self.assertIn('["gh", "secret", "set", "KAKAO_REFRESH_TOKEN", "--repo", target_repo]', self.secrets_check_text)
+        self.assertIn("probe_secrets_pat:", self.secrets_check_text)
+        self.assertIn("github-authentication-token-expiration", self.secrets_check_text)
+        self.assertIn('write_output("secrets_pat_status", "expiring")', self.secrets_check_text)
+        self.assertIn("[GitHub PAT 만료 임박]", self.secrets_check_text)
+
     def test_prod_workflows_keep_window_and_have_independent_early_trigger(self):
         self.assertIn("Independent early trigger at KST 05:35", self.daily_text)
         self.assertIn("workflow_dispatch:", self.daily_text)
