@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-05T05:50:33+09:00",
+  "generated_at": "2026-11-06T06:05:59+09:00",
   "section_jump": [
     {
       "date": "2026-08-19",
@@ -29,12 +29,6 @@
       "date": "2026-09-03",
       "count": 2,
       "section": "supply",
-      "surface": "briefing_chip"
-    },
-    {
-      "date": "2026-07-09",
-      "count": 1,
-      "section": "policy",
       "surface": "briefing_chip"
     },
     {
@@ -886,6 +880,13 @@
       "nav_type": "prev_date",
       "from_date": "2026-11-03",
       "to_date": "2026-11-02"
+    },
+    {
+      "date": "2026-11-05",
+      "count": 1,
+      "nav_type": "prev_date",
+      "from_date": "2026-11-05",
+      "to_date": "2026-11-04"
     }
   ]
 }
