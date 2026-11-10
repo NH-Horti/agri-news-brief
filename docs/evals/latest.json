@@ -1,67 +1,67 @@
 {
-  "report_date": "2026-11-10",
-  "generated_at_kst": "2026-11-10T06:16:22+09:00",
+  "report_date": "2026-11-11",
+  "generated_at_kst": "2026-11-11T06:18:52+09:00",
   "status": "pass",
-  "overall_score": 86.07,
-  "operational_score": 91.85,
-  "reader_quality_score": 86.07,
+  "overall_score": 97.36,
+  "operational_score": 97.36,
+  "reader_quality_score": 97.36,
   "reader_quality_gate": {
     "status": "clear",
-    "headline_score": 86.07,
-    "operational_score": 91.85,
-    "penalty": 5.78,
+    "headline_score": 97.36,
+    "operational_score": 97.36,
+    "penalty": 0.0,
     "cap": 100.0,
     "reasons": []
   },
   "scores": {
     "completeness": 100.0,
-    "diversity": 98.24,
-    "source_quality": 96.84,
-    "summary_quality": 96.84,
+    "diversity": 100.0,
+    "source_quality": 100.0,
+    "summary_quality": 92.5,
     "freshness": 100.0,
-    "retrieval_support": 73.12,
-    "section_alignment": 94.69,
-    "core_quality": 84.19,
-    "commodity_board_quality": 95.57,
-    "reader_quality": 86.07
+    "retrieval_support": 90.62,
+    "section_alignment": 95.23,
+    "core_quality": 98.39,
+    "commodity_board_quality": 100.0,
+    "reader_quality": 97.36
   },
   "counts": {
-    "briefing_total": 19,
-    "commodity_total": 35,
-    "commodity_primary_total": 12,
-    "commodity_pool_total": 8,
-    "commodity_active_today_total": 17,
-    "commodity_active_today_unlinked_total": 5,
-    "commodity_managed_unlinked_total": 21,
+    "briefing_total": 20,
+    "commodity_total": 51,
+    "commodity_primary_total": 10,
+    "commodity_pool_total": 9,
+    "commodity_active_today_total": 16,
+    "commodity_active_today_unlinked_total": 6,
+    "commodity_managed_unlinked_total": 23,
     "briefing_by_section": {
       "supply": 5,
       "policy": 5,
       "dist": 5,
-      "pest": 4
+      "pest": 5
     },
     "core_by_section": {
       "supply": 2,
-      "policy": 1,
+      "policy": 2,
       "dist": 2,
       "pest": 1
     },
     "commodity_by_section": {
-      "supply": 24,
-      "policy": 3,
-      "dist": 6,
-      "pest": 2
+      "supply": 20,
+      "policy": 10,
+      "dist": 5,
+      "pest": 16
     },
     "raw_by_section": {
-      "supply": 246,
+      "supply": 351,
       "policy": 101,
-      "dist": 56,
-      "pest": 9
+      "dist": 74,
+      "pest": 35
     },
     "expected_briefing_by_section": {
       "supply": 5,
       "policy": 5,
       "dist": 5,
-      "pest": 4
+      "pest": 5
     },
     "soft_fallback_briefing_by_section": {
       "supply": 4,
@@ -83,28 +83,28 @@
     },
     "low_tier_source_total": 3,
     "low_tier_source_by_section": {
-      "supply": 0,
-      "policy": 1,
+      "supply": 1,
+      "policy": 0,
       "dist": 1,
       "pest": 1
     },
     "achievable_briefing_by_section": {
-      "supply": 222,
-      "policy": 86,
-      "dist": 26,
-      "pest": 4
+      "supply": 306,
+      "policy": 90,
+      "dist": 46,
+      "pest": 29
     }
   },
   "metrics": {
     "briefing_title_unique_rate": 1.0,
-    "briefing_domain_diversity_rate": 0.6842,
-    "low_tier_source_rate": 0.1579,
+    "briefing_domain_diversity_rate": 0.7,
+    "low_tier_source_rate": 0.15,
     "low_tier_source_excess_count": 0,
     "source_quality_penalty": 0.0,
-    "surface_reuse_penalty": 0.0185,
+    "surface_reuse_penalty": 0.0141,
     "summary_presence_rate": 1.0,
-    "summary_length_ok_rate": 0.8947,
-    "summary_numeric_rate": 0.8947,
+    "summary_length_ok_rate": 0.75,
+    "summary_numeric_rate": 0.9,
     "summary_opening_diversity": 1.0,
     "matched_article_rate": 1.0,
     "within_48h_rate": 1.0,
@@ -112,18 +112,18 @@
     "stale_over_96h_rate": 0.0,
     "freshness_window_mode": "regular",
     "freshness_gap_offset_hours": 0.0,
-    "seed_coverage_score": 0.5417,
-    "section_alignment_fit_avg": 2.7937,
-    "section_alignment_low_fit_rate": 0.1579,
+    "seed_coverage_score": 0.6875,
+    "section_alignment_fit_avg": 2.928,
+    "section_alignment_low_fit_rate": 0.15,
     "section_alignment_cross_gap_rate": 0.0,
     "section_alignment_weak_stage_rate": 0.0,
     "content_false_positive_rate": 0.0,
     "reader_hard_issue_count": 0,
     "reader_hard_issue_rate": 0.0,
     "reader_hard_core_issue_count": 0,
-    "reader_quality_penalty": 5.7789,
+    "reader_quality_penalty": 0.0,
     "reader_quality_cap": 100.0,
-    "preferred_slot_reader_penalty_weight": 1.5,
+    "preferred_slot_reader_penalty_weight": 0.75,
     "off_scope_foreign_rate": 0.0,
     "story_duplicate_rate": 0.0,
     "cross_section_duplicate_rate": 0.0,
@@ -131,44 +131,44 @@
     "semantic_false_positive_penalty": 0.0,
     "story_duplicate_penalty": 0.0,
     "policy_wrong_section_rate": 0.0,
-    "promotional_filler_rate": 0.1053,
-    "promotional_core_rate": 0.1667,
-    "weak_core_editorial_rate": 0.1667,
+    "promotional_filler_rate": 0.0,
+    "promotional_core_rate": 0.0,
+    "weak_core_editorial_rate": 0.0,
     "pest_theme_duplicate_rate": 0.0,
     "policy_theme_duplicate_rate": 0.0,
     "policy_theme_duplicate_count": 0,
     "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 3.2105,
+    "editorial_quality_penalty": 0.0,
     "preferred_slot_gap_rate": 0.0,
     "preferred_slot_gap_total": 0,
     "preferred_slot_penalty": 0.0,
-    "core_fit_avg": 3.1183,
-    "core_rank_percentile_avg": 0.7603,
+    "core_fit_avg": 4.2657,
+    "core_rank_percentile_avg": 0.8775,
     "core_stage_core_rate": 1.0,
-    "weak_core_rate": 0.1667,
+    "weak_core_rate": 0.0,
     "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0,
-    "commodity_primary_fit_avg": 2.8,
-    "commodity_primary_rank_avg": 3.3333,
+    "commodity_primary_fit_avg": 3.502,
+    "commodity_primary_rank_avg": 3.4,
     "commodity_primary_title_item_focus_rate": 1.0,
-    "commodity_primary_title_issue_signal_rate": 0.9167,
-    "commodity_primary_strict_link_rate": 0.9167,
+    "commodity_primary_title_issue_signal_rate": 1.0,
+    "commodity_primary_strict_link_rate": 1.0,
     "commodity_primary_low_rank_rate": 0.0,
-    "commodity_primary_count": 12,
-    "commodity_active_today_total": 17,
-    "commodity_active_today_unlinked_total": 5,
-    "commodity_managed_unlinked_total": 21,
+    "commodity_primary_count": 10,
+    "commodity_active_today_total": 16,
+    "commodity_active_today_unlinked_total": 6,
+    "commodity_managed_unlinked_total": 23,
     "commodity_board_daily_min_primary_count": 6,
     "commodity_board_low_coverage": false,
-    "commodity_board_coverage_rate": 0.3636,
+    "commodity_board_coverage_rate": 0.303,
     "commodity_primary_title_item_missing_rate": 0.0,
     "commodity_primary_body_only_rate": 0.0,
     "commodity_primary_false_link_rate": 0.0,
-    "commodity_pool_count": 8,
+    "commodity_pool_count": 9,
     "commodity_pool_false_link_rate": 0.0,
-    "commodity_primary_dominant_section_rate": 0.5833,
-    "commodity_primary_section_balance_score": 0.631
+    "commodity_primary_dominant_section_rate": 0.4,
+    "commodity_primary_section_balance_score": 1.0
   },
   "section_scores": {
     "briefing_fill": {
@@ -187,108 +187,77 @@
       "supply": 1.0,
       "policy": 1.0,
       "dist": 1.0,
-      "pest": 0.25
+      "pest": 1.0
     },
     "seed_coverage": {
-      "supply": 0.6667,
-      "policy": 0.5,
-      "dist": 0.5833,
-      "pest": 0.4167
+      "supply": 0.75,
+      "policy": 0.6667,
+      "dist": 0.8333,
+      "pest": 0.5
     },
     "section_alignment": {
-      "supply": 1.0,
+      "supply": 0.8364,
       "policy": 0.8364,
-      "dist": 0.7,
+      "dist": 0.8364,
       "pest": 1.0
     },
     "core_quality": {
       "supply": 1.0,
-      "policy": 0.9017,
-      "dist": 0.5526,
-      "pest": 0.9127
+      "policy": 0.9689,
+      "dist": 0.9266,
+      "pest": 1.0
     }
   },
   "freshness_samples": [
     {
-      "title": "“누가 갈아엎고 싶겠습니까”… 배추·쪽파값 폭락에 밭 갈아엎는 농가",
+      "title": "영천농협, 샤인머스켓 24.5톤 미국·대만·홍콩 수출 …하루 최대 물량 기...",
+      "section": "policy",
+      "age_hours": 19.2
+    },
+    {
+      "title": "방제 시간 70% 줄이고 당도 1.4브릭스 쑥…제주 노지 감귤 스마트팜 결실",
+      "section": "pest",
+      "age_hours": 19.0
+    },
+    {
+      "title": "임미애 \"특검법 위헌이면 헌재서 다퉈야... 농민 예산 볼모 잡지 말라\"",
+      "section": "dist",
+      "age_hours": 18.1
+    },
+    {
+      "title": "“건 고추 한 근에 8000원”…값 부진하고 생산비 올라 농가 한숨",
       "section": "supply",
-      "age_hours": 24.0
-    },
-    {
-      "title": "한·일 세미나 “ 농산물 도매시장, 경매로는 부족...사업 다각화 필요”",
-      "section": "dist",
-      "age_hours": 22.8
-    },
-    {
-      "title": "쿠팡 ‘착한상점’, 아산시와 맞손…“농산물 판로 확대”",
-      "section": "dist",
-      "age_hours": 21.6
-    },
-    {
-      "title": "토마토 생산량 70% 급감 우려...부산까지 번진 바이러스에 '초비상' [자...",
-      "section": "pest",
-      "age_hours": 21.4
-    },
-    {
-      "title": "[영천 24시] 영천 샤인머스켓 24.5톤 미국·대만·홍콩 수출…하루 최대...",
-      "section": "dist",
-      "age_hours": 20.1
-    },
-    {
-      "title": "“지원할땐 언제고”… ‘샤인머스캣 폭락’ 정부는 모르쇠",
-      "section": "policy",
-      "age_hours": 18.4
-    },
-    {
-      "title": "이행도 의원 \"꿀벌 감소로 대봉감 피해 우려…대책 마련해야\"",
-      "section": "policy",
-      "age_hours": 16.7
-    },
-    {
-      "title": "충남 토마토 갈색주름과실바이러스 65농가 '확진'…공적 방제 촉구",
-      "section": "pest",
       "age_hours": 16.5
+    },
+    {
+      "title": "개발제한구역 논에 밭작물 재배 신고제 개정 ‘목소리’",
+      "section": "policy",
+      "age_hours": 16.4
+    },
+    {
+      "title": "농산물 가격 왜 달라질까…소비자단체, 전국 8개 지역서 유통구조 캠페...",
+      "section": "supply",
+      "age_hours": 16.3
+    },
+    {
+      "title": "횡성군, 농자재 구매비 50% 지원…12월 10일까지 신청",
+      "section": "policy",
+      "age_hours": 15.8
+    },
+    {
+      "title": "‘순천 골드 키위 ’ 캐나다 북미 시장 진출, 수출길 올라",
+      "section": "dist",
+      "age_hours": 14.0
     }
   ],
   "content_false_positive_samples": [],
   "reader_hard_issue_samples": [],
   "story_duplicate_samples": [],
-  "commodity_primary_linkage_samples": [
-    {
-      "title": "가을비가 망친 감귤 풍년 “인건비는커녕 약제값도 못 건질 판”",
-      "item_label": "감귤(만감류)",
-      "section": "dist",
-      "surface": "commodity_primary",
-      "representative_rank": 3,
-      "reasons": [
-        "title_issue_missing"
-      ]
-    }
-  ],
+  "commodity_primary_linkage_samples": [],
   "commodity_pool_linkage_samples": [],
-  "editorial_quality_samples": [
-    {
-      "title": "한·일 세미나 “ 농산물 도매시장, 경매로는 부족...사업 다각화 필요”",
-      "href": "https://www.mk.co.kr/article/12201650",
-      "section": "dist",
-      "is_core": true,
-      "reasons": [
-        "promotional_or_event_filler"
-      ]
-    },
-    {
-      "title": "쿠팡 ‘착한상점’, 아산시와 맞손…“농산물 판로 확대”",
-      "href": "https://biz.heraldcorp.com/article/10929972",
-      "section": "dist",
-      "is_core": false,
-      "reasons": [
-        "promotional_or_event_filler"
-      ]
-    }
-  ],
+  "editorial_quality_samples": [],
   "improvement_hints": [
-    "리콜 시드 결손이 보입니다: pest. query seed 보강 또는 Google/HF 보조 리콜을 검토하세요.",
-    "편집 품질상 약한 기사 선택이 감지되었습니다 (promotional_filler=11%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요."
+    "요약 문장 품질 편차가 큽니다. 품목·지역·수치·대응을 앞 문장에 명시하도록 프롬프트 피드백을 자동 반영하세요."
   ],
   "selection_guardrails": {
     "driver_tags": [],
@@ -344,10 +313,10 @@
     "publishable": true,
     "publication_mode": "normal",
     "achievable_briefing_by_section": {
-      "supply": 222,
-      "policy": 86,
-      "dist": 26,
-      "pest": 4
+      "supply": 306,
+      "policy": 90,
+      "dist": 46,
+      "pest": 29
     },
     "thin_pool_sections": {},
     "repair_count": 0,
@@ -361,7 +330,7 @@
         "label": "initial",
         "rank": [
           0,
-          -86.07
+          -97.36
         ]
       }
     ],
