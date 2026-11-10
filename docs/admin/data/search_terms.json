@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-10T08:27:05+09:00",
+  "generated_at": "2026-11-11T05:50:54+09:00",
   "rows": [
     {
       "date": "2026-08-24",
@@ -53,7 +53,7 @@
     {
       "date": "2026-11-09",
       "query": "ㄱ",
-      "section_filter": "",
+      "section_filter": "(not set)",
       "result_count": 0,
       "count": 1
     }
