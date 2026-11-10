@@ -1,47 +1,47 @@
 {
-  "report_date": "2026-11-10",
-  "generated_at_kst": "2026-11-10T06:16:22+09:00",
+  "report_date": "2026-11-11",
+  "generated_at_kst": "2026-11-11T06:18:52+09:00",
   "scores": {
-    "section_alignment": 94.69,
-    "core_quality": 84.19,
-    "commodity_board_quality": 95.57
+    "section_alignment": 95.23,
+    "core_quality": 98.39,
+    "commodity_board_quality": 100.0
   },
   "metrics": {
-    "section_alignment_low_fit_rate": 0.1579,
+    "section_alignment_low_fit_rate": 0.15,
     "section_alignment_cross_gap_rate": 0.0,
     "content_false_positive_rate": 0.0,
     "reader_hard_issue_count": 0,
     "reader_hard_issue_rate": 0.0,
-    "reader_quality_penalty": 5.7789,
+    "reader_quality_penalty": 0.0,
     "reader_quality_cap": 100.0,
-    "weak_core_rate": 0.1667,
+    "weak_core_rate": 0.0,
     "policy_wrong_section_rate": 0.0,
-    "promotional_filler_rate": 0.1053,
-    "promotional_core_rate": 0.1667,
-    "weak_core_editorial_rate": 0.1667,
+    "promotional_filler_rate": 0.0,
+    "promotional_core_rate": 0.0,
+    "weak_core_editorial_rate": 0.0,
     "pest_theme_duplicate_rate": 0.0,
     "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 3.2105,
+    "editorial_quality_penalty": 0.0,
     "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0,
     "commodity_primary_title_item_focus_rate": 1.0,
-    "commodity_primary_title_issue_signal_rate": 0.9167,
-    "commodity_primary_strict_link_rate": 0.9167,
+    "commodity_primary_title_issue_signal_rate": 1.0,
+    "commodity_primary_strict_link_rate": 1.0,
     "commodity_primary_low_rank_rate": 0.0,
-    "commodity_primary_count": 12,
-    "commodity_active_today_total": 17,
-    "commodity_active_today_unlinked_total": 5,
-    "commodity_managed_unlinked_total": 21,
+    "commodity_primary_count": 10,
+    "commodity_active_today_total": 16,
+    "commodity_active_today_unlinked_total": 6,
+    "commodity_managed_unlinked_total": 23,
     "commodity_board_daily_min_primary_count": 6,
     "commodity_board_low_coverage": false,
-    "commodity_board_coverage_rate": 0.3636,
+    "commodity_board_coverage_rate": 0.303,
     "commodity_primary_title_item_missing_rate": 0.0,
     "commodity_primary_body_only_rate": 0.0,
     "commodity_primary_false_link_rate": 0.0,
-    "commodity_pool_count": 8,
+    "commodity_pool_count": 9,
     "commodity_pool_false_link_rate": 0.0,
-    "commodity_primary_dominant_section_rate": 0.5833
+    "commodity_primary_dominant_section_rate": 0.4
   },
   "selection_guardrails": {
     "driver_tags": [],
@@ -79,26 +79,7 @@
     "commodity_strict_primary_only": true,
     "commodity_disable_primary_fallback": true
   },
-  "editorial_quality_samples": [
-    {
-      "title": "한·일 세미나 “ 농산물 도매시장, 경매로는 부족...사업 다각화 필요”",
-      "href": "https://www.mk.co.kr/article/12201650",
-      "section": "dist",
-      "is_core": true,
-      "reasons": [
-        "promotional_or_event_filler"
-      ]
-    },
-    {
-      "title": "쿠팡 ‘착한상점’, 아산시와 맞손…“농산물 판로 확대”",
-      "href": "https://biz.heraldcorp.com/article/10929972",
-      "section": "dist",
-      "is_core": false,
-      "reasons": [
-        "promotional_or_event_filler"
-      ]
-    }
-  ],
+  "editorial_quality_samples": [],
   "reader_hard_issue_samples": [],
   "editorial_improvement_plan": {}
 }
