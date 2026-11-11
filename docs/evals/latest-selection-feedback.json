@@ -1,13 +1,13 @@
 {
-  "report_date": "2026-11-11",
-  "generated_at_kst": "2026-11-11T06:18:52+09:00",
+  "report_date": "2026-11-12",
+  "generated_at_kst": "2026-11-12T06:16:49+09:00",
   "scores": {
-    "section_alignment": 95.23,
-    "core_quality": 98.39,
-    "commodity_board_quality": 100.0
+    "section_alignment": 100.0,
+    "core_quality": 97.7,
+    "commodity_board_quality": 99.14
   },
   "metrics": {
-    "section_alignment_low_fit_rate": 0.15,
+    "section_alignment_low_fit_rate": 0.05,
     "section_alignment_cross_gap_rate": 0.0,
     "content_false_positive_rate": 0.0,
     "reader_hard_issue_count": 0,
@@ -29,19 +29,19 @@
     "commodity_primary_title_issue_signal_rate": 1.0,
     "commodity_primary_strict_link_rate": 1.0,
     "commodity_primary_low_rank_rate": 0.0,
-    "commodity_primary_count": 10,
-    "commodity_active_today_total": 16,
-    "commodity_active_today_unlinked_total": 6,
-    "commodity_managed_unlinked_total": 23,
+    "commodity_primary_count": 14,
+    "commodity_active_today_total": 15,
+    "commodity_active_today_unlinked_total": 1,
+    "commodity_managed_unlinked_total": 19,
     "commodity_board_daily_min_primary_count": 6,
     "commodity_board_low_coverage": false,
-    "commodity_board_coverage_rate": 0.303,
+    "commodity_board_coverage_rate": 0.4242,
     "commodity_primary_title_item_missing_rate": 0.0,
     "commodity_primary_body_only_rate": 0.0,
     "commodity_primary_false_link_rate": 0.0,
-    "commodity_pool_count": 9,
+    "commodity_pool_count": 1,
     "commodity_pool_false_link_rate": 0.0,
-    "commodity_primary_dominant_section_rate": 0.4
+    "commodity_primary_dominant_section_rate": 0.5
   },
   "selection_guardrails": {
     "driver_tags": [],
