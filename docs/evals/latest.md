@@ -1,11 +1,11 @@
-## Daily Eval (2026-11-11)
-- Overall: **97.36** (pass)
-- Operational: **97.36**
-- Reader quality: **97.36** (clear; penalty=0.0, cap=100.0, reasons=clear)
-- Scores: completeness=100.0, diversity=100.0, source=100.0, summary=92.5, freshness=100.0, retrieval=90.6, section_fit=95.2, core=98.4, commodity=100.0
-- Briefing cards: 20 / Commodity cards: 51
-- Sections: supply:5/5 raw=351, policy:5/5 raw=101, dist:5/5 raw=74, pest:5/5 raw=35
-- Metrics: title_unique=1.00, domain_diversity=0.70, low_tier=0.15, summary_presence=1.00, summary_numeric=0.90, fresh_72h=1.00, fit_avg=2.93, false_positive=0.00, hard_reader_issues=0, weak_core=0.00, editorial_penalty=0.0, commodity_weak=0.00, commodity_items=10, commodity_active_today=16, commodity_active_today_unlinked=6, commodity_coverage=0.30, commodity_strict_link=1.00, commodity_false_link=0.00, commodity_pool_false_link=0.00, commodity_dominant_section=0.40, semantic_penalty=0.0
+## Daily Eval (2026-11-12)
+- Overall: **97.25** (pass)
+- Operational: **97.25**
+- Reader quality: **97.25** (clear; penalty=0.0, cap=100.0, reasons=clear)
+- Scores: completeness=100.0, diversity=96.4, source=100.0, summary=92.5, freshness=100.0, retrieval=91.2, section_fit=100.0, core=97.7, commodity=99.1
+- Briefing cards: 20 / Commodity cards: 63
+- Sections: supply:5/5 raw=376, policy:5/5 raw=160, dist:5/5 raw=116, pest:5/5 raw=46
+- Metrics: title_unique=1.00, domain_diversity=0.65, low_tier=0.15, summary_presence=1.00, summary_numeric=0.75, fresh_72h=1.00, fit_avg=3.38, false_positive=0.00, hard_reader_issues=0, weak_core=0.00, editorial_penalty=0.0, commodity_weak=0.00, commodity_items=14, commodity_active_today=15, commodity_active_today_unlinked=1, commodity_coverage=0.42, commodity_strict_link=1.00, commodity_false_link=0.00, commodity_pool_false_link=0.00, commodity_dominant_section=0.50, semantic_penalty=0.0
 
 
 ### Editorial Shadow Eval
