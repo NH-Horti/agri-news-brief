@@ -1,7 +1,1312 @@
 {
   "version": 1,
-  "updated_at": "2026-11-12T06:16:52.798134+09:00",
+  "updated_at": "2026-11-13T06:16:19.396882+09:00",
   "items": [
+    {
+      "id": "67f4b2b4dcbf",
+      "date": "2026-11-13",
+      "section": "policy",
+      "section_title": "정책 및 주요 이슈",
+      "rank": 3,
+      "title": "'배춧값 하락 비상'...광주특별시, 수급 안정 대책 본격 추진",
+      "press": "파이낸셜뉴스",
+      "summary": "】전남광주통합특별시(광주특별시)가 배춧값 하락을 막기 위해 정부와 연계해 수급 안정 대책을 본격 추진한다. 전남광주통합특별시가 배춧값 하락을 막기 위해 정부와 연계해 수급 안정 대책을 본격 추진한다.",
+      "url": "https://n.news.naver.com/mnews/article/014/0005603346?sid=102",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#sec-policy",
+      "score": 78.91,
+      "press_tier": 3,
+      "topics": []
+    },
+    {
+      "id": "87a7ddbefe0c",
+      "date": "2026-11-13",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 3,
+      "title": "감귤 가격 불안에… 문대림 의원 \"내년 가격 안정제에 노지감귤 포함해야...",
+      "press": "파이낸셜뉴스",
+      "summary": "1% 증가 전망 수입안정보험 노지온주감귤 확대 요구 수급위기 시 정부 수매·시장격리 촉구 문대림 더불어민주당 의원이 지난 11일 국회 농림축산식품해양수산위원회 정책조정위원회에서 감귤 가격안정 대책을 논의하고 있다.",
+      "url": "https://n.news.naver.com/mnews/article/014/0005603126?sid=102",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#sec-supply",
+      "score": 78.16,
+      "press_tier": 3,
+      "topics": [
+        "감귤/만감"
+      ]
+    },
+    {
+      "id": "e110ec801546",
+      "date": "2026-11-13",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 3,
+      "title": "경남 밀양시, 전국 경매사 초청 ‘농산물유통상생협의회’ 개최",
+      "press": "농민신문",
+      "summary": "안병구 밀양시장이 위원장을 맡은 농산물유통상생협의회는 지역농산물의 유통 활성화 및 안정적인 판로 확보를 위한 협력 방안을 논의하기 위해 조직됐다.",
+      "url": "https://n.news.naver.com/mnews/article/662/0000108286?sid=102",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#sec-dist",
+      "score": 73.03,
+      "press_tier": 3,
+      "topics": []
+    },
+    {
+      "id": "9d4884559485",
+      "date": "2026-11-13",
+      "section": "policy",
+      "section_title": "정책 및 주요 이슈",
+      "rank": 4,
+      "title": "“배추값 하락 대응”…전남광주시, 자체 수급안정 대책 추진",
+      "press": "서울신문",
+      "summary": "가 가 가 가 가 프린트 공유하기 공유 닫기 페이스북 네이버블로그 엑스 카카오톡 밴드 https://www.seoul.co.",
+      "url": "https://n.news.naver.com/mnews/article/081/0003698890?sid=101",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#sec-policy",
+      "score": 69.51,
+      "press_tier": 3,
+      "topics": [
+        "배추"
+      ]
+    },
+    {
+      "id": "e39f87d95fb6",
+      "date": "2026-11-13",
+      "section": "policy",
+      "section_title": "정책 및 주요 이슈",
+      "rank": 14,
+      "title": "배추 공급과잉 선제 대응···전남광주시, 3만t 시장격리에 58억원 지원",
+      "press": "경향신문",
+      "summary": "",
+      "url": "https://www.khan.co.kr/article/202611121204001",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-napa_cabbage",
+      "score": 64.34,
+      "press_tier": 3,
+      "topics": [
+        "배추"
+      ]
+    },
+    {
+      "id": "9c5a69e03d50",
+      "date": "2026-11-13",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 4,
+      "title": "제주 감귤, 검역협상 타결 8개월 만에 우즈베키스탄 첫 수출",
+      "press": "헤럴드경제",
+      "summary": "제주 감귤이 검역협상 타결 8개월 만에 우즈베키스탄 수출길에 올랐다. 이번 수출은 지난 3월 한국과 우즈베키스탄 간 감귤 검역협상이 타결된 지 8개월 만이다.",
+      "url": "https://n.news.naver.com/mnews/article/016/0002722780?sid=101",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#sec-dist",
+      "score": 55.43,
+      "press_tier": 3,
+      "topics": [
+        "감귤/만감"
+      ]
+    },
+    {
+      "id": "71fd13536e49",
+      "date": "2026-11-13",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 47,
+      "title": "제주 감귤, 우즈베키스탄 첫 수출…검역협상 타결 8개월 만",
+      "press": "머니투데이",
+      "summary": "",
+      "url": "https://www.mt.co.kr/economy/2026/11/12/2026111214302330386",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-citrus",
+      "score": 53.62,
+      "press_tier": 3,
+      "topics": [
+        "감귤/만감"
+      ]
+    },
+    {
+      "id": "932eb4ce433b",
+      "date": "2026-11-13",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 49,
+      "title": "제주 감귤 우즈베키스탄 첫 수출… 이달에만 41t",
+      "press": "파이낸셜뉴스",
+      "summary": "",
+      "url": "https://www.fnnews.com/news/202611121815107653",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-citrus",
+      "score": 53.59,
+      "press_tier": 3,
+      "topics": [
+        "감귤/만감"
+      ]
+    },
+    {
+      "id": "14d795dd0b81",
+      "date": "2026-11-13",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 1,
+      "title": "손끝 노랗게 될 때까지 까먹는 ‘감귤’…올해는 ‘날씨’ 변수",
+      "press": "농민신문",
+      "summary": "김상윤 농협가락공판장 경매사는 “10월 셋째주까지 제주지역에 덥고 습한 날씨가 이어지면서 극조생종 위주로 부패가 심했다”며 “중도매인들이 소비지에 감귤을 판매한 뒤 품위가 급격히 떨어져 항의받은 사례도 잇따랐다”고 말했다.",
+      "url": "https://n.news.naver.com/mnews/article/662/0000108340?sid=101",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#sec-dist",
+      "score": 50.88,
+      "press_tier": 3,
+      "topics": [
+        "감귤/만감"
+      ]
+    },
+    {
+      "id": "dbdb85eca704",
+      "date": "2026-11-13",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 50,
+      "title": "제주 감귤 우즈베키스탄에 첫 수출",
+      "press": "KBS",
+      "summary": "",
+      "url": "https://news.kbs.co.kr/news/pc/view/view.do?ncd=8711629",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-citrus",
+      "score": 46.39,
+      "press_tier": 3,
+      "topics": [
+        "감귤/만감"
+      ]
+    },
+    {
+      "id": "7c3d3157ff9a",
+      "date": "2026-11-13",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 51,
+      "title": "우즈베키스탄 감귤 초도 수출 및 제주 농산물 합동 선적 식",
+      "press": "연합뉴스",
+      "summary": "",
+      "url": "https://www.yna.co.kr/view/PYH20261112199800013?input=1196m",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-citrus",
+      "score": 42.22,
+      "press_tier": 3,
+      "topics": [
+        "감귤/만감"
+      ]
+    },
+    {
+      "id": "1289fcb65e10",
+      "date": "2026-11-13",
+      "section": "policy",
+      "section_title": "정책 및 주요 이슈",
+      "rank": 9,
+      "title": "가을배추 3만t 출하정지…정부, 공급과잉 대응 나선다",
+      "press": "농민신문",
+      "summary": "",
+      "url": "https://www.nongmin.com/article/20261112500047",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-napa_cabbage",
+      "score": 40.31,
+      "press_tier": 3,
+      "topics": [
+        "배추"
+      ]
+    },
+    {
+      "id": "7733c179b3c0",
+      "date": "2026-11-13",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 3,
+      "title": "[네트워크 현장] 전남광주특별시, 배추 시장격리 등 수급 대책 추진 외",
+      "press": "KBS",
+      "summary": "",
+      "url": "https://news.kbs.co.kr/news/pc/view/view.do?ncd=8711426",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-napa_cabbage",
+      "score": 38.6,
+      "press_tier": 3,
+      "topics": [
+        "배추"
+      ]
+    },
+    {
+      "id": "1531bc4ba424",
+      "date": "2026-11-13",
+      "section": "policy",
+      "section_title": "정책 및 주요 이슈",
+      "rank": 21,
+      "title": "김장철 앞두고 배추값 ‘뚝’…전남광주, 시장격리·할인행사로 수급 안...",
+      "press": "서울경제",
+      "summary": "",
+      "url": "https://www.sedaily.com/article/20113473",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-napa_cabbage",
+      "score": 38.45,
+      "press_tier": 3,
+      "topics": [
+        "배추"
+      ]
+    },
+    {
+      "id": "bfefe12f507e",
+      "date": "2026-11-13",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 39,
+      "title": "감기 걸린 수박 ·비에 젖은 쪽파…수확철 농가 초비상",
+      "press": "MBN",
+      "summary": "",
+      "url": "http://www.mbn.co.kr/pages/news/newsView.php?news_seq_no=5230556",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-green_onion",
+      "score": 37.65,
+      "press_tier": 3,
+      "topics": [
+        "대파",
+        "수박"
+      ]
+    },
+    {
+      "id": "94a52401d5ad",
+      "date": "2026-11-13",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 1,
+      "title": "[담글까, 살까]농작물 가격 불안…'절임 배추 '가 해남 농가 살렸다",
+      "press": "아시아경제",
+      "summary": "전국 배추 재배면적의 80%를 차지하는 주산지 전남광주 해남에서 원물 배추 가격의 극심한 변동성을 이겨내기 위. [담글까, 살까]농작물 가격 불안…'절임 배추 '가 해남 농가 살렸다",
+      "url": "https://n.news.naver.com/mnews/article/277/0005841981?sid=102",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#sec-supply",
+      "score": 32.27,
+      "press_tier": 3,
+      "topics": [
+        "배추"
+      ]
+    },
+    {
+      "id": "91485f1ee72a",
+      "date": "2026-11-13",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 43,
+      "title": "7000원대 토마토 가 4000원대로…값 떨어지자 농가 한숨",
+      "press": "이데일리",
+      "summary": "",
+      "url": "https://www.edaily.co.kr/News/Read?newsId=02115606645645064&mediaCodeNo=257",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-tomato",
+      "score": 29.18,
+      "press_tier": 3,
+      "topics": [
+        "토마토"
+      ]
+    },
+    {
+      "id": "b793365e3a4b",
+      "date": "2026-11-13",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 34,
+      "title": "[담글까, 살까]김장배추 도매 가 하락…광주특별시, 3만 톤 시장격리 지...",
+      "press": "아시아경제",
+      "summary": "",
+      "url": "https://view.asiae.co.kr/article/2026111213494274582",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-napa_cabbage",
+      "score": 28.75,
+      "press_tier": 3,
+      "topics": [
+        "배추"
+      ]
+    },
+    {
+      "id": "8755b941c0f1",
+      "date": "2026-11-13",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 2,
+      "title": "김장철 배춧값 하락…전남광주시, 수급안정 대책 추진",
+      "press": "연합뉴스",
+      "summary": "전남광주통합특별시가 김장철을 앞두고 배추 가격 하락에 대응해 수급안정 대책을 마련했다.",
+      "url": "https://n.news.naver.com/mnews/article/001/0016438009?sid=101",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#sec-supply",
+      "score": 27.3,
+      "press_tier": 3,
+      "topics": []
+    },
+    {
+      "id": "704f1274a86c",
+      "date": "2026-11-13",
+      "section": "pest",
+      "section_title": "생육 리스크 및 방제",
+      "rank": 2,
+      "title": "소나무재선충병 피해 26배 급증…충남 전역 방제 비상",
+      "press": "KBS",
+      "summary": "[KBS 대전] [앵커] 충남의 소나무재선충병 피해가 지난해보다 26배 급증하면서 방제에 비상이 걸렸습니다. \"] 피해가 충남 전역으로 번진 만큼 시군 경계를 넘는 공동 방제와 감염목의 신속한 제거가 차단의 관건이 되고 있습니다.",
+      "url": "https://n.news.naver.com/mnews/article/056/0012292974?sid=101",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#sec-pest",
+      "score": 24.43,
+      "press_tier": 3,
+      "topics": []
+    },
+    {
+      "id": "d5dd10b4f1ed",
+      "date": "2026-11-13",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 29,
+      "title": "송미령 장관 “김장 한 포기 더”… 배추 값 하락 에 소비·나눔 독려",
+      "press": "이데일리",
+      "summary": "",
+      "url": "https://www.edaily.co.kr/News/Read?newsId=03224246645645064&mediaCodeNo=257",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-napa_cabbage",
+      "score": 24.05,
+      "press_tier": 3,
+      "topics": [
+        "배추"
+      ]
+    },
+    {
+      "id": "ebb268b078f9",
+      "date": "2026-11-13",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 5,
+      "title": "“속상하게 왜 또 물어, 배추값 폭락한 거 몰라서 그래?”···강원지역...",
+      "press": "경향신문",
+      "summary": "",
+      "url": "https://www.khan.co.kr/article/202611121512001",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-napa_cabbage",
+      "score": 23.95,
+      "press_tier": 3,
+      "topics": [
+        "배추"
+      ]
+    },
+    {
+      "id": "bbd0cee839de",
+      "date": "2026-11-13",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 6,
+      "title": "“속 탄다” 수확 포기로 썩어가는 배추밭",
+      "press": "경향신문",
+      "summary": "",
+      "url": "https://www.khan.co.kr/article/202611122059025",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-napa_cabbage",
+      "score": 23.25,
+      "press_tier": 3,
+      "topics": [
+        "배추"
+      ]
+    },
+    {
+      "id": "49023d65c7e6",
+      "date": "2026-11-13",
+      "section": "pest",
+      "section_title": "생육 리스크 및 방제",
+      "rank": 42,
+      "title": "‘토마토갈색주름바이러스’ 확산 비상…“전수조사·공적 방제”",
+      "press": "KBS",
+      "summary": "",
+      "url": "https://news.kbs.co.kr/news/pc/view/view.do?ncd=8711576",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-tomato",
+      "score": 20.3,
+      "press_tier": 3,
+      "topics": []
+    },
+    {
+      "id": "659a3bb99270",
+      "date": "2026-11-13",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 33,
+      "title": "배추 값 하락 에 김장 소비 독려…송미령 장관 “김장 한 포기 더 담아주...",
+      "press": "헤럴드경제",
+      "summary": "",
+      "url": "https://biz.heraldcorp.com/article/10934402",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-napa_cabbage",
+      "score": 18.3,
+      "press_tier": 3,
+      "topics": [
+        "배추"
+      ]
+    },
+    {
+      "id": "b403a1011e1d",
+      "date": "2026-11-13",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 40,
+      "title": "“밭 갈아엎은 날, 밤새 울었다”···쪽파값 폭락에 무너진 농심[현장...",
+      "press": "경향신문",
+      "summary": "",
+      "url": "https://www.khan.co.kr/article/202611121630001",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-green_onion",
+      "score": 17.98,
+      "press_tier": 3,
+      "topics": [
+        "대파"
+      ]
+    },
+    {
+      "id": "ea8a9a3f0891",
+      "date": "2026-11-13",
+      "section": "policy",
+      "section_title": "정책 및 주요 이슈",
+      "rank": 2,
+      "title": "‘12년 이전 사육 증빙’ 요구에…FTA 직불금 받는 염소농가 ‘고작 4%’",
+      "press": "농민신문",
+      "summary": "앞서 농식품부 는 2∼3월 FTA 피해 점검 품목 42개와 농민 신청 품목 63개 등 105개 품목을 대상으로 FTA 피해. 지급이라는 단발성 지원보다는 해당 축종의 수급 안정을 돕는 구조적 지원으로 전환해야 한다”고 강조했다.",
+      "url": "https://n.news.naver.com/mnews/article/662/0000108333?sid=101",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#sec-policy",
+      "score": 15.67,
+      "press_tier": 3,
+      "topics": []
+    },
+    {
+      "id": "80bd9960eb61",
+      "date": "2026-11-13",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 4,
+      "title": "'배추는 넘치고 김장하는 집은 줄고'... 농가소득 '빨간불'",
+      "press": "충남일보",
+      "summary": "본격적인 김장철을 앞두고 배추 가격이 큰 폭으로 하락하면서 소비자들의 김장비용 부담은 줄어든 반면 생산량 증가와 소비 감소가 맞물린 산지에서는 농가소득 악화에 대한 우려가 커지고 있다.",
+      "url": "http://www.chungnamilbo.co.kr/news/articleView.html?idxno=920271",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#sec-supply",
+      "score": 54.77,
+      "press_tier": 2,
+      "topics": [
+        "배추"
+      ]
+    },
+    {
+      "id": "3181dd2fab72",
+      "date": "2026-11-13",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 48,
+      "title": "제주 감귤, 중앙아시아 간다…\"우즈벡에 2t 초도 수출\"",
+      "press": "뉴시스",
+      "summary": "",
+      "url": "https://www.newsis.com/view/NISX20261112_0003865769",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-citrus",
+      "score": 52.5,
+      "press_tier": 2,
+      "topics": [
+        "감귤/만감"
+      ]
+    },
+    {
+      "id": "fc11483415ac",
+      "date": "2026-11-13",
+      "section": "policy",
+      "section_title": "정책 및 주요 이슈",
+      "rank": 10,
+      "title": "농식품부, 가을배추 3만톤 출하정지…수급 안정 추가대책",
+      "press": "농축유통신문",
+      "summary": "",
+      "url": "http://www.amnews.co.kr/news/articleView.html?idxno=75575",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-napa_cabbage",
+      "score": 50.51,
+      "press_tier": 2,
+      "topics": [
+        "배추"
+      ]
+    },
+    {
+      "id": "e76262675807",
+      "date": "2026-11-13",
+      "section": "policy",
+      "section_title": "정책 및 주요 이슈",
+      "rank": 22,
+      "title": "상추·오이 급등, 배추·무는 하락",
+      "press": "식품안전뉴스",
+      "summary": "",
+      "url": "http://www.fsnews.co.kr/news/articleView.html?idxno=62645",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-napa_cabbage",
+      "score": 39.92,
+      "press_tier": 2,
+      "topics": [
+        "배추",
+        "상추",
+        "오이"
+      ]
+    },
+    {
+      "id": "8c31b6156a76",
+      "date": "2026-11-13",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 52,
+      "title": "제주 감귤, 우즈벡 시장 뚫었다…검역협상 8개월 만에 첫 수출",
+      "press": "뉴스1",
+      "summary": "",
+      "url": "https://www.news1.kr/economy/trend/6352158",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-citrus",
+      "score": 35.34,
+      "press_tier": 2,
+      "topics": [
+        "감귤/만감"
+      ]
+    },
+    {
+      "id": "2363b8584fa5",
+      "date": "2026-11-13",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 27,
+      "title": "전남광주특별시, 배추 값 42% 급락에 수급 안정 총력",
+      "press": "노컷뉴스",
+      "summary": "",
+      "url": "https://www.nocutnews.co.kr/news/6605847",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-napa_cabbage",
+      "score": 34.78,
+      "press_tier": 2,
+      "topics": [
+        "배추"
+      ]
+    },
+    {
+      "id": "3fa52434786a",
+      "date": "2026-11-13",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 2,
+      "title": "“ 배추 값 하락 대응”…통합특별시, 수급안정 대책 추진",
+      "press": "전남매일",
+      "summary": "",
+      "url": "http://www.jndn.com/article.php?aid=1794474229443001001",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-napa_cabbage",
+      "score": 34.758,
+      "press_tier": 2,
+      "topics": [
+        "배추"
+      ]
+    },
+    {
+      "id": "a1384ec4a889",
+      "date": "2026-11-13",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 26,
+      "title": "생산량 증가에 김장 수요 감소, 배추 값 폭락",
+      "press": "내일신문",
+      "summary": "",
+      "url": "https://www.naeil.com/news/read/608497",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-napa_cabbage",
+      "score": 34.42,
+      "press_tier": 2,
+      "topics": [
+        "배추"
+      ]
+    },
+    {
+      "id": "8d6caceea298",
+      "date": "2026-11-13",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 28,
+      "title": "배추값 하락에 \"김장 한 포기 더\"…송미령, 양평서 김치 나눔",
+      "press": "뉴시스",
+      "summary": "",
+      "url": "https://www.newsis.com/view/NISX20261112_0003864741",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-napa_cabbage",
+      "score": 28.58,
+      "press_tier": 2,
+      "topics": [
+        "배추"
+      ]
+    },
+    {
+      "id": "2a40f751cb42",
+      "date": "2026-11-13",
+      "section": "pest",
+      "section_title": "생육 리스크 및 방제",
+      "rank": 1,
+      "title": "딸기 총채벌레, 꽃 속 예찰·초기 방제 로 피해 줄여",
+      "press": "농업정보신문",
+      "summary": "딸기 시설하우스 내 총채벌레 피해 우려가 커지면서 개화 초기 예찰과 방제가 필요하다. 꽃 속에서 유충이 관찰되면 즉시 방제하고, 작용기작이 다른 전문 약제를 번갈아 살포해 저항성에 대응해야 한다.",
+      "url": "https://www.nongup.net/news/articleView.html?idxno=34013",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#sec-pest",
+      "score": 24.96,
+      "press_tier": 2,
+      "topics": [
+        "딸기"
+      ]
+    },
+    {
+      "id": "dab4c6775078",
+      "date": "2026-11-13",
+      "section": "pest",
+      "section_title": "생육 리스크 및 방제",
+      "rank": 3,
+      "title": "노지 감귤 스마트팜 실증서 방제 시간 70~75% 줄어",
+      "press": "농업정보신문",
+      "summary": "노지 감귤 과수원에서 무인 방제기를 활용한 결과, 방제 시간이 10아르(a)당 약 15분으로 인력 대비 70~75% 감소했다.",
+      "url": "https://www.nongup.net/news/articleView.html?idxno=34008",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#sec-pest",
+      "score": 24.79,
+      "press_tier": 2,
+      "topics": [
+        "감귤/만감"
+      ]
+    },
+    {
+      "id": "bd6e6c55a4da",
+      "date": "2026-11-13",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 24,
+      "title": "김장철 배추 값 42% 폭락…전남광주시 출하정지·시장격리 카드",
+      "press": "광주일보",
+      "summary": "",
+      "url": "http://www.kwangju.co.kr/article.php?aid=1794477600805302277",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-napa_cabbage",
+      "score": 24.75,
+      "press_tier": 2,
+      "topics": [
+        "배추"
+      ]
+    },
+    {
+      "id": "90e1b08a9a0a",
+      "date": "2026-11-13",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 30,
+      "title": "배추 값 폭락에도 수입량 늘었다…강원 농가 이중고",
+      "press": "강원도민일보",
+      "summary": "",
+      "url": "https://www.kado.net/news/articleView.html?idxno=2084630",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-napa_cabbage",
+      "score": 22.1,
+      "press_tier": 2,
+      "topics": [
+        "배추"
+      ]
+    },
+    {
+      "id": "95030db8f333",
+      "date": "2026-11-13",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 4,
+      "title": "\"출하물량 조절\"…전남광주시, 김장 배추 가격 안정화 나선다",
+      "press": "뉴시스",
+      "summary": "",
+      "url": "https://www.newsis.com/view/NISX20261112_0003865030",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-napa_cabbage",
+      "score": 20.77,
+      "press_tier": 2,
+      "topics": [
+        "배추"
+      ]
+    },
+    {
+      "id": "da9f0f2b10e4",
+      "date": "2026-11-13",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 2,
+      "title": "태안군, 농산물 스마트 유통 단지조성 유통 체계 구조적 혁신",
+      "press": "금강일보",
+      "summary": "군은 지난 11일 먹거리 유통 과 정례브리핑을 열고, 산지유통센터 (APC) 고도화, 온라인 판로 확대, 스마트. 핵심 과제인 만큼 계획 수립부터 준공 까지 철저히 준비해 실질적인 농가 소득 증대로 연결하겠다\"고 말했다.",
+      "url": "https://www.ggilbo.com/news/articleView.html?idxno=1192735",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#sec-dist",
+      "score": 19.83,
+      "press_tier": 2,
+      "topics": []
+    },
+    {
+      "id": "f314cf29e530",
+      "date": "2026-11-13",
+      "section": "policy",
+      "section_title": "정책 및 주요 이슈",
+      "rank": 1,
+      "title": "aT, 정부 비축기지에 'A 저장기술'첫 도입",
+      "press": "농축유통신문",
+      "summary": "aT는 이번 저장고 건립을 통해 배추 등 주요 정부 비축 농산물의 저장기간을 늘리고 장기 저장 과정에서 발생하는 품위 저하를 최소화할 계획이다.",
+      "url": "http://www.amnews.co.kr/news/articleView.html?idxno=75576",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#sec-policy",
+      "score": 19.33,
+      "press_tier": 2,
+      "topics": []
+    },
+    {
+      "id": "0e4e3c542b7e",
+      "date": "2026-11-13",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 46,
+      "title": "천안 농특산물, 카카오메이커스 판로 넓힌다…수신 멜론 이어 품목 확대",
+      "press": "농수축산신문",
+      "summary": "",
+      "url": "https://www.aflnews.co.kr/news/articleView.html?idxno=331583",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-muskmelon",
+      "score": 17.635,
+      "press_tier": 2,
+      "topics": []
+    },
+    {
+      "id": "4384aa068b06",
+      "date": "2026-11-13",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 5,
+      "title": "\"딸기 베트남 수출 길 더 넓어진다\"",
+      "press": "농축유통신문",
+      "summary": "해당 지침은 딸기 수출 농가를 비롯해 수출 통합조직, 수출 단지, 각 도 농업기술원 및 시·군 농업기술센터, 농림축산식품부, 농림축산 검역 본부, 국립 농산물 품질관리원, 한국농수산식품유통공사(aT) 등 유관기관 전체에.",
+      "url": "http://www.amnews.co.kr/news/articleView.html?idxno=75560",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#sec-dist",
+      "score": 15.79,
+      "press_tier": 2,
+      "topics": [
+        "딸기"
+      ]
+    },
+    {
+      "id": "a6c8a214f826",
+      "date": "2026-11-13",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 12,
+      "title": "'배추 가격 폭락 막는다'…가을배추 3만 톤 출하 정지",
+      "press": "기독교방송",
+      "summary": "",
+      "url": "https://www.ikbc.co.kr/article/view/kbc202611120050",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-napa_cabbage",
+      "score": 15.27,
+      "press_tier": 2,
+      "topics": [
+        "배추"
+      ]
+    },
+    {
+      "id": "ea6bce050805",
+      "date": "2026-11-13",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 58,
+      "title": "박완수 경남지사 \"농가, 인력 지원 체계 강화… 사과 피해 대응방안 마련...",
+      "press": "뉴스핌",
+      "summary": "",
+      "url": "https://www.newspim.com/news/view/20261112001166",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-apple",
+      "score": 10.88,
+      "press_tier": 2,
+      "topics": [
+        "사과"
+      ]
+    },
+    {
+      "id": "30f9aa714e1a",
+      "date": "2026-11-13",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 45,
+      "title": "경북과학대·칠곡군, 맞춤형 수출용 참외 시범단지 조성 맞손",
+      "press": "BBS불교방송",
+      "summary": "",
+      "url": "https://news.bbsi.co.kr/news/articleView.html?idxno=4118255",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-oriental_melon",
+      "score": 4.504,
+      "press_tier": 2,
+      "topics": [
+        "참외"
+      ]
+    },
+    {
+      "id": "90099ca3be8f",
+      "date": "2026-11-13",
+      "section": "policy",
+      "section_title": "정책 및 주요 이슈",
+      "rank": 8,
+      "title": "배추 값 42% 급락에 농가 시름… 전남광주, 시장격리 추진",
+      "press": "천지일보",
+      "summary": "",
+      "url": "https://www.newscj.com/news/articleView.html?idxno=3448179",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-napa_cabbage",
+      "score": 55.61,
+      "press_tier": 1,
+      "topics": [
+        "배추"
+      ]
+    },
+    {
+      "id": "8408f7b03faf",
+      "date": "2026-11-13",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 5,
+      "title": "수입 44% 줄었는데 양파 값 하락",
+      "press": "광주드림",
+      "summary": "수입이 줄었는데도 값이 내렸다는 점에서, 가격 하락의 배경이 수입 물량보다 국내 수급에 있었다는 해석이 가능하다. 올해 1~9월 양파 수입량이 전년 동기보다 44.2% 줄었지만 국산 양파 도매가격은 같은 기간 26.2% 떨어진 것으로 나타났다.",
+      "url": "http://www.gjdream.com/news/articleView.html?idxno=674319",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#sec-supply",
+      "score": 53.83,
+      "press_tier": 1,
+      "topics": [
+        "양파"
+      ]
+    },
+    {
+      "id": "c392965d60ae",
+      "date": "2026-11-13",
+      "section": "policy",
+      "section_title": "정책 및 주요 이슈",
+      "rank": 13,
+      "title": "배추 값 42% 급락…전남광주시, 58억원 투입해 수급 안정 총력",
+      "press": "진일보",
+      "summary": "",
+      "url": "https://www.jnilbo.com/news/articleView.html?idxno=90000082166",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-napa_cabbage",
+      "score": 52.36,
+      "press_tier": 1,
+      "topics": [
+        "배추"
+      ]
+    },
+    {
+      "id": "328afd68f0d4",
+      "date": "2026-11-13",
+      "section": "policy",
+      "section_title": "정책 및 주요 이슈",
+      "rank": 7,
+      "title": "전남광주시, 배추 가격 안정 에 70억원 투입",
+      "press": "SIDAE",
+      "summary": "",
+      "url": "https://www.sidae.com/article/2026111211174074073",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-napa_cabbage",
+      "score": 47.69,
+      "press_tier": 1,
+      "topics": [
+        "배추"
+      ]
+    },
+    {
+      "id": "99750382ed9a",
+      "date": "2026-11-13",
+      "section": "policy",
+      "section_title": "정책 및 주요 이슈",
+      "rank": 11,
+      "title": "배추 도매가 42% 추락… 수급안정 대책 추진",
+      "press": "쿡앤셰프",
+      "summary": "",
+      "url": "https://cooknchefnews.com/news/view/1065573459363611",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-napa_cabbage",
+      "score": 42.16,
+      "press_tier": 1,
+      "topics": [
+        "배추"
+      ]
+    },
+    {
+      "id": "90bf1582de00",
+      "date": "2026-11-13",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 16,
+      "title": "농식품부, 배추 '3만톤 출하정지' 추가 대책 발표",
+      "press": "한국농정신문",
+      "summary": "",
+      "url": "http://www.ikpnews.net/news/articleView.html?idxno=71997",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-napa_cabbage",
+      "score": 39.72,
+      "press_tier": 1,
+      "topics": [
+        "배추"
+      ]
+    },
+    {
+      "id": "1cc14e34c6bf",
+      "date": "2026-11-13",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 1,
+      "title": "전남광주시, 배추 가격 하락 '수급안정 대책 ' 총력",
+      "press": "CNB뉴스",
+      "summary": "",
+      "url": "https://www.cnbnews.com/news/articleView.html?idxno=1023450",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-napa_cabbage",
+      "score": 36.45,
+      "press_tier": 1,
+      "topics": [
+        "배추"
+      ]
+    },
+    {
+      "id": "543ab6fc68c2",
+      "date": "2026-11-13",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 54,
+      "title": "사과 생산량 10.8% 증가.. 도매가격 하락세",
+      "press": "MBCGN",
+      "summary": "",
+      "url": "https://mbcgn.kr/01_new/new01_view.asp?idx=412189",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-apple",
+      "score": 35.58,
+      "press_tier": 1,
+      "topics": []
+    },
+    {
+      "id": "1dc902ed4b78",
+      "date": "2026-11-13",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 17,
+      "title": "전남광주통합특별시, 배추 값 하락… 수급 안정 대책 추진",
+      "press": "CBC뉴스",
+      "summary": "",
+      "url": "https://www.cbci.co.kr/news/articleView.html?idxno=626244",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-napa_cabbage",
+      "score": 34.27,
+      "press_tier": 1,
+      "topics": [
+        "배추"
+      ]
+    },
+    {
+      "id": "84091e92afca",
+      "date": "2026-11-13",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 19,
+      "title": "전남광주시, 배추 값 하락에 수급 안정 대책 추진",
+      "press": "LG헬로비전뉴스",
+      "summary": "",
+      "url": "http://news.lghellovision.net/news/articleView.html?idxno=562058",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-napa_cabbage",
+      "score": 33.42,
+      "press_tier": 1,
+      "topics": [
+        "배추"
+      ]
+    },
+    {
+      "id": "f0a0652d0da7",
+      "date": "2026-11-13",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 18,
+      "title": "배추 값 42% 하락…전남광주, 3만t 출하정지·시장격리 추진",
+      "press": "쿠키뉴스",
+      "summary": "",
+      "url": "https://www.kukinews.com/article/view/kuk202611120131",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-napa_cabbage",
+      "score": 31.47,
+      "press_tier": 1,
+      "topics": [
+        "배추"
+      ]
+    },
+    {
+      "id": "362769edf188",
+      "date": "2026-11-13",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 23,
+      "title": "배추 값 42% 폭락…전남광주, 과잉 물량 3만톤 격리에 58억 투입",
+      "press": "AI타임스",
+      "summary": "",
+      "url": "https://www.aitimes.com/news/articleView.html?idxno=217342",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-napa_cabbage",
+      "score": 28.28,
+      "press_tier": 1,
+      "topics": [
+        "배추"
+      ]
+    },
+    {
+      "id": "9601621e0228",
+      "date": "2026-11-13",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 15,
+      "title": "배추값 폭락에 농가 '시름'…전남광주시, 70억 원대 수급안정 대책 가동",
+      "press": "한국정보신문",
+      "summary": "",
+      "url": "https://www.kpinews.kr/newsView/1065594243915734",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-napa_cabbage",
+      "score": 21.87,
+      "press_tier": 1,
+      "topics": [
+        "배추"
+      ]
+    },
+    {
+      "id": "f19613eec8c2",
+      "date": "2026-11-13",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 25,
+      "title": "배추값 42% 급락에 농가 시름…정부, 출하 제한·김장 나눔 확대",
+      "press": "뉴스후플러스",
+      "summary": "",
+      "url": "https://www.newswhoplus.com/news/articleView.html?idxno=74185",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-napa_cabbage",
+      "score": 21.3,
+      "press_tier": 1,
+      "topics": [
+        "배추"
+      ]
+    },
+    {
+      "id": "a60382025058",
+      "date": "2026-11-13",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 20,
+      "title": "전남지방우정청, ' 배추 값 57.8% 폭락 위기 돌파'... 절임 배추 판로 지원",
+      "press": "뉴스워커",
+      "summary": "",
+      "url": "https://www.newsworker.co.kr/news/articleView.html?idxno=513782",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-napa_cabbage",
+      "score": 21.2,
+      "press_tier": 1,
+      "topics": [
+        "배추"
+      ]
+    },
+    {
+      "id": "49ca030a5ab9",
+      "date": "2026-11-13",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 31,
+      "title": "전남광주시, 배추 값 폭락에 70억 투입…3만톤 시장격리 추진",
+      "press": "아시아투데이",
+      "summary": "",
+      "url": "https://www.asiatoday.co.kr/kn/view.php?key=20261112010004848",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-napa_cabbage",
+      "score": 17.807,
+      "press_tier": 1,
+      "topics": [
+        "배추"
+      ]
+    },
+    {
+      "id": "321a10ea828b",
+      "date": "2026-11-13",
+      "section": "pest",
+      "section_title": "생육 리스크 및 방제",
+      "rank": 4,
+      "title": "\"생산량 최대 70% 뚝\" 신종 토마토바이러스…전북 40농가 확진",
+      "press": "전민일보",
+      "summary": "국내에서 처음 발생한 토마토 바이러스병이 도내는 물론 전국 농가로 빠르게 번지고 있다.",
+      "url": "http://www.jeonmin.co.kr/news/articleView.html?idxno=450380",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#sec-pest",
+      "score": 17.46,
+      "press_tier": 1,
+      "topics": [
+        "토마토"
+      ]
+    },
+    {
+      "id": "09a1c8e80da3",
+      "date": "2026-11-13",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 55,
+      "title": "경남, 가을 수확철 농가 일손 돕기…박완수 지사도 사과 수확 참여",
+      "press": "쿠키뉴스",
+      "summary": "",
+      "url": "https://www.kukinews.com/article/view/kuk202611120223",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-apple",
+      "score": 17.233,
+      "press_tier": 1,
+      "topics": [
+        "사과"
+      ]
+    },
+    {
+      "id": "a7123f231fcb",
+      "date": "2026-11-13",
+      "section": "policy",
+      "section_title": "정책 및 주요 이슈",
+      "rank": 5,
+      "title": "정부 비축농산물 저장기반 강화... 장성 '기체 조절 저장고' 착공",
+      "press": "주간무역",
+      "summary": "aT는 이번 CA 저장고 건립을 통해 배추 등 주요 정부 비축 농산물의 저장기간 연장을 연장하고 품위 저하를 최소화할 계획이다.",
+      "url": "https://weeklytrade.co.kr/news/view.html?section=1&category=7&item=&no=102183",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#sec-policy",
+      "score": 14.28,
+      "press_tier": 1,
+      "topics": []
+    },
+    {
+      "id": "085c0d80317e",
+      "date": "2026-11-13",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 32,
+      "title": "전남광주특별시, 배추 값 하락 대응 '고삐'…시장격리·작목전환 추진",
+      "press": "더페어뉴스",
+      "summary": "",
+      "url": "https://www.thefairnews.co.kr/news/articleView.html?idxno=93941",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-napa_cabbage",
+      "score": 13.208,
+      "press_tier": 1,
+      "topics": [
+        "배추"
+      ]
+    },
+    {
+      "id": "8bb7fbf25c29",
+      "date": "2026-11-13",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 35,
+      "title": "aT, 장성 비축기지에 CA 저장고 착공… 배추 장기 저장 추진",
+      "press": "한국영농신문",
+      "summary": "",
+      "url": "https://www.youngnong.co.kr/news/articleView.html?idxno=71844",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-napa_cabbage",
+      "score": 12.433,
+      "press_tier": 1,
+      "topics": [
+        "배추"
+      ]
+    },
+    {
+      "id": "c7e4a8f27784",
+      "date": "2026-11-13",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 37,
+      "title": "이마트, 저렴해진 배추값에 김장 수요 공략···'올인원 행사' 진행",
+      "press": "직썰",
+      "summary": "",
+      "url": "https://www.ziksir.com/news/articleView.html?idxno=153132",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-napa_cabbage",
+      "score": 11.799,
+      "press_tier": 1,
+      "topics": [
+        "배추"
+      ]
+    },
+    {
+      "id": "5df46e2f6fe5",
+      "date": "2026-11-13",
+      "section": "dist",
+      "section_title": "유통 및 현장 (도매시장/APC/수출)",
+      "rank": 41,
+      "title": "안동 생강 전국 품평회서 우수성 입증…안동농협 김민성 조합원 장관상",
+      "press": "대경일보",
+      "summary": "",
+      "url": "https://www.dkilbo.com/news/articleView.html?idxno=560507",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-ginger",
+      "score": 10.55,
+      "press_tier": 1,
+      "topics": [
+        "생강"
+      ]
+    },
+    {
+      "id": "5624e7f591eb",
+      "date": "2026-11-13",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 36,
+      "title": "[김장철 장바구니경제㊤] 배추값 26% 내렸는데 새우젓 40%↑…엇갈린 김...",
+      "press": "핀포인트뉴스",
+      "summary": "",
+      "url": "https://www.pinpointnews.co.kr/news/articleView.html?idxno=503215",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-napa_cabbage",
+      "score": 9.157,
+      "press_tier": 1,
+      "topics": [
+        "배추"
+      ]
+    },
+    {
+      "id": "4671777a4095",
+      "date": "2026-11-13",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 44,
+      "title": "경북과학대·칠곡군, 수출용 참외 시범단지 조성 협약",
+      "press": "경북신문",
+      "summary": "",
+      "url": "https://www.kbsm.net/news/view.php?idx=541477",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-oriental_melon",
+      "score": 8.813,
+      "press_tier": 1,
+      "topics": [
+        "참외"
+      ]
+    },
+    {
+      "id": "1dd651005b2a",
+      "date": "2026-11-13",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 56,
+      "title": "박완수 경남지사, 밀양 사과 수확 도와, 열과 피해 대응도 논의",
+      "press": "뉴스타운",
+      "summary": "",
+      "url": "http://www.newstown.co.kr/news/articleView.html?idxno=721737",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-apple",
+      "score": 8.38,
+      "press_tier": 1,
+      "topics": [
+        "사과"
+      ]
+    },
+    {
+      "id": "c65b4a2c3587",
+      "date": "2026-11-13",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 38,
+      "title": "잦은 가을비에 벼 수확 늦어진 고령… 양파 농사 접는 농가도",
+      "press": "경북일보",
+      "summary": "",
+      "url": "https://www.kyongbuk.co.kr/news/articleView.html?idxno=4090645",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-onion",
+      "score": 8.341,
+      "press_tier": 1,
+      "topics": [
+        "양파"
+      ]
+    },
+    {
+      "id": "c43076c4c6ed",
+      "date": "2026-11-13",
+      "section": "pest",
+      "section_title": "생육 리스크 및 방제",
+      "rank": 5,
+      "title": "밀양 사과 열과 피해… 규모는 얼마나, 복구비 기준은",
+      "press": "천지일보",
+      "summary": "밀양시가 사과 껍질이 갈라지는 열과 피해와 관련해 국비 복구비 지원을 건의하고 있다. 시는 정확한 피해율을 파악하려면 피해 신고를 받아 전수조사를 해야 한다고 밝혔다.",
+      "url": "https://www.newscj.com/news/articleView.html?idxno=3448181",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#sec-pest",
+      "score": 6.79,
+      "press_tier": 1,
+      "topics": []
+    },
+    {
+      "id": "7bfbe4a5e7fb",
+      "date": "2026-11-13",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 57,
+      "title": "中 '사과 수확 로봇' 기술 표준 발표",
+      "press": "로봇신문",
+      "summary": "",
+      "url": "https://www.irobotnews.com/news/articleView.html?idxno=49562",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-apple",
+      "score": 5.48,
+      "press_tier": 1,
+      "topics": [
+        "사과"
+      ]
+    },
+    {
+      "id": "157e684e232a",
+      "date": "2026-11-13",
+      "section": "supply",
+      "section_title": "품목 및 수급 동향",
+      "rank": 53,
+      "title": "노지 감귤 스마트팜 실증…기계화 가능성 확인",
+      "press": "skbroadband",
+      "summary": "",
+      "url": "https://news.skbroadband.com/news/articleView.html?idxno=243089",
+      "archive": "/agri-news-brief/archive/2026-11-13.html#commodity-citrus",
+      "score": -0.182,
+      "press_tier": 1,
+      "topics": [
+        "감귤/만감"
+      ]
+    },
     {
       "id": "fc2f7cdb2dbe",
       "date": "2026-11-12",
