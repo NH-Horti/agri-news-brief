@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-13T06:29:02+09:00",
+  "generated_at": "2026-11-14T05:54:49+09:00",
   "rows": [
     {
       "date": "2026-09-22",
@@ -3718,6 +3718,19 @@
       "users": 1,
       "archive_url": "",
       "source_url": ""
+    },
+    {
+      "date": "2026-11-13",
+      "article_id": "321a10ea828b",
+      "title": "\"생산량 최대 70% 뚝\" 신종 토마토바이러스…전북 40농가 확진",
+      "report_date": "2026-11-13",
+      "section": "pest",
+      "surface": "briefing_card",
+      "target_domain": "www.jeonmin.co.kr",
+      "clicks": 2,
+      "users": 2,
+      "archive_url": "/agri-news-brief/archive/2026-11-13.html#sec-pest",
+      "source_url": "http://www.jeonmin.co.kr/news/articleView.html?idxno=450380"
     },
     {
       "date": "2026-07-20",
@@ -12467,6 +12480,84 @@
       "users": 1,
       "archive_url": "/agri-news-brief/archive/2026-11-12.html#commodity-strawberry",
       "source_url": "https://weeklytrade.co.kr/news/view.html?section=1&category=5&item=&no=102175"
+    },
+    {
+      "date": "2026-11-13",
+      "article_id": "1696ddbed933",
+      "title": "'배춧값 하락 비상'...광주특별시, 수급 안정 대책 본격 추진",
+      "report_date": "2026-11-13",
+      "section": "policy",
+      "surface": "briefing_open",
+      "target_domain": "www.fnnews.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-11-13",
+      "article_id": "7ee60cf38696",
+      "title": "[담글까, 살까]농작물 가격 불안…'절임 배추 '가 해남 농가 살렸다",
+      "report_date": "2026-11-13",
+      "section": "supply",
+      "surface": "briefing_card",
+      "target_domain": "view.asiae.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-11-13",
+      "article_id": "7ee60cf38696",
+      "title": "[담글까, 살까]농작물 가격 불안…'절임 배추 '가 해남 농가 살렸다",
+      "report_date": "2026-11-13",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "view.asiae.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "",
+      "source_url": ""
+    },
+    {
+      "date": "2026-11-13",
+      "article_id": "8408f7b03faf",
+      "title": "수입 44% 줄었는데 양파 값 하락",
+      "report_date": "2026-11-13",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.gjdream.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-11-13.html#sec-supply",
+      "source_url": "http://www.gjdream.com/news/articleView.html?idxno=674319"
+    },
+    {
+      "date": "2026-11-13",
+      "article_id": "c43076c4c6ed",
+      "title": "밀양 사과 열과 피해… 규모는 얼마나, 복구비 기준은",
+      "report_date": "2026-11-13",
+      "section": "pest",
+      "surface": "briefing_card",
+      "target_domain": "www.newscj.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-11-13.html#sec-pest",
+      "source_url": "https://www.newscj.com/news/articleView.html?idxno=3448181"
+    },
+    {
+      "date": "2026-11-13",
+      "article_id": "c43076c4c6ed",
+      "title": "밀양 사과 열과 피해… 규모는 얼마나, 복구비 기준은",
+      "report_date": "2026-11-13",
+      "section": "pest",
+      "surface": "briefing_open",
+      "target_domain": "www.newscj.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-11-13.html#sec-pest",
+      "source_url": "https://www.newscj.com/news/articleView.html?idxno=3448181"
     }
   ]
 }
