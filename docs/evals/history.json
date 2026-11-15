@@ -1,6 +1,55 @@
 {
   "reports": [
     {
+      "report_date": "2026-11-16",
+      "generated_at_kst": "2026-11-16T06:21:18+09:00",
+      "overall_score": 73.85,
+      "operational_score": 84.47,
+      "reader_quality_score": 73.85,
+      "reader_quality_gate_status": "capped",
+      "reader_quality_gate_reasons": [
+        "pest_theme_duplicate"
+      ],
+      "editorial_score": null,
+      "editorial_model_reported_score": null,
+      "editorial_score_method": null,
+      "editorial_quality_tier": null,
+      "editorial_acceptance_passed": null,
+      "editorial_status": null,
+      "quality_gate_status": null,
+      "quality_gate_reason": null,
+      "status": "warn",
+      "section_alignment": 75.0,
+      "core_quality": 77.59,
+      "commodity_board_quality": 90.9,
+      "briefing_total": 20,
+      "commodity_total": 67,
+      "commodity_active_today_total": 17,
+      "commodity_active_today_unlinked_total": 4,
+      "commodity_managed_unlinked_total": 20,
+      "summary_presence_rate": 1.0,
+      "within_72h_rate": 1.0,
+      "briefing_title_unique_rate": 1.0,
+      "low_tier_source_rate": 0.2,
+      "low_tier_source_excess_count": 0,
+      "content_false_positive_rate": 0.05,
+      "reader_hard_issue_count": 0,
+      "reader_quality_penalty": 10.62,
+      "editorial_quality_penalty": 0.9,
+      "commodity_primary_false_link_rate": 0.0,
+      "commodity_pool_false_link_rate": 0.0,
+      "policy_wrong_section_rate": 0.0,
+      "promotional_filler_rate": 0.05,
+      "promotional_core_rate": 0.0,
+      "pest_theme_duplicate_rate": 0.05,
+      "guardrail_driver_tags": [
+        "semantic_false_positive",
+        "section_alignment",
+        "core_quality",
+        "commodity_board"
+      ]
+    },
+    {
       "report_date": "2026-11-13",
       "generated_at_kst": "2026-11-13T06:16:17+09:00",
       "overall_score": 94.4,
@@ -5472,5 +5521,5 @@
       "briefing_title_unique_rate": 1.0
     }
   ],
-  "updated_at_kst": "2026-11-13T06:16:17+09:00"
+  "updated_at_kst": "2026-11-16T06:21:18+09:00"
 }
