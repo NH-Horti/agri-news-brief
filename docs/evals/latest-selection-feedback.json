@@ -1,62 +1,65 @@
 {
-  "report_date": "2026-11-13",
-  "generated_at_kst": "2026-11-13T06:16:17+09:00",
+  "report_date": "2026-11-16",
+  "generated_at_kst": "2026-11-16T06:21:18+09:00",
   "scores": {
-    "section_alignment": 95.82,
-    "core_quality": 82.53,
-    "commodity_board_quality": 100.0
+    "section_alignment": 75.0,
+    "core_quality": 77.59,
+    "commodity_board_quality": 90.9
   },
   "metrics": {
-    "section_alignment_low_fit_rate": 0.1,
-    "section_alignment_cross_gap_rate": 0.05,
-    "content_false_positive_rate": 0.0,
+    "section_alignment_low_fit_rate": 0.05,
+    "section_alignment_cross_gap_rate": 0.0,
+    "content_false_positive_rate": 0.05,
     "reader_hard_issue_count": 0,
     "reader_hard_issue_rate": 0.0,
-    "reader_quality_penalty": 0.0,
-    "reader_quality_cap": 100.0,
-    "weak_core_rate": 0.25,
+    "reader_quality_penalty": 10.62,
+    "reader_quality_cap": 90.0,
+    "weak_core_rate": 0.2857,
     "policy_wrong_section_rate": 0.0,
-    "promotional_filler_rate": 0.0,
+    "promotional_filler_rate": 0.05,
     "promotional_core_rate": 0.0,
     "weak_core_editorial_rate": 0.0,
-    "pest_theme_duplicate_rate": 0.0,
-    "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 0.0,
+    "pest_theme_duplicate_rate": 0.05,
+    "dist_weak_ops_rate": 0.05,
+    "editorial_quality_penalty": 0.9,
     "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0,
     "commodity_primary_title_item_focus_rate": 1.0,
-    "commodity_primary_title_issue_signal_rate": 1.0,
-    "commodity_primary_strict_link_rate": 1.0,
+    "commodity_primary_title_issue_signal_rate": 0.9231,
+    "commodity_primary_strict_link_rate": 0.9231,
     "commodity_primary_low_rank_rate": 0.0,
-    "commodity_primary_count": 10,
-    "commodity_active_today_total": 12,
-    "commodity_active_today_unlinked_total": 2,
-    "commodity_managed_unlinked_total": 23,
+    "commodity_primary_count": 13,
+    "commodity_active_today_total": 17,
+    "commodity_active_today_unlinked_total": 4,
+    "commodity_managed_unlinked_total": 20,
     "commodity_board_daily_min_primary_count": 6,
     "commodity_board_low_coverage": false,
-    "commodity_board_coverage_rate": 0.303,
+    "commodity_board_coverage_rate": 0.3939,
     "commodity_primary_title_item_missing_rate": 0.0,
     "commodity_primary_body_only_rate": 0.0,
     "commodity_primary_false_link_rate": 0.0,
-    "commodity_pool_count": 2,
+    "commodity_pool_count": 4,
     "commodity_pool_false_link_rate": 0.0,
-    "commodity_primary_dominant_section_rate": 0.4
+    "commodity_primary_dominant_section_rate": 0.6923
   },
   "selection_guardrails": {
     "driver_tags": [
-      "core_quality"
+      "semantic_false_positive",
+      "section_alignment",
+      "core_quality",
+      "commodity_board"
     ],
     "section_card_min_fit": {
-      "default": 0.8,
-      "supply": 0.82,
-      "policy": 0.82,
-      "dist": 0.95,
-      "pest": 0.78
+      "default": 0.88,
+      "supply": 0.98,
+      "policy": 0.96,
+      "dist": 1.05,
+      "pest": 0.84
     },
-    "section_low_fit_rescue_min": 0.15,
-    "high_score_low_fit_rescue_margin": 3.0,
-    "tail_score_floor_delta": 0.0,
+    "section_low_fit_rescue_min": 0.35,
+    "high_score_low_fit_rescue_margin": 4.4,
+    "tail_score_floor_delta": 0.8,
     "core_fit_min": {
       "default": 1.28,
       "supply": 1.48,
@@ -74,14 +77,34 @@
     "disable_relaxed_core_fill": false,
     "final_low_tier_max_per_section": 1,
     "final_low_tier_max_total": 4,
-    "commodity_active_min_rank": 1,
-    "commodity_program_core_min_rank": 1,
+    "commodity_active_min_rank": 2,
+    "commodity_program_core_min_rank": 3,
     "commodity_require_issue_signal": false,
     "commodity_require_direct_item_focus": false,
     "commodity_strict_primary_only": true,
     "commodity_disable_primary_fallback": true
   },
-  "editorial_quality_samples": [],
+  "editorial_quality_samples": [
+    {
+      "title": "창원시, 경남특산물박람회서 농수특산물 판로 확대 나서",
+      "href": "https://www.shinailbo.co.kr/news/articleView.html?idxno=5083519",
+      "section": "dist",
+      "is_core": false,
+      "reasons": [
+        "promotional_or_event_filler",
+        "dist_event_or_development_without_ops"
+      ]
+    },
+    {
+      "title": "부여군 조인준 농촌 지도 사, ‘지방행정의 달인’ 선정…농업 병해충 방...",
+      "href": "https://www.joongdo.co.kr/web/view.php?key=20261114010004811",
+      "section": "pest",
+      "is_core": false,
+      "reasons": [
+        "pest_theme_duplicate:general_pest"
+      ]
+    }
+  ],
   "reader_hard_issue_samples": [],
   "editorial_improvement_plan": {}
 }
