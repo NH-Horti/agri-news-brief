@@ -1,22 +1,10 @@
 {
-  "generated_at": "2026-11-16T04:48:02+09:00",
+  "generated_at": "2026-11-17T08:24:37+09:00",
   "section_jump": [
     {
       "date": "2026-08-19",
       "count": 3,
       "section": "pest",
-      "surface": "briefing_chip"
-    },
-    {
-      "date": "2026-07-20",
-      "count": 2,
-      "section": "fruit_flower",
-      "surface": "commodity_group_chip"
-    },
-    {
-      "date": "2026-07-20",
-      "count": 2,
-      "section": "supply",
       "surface": "briefing_chip"
     },
     {
@@ -29,12 +17,6 @@
       "date": "2026-09-03",
       "count": 2,
       "section": "supply",
-      "surface": "briefing_chip"
-    },
-    {
-      "date": "2026-07-20",
-      "count": 1,
-      "section": "pest",
       "surface": "briefing_chip"
     },
     {
@@ -132,12 +114,6 @@
     {
       "date": "2026-08-24",
       "count": 4,
-      "from_view": "briefing",
-      "to_view": "commodity"
-    },
-    {
-      "date": "2026-07-20",
-      "count": 3,
       "from_view": "briefing",
       "to_view": "commodity"
     },
