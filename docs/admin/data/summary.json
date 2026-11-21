@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-21T06:50:42+09:00",
+  "generated_at": "2026-11-22T05:33:04+09:00",
   "windows": {
     "7": {
       "totals": {
@@ -19,52 +19,52 @@
         "avg_engagement_sec": 277.17
       },
       "range": {
-        "from": "2026-11-15",
-        "to": "2026-11-21"
+        "from": "2026-11-16",
+        "to": "2026-11-22"
       }
     },
     "30": {
       "totals": {
-        "visits": 173,
+        "visits": 162,
         "users": 14,
-        "pageviews": 423,
-        "article_clicks": 250,
-        "article_ctr": 0.591017,
-        "avg_engagement_sec": 200.54
+        "pageviews": 404,
+        "article_clicks": 241,
+        "article_ctr": 0.596535,
+        "avg_engagement_sec": 209.69
       },
       "prev": {
-        "visits": 154,
+        "visits": 161,
         "users": 20,
-        "pageviews": 364,
-        "article_clicks": 265,
-        "article_ctr": 0.728022,
-        "avg_engagement_sec": 179.38
+        "pageviews": 374,
+        "article_clicks": 268,
+        "article_ctr": 0.716578,
+        "avg_engagement_sec": 173.95
       },
       "range": {
-        "from": "2026-10-23",
-        "to": "2026-11-21"
+        "from": "2026-10-24",
+        "to": "2026-11-22"
       }
     },
     "90": {
       "totals": {
-        "visits": 573,
-        "users": 32,
-        "pageviews": 1410,
-        "article_clicks": 936,
-        "article_ctr": 0.66383,
-        "avg_engagement_sec": 196.14
+        "visits": 553,
+        "users": 30,
+        "pageviews": 1347,
+        "article_clicks": 899,
+        "article_ctr": 0.667409,
+        "avg_engagement_sec": 194.68
       },
       "prev": {
-        "visits": 732,
-        "users": 43,
-        "pageviews": 2047,
-        "article_clicks": 1210,
-        "article_ctr": 0.591109,
-        "avg_engagement_sec": 207.43
+        "visits": 735,
+        "users": 44,
+        "pageviews": 2056,
+        "article_clicks": 1206,
+        "article_ctr": 0.586576,
+        "avg_engagement_sec": 208.34
       },
       "range": {
-        "from": "2026-08-24",
-        "to": "2026-11-21"
+        "from": "2026-08-25",
+        "to": "2026-11-22"
       }
     }
   }
