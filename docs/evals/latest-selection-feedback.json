@@ -1,47 +1,47 @@
 {
-  "report_date": "2026-11-23",
-  "generated_at_kst": "2026-11-23T06:20:48+09:00",
+  "report_date": "2026-11-24",
+  "generated_at_kst": "2026-11-24T06:20:55+09:00",
   "scores": {
-    "section_alignment": 100.0,
-    "core_quality": 99.63,
-    "commodity_board_quality": 96.08
+    "section_alignment": 97.19,
+    "core_quality": 99.97,
+    "commodity_board_quality": 91.39
   },
   "metrics": {
-    "section_alignment_low_fit_rate": 0.0,
-    "section_alignment_cross_gap_rate": 0.0,
+    "section_alignment_low_fit_rate": 0.05,
+    "section_alignment_cross_gap_rate": 0.05,
     "content_false_positive_rate": 0.0,
     "reader_hard_issue_count": 0,
     "reader_hard_issue_rate": 0.0,
-    "reader_quality_penalty": 0.0,
+    "reader_quality_penalty": 1.44,
     "reader_quality_cap": 100.0,
     "weak_core_rate": 0.0,
-    "policy_wrong_section_rate": 0.0,
+    "policy_wrong_section_rate": 0.05,
     "promotional_filler_rate": 0.0,
     "promotional_core_rate": 0.0,
     "weak_core_editorial_rate": 0.0,
     "pest_theme_duplicate_rate": 0.0,
     "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 0.0,
+    "editorial_quality_penalty": 0.8,
     "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0,
     "commodity_primary_title_item_focus_rate": 1.0,
-    "commodity_primary_title_issue_signal_rate": 1.0,
-    "commodity_primary_strict_link_rate": 1.0,
+    "commodity_primary_title_issue_signal_rate": 0.8182,
+    "commodity_primary_strict_link_rate": 0.8182,
     "commodity_primary_low_rank_rate": 0.0,
-    "commodity_primary_count": 14,
-    "commodity_active_today_total": 17,
-    "commodity_active_today_unlinked_total": 3,
-    "commodity_managed_unlinked_total": 19,
+    "commodity_primary_count": 11,
+    "commodity_active_today_total": 18,
+    "commodity_active_today_unlinked_total": 7,
+    "commodity_managed_unlinked_total": 22,
     "commodity_board_daily_min_primary_count": 6,
     "commodity_board_low_coverage": false,
-    "commodity_board_coverage_rate": 0.4242,
+    "commodity_board_coverage_rate": 0.3333,
     "commodity_primary_title_item_missing_rate": 0.0,
     "commodity_primary_body_only_rate": 0.0,
     "commodity_primary_false_link_rate": 0.0,
-    "commodity_pool_count": 3,
+    "commodity_pool_count": 11,
     "commodity_pool_false_link_rate": 0.0,
-    "commodity_primary_dominant_section_rate": 0.5714
+    "commodity_primary_dominant_section_rate": 0.6364
   },
   "selection_guardrails": {
     "driver_tags": [],
@@ -79,7 +79,17 @@
     "commodity_strict_primary_only": true,
     "commodity_disable_primary_fallback": true
   },
-  "editorial_quality_samples": [],
+  "editorial_quality_samples": [
+    {
+      "title": "대전원예농협, 김장 배추 수급 안정과 농가 지원 나서",
+      "href": "https://www.news1.kr/photos/8228334",
+      "section": "policy",
+      "is_core": false,
+      "reasons": [
+        "policy_price_report_without_policy_action"
+      ]
+    }
+  ],
   "reader_hard_issue_samples": [],
   "editorial_improvement_plan": {}
 }
