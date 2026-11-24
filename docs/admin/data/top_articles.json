@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-24T10:41:29+09:00",
+  "generated_at": "2026-11-25T08:29:40+09:00",
   "rows": [
     {
       "date": "2026-09-22",
@@ -1194,19 +1194,6 @@
       "target_domain": "www.mt.co.kr",
       "clicks": 3,
       "users": 3,
-      "archive_url": "",
-      "source_url": ""
-    },
-    {
-      "date": "2026-07-28",
-      "article_id": "bad5acd7925f",
-      "title": "김천 포도, 과잉공급 가격 하락에 40도 폭염 피해까지",
-      "report_date": "2026-07-28",
-      "section": "supply",
-      "surface": "commodity_primary",
-      "target_domain": "www.idaegu.com",
-      "clicks": 2,
-      "users": 1,
       "archive_url": "",
       "source_url": ""
     },
@@ -12233,6 +12220,45 @@
       "users": 1,
       "archive_url": "",
       "source_url": ""
+    },
+    {
+      "date": "2026-11-24",
+      "article_id": "554a4e20160b",
+      "title": "'황금 포도' 옛말···샤인머스캣, 공급과잉에 가격 76% 급락",
+      "report_date": "2026-11-24",
+      "section": "supply",
+      "surface": "briefing_open",
+      "target_domain": "www.seoulfn.com",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-11-24.html#sec-supply",
+      "source_url": "https://www.seoulfn.com/news/articleView.html?idxno=643602"
+    },
+    {
+      "date": "2026-11-24",
+      "article_id": "880af465bdb7",
+      "title": "' 토마토 바이러스' 이렇게 대응하자",
+      "report_date": "2026-11-24",
+      "section": "pest",
+      "surface": "briefing_open",
+      "target_domain": "www.newsfarm.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-11-24.html#sec-pest",
+      "source_url": "http://www.newsfarm.co.kr/news/articleView.html?idxno=103027"
+    },
+    {
+      "date": "2026-11-24",
+      "article_id": "8b4a872d4194",
+      "title": "드론 약제 흩날림 줄였다⋯미세 살포액 묻은 면적 95.1% 감소",
+      "report_date": "2026-11-24",
+      "section": "pest",
+      "surface": "briefing_open",
+      "target_domain": "www.etoday.co.kr",
+      "clicks": 1,
+      "users": 1,
+      "archive_url": "/agri-news-brief/archive/2026-11-24.html#sec-pest",
+      "source_url": "https://www.etoday.co.kr/news/view/2651686"
     }
   ]
 }
