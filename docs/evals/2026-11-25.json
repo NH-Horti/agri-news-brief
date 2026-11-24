@@ -1,0 +1,393 @@
+{
+  "report_date": "2026-11-25",
+  "generated_at_kst": "2026-11-25T06:16:39+09:00",
+  "status": "pass",
+  "overall_score": 88.65,
+  "operational_score": 94.41,
+  "reader_quality_score": 88.65,
+  "reader_quality_gate": {
+    "status": "clear",
+    "headline_score": 88.65,
+    "operational_score": 94.41,
+    "penalty": 5.76,
+    "cap": 100.0,
+    "reasons": []
+  },
+  "scores": {
+    "completeness": 100.0,
+    "diversity": 96.0,
+    "source_quality": 80.0,
+    "summary_quality": 97.0,
+    "freshness": 100.0,
+    "retrieval_support": 89.38,
+    "section_alignment": 100.0,
+    "core_quality": 100.0,
+    "commodity_board_quality": 93.3,
+    "reader_quality": 88.65
+  },
+  "counts": {
+    "briefing_total": 20,
+    "commodity_total": 44,
+    "commodity_primary_total": 11,
+    "commodity_pool_total": 14,
+    "commodity_active_today_total": 14,
+    "commodity_active_today_unlinked_total": 3,
+    "commodity_managed_unlinked_total": 22,
+    "briefing_by_section": {
+      "supply": 5,
+      "policy": 5,
+      "dist": 5,
+      "pest": 5
+    },
+    "core_by_section": {
+      "supply": 2,
+      "policy": 1,
+      "dist": 2,
+      "pest": 1
+    },
+    "commodity_by_section": {
+      "supply": 33,
+      "policy": 0,
+      "dist": 6,
+      "pest": 5
+    },
+    "raw_by_section": {
+      "supply": 430,
+      "policy": 123,
+      "dist": 100,
+      "pest": 30
+    },
+    "expected_briefing_by_section": {
+      "supply": 5,
+      "policy": 5,
+      "dist": 5,
+      "pest": 5
+    },
+    "soft_fallback_briefing_by_section": {
+      "supply": 4,
+      "policy": 4,
+      "dist": 4,
+      "pest": 4
+    },
+    "minimum_fallback_briefing_by_section": {
+      "supply": 3,
+      "policy": 3,
+      "dist": 3,
+      "pest": 3
+    },
+    "preferred_slot_gap_by_section": {
+      "supply": 0,
+      "policy": 0,
+      "dist": 0,
+      "pest": 0
+    },
+    "low_tier_source_total": 4,
+    "low_tier_source_by_section": {
+      "supply": 1,
+      "policy": 1,
+      "dist": 0,
+      "pest": 2
+    },
+    "achievable_briefing_by_section": {
+      "supply": 404,
+      "policy": 104,
+      "dist": 69,
+      "pest": 25
+    }
+  },
+  "metrics": {
+    "briefing_title_unique_rate": 1.0,
+    "briefing_domain_diversity_rate": 0.85,
+    "low_tier_source_rate": 0.2,
+    "low_tier_source_excess_count": 0,
+    "source_quality_penalty": 0.0,
+    "surface_reuse_penalty": 0.0,
+    "summary_presence_rate": 1.0,
+    "summary_length_ok_rate": 0.9,
+    "summary_numeric_rate": 0.8,
+    "summary_opening_diversity": 1.0,
+    "matched_article_rate": 1.0,
+    "within_48h_rate": 1.0,
+    "within_72h_rate": 1.0,
+    "stale_over_96h_rate": 0.0,
+    "freshness_window_mode": "regular",
+    "freshness_gap_offset_hours": 0.0,
+    "seed_coverage_score": 0.6458,
+    "section_alignment_fit_avg": 3.7495,
+    "section_alignment_low_fit_rate": 0.0,
+    "section_alignment_cross_gap_rate": 0.0,
+    "section_alignment_weak_stage_rate": 0.0,
+    "content_false_positive_rate": 0.0,
+    "reader_hard_issue_count": 0,
+    "reader_hard_issue_rate": 0.0,
+    "reader_hard_core_issue_count": 0,
+    "reader_quality_penalty": 5.76,
+    "reader_quality_cap": 100.0,
+    "preferred_slot_reader_penalty_weight": 1.5,
+    "off_scope_foreign_rate": 0.0,
+    "story_duplicate_rate": 0.0,
+    "cross_section_duplicate_rate": 0.0,
+    "content_irrelevant_rate": 0.0,
+    "semantic_false_positive_penalty": 0.0,
+    "story_duplicate_penalty": 0.0,
+    "policy_wrong_section_rate": 0.0,
+    "promotional_filler_rate": 0.1,
+    "promotional_core_rate": 0.1667,
+    "weak_core_editorial_rate": 0.1667,
+    "pest_theme_duplicate_rate": 0.0,
+    "policy_theme_duplicate_rate": 0.0,
+    "policy_theme_duplicate_count": 0,
+    "dist_weak_ops_rate": 0.0,
+    "editorial_quality_penalty": 3.2,
+    "preferred_slot_gap_rate": 0.0,
+    "preferred_slot_gap_total": 0,
+    "preferred_slot_penalty": 0.0,
+    "core_fit_avg": 4.6283,
+    "core_rank_percentile_avg": 0.9707,
+    "core_stage_core_rate": 1.0,
+    "weak_core_rate": 0.0,
+    "commodity_primary_item_focus_rate": 1.0,
+    "commodity_primary_issue_signal_rate": 1.0,
+    "commodity_primary_weak_rate": 0.0,
+    "commodity_primary_fit_avg": 3.0536,
+    "commodity_primary_rank_avg": 3.2727,
+    "commodity_primary_title_item_focus_rate": 1.0,
+    "commodity_primary_title_issue_signal_rate": 0.9091,
+    "commodity_primary_strict_link_rate": 0.9091,
+    "commodity_primary_low_rank_rate": 0.0,
+    "commodity_primary_count": 11,
+    "commodity_active_today_total": 14,
+    "commodity_active_today_unlinked_total": 3,
+    "commodity_managed_unlinked_total": 22,
+    "commodity_board_daily_min_primary_count": 6,
+    "commodity_board_low_coverage": false,
+    "commodity_board_coverage_rate": 0.3333,
+    "commodity_primary_title_item_missing_rate": 0.0,
+    "commodity_primary_body_only_rate": 0.0,
+    "commodity_primary_false_link_rate": 0.0,
+    "commodity_pool_count": 14,
+    "commodity_pool_false_link_rate": 0.0,
+    "commodity_primary_dominant_section_rate": 0.6364,
+    "commodity_primary_section_balance_score": 0.4416
+  },
+  "section_scores": {
+    "briefing_fill": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "core_fill": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "retrieval_pool": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "seed_coverage": {
+      "supply": 0.8333,
+      "policy": 0.5,
+      "dist": 0.75,
+      "pest": 0.5
+    },
+    "section_alignment": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    },
+    "core_quality": {
+      "supply": 1.0,
+      "policy": 1.0,
+      "dist": 1.0,
+      "pest": 1.0
+    }
+  },
+  "freshness_samples": [
+    {
+      "title": "KG케미칼, 경주시와 AI로 연작장해 대응…작물 예찰·처방 특허 출원",
+      "section": "pest",
+      "age_hours": 20.6
+    },
+    {
+      "title": "영광군, 마늘· 양파 농산물 가격안정제 지원 위한 사전 준비 당부",
+      "section": "policy",
+      "age_hours": 20.5
+    },
+    {
+      "title": "농진원, 드론 방제 약제 흩날림 줄인다",
+      "section": "pest",
+      "age_hours": 19.5
+    },
+    {
+      "title": "의료 공백 해소· 과수화상병 4년 연속 미발생…평창군, 적극행정 우수공...",
+      "section": "pest",
+      "age_hours": 19.2
+    },
+    {
+      "title": "접경지 친환경농가 \"군급식 지원사업 예산 편성해야\"",
+      "section": "policy",
+      "age_hours": 19.0
+    },
+    {
+      "title": "강릉시, 스마트 산지유통시설 확충 등 미래형 유통 기반 마련",
+      "section": "dist",
+      "age_hours": 18.2
+    },
+    {
+      "title": "\"AI·빅데이터 기반 정밀방제, 농약산업 새로운 성장동력\"",
+      "section": "pest",
+      "age_hours": 16.2
+    },
+    {
+      "title": "\"배춧값 내려도 김장은 안 해요\"…옛말 된 김장철 특수",
+      "section": "supply",
+      "age_hours": 15.1
+    }
+  ],
+  "content_false_positive_samples": [],
+  "reader_hard_issue_samples": [],
+  "story_duplicate_samples": [],
+  "commodity_primary_linkage_samples": [
+    {
+      "title": "[산지 확대경] “ 딸기 농사 풍년”…소비회복·기온변화 ‘값’ 변수",
+      "item_label": "딸기",
+      "section": "dist",
+      "surface": "commodity_primary",
+      "representative_rank": 4,
+      "reasons": [
+        "title_issue_missing"
+      ]
+    }
+  ],
+  "commodity_pool_linkage_samples": [],
+  "editorial_quality_samples": [
+    {
+      "title": "접경지 친환경농가 \"군급식 지원사업 예산 편성해야\"",
+      "href": "https://www.agrinet.co.kr/news/articleView.html?idxno=409134",
+      "section": "policy",
+      "is_core": false,
+      "reasons": [
+        "promotional_or_event_filler"
+      ]
+    },
+    {
+      "title": "논산 성동 농협 스마트 APC 준공",
+      "href": "http://www.cctimes.kr/news/articleView.html?idxno=938911",
+      "section": "dist",
+      "is_core": true,
+      "reasons": [
+        "promotional_or_event_filler"
+      ]
+    }
+  ],
+  "improvement_hints": [
+    "편집 품질상 약한 기사 선택이 감지되었습니다 (promotional_filler=10%). 운영 자동 피드백에는 바로 반영하지 말고, 코어 기사 demotion과 섹션별 soft penalty로 미세 조정하세요."
+  ],
+  "selection_guardrails": {
+    "driver_tags": [],
+    "section_card_min_fit": {
+      "default": 0.8,
+      "supply": 0.82,
+      "policy": 0.82,
+      "dist": 0.95,
+      "pest": 0.78
+    },
+    "section_low_fit_rescue_min": 0.15,
+    "high_score_low_fit_rescue_margin": 3.0,
+    "tail_score_floor_delta": 0.0,
+    "core_fit_min": {
+      "default": 1.2,
+      "supply": 1.4,
+      "policy": 1.4,
+      "dist": 1.6,
+      "pest": 1.2
+    },
+    "core_relaxed_min_fit": {
+      "default": 1.0,
+      "supply": 1.18,
+      "policy": 1.15,
+      "dist": 1.35,
+      "pest": 1.0
+    },
+    "disable_relaxed_core_fill": false,
+    "final_low_tier_max_per_section": 1,
+    "final_low_tier_max_total": 4,
+    "commodity_active_min_rank": 1,
+    "commodity_program_core_min_rank": 1,
+    "commodity_require_issue_signal": false,
+    "commodity_require_direct_item_focus": false,
+    "commodity_strict_primary_only": true,
+    "commodity_disable_primary_fallback": true
+  },
+  "summary_prompt_feedback": [
+    "각 기사 요약은 2문장으로 유지하고 첫 문장에 품목·지역·핵심 이슈를 바로 적는다.",
+    "기사에 수치가 있으면 1개 이상 남기고, 없으면 대응 주체나 시점을 분명히 적는다.",
+    "비슷한 시작 표현을 반복하지 말고 원인과 대응을 분리해서 간결하게 쓴다."
+  ],
+  "adaptive_evaluation": {
+    "full_editorial_eval": false,
+    "reason": "openai_quota_unavailable",
+    "stable_days_required": 20
+  },
+  "editorial": {
+    "status": "skipped",
+    "reason": "openai_quota_unavailable",
+    "model": "gpt-5.6-sol"
+  },
+  "prepublish_quality_gate": {
+    "status": "passed",
+    "publishable": true,
+    "publication_mode": "normal",
+    "achievable_briefing_by_section": {
+      "supply": 404,
+      "policy": 104,
+      "dist": 69,
+      "pest": 25
+    },
+    "thin_pool_sections": {},
+    "repair_count": 0,
+    "applied_repair_count": 0,
+    "repair_proposal_limit": 3,
+    "repair_attempts": [],
+    "hard_issue_excisions": [],
+    "hard_issue_excision_limit": 2,
+    "state_history": [
+      {
+        "label": "initial",
+        "rank": [
+          0,
+          -88.65
+        ]
+      }
+    ],
+    "restored_best_state": "",
+    "guaranteed_delivery": {},
+    "deadline_kst": "06:50",
+    "deadline_reached": false,
+    "minimum_operational_score": 85.0,
+    "sla_fallback_enabled": true,
+    "sla_fallback_allowed_for_run": true,
+    "editorial_forced_for_run": false,
+    "editorial_required_satisfied": true,
+    "sla_fallback_forced": false,
+    "sla_fallback_minimum_score": 78.0,
+    "sla_fallback_score_enforced": true,
+    "sla_fallback_minimum_per_section": 4,
+    "sla_fallback_blockers": [],
+    "hard_editorial_issue_count": 0,
+    "model": "gpt-5.6-sol",
+    "usage_events": [],
+    "editorial_usage_calls": 0,
+    "editorial_usage_tokens": 0,
+    "editorial_max_calls": 6,
+    "editorial_token_budget": 130000,
+    "editorial_budget_available": true,
+    "estimated_cost_usd": 0
+  }
+}
