@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "report_date": "2026-11-27",
+  "status": "success",
+  "channel": "kakao",
+  "sent_at_kst": "2026-11-27T06:21:09+09:00",
+  "page_url": "https://nh-horti.github.io/agri-news-brief/archive/2026-11-27.html?v=71e42d2",
+  "page_format": "full_formal_briefing",
+  "message_format": "normal_daily_summary",
+  "publication_mode": "normal",
+  "message_sha256": "67f8d3d794c9f2dc3ab332118e573c0799b45864a70584ba82e65b73a2c3eeb4",
+  "section_counts": {
+    "supply": 5,
+    "policy": 5,
+    "dist": 5,
+    "pest": 5
+  }
+}
