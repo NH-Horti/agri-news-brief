@@ -1,51 +1,51 @@
 {
-  "report_date": "2026-11-26",
-  "generated_at_kst": "2026-11-26T06:18:20+09:00",
+  "report_date": "2026-11-27",
+  "generated_at_kst": "2026-11-27T06:20:07+09:00",
   "scores": {
-    "section_alignment": 100.0,
-    "core_quality": 100.0,
-    "commodity_board_quality": 88.0
+    "section_alignment": 97.19,
+    "core_quality": 81.82,
+    "commodity_board_quality": 100.0
   },
   "metrics": {
     "section_alignment_low_fit_rate": 0.05,
-    "section_alignment_cross_gap_rate": 0.0,
+    "section_alignment_cross_gap_rate": 0.05,
     "content_false_positive_rate": 0.0,
     "reader_hard_issue_count": 0,
     "reader_hard_issue_rate": 0.0,
-    "reader_quality_penalty": 4.41,
+    "reader_quality_penalty": 1.08,
     "reader_quality_cap": 100.0,
-    "weak_core_rate": 0.0,
+    "weak_core_rate": 0.25,
     "policy_wrong_section_rate": 0.0,
     "promotional_filler_rate": 0.1,
-    "promotional_core_rate": 0.125,
-    "weak_core_editorial_rate": 0.125,
+    "promotional_core_rate": 0.0,
+    "weak_core_editorial_rate": 0.0,
     "pest_theme_duplicate_rate": 0.0,
-    "dist_weak_ops_rate": 0.0,
-    "editorial_quality_penalty": 2.45,
+    "dist_weak_ops_rate": 0.05,
+    "editorial_quality_penalty": 0.6,
     "commodity_primary_item_focus_rate": 1.0,
     "commodity_primary_issue_signal_rate": 1.0,
     "commodity_primary_weak_rate": 0.0,
     "commodity_primary_title_item_focus_rate": 1.0,
-    "commodity_primary_title_issue_signal_rate": 0.9,
-    "commodity_primary_strict_link_rate": 0.9,
+    "commodity_primary_title_issue_signal_rate": 1.0,
+    "commodity_primary_strict_link_rate": 1.0,
     "commodity_primary_low_rank_rate": 0.0,
-    "commodity_primary_count": 10,
-    "commodity_active_today_total": 16,
-    "commodity_active_today_unlinked_total": 6,
-    "commodity_managed_unlinked_total": 23,
+    "commodity_primary_count": 15,
+    "commodity_active_today_total": 19,
+    "commodity_active_today_unlinked_total": 4,
+    "commodity_managed_unlinked_total": 18,
     "commodity_board_daily_min_primary_count": 6,
     "commodity_board_low_coverage": false,
-    "commodity_board_coverage_rate": 0.303,
+    "commodity_board_coverage_rate": 0.4545,
     "commodity_primary_title_item_missing_rate": 0.0,
     "commodity_primary_body_only_rate": 0.0,
     "commodity_primary_false_link_rate": 0.0,
-    "commodity_pool_count": 8,
+    "commodity_pool_count": 5,
     "commodity_pool_false_link_rate": 0.0,
-    "commodity_primary_dominant_section_rate": 0.9
+    "commodity_primary_dominant_section_rate": 0.4667
   },
   "selection_guardrails": {
     "driver_tags": [
-      "commodity_board"
+      "core_quality"
     ],
     "section_card_min_fit": {
       "default": 0.8,
@@ -58,24 +58,24 @@
     "high_score_low_fit_rescue_margin": 3.0,
     "tail_score_floor_delta": 0.0,
     "core_fit_min": {
-      "default": 1.2,
-      "supply": 1.4,
-      "policy": 1.4,
-      "dist": 1.6,
-      "pest": 1.2
+      "default": 1.28,
+      "supply": 1.48,
+      "policy": 1.48,
+      "dist": 1.68,
+      "pest": 1.28
     },
     "core_relaxed_min_fit": {
-      "default": 1.0,
-      "supply": 1.18,
-      "policy": 1.15,
-      "dist": 1.35,
-      "pest": 1.0
+      "default": 1.12,
+      "supply": 1.3,
+      "policy": 1.27,
+      "dist": 1.47,
+      "pest": 1.12
     },
     "disable_relaxed_core_fill": false,
     "final_low_tier_max_per_section": 1,
     "final_low_tier_max_total": 4,
-    "commodity_active_min_rank": 2,
-    "commodity_program_core_min_rank": 3,
+    "commodity_active_min_rank": 1,
+    "commodity_program_core_min_rank": 1,
     "commodity_require_issue_signal": false,
     "commodity_require_direct_item_focus": false,
     "commodity_strict_primary_only": true,
@@ -83,8 +83,8 @@
   },
   "editorial_quality_samples": [
     {
-      "title": "대관령원협, 고랭지 감자 농가에 영농자재 지원",
-      "href": "http://www.wonyesanup.co.kr/news/articleView.html?idxno=66407",
+      "title": "청주 현도 농협 , 낡은 양곡창고의 변신…농자재 판매 ‘쑥’",
+      "href": "https://www.nongmin.com/article/20261124500396",
       "section": "policy",
       "is_core": false,
       "reasons": [
@@ -92,12 +92,13 @@
       ]
     },
     {
-      "title": "논산 성동농협 '스마트 농산물산지유통센터(APC)' 준공",
-      "href": "https://www.ggilbo.com/news/articleView.html?idxno=1195522",
+      "title": "하동 농식품은 태국, 거창 샤인머스캣은 미국행",
+      "href": "https://www.donga.com/news/Society/article/all/20261126/135098394/2",
       "section": "dist",
-      "is_core": true,
+      "is_core": false,
       "reasons": [
-        "promotional_or_event_filler"
+        "promotional_or_event_filler",
+        "dist_event_or_development_without_ops"
       ]
     }
   ],
